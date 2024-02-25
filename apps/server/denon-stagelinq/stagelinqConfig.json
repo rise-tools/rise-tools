@@ -1,0 +1,113 @@
+{
+	"player": {
+		"Engine": {
+			"DeckCount": 0,
+			"Sync": {
+				"Network": {
+					"MasterStatus": false
+				}
+			},
+			"Master": {
+				"MasterTempo": 120
+			}
+		},
+		"Client": {
+			"Librarian": {
+				"DevicesController": {
+					"CurrentDevice": "",
+					"HasSDCardConnected": false,
+					"HasUsbDeviceConnected": false
+				}
+			},
+			"Preferences": {
+				"LayerB": false,
+				"Player": "",
+				"PlayerJogColorA": "#FFFFFF",
+				"PlayerJogColorB": "#FFFFFF",
+				"Profile": {
+					"Application": {
+						"PlayerColor1": "#FFFFFF",
+						"PlayerColor1A": "#FFFFFF",
+						"PlayerColor1B": "#FFFFFF",
+						"PlayerColor2": "#FFFFFF",
+						"PlayerColor2A": "#FFFFFF",
+						"PlayerColor2B": "#FFFFFF",
+						"PlayerColor3": "#FFFFFF",
+						"PlayerColor3A": "#FFFFFF",
+						"PlayerColor3B": "#FFFFFF",
+						"PlayerColor4": "#FFFFFF",
+						"PlayerColor4A": "#FFFFFF",
+						"PlayerColor4B": "#FFFFFF",
+						"SyncMode": ""
+					}
+				}
+			}
+		}
+	},
+	"playerDeck": {
+		"CurrentBPM": 120,
+		"ExternalMixerVolume": 1,
+		"ExternalScratchWheelTouch": false,
+		"Pads": {
+			"View": ""
+		},
+		"Play": false,
+		"PlayState": false,
+		"Speed": 1,
+		"SpeedNeutral": false,
+		"SpeedOffsetDown": false,
+		"SpeedOffsetUp": false,
+		"SpeedRange": "8",
+		"SpeedState": 1,
+		"SyncMode": "Off",
+		"DeckIsMaster": false,
+		"Track": {
+			"ArtistName": "",
+			"Bleep": false,
+			"CuePosition": 156,
+			"CurrentBPM": 120,
+			"CurrentKeyIndex": 0,
+			"CurrentLoopInPosition": 156,
+			"CurrentLoopOutPosition": 156,
+			"CurrentLoopSizeInBeats": 0,
+			"KeyLock": false,
+			"LoopEnableState": false,
+			"Loop": {
+				"QuickLoop1": false,
+				"QuickLoop2": false,
+				"QuickLoop3": false,
+				"QuickLoop4": false,
+				"QuickLoop5": false,
+				"QuickLoop6": false,
+				"QuickLoop7": false,
+				"QuickLoop8": false
+			},
+			"PlayPauseLEDState": false,
+			"SampleRate": 44100,
+			"SongAnalyzed": false,
+			"SongLoaded": false,
+			"SongName": "",
+			"SoundSwitchGUID": "",
+			"TrackBytes": 1,
+			"TrackData": false,
+			"TrackLength": 1,
+			"TrackName": "",
+			"TrackNetworkPath": "",
+			"TrackURI": "",
+			"TrackWasPlayed": false
+		}
+	},
+	"mixer": {
+		"Mixer": {
+			"CH1faderPosition": 1.27,
+			"CH2faderPosition": 0,
+			"CH3faderPosition": 0,
+			"CH4faderPosition": 0,
+			"CrossfaderPosition": 0.5,
+			"ChannelAssignment1": "",
+			"ChannelAssignment2": "",
+			"ChannelAssignment3": "",
+			"ChannelAssignment4": ""
+		}
+	}
+}

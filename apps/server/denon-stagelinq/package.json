@@ -1,0 +1,38 @@
+{
+	"name": "StageLinqJS",
+	"version": "2.0.0-Beta",
+	"description": "Typescript library to connect to Denon StageLinq devices",
+	"homepage": "https://github.com/honusz/StageLinq",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node dist/cli/index.js",
+		"watch": "tsc --build tsconfig.json -w",
+		"cli": "esr cli/index.ts"
+	},
+	"author": "honusz",
+	"license": "GNU GPLv3",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"dependencies": {
+		"@types/filesystem": "^0.0.32",
+		"@types/uuid": "^9.0.1",
+		"better-sqlite3": "^7.6.2",
+		"console-stamp": "^3.0.3",
+		"esbuild": "^0.20.0",
+		"esbuild-runner": "^2.2.2",
+		"ip": "^1.1.5",
+		"minimist": "^1.2.5"
+	},
+	"devDependencies": {
+		"@types/assert": "^1.5.5",
+		"@types/better-sqlite3": "^7.6.3",
+		"@types/ip": "^1.1.0",
+		"@types/node": "^18.15.11",
+		"prettier": "^2.5.1",
+		"typedoc": "^0.23.28",
+		"typescript": "^5.0.3"
+	}
+}

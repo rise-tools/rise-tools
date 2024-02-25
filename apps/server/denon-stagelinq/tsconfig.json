@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"target": "es2020",
+		"module": "commonjs",
+		"outDir": "dist",
+		"sourceMap": true,
+		"allowJs": false,
+		"alwaysStrict": true,
+		"noImplicitAny": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"resolveJsonModule": true,
+		"declaration": true
+	}
+}

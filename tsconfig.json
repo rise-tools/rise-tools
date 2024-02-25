@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "app/*": ["./packages/app/*"],
+      "@react-native-templates/demo-ui/*": ["./packages/ui/*"],
+      "@react-native-templates/core": ["./packages/core/src/index"],
+      "@react-native-templates/ws-client": ["./packages/ws-client/src/index"]
+    }
+  },
+  "extends": "expo/tsconfig.base",
+  "exclude": [
+    "**/node_modules",
+    "**/dist",
+    "**/types",
+    "apps/next/out",
+    "apps/next/.next",
+    "apps/next/.tamagui"
+  ]
+}

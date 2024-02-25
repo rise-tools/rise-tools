@@ -1,0 +1,27 @@
+# Binary dumps from StageLinq library
+localdb/
+waveform.bin
+
+# JS compiled
+dist/
+
+# Logs
+logs
+*.log
+log.txt
+
+# NodeJS directories
+node_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# VSCode configs
+.vscode/
+*.code-workspace
+
+# Mac Finder junk
+.DS_Store
+
+# Scratch folder
+_scratch_
