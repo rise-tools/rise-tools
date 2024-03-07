@@ -1,6 +1,6 @@
 import { createReadStream, read, stat } from 'fs-extra'
 import { EGInfo } from './eg'
-import { readDb } from './eg-video'
+import { DBState, readDb } from './eg-video'
 import { Frame } from './eg-sacn'
 import { join } from 'path'
 
@@ -9,12 +9,31 @@ export type VideoPlayer = {
   restart: () => void
 }
 
-export function egVideo(eg: EGInfo, mediaPath: string) {
+export type EGVideo = ReturnType<typeof egVideo>
+
+export function egVideo(
+  eg: EGInfo,
+  mediaPath: string,
+  {
+    onMediaUpdate,
+  }: {
+    onMediaUpdate: (mediaDb: DBState) => void
+  }
+) {
   const { frameSize } = eg
 
-  async function list() {
-    return await readDb(mediaPath)
+  let mediaDb: null | DBState = null
+
+  async function updateDb() {
+    mediaDb = await readDb(mediaPath)
+    onMediaUpdate(mediaDb)
   }
+
+  updateDb()
+
+  setInterval(() => {
+    updateDb()
+  }, 5000)
 
   async function loadVideo(fileSha256: string): Promise<VideoPlayer> {
     const dbState = await readDb(mediaPath)
@@ -124,6 +143,6 @@ export function egVideo(eg: EGInfo, mediaPath: string) {
   }
   return {
     loadVideo,
-    list,
+    updateDb,
   }
 }

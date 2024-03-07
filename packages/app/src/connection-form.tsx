@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 const connectionFormSchema = z.object({
   label: fields.text.describe('Connection Label'),
-  host: fields.url.describe('Websocket URL // wss://demo-remote.verse.link'),
+  host: fields.url.describe('Websocket URL // wss://demo-remote.verse.link').toLowerCase(),
   path: fields.path.describe('Path/Location (optional) // Root Location'),
 })
 

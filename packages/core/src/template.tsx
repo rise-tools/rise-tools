@@ -325,7 +325,7 @@ type ValidationErrors = any;
 
 function validateProps<Value>(
   input: any,
-  validator: (input: any) => Value | undefined
+  validator?: (input: any) => Value | undefined
 ): [ValidationErrors | null, Value | undefined] {
   if (!validator) return [null, input];
   try {
