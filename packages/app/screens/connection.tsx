@@ -6,6 +6,7 @@ import { NotFoundScreen } from './not-found'
 import { Template } from '@react-native-templates/core'
 import { demoComponents } from 'app/demoComponents'
 import { useRouter } from 'solito/router'
+import { SizableText } from '@react-native-templates/demo-ui'
 
 const { useParam, useParams } = createParam<{ id: string; path: string }>()
 
@@ -15,6 +16,7 @@ export function ConnectionScreen() {
   const [connection] = useConnection(id)
   if (!connection) return <NotFoundScreen />
   return <ActiveConnectionScreen connection={connection} />
+  // return <SizableText>Hellow</SizableText>
 }
 function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   const router = useRouter()
@@ -35,9 +37,6 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
       dataSource={dataSource}
       onEvent={dataSource.sendEvent}
       path={path || ''}
-      // onEvent={(payload) => {
-      //   console.log('onEvent', payload)
-      // }}
     />
   )
 }

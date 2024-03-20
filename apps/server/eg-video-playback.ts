@@ -4,9 +4,16 @@ import { DBState, readDb } from './eg-video'
 import { Frame } from './eg-sacn'
 import { join } from 'path'
 
+export type VideoPlaybackInstance = {
+  readFrame: () => Frame | null
+  restart: () => void
+}
+
 export type VideoPlayer = {
   readFrame: () => Frame | null
   restart: () => void
+  selectVideo: (videoId: string) => void
+  id: string
 }
 
 export type EGVideo = ReturnType<typeof egVideo>
@@ -35,10 +42,10 @@ export function egVideo(
     updateDb()
   }, 5000)
 
-  async function loadVideo(fileSha256: string): Promise<VideoPlayer> {
+  async function loadVideo(fileSha256: string): Promise<VideoPlaybackInstance> {
     const dbState = await readDb(mediaPath)
     const file = dbState.files.find((file) => file.fileSha256 === fileSha256)
-    console.log('will load video', file)
+    // console.log('will load video', file)
 
     const MAX_QUEUE_SIZE = 10
 
@@ -52,7 +59,7 @@ export function egVideo(
     }
     const framesFilePath = join(mediaPath, framesFile)
     const fileInfo = await stat(framesFilePath)
-    console.log('fileInfo', fileInfo)
+    // console.log('fileInfo', fileInfo)
 
     let resume = () => {}
     let pause = () => {}
@@ -113,6 +120,7 @@ export function egVideo(
       currentBuffer = Buffer.alloc(0)
       startReadback()
     }
+    console.log('will startReadback')
     startReadback()
     // setInterval(() => {
     //   if (bufferQueue.length > 0) {
@@ -141,8 +149,49 @@ export function egVideo(
       restart,
     }
   }
+
+  function createPlayer(id: string): VideoPlayer {
+    let activeVideo: string | null = null
+    let videoInstance: VideoPlaybackInstance | null = null
+    function readFrame(): Frame | null {
+      if (videoInstance) {
+        const frame = videoInstance.readFrame()
+        return frame
+      }
+      return null
+    }
+    async function selectVideo(videoId: string) {
+      if (activeVideo !== videoId) {
+        console.log('selecting video', videoId)
+        activeVideo = videoId
+        videoInstance = await loadVideo(videoId)
+      }
+    }
+    function restart() {
+      if (videoInstance) {
+        videoInstance.restart()
+      }
+    }
+    return { readFrame, selectVideo, restart, id }
+  }
+  const players: Map<string, VideoPlayer> = new Map()
+  function getPlayer(id: string): VideoPlayer {
+    if (players.has(id)) {
+      return players.get(id)!
+    } else {
+      const player = createPlayer(id)
+      players.set(id, player)
+      return player
+    }
+  }
+  function incrementTime() {
+    // todo, this is how we should handle the passage of time
+  }
+
   return {
     loadVideo,
     updateDb,
+    getPlayer,
+    incrementTime,
   }
 }

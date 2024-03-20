@@ -3,6 +3,7 @@ import { createAnimations } from '@tamagui/animations-react-native'
 export const animations = createAnimations({
   '100ms': {
     type: 'timing',
+    // easing: Ease.linear,
     duration: 100,
   },
   bouncy: {
@@ -24,7 +25,7 @@ export const animations = createAnimations({
     stiffness: 40,
   },
   quick: {
-    damping: 20,
+    damping: 25,
     mass: 1.2,
     stiffness: 250,
   },

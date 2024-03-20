@@ -3,16 +3,11 @@ import { eg as egInfo } from './eg'
 import { getEGLiveFrame, getEGReadyFrame } from './eg-main'
 import { egSacnService } from './eg-sacn'
 import { createEGViewServer } from './eg-view-server'
-import {
-  MainState,
-  MainStateSchema,
-  defaultMainState,
-  effectTypes,
-  effectsSchema,
-} from './state-schema'
-import { getBeatEffects, getQuickEffects, getUIRoot } from './ui'
+import { MainState, MainStateSchema, Media, defaultMainState } from './state-schema'
+import { getBeatEffects, getEffectsUI, getMediaUI, getQuickEffects, getUIRoot } from './ui'
 import { createWSServer } from './ws-rnt-server'
 import { egVideo } from './eg-video-playback'
+import { randomUUID } from 'crypto'
 
 let mainState: MainState = defaultMainState
 
@@ -47,8 +42,8 @@ function mainLoop() {
 
   wsServer.update('relativeTime', relativeTime)
 
-  const egLiveFrame = getEGLiveFrame(mainState, context)
   const egReadyFrame = getEGReadyFrame(mainState, context)
+  const egLiveFrame = getEGLiveFrame(mainState, context, egReadyFrame)
   eg.sendFrame(egLiveFrame)
   liveViewServer.sendFrame(egLiveFrame)
   readyViewServer.sendFrame(egReadyFrame)
@@ -63,11 +58,23 @@ const wsServer = createWSServer(3990)
 const startTime = Date.now()
 wsServer.update('startTime', startTime)
 
+function updateMediaUI(mediaKey: string) {
+  const mediaState = mainState[mediaKey]
+  // wsServer.update('readyMedia', getMediaUI('readyMedia', mainState.readyMedia))
+  wsServer.update(mediaKey, getMediaUI(mediaKey, mediaState))
+  if (mediaState.type === 'video') {
+    // something about effects
+    wsServer.update(`${mediaKey}-effects`, getEffectsUI(mediaKey, mediaState.effects))
+  }
+}
+
 function updateUI() {
   wsServer.update('mainState', mainState)
   wsServer.updateRoot(getUIRoot(mainState))
   wsServer.update('quickEffects', getQuickEffects(mainState))
   wsServer.update('beatEffects', getBeatEffects(mainState))
+  updateMediaUI('readyMedia', mainState.readyMedia)
+  updateMediaUI('liveMedia', mainState.liveMedia)
 }
 updateUI()
 
@@ -75,11 +82,36 @@ let mainStateToDiskTimeout: undefined | NodeJS.Timeout = undefined
 
 function mainStateUpdate(updater: (state: MainState) => MainState) {
   clearTimeout(mainStateToDiskTimeout)
+  const prevState = mainState
   mainState = updater(mainState)
   updateUI()
   mainStateToDiskTimeout = setTimeout(() => {
     writeFile('./main-state.json', JSON.stringify(mainState), () => {})
   }, 500)
+  mainStateEffect(mainState, prevState)
+}
+
+function mainStateEffect(state: MainState, prevState: MainState) {
+  setTimeout(() => {
+    if (state.transitionState.manual === 1) {
+      mainStateUpdate((state) => ({
+        ...state,
+        readyMedia: state.liveMedia,
+        liveMedia: state.readyMedia,
+        transitionState: { manual: null, autoStartTime: null },
+      }))
+    } else if (state.transitionState.autoStartTime) {
+      let progress = Math.min(
+        1,
+        (Date.now() - state.transitionState.autoStartTime) / state.transition.duration
+      )
+      console.log('progress', progress)
+      mainStateUpdate((state) => ({
+        ...state,
+        transitionState: { ...state.transitionState, manual: progress },
+      }))
+    }
+  }, 80)
 }
 
 function sliderUpdate(
@@ -177,16 +209,16 @@ wsServer.subscribeEvent((...event) => {
     wsServer.update('testValue', value)
     return
   }
-  const matchingEffect: undefined | keyof typeof effectsSchema = effectTypes.find(
-    (effect) => 'quickEffects.' + effect === path
-  )
-  if (name === 'press' && matchingEffect) {
-    mainStateUpdate((state) => ({
-      ...state,
-      effects: { ...state.effects, [matchingEffect]: Date.now() },
-    }))
-    return
-  }
+  // const matchingEffect: undefined | keyof typeof effectsSchema = effectTypes.find(
+  //   (effect) => 'quickEffects.' + effect === path
+  // )
+  // if (name === 'press' && matchingEffect) {
+  //   mainStateUpdate((state) => ({
+  //     ...state,
+  //     effects: { ...state.effects, [matchingEffect]: Date.now() },
+  //   }))
+  //   return
+  // }
   // manual beat
   if (switchUpdate(event, 'beatEffects.manualBeat.manualBeatEnabled', ['manualBeat', 'enabled']))
     return
@@ -215,8 +247,98 @@ wsServer.subscribeEvent((...event) => {
   //   }
   //   return
   // }
+
+  if (handleMediaEvent('liveMedia', path, name, value)) return
+  if (handleMediaEvent('readyMedia', path, name, value)) return
+  if (handleTransitionEvent(path, name, value)) return
+
   console.log('Unknown Event', path, name, value)
 })
+
+function handleTransitionEvent(path: string, name: string, value: any): boolean {
+  if (value?.[0] !== 'updateTransition') return false
+  if (value?.[1] === 'manual') {
+    mainStateUpdate((state) => ({
+      ...state,
+      transitionState: {
+        ...state.transitionState,
+        manual: value[2],
+      },
+    }))
+    return true
+  }
+  if (value?.[1] === 'duration') {
+    mainStateUpdate((state) => ({
+      ...state,
+      transition: {
+        ...state.transitionState,
+        duration: value[2],
+      },
+    }))
+    return true
+  }
+  if (value?.[1] === 'startAuto') {
+    mainStateUpdate((state) => ({
+      ...state,
+      transitionState: {
+        ...state.transitionState,
+        autoStartTime: Date.now(),
+      },
+    }))
+    return true
+  }
+  return false
+}
+
+function handleMediaEvent(
+  mediaKey: string,
+  path: string,
+  eventName: string,
+  value: string
+): boolean {
+  if (value?.[0] === 'updateMedia' && value?.[1] === mediaKey) {
+    const action = value?.[2]
+    if (action === 'clear') {
+      mainStateUpdate((state) => ({
+        ...state,
+        [mediaKey]: createBlankMedia('off'),
+      }))
+      return true
+    }
+    if (action === 'mode') {
+      const mode = value?.[3]
+      mainStateUpdate((state) => ({
+        ...state,
+        [mediaKey]: createBlankMedia(mode),
+      }))
+      return true
+    }
+    if (action === 'color') {
+      const colorField = value?.[3]
+      const number = value?.[4]
+      if (colorField === 'h' || colorField === 's' || colorField === 'l') {
+        mainStateUpdate((state) => ({
+          ...state,
+          [mediaKey]: { ...state[mediaKey], [colorField]: number },
+        }))
+        // console.log('color update', colorField, number)
+        return true
+      }
+    }
+    if (action === 'track') {
+      const track = value?.[3]
+      console.log('track update', mediaKey, track)
+      mainStateUpdate((state) => ({
+        ...state,
+        [mediaKey]: { ...state[mediaKey], track },
+      }))
+      return true
+      return true
+    }
+  }
+
+  return false
+}
 
 // stagelinqInterface({
 //   quiet: true,
@@ -233,3 +355,16 @@ wsServer.subscribeEvent((...event) => {
 //     // info.bpm
 //   },
 // })
+
+function createBlankMedia(type: Media['type']): Media {
+  if (type === 'off') {
+    return { type }
+  }
+  if (type === 'color') {
+    return { type, h: 0, s: 1, l: 1 }
+  }
+  if (type === 'video') {
+    return { type, track: null, id: randomUUID() }
+  }
+  return { type: 'off' }
+}

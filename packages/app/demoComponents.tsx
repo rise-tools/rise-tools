@@ -1,7 +1,9 @@
 import {
   Adapt,
   Button,
+  FontSizeTokens,
   Label,
+  Overlay,
   Paragraph,
   ScrollView,
   Select,
@@ -10,15 +12,19 @@ import {
   Slider,
   Spinner,
   Switch,
+  View,
   XStack,
   YStack,
+  getFontSize,
 } from '@react-native-templates/demo-ui'
+import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
 import { Check, ChevronDown, ChevronUp, Sparkles, X } from '@tamagui/lucide-icons'
 import { useEffect, useMemo, useState } from 'react'
 import { z } from 'zod'
 import { Icon } from './icons'
 import { LinearGradient } from 'tamagui/linear-gradient'
 import QRCode from 'react-native-qrcode-svg'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 function TButton(props) {
   return (
@@ -98,9 +104,50 @@ function TSlider(props: z.infer<typeof SliderProps> & BaseTemplateProps) {
   )
 }
 
+function keyExtractor(item: z.infer<typeof SortableListItemSchema>) {
+  return item.key
+}
+const SortableListItemSchema = z.object({ key: z.string(), label: z.string() })
+const SortableListProps = z.object({
+  items: z.array(SortableListItemSchema),
+})
+function SortableList(props: z.infer<typeof SortableListProps> & BaseTemplateProps) {
+  return (
+    <View f={1}>
+      <DraggableFlatList
+        containerStyle={{ flex: 1 }}
+        data={props.items}
+        keyExtractor={keyExtractor}
+        renderItem={(row) => {
+          const { item, drag, isActive } = row
+          return (
+            <ScaleDecorator>
+              <TouchableOpacity
+                onPress={() => {
+                  alert('pressed an item')
+                }}
+                onLongPress={drag}
+                disabled={isActive}
+                style={[
+                  { padding: 10, backgroundColor: 'white', margin: 10 },
+                  // styles.rowItem,
+                  // { backgroundColor: isActive ? "red" : item.backgroundColor },
+                ]}
+              >
+                <Label style={{}}>{item.label}</Label>
+              </TouchableOpacity>
+            </ScaleDecorator>
+          )
+        }}
+      />
+    </View>
+  )
+}
+
 const SliderFieldProps = z.object({
   value: z.number().nullable().optional(),
   defaultValue: z.number().optional(),
+  onValue: z.string().or(z.array(z.string())).nullable().optional(),
   min: z.number().optional(),
   max: z.number().optional(),
   step: z.number().optional(),
@@ -119,7 +166,14 @@ function TSliderField(props: z.infer<typeof SliderFieldProps> & BaseTemplateProp
         min={props.min || 0}
         step={props.step || 1}
         onValueChange={(value) => {
-          props.onTemplateEvent('update', value)
+          let payload: (string | number)[] = value
+          if (props.onValue === null) return
+          if (props.onValue)
+            payload = [
+              ...(Array.isArray(props.onValue) ? props.onValue : [props.onValue]),
+              ...value,
+            ]
+          props.onTemplateEvent('update', payload)
         }}
       >
         <Slider.Track>
@@ -153,7 +207,7 @@ function TSwitchField(props: z.infer<typeof SwitchFieldProps> & BaseTemplateProp
           props.onTemplateEvent('update', value)
         }}
       >
-        <Switch.Thumb animation="100ms" />
+        <Switch.Thumb animation="quick" />
       </Switch>
     )
   }
@@ -179,7 +233,9 @@ type BaseTemplateProps = {
 }
 
 const SelectFieldProps = z.object({
-  value: z.string(),
+  value: z.string().nullable(),
+  id: z.string().optional(),
+  onValue: z.string().or(z.array(z.string())).nullable().optional(),
   options: z.array(
     z.object({
       key: z.string(),
@@ -195,35 +251,51 @@ function TSelectField({
   const { value, options } = props
   return (
     <Select
-      id="food"
+      id={props.id}
       value={value}
       onValueChange={(value) => {
-        onTemplateEvent('update', value)
+        let payload = [value]
+        if (props.onValue === null) return
+        if (props.onValue)
+          payload = [...(Array.isArray(props.onValue) ? props.onValue : [props.onValue]), value]
+        onTemplateEvent('update', payload)
       }}
       disablePreventBodyScroll
-      // {...props}
+      // native
     >
       <Select.Trigger iconAfter={ChevronDown}>
         <Select.Value placeholder="..." />
       </Select.Trigger>
 
-      <Adapt when="sm" platform="touch">
+      <Adapt
+        //when="sm"
+        platform="touch"
+      >
         <Sheet
           modal
           dismissOnSnapToBottom
-          animationConfig={{
-            type: 'spring',
-            damping: 20,
-            mass: 1.2,
-            stiffness: 250,
-          }}
+          // animationConfig={{
+          //   type: 'spring',
+          //   damping: 20,
+          //   mass: 1.2,
+          //   stiffness: 250,
+          // }}
+          animation="quick"
+          // dismissOnOverlayPress
         >
+          <Sheet.Overlay
+          // animation="quick"
+          // opacity={0.2}
+          // backgroundColor="red"
+          // enterStyle={{ opacity: 0.01 }}
+          // exitStyle={{ opacity: 0.01 }}
+          />
+          {/* <Sheet.Handle /> */}
           <Sheet.Frame>
             <Sheet.ScrollView>
               <Adapt.Contents />
             </Sheet.ScrollView>
           </Sheet.Frame>
-          <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
         </Sheet>
       </Adapt>
 
@@ -252,6 +324,7 @@ function TSelectField({
           animateOnly={['transform', 'opacity']}
           enterStyle={{ o: 0, y: -10 }}
           exitStyle={{ o: 0, y: 10 }}
+          minWidth={200}
         >
           {useMemo(
             () =>
@@ -266,6 +339,21 @@ function TSelectField({
                 )
               }),
             [options]
+          )}
+          {/* Native gets an extra icon */}
+          {true && (
+            <YStack
+              position="absolute"
+              right={0}
+              top={0}
+              bottom={0}
+              alignItems="center"
+              justifyContent="center"
+              width={'$4'}
+              pointerEvents="none"
+            >
+              <ChevronDown size={getFontSize((props.size as FontSizeTokens) ?? '$true')} />
+            </YStack>
           )}
         </Select.Viewport>
 
@@ -344,6 +432,10 @@ export const demoComponents = {
   SelectField: {
     component: TSelectField,
     validator: SelectFieldProps.parse,
+  },
+  SortableList: {
+    component: SortableList,
+    validator: SortableListProps.parse,
   },
   Icon,
 }

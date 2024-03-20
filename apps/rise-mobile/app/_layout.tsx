@@ -6,6 +6,7 @@ import { useColorScheme } from 'react-native'
 
 import { ExpoStorageProvider, navigationStore } from '../src/expo-storage'
 import { useEffect } from 'react'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 export default function HomeLayout() {
   const pathname = usePathname()
@@ -33,18 +34,20 @@ export default function HomeLayout() {
   }
   return (
     <Provider>
-      <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <ExpoStorageProvider>
-          <Stack>
-            <Stack.Screen
-              name="connection/[id]"
-              getId={({ params }: { params: { id: string; path: string } }) => {
-                return `${params.id}-${params.path}`
-              }}
-            />
-          </Stack>
-        </ExpoStorageProvider>
-      </ThemeProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <ExpoStorageProvider>
+            <Stack>
+              <Stack.Screen
+                name="connection/[id]"
+                getId={({ params }: { params: { id: string; path: string } }) => {
+                  return `${params.id}-${params.path}`
+                }}
+              />
+            </Stack>
+          </ExpoStorageProvider>
+        </ThemeProvider>
+      </GestureHandlerRootView>
     </Provider>
   )
 }

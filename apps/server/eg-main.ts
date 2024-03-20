@@ -5,10 +5,22 @@ import {
   createSolidHSLFrame,
   createSolidRGBFrame,
   flashEffect,
+  frameTransitionMix,
   waveFrameLayerEffect,
 } from './eg-tools'
 import { EGVideo, VideoPlayer } from './eg-video-playback'
-import { MainState, StateContext, effectTypes, effectsSchema } from './state-schema'
+import { UPRISING } from './flag'
+import {
+  ColorMedia,
+  MainState,
+  Media,
+  StateContext,
+  Transition,
+  TransitionState,
+  VideoMedia,
+  // effectTypes,
+  // effectsSchema,
+} from './state-schema'
 
 const readyVideoPlayers: Record<string, undefined | VideoPlayer> = {}
 const loadingVideoPlayers: Record<string, undefined | Promise<void>> = {}
@@ -29,14 +41,14 @@ function getVideoPlayback(video: EGVideo, fileId: string) {
     })
 }
 
-const egEffectAppliers: Record<
-  keyof typeof effectsSchema,
-  (frame: Uint8Array, progress: number, intensity: number, waveLength: number) => Uint8Array
-> = {
-  flash: flashEffect(egInfo),
-  waveIn: waveFrameLayerEffect(egInfo, true),
-  waveOut: waveFrameLayerEffect(egInfo, false),
-}
+// const egEffectAppliers: Record<
+//   keyof typeof effectsSchema,
+//   (frame: Uint8Array, progress: number, intensity: number, waveLength: number) => Uint8Array
+// > = {
+//   flash: flashEffect(egInfo),
+//   waveIn: waveFrameLayerEffect(egInfo, true),
+//   waveOut: waveFrameLayerEffect(egInfo, false),
+// }
 
 let stagelinqLastBeatTime = 0
 let stagelinqLastMeasureTime = 0
@@ -46,19 +58,19 @@ const effectDuration = 1000
 function applyEGEffects(mainState: MainState, ctx: StateContext, frame: Uint8Array): Uint8Array {
   let outputFrame = frame
   const { nowTime } = ctx
-  effectTypes.forEach((effectName) => {
-    const applier = egEffectAppliers[effectName]
-    const lastEffectTime = mainState.effects[effectName]
-    if (lastEffectTime !== null) {
-      const quickEffectAmount = Math.min(
-        1,
-        Math.max(0, (nowTime - lastEffectTime) / effectDuration)
-      )
-      if (quickEffectAmount > 0) {
-        outputFrame = applier(outputFrame, quickEffectAmount, 1, 0.5)
-      }
-    }
-  })
+  // effectTypes.forEach((effectName) => {
+  //   const applier = egEffectAppliers[effectName]
+  //   const lastEffectTime = mainState.effects[effectName]
+  //   if (lastEffectTime !== null) {
+  //     const quickEffectAmount = Math.min(
+  //       1,
+  //       Math.max(0, (nowTime - lastEffectTime) / effectDuration)
+  //     )
+  //     if (quickEffectAmount > 0) {
+  //       outputFrame = applier(outputFrame, quickEffectAmount, 1, 0.5)
+  //     }
+  //   }
+  // })
   // apply manual beat effect
   if (mainState.manualBeat.enabled && false) {
     const manualBeatEffectDuration = 60_000 / mainState.manualBeat.bpm
@@ -111,7 +123,67 @@ function applyEGEffects(mainState: MainState, ctx: StateContext, frame: Uint8Arr
 const blackFrame = createSolidRGBFrame(egInfo, 0, 0, 0)
 const whiteFrame = createSolidRGBFrame(egInfo, 255, 255, 255)
 
-export function getEGLiveFrame(mainState: MainState, ctx: StateContext): Frame {
+function colorFrame(media: ColorMedia, ctx: StateContext): Frame {
+  return createSolidHSLFrame(egInfo, media.h, media.s, media.l)
+}
+
+function videoFrame(media: VideoMedia, ctx: StateContext): Frame {
+  const video = ctx.video.getPlayer(media.id)
+  if (media.track) {
+    video.selectVideo(media.track).catch((e) => {
+      console.error('Error selecting video', e)
+    })
+    return video.readFrame() || blackFrame
+  }
+  return blackFrame
+}
+
+function mediaFrame(media: Media, ctx: StateContext): Frame {
+  if (media.type === 'color') return colorFrame(media, ctx)
+  if (media.type === 'video') return videoFrame(media, ctx)
+  if (media.type === 'off') return blackFrame
+  return blackFrame
+}
+
+function runTransition(
+  frameA: Frame,
+  frameB: Frame,
+  transition: Transition,
+  transitionState: TransitionState,
+  ctx: StateContext
+): Frame {
+  let transitionProgresss = transitionState.manual
+  if (transitionState.autoStartTime && !transitionProgresss) {
+    transitionProgresss = Math.min(
+      1,
+      (ctx.nowTime - transitionState.autoStartTime) / transition.duration
+    )
+  }
+  return frameTransitionMix(egInfo, frameA, frameB, transitionProgresss || 0)
+}
+
+export function getEGLiveFrameUPRISING(
+  mainState: MainState,
+  ctx: StateContext,
+  readyFrame: Frame
+): Frame {
+  const liveFrame = mediaFrame(mainState.liveMedia, ctx)
+  const finalFrame = runTransition(
+    liveFrame,
+    readyFrame,
+    mainState.transition,
+    mainState.transitionState,
+    ctx
+  )
+  return finalFrame
+}
+
+export function getEGReadyFrame(mainState: MainState, ctx: StateContext): Frame {
+  return mediaFrame(mainState.readyMedia, ctx)
+}
+
+export function getEGLiveFrame(mainState: MainState, ctx: StateContext, readyFrame: Frame): Frame {
+  if (UPRISING) return getEGLiveFrameUPRISING(mainState, ctx, readyFrame)
   const { relativeTime } = ctx
   if (mainState.mode === 'off') return blackFrame
   if (mainState.mode === 'white') {
@@ -145,8 +217,4 @@ export function getEGLiveFrame(mainState: MainState, ctx: StateContext): Frame {
     return applyEGEffects(mainState, ctx, frame)
   }
   return blackFrame
-}
-
-export function getEGReadyFrame(mainState: MainState, ctx: StateContext): Frame {
-  return whiteFrame
 }

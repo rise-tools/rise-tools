@@ -1,5 +1,16 @@
 import { hslToHex } from './color'
-import { MainState } from './state-schema'
+import { UPRISING } from './flag'
+import {
+  ColorMedia,
+  Effects,
+  MainState,
+  Media,
+  Transition,
+  TransitionState,
+  VideoMedia,
+} from './state-schema'
+
+type UI = any
 
 function icon(name: string) {
   return {
@@ -116,7 +127,229 @@ function getModeControls(state: MainState) {
   return [] as const
 }
 
+function scroll(children: any[]) {
+  return {
+    $: 'component',
+    component: 'ScrollView',
+    props: {
+      padding: '$4',
+      gap: '$4',
+    },
+    children,
+  }
+}
+
+function getVideoControls(mediaPath: string, state: VideoMedia): UI[] {
+  return [
+    {
+      $: 'component',
+      key: 'selectVideo',
+      component: 'SelectField',
+      props: {
+        value: state.track,
+        onValue: ['updateMedia', mediaPath, 'track'],
+        options: { $: 'ref', ref: ['videoList'] },
+      },
+    },
+    {
+      $: 'component',
+      key: 'restart',
+      component: 'Button',
+      children: 'Restart Video',
+      props: {
+        onPress: ['updateMedia', mediaPath, 'restart'],
+      },
+    },
+    {
+      $: 'component',
+      key: 'effect',
+      component: 'Button',
+      children: 'Effects',
+      props: {
+        icon: icon('Sparkles'),
+        onPress: ['navigate', `${mediaPath}-effects`],
+      },
+    },
+  ]
+}
+
+function getColorControls(mediaPath: string, state: ColorMedia): UI[] {
+  return [
+    {
+      $: 'component',
+      key: 'ColorPreview',
+      component: 'View',
+      props: {
+        height: 50,
+        backgroundColor: hslToHex(state.h, state.s, state.l),
+        borderRadius: '$3',
+      },
+    },
+    {
+      $: 'component',
+      key: 'ColorHueSlider',
+      component: 'SliderField',
+      props: {
+        label: 'Hue',
+        value: state.h,
+        onValue: ['updateMedia', mediaPath, 'color', 'h'],
+        max: 360,
+        min: 0,
+        step: 1,
+      },
+    },
+    {
+      $: 'component',
+      key: 'ColorSaturationSlider',
+      component: 'SliderField',
+      props: {
+        label: 'Saturation',
+        value: state.s,
+        onValue: ['updateMedia', mediaPath, 'color', 's'],
+        max: 1,
+        min: 0,
+        step: 0.01,
+      },
+    },
+    {
+      $: 'component',
+      key: 'ColorLightnessSlider',
+      component: 'SliderField',
+      props: {
+        label: 'Lightness',
+        value: state.l,
+        onValue: ['updateMedia', mediaPath, 'color', 'l'],
+        max: 1,
+        min: 0,
+        step: 0.01,
+      },
+    },
+  ]
+}
+
+export function getEffectsUI(mediaLinkPath: string, effectsState: Effects): UI {
+  return {
+    $: 'component',
+    component: 'SortableList',
+    props: {
+      items: [
+        { key: 'a', label: 'A Hello Test' },
+        { key: 'b', label: 'B Hello Test' },
+      ],
+    },
+  }
+}
+
+export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
+  if (state.type === 'off') {
+    return [
+      {
+        $: 'component',
+        key: 'MediaMode',
+        component: 'SelectField',
+        props: {
+          value: state.type,
+          onValue: ['updateMedia', mediaLinkPath, 'mode'],
+          options: [
+            { key: 'off', label: 'Off' },
+            { key: 'color', label: 'Color' },
+            { key: 'video', label: 'Video' },
+          ],
+        },
+      },
+    ]
+  }
+  return [
+    {
+      $: 'component',
+      key: 'MediaMode',
+      component: 'XStack',
+      children: [
+        {
+          $: 'component',
+          key: 'link',
+          component: 'Button',
+          props: {
+            f: 1,
+            onPress: ['navigate', mediaLinkPath],
+          },
+          children: 'Open Media',
+        },
+        {
+          $: 'component',
+          key: 'clear',
+          component: 'Button',
+          props: {
+            chromeless: true,
+            backgroundColor: '$transparent',
+            onPress: ['updateMedia', mediaLinkPath, 'clear'],
+          },
+          children: {
+            $: 'component',
+            key: 'icon',
+            component: 'Icon',
+            props: { icon: 'X' },
+          },
+        },
+      ],
+    },
+  ]
+}
+
+export function getTransitionControls(transition: Transition, state: TransitionState): UI[] {
+  return [
+    {
+      $: 'component',
+      key: 'manual',
+      component: 'SliderField',
+      props: {
+        label: 'Manual',
+        value: state.manual || 0,
+        onValue: ['updateTransition', 'manual'],
+        max: 1,
+        min: 0,
+        step: 0.01,
+      },
+    },
+    {
+      $: 'component',
+      key: 'transition',
+      component: 'Button',
+      children: 'Start Transition',
+      props: {
+        onPress: ['updateTransition', 'startAuto'],
+      },
+    },
+    {
+      $: 'component',
+      key: 'duration',
+      component: 'SliderField',
+      props: {
+        label: `Duration ${Math.round(transition.duration / 100) / 10}sec`,
+        value: transition.duration || 0,
+        onValue: ['updateTransition', 'duration'],
+        max: 10000,
+        min: 0,
+        step: 1,
+      },
+    },
+  ]
+}
+
+export function getUIRootUPRISING(state: MainState) {
+  return scroll([
+    section('Live', getMediaControls(state.liveMedia, 'liveMedia')),
+    section('Ready', getMediaControls(state.readyMedia, 'readyMedia')),
+    section('Transition', getTransitionControls(state.transition, state.transitionState)),
+  ])
+}
+
 export function getUIRoot(state: MainState) {
+  if (UPRISING) return getUIRootUPRISING(state)
+  return getUIRootLegacy(state)
+}
+
+export function getUIRootLegacy(state: MainState) {
   return {
     $: 'component',
     component: 'ScrollView',
@@ -221,6 +454,18 @@ export function getUIRoot(state: MainState) {
       },
     ],
   }
+}
+
+export function getMediaUI(mediaPath: string, mediaState: Media) {
+  if (mediaState.type === 'color') return scroll(getColorControls(mediaPath, mediaState))
+  if (mediaState.type === 'video') return scroll(getVideoControls(mediaPath, mediaState))
+  return scroll([
+    {
+      $: 'component',
+      component: 'Text',
+      children: mediaState.type,
+    },
+  ])
 }
 
 export function getQuickEffects(mainState: MainState) {

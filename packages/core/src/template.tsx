@@ -20,7 +20,7 @@ export type Store<V = unknown> = {
 
 export type DataSource = {
   get: (key: string) => Store;
-  sendEvent?: (path: string, name: string, value: any) => void;
+  // sendEvent?: (path: string, name: string, value: any) => void;
 };
 
 export function useStore(store: Store) {

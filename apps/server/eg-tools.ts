@@ -1,5 +1,6 @@
 import chroma from 'chroma-js'
 import { EGInfo } from './eg'
+import { Frame } from './eg-sacn'
 
 export function applyEGFlash(
   info: EGInfo,
@@ -60,6 +61,20 @@ export function frameAdd(info: EGInfo, frame1: Frame, frame2: Frame) {
   const outputFrame = new Uint8Array(frameSize)
   for (let i = 0; i < frameSize; i++) {
     outputFrame[i] = Math.min(255, frame1[i] + frame2[i])
+  }
+  return outputFrame
+}
+
+export function frameTransitionMix(
+  info: EGInfo,
+  frame1: Frame,
+  frame2: Frame,
+  progress: number // goes from 0-1
+) {
+  const { frameSize } = info
+  const outputFrame = new Uint8Array(frameSize)
+  for (let i = 0; i < frameSize; i++) {
+    outputFrame[i] = Math.round(frame1[i] * (1 - progress) + frame2[i] * progress)
   }
   return outputFrame
 }
