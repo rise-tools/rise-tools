@@ -24,28 +24,63 @@ const colorSchema = z.object({
 })
 
 const desaturateEffectSchema = z.object({
-  key: z.literal('desaturate'),
+  key: z.string(),
+  type: z.literal('desaturate'),
   value: z.number(),
 })
 export type DesaturateEffect = z.infer<typeof desaturateEffectSchema>
 
-const hueShiftEffectSchema = z.object({
-  key: z.literal('hueShift'),
+const brightenEffectSchema = z.object({
+  key: z.string(),
+  type: z.literal('brighten'),
   value: z.number(),
+})
+export type BrightenEffect = z.infer<typeof brightenEffectSchema>
+
+const darkenEffectSchema = z.object({
+  key: z.string(),
+  type: z.literal('darken'),
+  value: z.number(),
+})
+export type DarkenEffect = z.infer<typeof darkenEffectSchema>
+
+const hueShiftEffectSchema = z.object({
+  key: z.string(),
+  type: z.literal('hueShift'),
+  value: z.number(), // range from -180 to 180
 })
 export type HueShiftEffect = z.infer<typeof hueShiftEffectSchema>
 
-const effectSchema = z.discriminatedUnion('key', [desaturateEffectSchema, hueShiftEffectSchema])
+const invertEffectSchema = z.object({
+  key: z.string(),
+  type: z.literal('invert'),
+})
+export type InvertEffect = z.infer<typeof invertEffectSchema>
+
+const effectSchema = z.discriminatedUnion('type', [
+  desaturateEffectSchema,
+  invertEffectSchema,
+  hueShiftEffectSchema,
+  brightenEffectSchema,
+  darkenEffectSchema,
+])
 export type Effect = z.infer<typeof effectSchema>
 
 const effectsSchema = z.array(effectSchema)
 export type Effects = z.infer<typeof effectsSchema>
+
+const videoParamsSchema = z.object({
+  loopBounce: z.boolean().optional(),
+  reverse: z.boolean().optional(),
+})
+export type VideoParams = z.infer<typeof videoParamsSchema>
 
 const videoMediaSchema = z.object({
   id: z.string(),
   type: z.literal('video'),
   track: z.string().nullable(),
   effects: effectsSchema.optional(),
+  params: videoParamsSchema.optional(),
 })
 export type VideoMedia = z.infer<typeof videoMediaSchema>
 
@@ -62,12 +97,53 @@ const offMediaSchema = z.object({
 })
 export type OffMedia = z.infer<typeof offMediaSchema>
 
-const mediaSchema = z.discriminatedUnion('type', [
+export type LayersMedia = {
+  type: 'layers'
+  layers: {
+    key: string
+    media: Media
+    mixMode: 'add' | 'mix'
+    mixAmount: number
+  }[]
+}
+const layersMediaSchema: z.ZodType<LayersMedia> = z.object({
+  type: z.literal('layers'),
+  layers: z.array(
+    z.object({
+      key: z.string(),
+      media: z.lazy(() => mediaSchema),
+      mixMode: z.enum(['add', 'mix']),
+      mixAmount: z.number(),
+    })
+  ),
+})
+
+export type SequenceMedia = {
+  type: 'sequence'
+  sequence: {
+    key: string
+    media: Media
+  }[]
+}
+const sequenceMediaSchema: z.ZodType<SequenceMedia> = z.object({
+  type: z.literal('sequence'),
+  sequence: z.array(
+    z.object({
+      key: z.string(),
+      media: z.lazy(() => mediaSchema),
+    })
+  ),
+})
+
+export type Media = OffMedia | ColorMedia | VideoMedia | LayersMedia | SequenceMedia
+
+const mediaSchema: z.ZodType<Media> = z.discriminatedUnion('type', [
   offMediaSchema,
   colorMediaSchema,
   videoMediaSchema,
+  layersMediaSchema,
+  sequenceMediaSchema,
 ])
-export type Media = z.infer<typeof mediaSchema>
 
 const fadeTransitionSchema = z.object({
   type: z.literal('fade'),

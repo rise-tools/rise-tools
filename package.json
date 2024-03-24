@@ -17,6 +17,7 @@
     "web:extract": "DISABLE_EXTRACTION=false yarn workspace next-app dev",
     "web:prod": "yarn workspace next-app build",
     "web:prod:serve": "yarn workspace next-app serve",
+    "convert-videos": "cd apps/server && yarn convert-videos",
     "fix": "manypkg fix",
     "postinstall": "yarn check-deps && yarn build",
     "build": "yarn workspaces foreach --exclude next-app run build",

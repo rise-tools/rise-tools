@@ -1,8 +1,18 @@
-import { appendFileSync, readdir, readFile, writeFile, stat } from 'fs-extra'
+import { readdir, readFile, writeFile, stat } from 'fs-extra'
 import { egStageMap } from './eg'
 import { basename, extname } from 'path'
-import { createReadStream, existsSync, read, statSync, unlink, unlinkSync } from 'fs'
+import {
+  createReadStream,
+  createWriteStream,
+  existsSync,
+  read,
+  statSync,
+  unlink,
+  unlinkSync,
+  writeFileSync,
+} from 'fs'
 import { createHash } from 'crypto'
+import zlib from 'zlib'
 import { DBFile, DBState, readDb, updateDb } from './eg-video'
 
 const args = process.argv.slice(2)
@@ -131,6 +141,15 @@ async function importFile(
     let videoBuffer = Buffer.alloc(0) // Buffer to hold frame data
 
     console.log('Extracting video...')
+    const outputDataFile = join(outputDir, egFramesFile)
+
+    try {
+      unlinkSync(outputDataFile)
+    } catch (e) {
+      console.warn('Failed to delete existing file', outputDataFile)
+    }
+
+    writeFileSync(outputDataFile, Buffer.alloc(0))
 
     const ffmpeg = spawn(ffmpegPath, [
       '-i',
@@ -159,12 +178,28 @@ async function importFile(
     })
     const startTime = Date.now()
 
+    const frameOutputBuffer = new Uint8Array(egStageMap.length * 3)
+
+    const fsWriter = createWriteStream(outputDataFile, {
+      encoding: 'binary',
+    })
+
+    const compressionWriter = zlib.createBrotliCompress({
+      params: {
+        [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_GENERIC,
+        [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.BROTLI_MAX_QUALITY,
+      },
+    })
+
+    compressionWriter.pipe(fsWriter)
+
     ffmpeg.on('close', (code) => {
       console.log(`ffmpeg process exited with code ${code}`)
       const endTime = Date.now()
       const duration = endTime - startTime
       const durationInSeconds = duration / 1000
       console.log('Done in ' + durationInSeconds + ' seconds')
+      compressionWriter.close()
       resolve({
         fileSha256,
         width,
@@ -179,8 +214,6 @@ async function importFile(
         importerVersion,
       })
     })
-
-    const frameOutputBuffer = new Uint8Array(egStageMap.length * 3)
 
     // async function writeEGFrameToImage(frameBuffer: Uint8Array) {
     //   const image = await Jimp.create(width, height, '#000000')
@@ -220,17 +253,9 @@ async function importFile(
     //   await image.write('./test-output/video-frame.png')
     // }
 
-    const outputDataFile = join(outputDir, egFramesFile)
-
-    try {
-      unlinkSync(outputDataFile)
-    } catch (e) {
-      console.warn('Failed to delete existing file', outputDataFile)
-    }
-
-    function appendFile(filePath: string, data: Uint8Array) {
+    function appendFile(data: Uint8Array) {
       let buffer = Buffer.from(data.buffer, data.byteOffset, data.byteLength)
-      appendFileSync(filePath, buffer)
+      compressionWriter.write(buffer)
     }
 
     function processFrame(frame: Buffer) {
@@ -257,7 +282,7 @@ async function importFile(
       //   })
       //   .finally(() => {})
 
-      appendFile(outputDataFile, frameOutputBuffer)
+      appendFile(frameOutputBuffer)
     }
   })
 }

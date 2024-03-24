@@ -3,10 +3,15 @@ import { EGInfo } from './eg'
 import { DBState, readDb } from './eg-video'
 import { Frame } from './eg-sacn'
 import { join } from 'path'
+import fs from 'fs'
+import { promisify } from 'util'
+import zlib from 'zlib'
 
 export type VideoPlaybackInstance = {
   readFrame: () => Frame | null
   restart: () => void
+  setParams: (params: PlaybackParams) => void
+  frameCount: number
 }
 
 export type VideoPlayer = {
@@ -14,7 +19,15 @@ export type VideoPlayer = {
   restart: () => void
   selectVideo: (videoId: string) => void
   id: string
+  setParams: (params: PlaybackParams) => void
+  getFrameCount: () => number | null
 }
+
+export type PlaybackParams = {
+  loopBounce?: boolean
+  reverse?: boolean
+}
+const openFile = promisify(fs.open)
 
 export type EGVideo = ReturnType<typeof egVideo>
 
@@ -23,8 +36,10 @@ export function egVideo(
   mediaPath: string,
   {
     onMediaUpdate,
+    onPlayerUpdate,
   }: {
     onMediaUpdate: (mediaDb: DBState) => void
+    onPlayerUpdate: (player: VideoPlayer) => void
   }
 ) {
   const { frameSize } = eg
@@ -42,12 +57,17 @@ export function egVideo(
     updateDb()
   }, 5000)
 
-  async function loadVideo(fileSha256: string): Promise<VideoPlaybackInstance> {
+  async function loadVideo(
+    fileSha256: string,
+    params: PlaybackParams = {}
+  ): Promise<VideoPlaybackInstance> {
     const dbState = await readDb(mediaPath)
     const file = dbState.files.find((file) => file.fileSha256 === fileSha256)
     // console.log('will load video', file)
 
-    const MAX_QUEUE_SIZE = 10
+    let playbackParams: PlaybackParams = params
+    const MAX_QUEUE_SIZE = 30
+    const batchSize = 5
 
     let bufferQueue: Uint8Array[] = []
     let currentBuffer: Buffer = Buffer.alloc(0)
@@ -60,27 +80,72 @@ export function egVideo(
     const framesFilePath = join(mediaPath, framesFile)
     const fileInfo = await stat(framesFilePath)
     // console.log('fileInfo', fileInfo)
-
+    if (fileInfo.size % frameSize !== 0) {
+      throw new Error('File size is not an exact multiple of the frame size.')
+    }
+    const frameCount = fileInfo.size / frameSize
     let resume = () => {}
     let pause = () => {}
-    function startReadback() {
+
+    async function startReadbackReverse() {
+      const readbackInstance = playCount++
+      console.log('startReadbackReverse', readbackInstance)
+      const fileHandle = await openFile(framesFilePath, 'r')
+
+      const totalFrames = fileInfo.size / frameSize
+      let currentFrameIndex = totalFrames - 1
+      async function readFrames() {
+        streamPaused = false
+        const framesToRead = Math.min(batchSize, currentFrameIndex + 1)
+        const buffer = Buffer.alloc(framesToRead * frameSize)
+        for (let i = 0; i < framesToRead; i++) {
+          const offset = (currentFrameIndex - i) * frameSize
+          await read(fileHandle, buffer, i * frameSize, frameSize, offset)
+        }
+        const frames = []
+        for (let i = 0; i < framesToRead; i++) {
+          const frameBuffer = buffer.slice(i * frameSize, (i + 1) * frameSize)
+          frames.push(new Uint8Array(frameBuffer))
+        }
+        bufferQueue.push(...frames)
+        currentFrameIndex -= framesToRead
+        if (currentFrameIndex <= 0) {
+          // end of reverse playback
+          if (playbackParams.loopBounce) {
+            startReadbackForward()
+          } else if (playbackParams.reverse) {
+            startReadbackReverse()
+          } else {
+            startReadbackForward()
+          }
+        }
+        streamPaused = true
+      }
+      readFrames()
+      pause = () => {}
+      resume = async () => {
+        await readFrames()
+      }
+    }
+
+    function startReadbackForward() {
       let totalBufferRead = 0
       const readbackInstance = playCount++
-      console.log('hello startReadback', readbackInstance)
+      console.log('startReadbackForward', readbackInstance)
 
       streamPaused = false
-      const readableStream = createReadStream(framesFilePath, {
-        // encoding: null
-      })
+
+      const fileReadStream = createReadStream(framesFilePath, {})
+
       resume = () => {
-        readableStream.resume()
+        fileReadStream.resume()
         streamPaused = false
       }
       pause = () => {
-        readableStream.pause()
+        fileReadStream.pause()
         streamPaused = true
       }
-      readableStream.on('data', (chunk: Buffer) => {
+      fileReadStream.on('data', (chunk: Buffer) => {
         totalBufferRead += chunk.length
         currentBuffer = Buffer.concat([currentBuffer, chunk])
 
@@ -94,23 +159,24 @@ export function egVideo(
         }
       })
 
-      readableStream.on('end', () => {
-        // console.log('end event', {
-        //   readbackInstance,
-        //   currentBuffer: currentBuffer.length,
-        //   queue: bufferQueue.length,
-        // })
+      fileReadStream.on('end', () => {
         while (currentBuffer.length >= frameSize) {
           const bufferToProcess = currentBuffer.slice(0, frameSize)
           currentBuffer = currentBuffer.slice(frameSize)
           bufferQueue.push(new Uint8Array(bufferToProcess))
         }
-        console.log('Video playback read restart', readbackInstance)
-        startReadback()
+        // end of forward playback
+        if (playbackParams.loopBounce) {
+          startReadbackReverse()
+        } else if (playbackParams.reverse) {
+          startReadbackReverse()
+        } else {
+          startReadbackForward()
+        }
       })
 
-      readableStream.on('error', (error: Error) => {
-        console.error('Video playback read error:', error)
+      fileReadStream.on('error', (error: Error) => {
+        console.error('Video playback fs error:', error)
       })
     }
 
@@ -118,22 +184,17 @@ export function egVideo(
       pause()
       bufferQueue = []
       currentBuffer = Buffer.alloc(0)
-      startReadback()
+      if (playbackParams.reverse) {
+        startReadbackReverse()
+      } else {
+        startReadbackForward()
+      }
     }
-    console.log('will startReadback')
-    startReadback()
-    // setInterval(() => {
-    //   if (bufferQueue.length > 0) {
-    //     const uint8ArrayChunk = bufferQueue.shift()
-    //     if (uint8ArrayChunk) {
-    //       sendFrame(uint8ArrayChunk)
-    //     }
-    //     if (streamPaused && bufferQueue.length < MAX_QUEUE_SIZE) {
-    //       readableStream.resume()
-    //       streamPaused = false
-    //     }
-    //   }
-    // }, 1000 / playbackFPS)
+    if (playbackParams.reverse) {
+      startReadbackReverse()
+    } else {
+      startReadbackForward()
+    }
     function readFrame(): Frame | null {
       if (bufferQueue.length > 0) {
         const frame = bufferQueue.shift()
@@ -144,15 +205,21 @@ export function egVideo(
       }
       return null
     }
+    function setParams(params: PlaybackParams) {
+      playbackParams = params
+    }
     return {
       readFrame,
       restart,
+      setParams,
+      frameCount,
     }
   }
 
   function createPlayer(id: string): VideoPlayer {
     let activeVideo: string | null = null
     let videoInstance: VideoPlaybackInstance | null = null
+    let playbackParams: PlaybackParams = {}
     function readFrame(): Frame | null {
       if (videoInstance) {
         const frame = videoInstance.readFrame()
@@ -162,9 +229,11 @@ export function egVideo(
     }
     async function selectVideo(videoId: string) {
       if (activeVideo !== videoId) {
-        console.log('selecting video', videoId)
         activeVideo = videoId
-        videoInstance = await loadVideo(videoId)
+        await loadVideo(videoId, playbackParams).then((instance) => {
+          videoInstance = instance
+          onPlayerUpdate(player)
+        })
       }
     }
     function restart() {
@@ -172,7 +241,21 @@ export function egVideo(
         videoInstance.restart()
       }
     }
-    return { readFrame, selectVideo, restart, id }
+    function setParams(params: PlaybackParams) {
+      playbackParams = params
+      if (videoInstance) {
+        videoInstance.setParams(params)
+      }
+    }
+    function getFrameCount(): number | null {
+      if (videoInstance) {
+        return videoInstance.frameCount
+      }
+      return null
+    }
+    const player: VideoPlayer = { readFrame, selectVideo, setParams, restart, getFrameCount, id }
+
+    return player
   }
   const players: Map<string, VideoPlayer> = new Map()
   function getPlayer(id: string): VideoPlayer {

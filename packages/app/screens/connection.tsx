@@ -28,6 +28,9 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
       router.push(`/connection/${params.id}?path=${event.value?.[1]}`)
       return true
     }
+    if (event.value?.[0] === 'navigate-back') {
+      router.back()
+    }
     return false
   })
   if (!dataSource) return null

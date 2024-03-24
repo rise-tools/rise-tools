@@ -79,6 +79,63 @@ export function frameTransitionMix(
   return outputFrame
 }
 
+export function frameInvert(info: EGInfo, frame: Frame) {
+  const { frameSize } = info
+  const outputFrame = new Uint8Array(frameSize)
+  for (let i = 0; i < frameSize; i++) {
+    outputFrame[i] = 255 - frame[i]
+  }
+  return outputFrame
+}
+
+export function frameDesaturate(info: EGInfo, frame: Frame, amount: number) {
+  const { frameSize } = info
+  const outputFrame = new Uint8Array(frameSize)
+  for (let i = 0; i < frameSize; i += 3) {
+    const color = chroma(frame[i], frame[i + 1], frame[i + 2])
+    const desaturatedColor = color.desaturate(amount)
+    outputFrame[i] = desaturatedColor.get('rgb.r')
+    outputFrame[i + 1] = desaturatedColor.get('rgb.g')
+    outputFrame[i + 2] = desaturatedColor.get('rgb.b')
+  }
+  return outputFrame
+}
+
+export function frameHueShift(info: EGInfo, frame: Frame, amount: number) {
+  const { frameSize } = info
+  const outputFrame = new Uint8Array(frameSize)
+  for (let i = 0; i < frameSize; i += 3) {
+    const baseColor = chroma(frame[i], frame[i + 1], frame[i + 2])
+    const desaturatedColor = chroma.hsl(
+      baseColor.get('hsl.h') + amount,
+      baseColor.get('hsl.s'),
+      baseColor.get('hsl.l')
+    )
+    outputFrame[i] = desaturatedColor.get('rgb.r')
+    outputFrame[i + 1] = desaturatedColor.get('rgb.g')
+    outputFrame[i + 2] = desaturatedColor.get('rgb.b')
+  }
+  return outputFrame
+}
+
+export function frameBrighten(info: EGInfo, frame: Frame, amount: number) {
+  const { frameSize } = info
+  const outputFrame = new Uint8Array(frameSize)
+  for (let i = 0; i < frameSize; i++) {
+    outputFrame[i] = Math.round(Math.min(255, frame[i] + amount * 255))
+  }
+  return outputFrame
+}
+
+export function frameDarken(info: EGInfo, frame: Frame, amount: number) {
+  const { frameSize } = info
+  const outputFrame = new Uint8Array(frameSize)
+  for (let i = 0; i < frameSize; i++) {
+    outputFrame[i] = Math.round(Math.max(0, frame[i] - amount * 255))
+  }
+  return outputFrame
+}
+
 function simpleWave(progress: number) {
   // output a wave from 0-1 as input goes from 0-1
   const usableProgress = Math.min(1, Math.max(0, progress))

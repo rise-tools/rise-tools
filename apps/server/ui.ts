@@ -1,16 +1,24 @@
 import { hslToHex } from './color'
+import { EGVideo } from './eg-video-playback'
 import { UPRISING } from './flag'
 import {
   ColorMedia,
+  Effect,
   Effects,
+  LayersMedia,
   MainState,
   Media,
+  SequenceMedia,
   Transition,
   TransitionState,
   VideoMedia,
 } from './state-schema'
 
 type UI = any
+
+export type UIContext = {
+  video: EGVideo
+}
 
 function icon(name: string) {
   return {
@@ -139,13 +147,15 @@ function scroll(children: any[]) {
   }
 }
 
-function getVideoControls(mediaPath: string, state: VideoMedia): UI[] {
+function getVideoControls(mediaPath: string, state: VideoMedia, context: UIContext): UI[] {
+  const player = context.video.getPlayer(state.id)
   return [
     {
       $: 'component',
       key: 'selectVideo',
       component: 'SelectField',
       props: {
+        unselectedLabel: 'Select Video...',
         value: state.track,
         onValue: ['updateMedia', mediaPath, 'track'],
         options: { $: 'ref', ref: ['videoList'] },
@@ -159,6 +169,32 @@ function getVideoControls(mediaPath: string, state: VideoMedia): UI[] {
       props: {
         onPress: ['updateMedia', mediaPath, 'restart'],
       },
+    },
+    {
+      $: 'component',
+      key: 'loopBounce',
+      component: 'SwitchField',
+      props: {
+        value: state?.params?.loopBounce || false,
+        label: 'Loop Bounce',
+        onValue: ['updateMedia', mediaPath, 'loopBounce'],
+      },
+    },
+    {
+      $: 'component',
+      key: 'reverse',
+      component: 'SwitchField',
+      props: {
+        value: state?.params?.reverse || false,
+        label: 'Reverse Playback',
+        onValue: ['updateMedia', mediaPath, 'reverse'],
+      },
+    },
+    {
+      $: 'component',
+      key: 'info',
+      component: 'Label',
+      children: `Frame Count: ${player.getFrameCount()}`,
     },
     {
       $: 'component',
@@ -227,18 +263,145 @@ function getColorControls(mediaPath: string, state: ColorMedia): UI[] {
   ]
 }
 
-export function getEffectsUI(mediaLinkPath: string, effectsState: Effects): UI {
+export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | undefined): UI {
   return {
     $: 'component',
     component: 'SortableList',
     props: {
-      items: [
-        { key: 'a', label: 'A Hello Test' },
-        { key: 'b', label: 'B Hello Test' },
-      ],
+      onReorder: ['updateMedia', mediaLinkPath, 'effectOrder'],
+      footer: {
+        $: 'component',
+        key: 'addEffect',
+        component: 'SelectField',
+        props: {
+          unselectedLabel: 'Add Effect...',
+          value: null,
+          options: [
+            { key: 'desaturate', label: 'Desaturate' },
+            { key: 'invert', label: 'Invert' },
+            { key: 'hueShift', label: 'Hue Shift' },
+            { key: 'brighten', label: 'Brighten' },
+            { key: 'darken', label: 'Darken' },
+          ],
+          onValue: ['updateMedia', mediaLinkPath, 'addEffect'],
+        },
+      },
+      items: (effectsState || []).map((effect) => {
+        return {
+          key: effect.key,
+          label: effect.type,
+          onPress: ['navigate', `${mediaLinkPath}-effects-${effect.key}`],
+        }
+      }),
+      // items: [
+      //   { key: 'a', label: 'A Hello Test', onPress: ['navigate', 'a'] },
+      //   { key: 'b', label: 'B Hello Test' },
+      // ],
     },
   }
 }
+
+export function getEffectUI(effectPath: string[], effect: Effect) {
+  const removeEffect = {
+    $: 'component',
+    key: 'removeEffect',
+    component: 'Button',
+    children: 'Remove Effect',
+    props: {
+      onPress: {
+        $: 'multi',
+        events: [['updateEffect', effectPath, 'remove'], 'navigate-back'],
+      },
+    },
+  }
+  if (effect.type === 'desaturate') {
+    return section('Desaturate', [
+      {
+        $: 'component',
+        key: 'value',
+        component: 'SliderField',
+        props: {
+          onValue: ['updateEffect', effectPath, 'value'],
+          label: 'Value',
+          value: effect.value,
+          max: 1,
+          min: 0,
+          step: 0.01,
+        },
+      },
+      removeEffect,
+    ])
+  } else if (effect.type === 'hueShift') {
+    return section('Hue Shift', [
+      {
+        $: 'component',
+        key: 'value',
+        component: 'SliderField',
+        props: {
+          onValue: ['updateEffect', effectPath, 'value'],
+          label: 'Value',
+          value: effect.value,
+          max: 180,
+          min: -180,
+          step: 1,
+        },
+      },
+      removeEffect,
+    ])
+  } else if (effect.type === 'darken') {
+    return section('Darken', [
+      {
+        $: 'component',
+        key: 'value',
+        component: 'SliderField',
+        props: {
+          onValue: ['updateEffect', effectPath, 'value'],
+          label: 'Value',
+          value: effect.value,
+          max: 1,
+          min: 0,
+          step: 0.01,
+        },
+      },
+      removeEffect,
+    ])
+  } else if (effect.type === 'brighten') {
+    return section('Brighten', [
+      {
+        $: 'component',
+        key: 'value',
+        component: 'SliderField',
+        props: {
+          onValue: ['updateEffect', effectPath, 'value'],
+          label: 'Value',
+          value: effect.value,
+          max: 1,
+          min: 0,
+          step: 0.01,
+        },
+      },
+      removeEffect,
+    ])
+  }
+  return section(`Effect: ${effect.type}`, [removeEffect])
+}
+function getVideoTitle(state: VideoMedia): string {
+  if (state.track === null) return 'Video - Empty'
+  return `Video - ${state.track}`
+}
+function getMediaTitle(state: Media): string {
+  if (state.type === 'color') return 'Color'
+  if (state.type === 'video') return getVideoTitle(state)
+  return 'Media'
+}
+
+const newMediaOptions = [
+  { key: 'off', label: 'Off' },
+  { key: 'color', label: 'Color' },
+  { key: 'video', label: 'Video' },
+  { key: 'layers', label: 'Layers' },
+  { key: 'sequence', label: 'Sequence' },
+]
 
 export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
   if (state.type === 'off') {
@@ -250,11 +413,7 @@ export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
         props: {
           value: state.type,
           onValue: ['updateMedia', mediaLinkPath, 'mode'],
-          options: [
-            { key: 'off', label: 'Off' },
-            { key: 'color', label: 'Color' },
-            { key: 'video', label: 'Video' },
-          ],
+          options: newMediaOptions,
         },
       },
     ]
@@ -273,7 +432,7 @@ export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
             f: 1,
             onPress: ['navigate', mediaLinkPath],
           },
-          children: 'Open Media',
+          children: `Open ${getMediaTitle(state)}`,
         },
         {
           $: 'component',
@@ -456,9 +615,24 @@ export function getUIRootLegacy(state: MainState) {
   }
 }
 
-export function getMediaUI(mediaPath: string, mediaState: Media) {
+function getSequenceControls(
+  mediaLinkPath: string,
+  state: SequenceMedia,
+  context: UIContext
+): UI[] {
+  return []
+}
+
+function getLayersControls(mediaLinkPath: string, state: LayersMedia, context: UIContext): UI[] {
+  return []
+}
+
+export function getMediaUI(mediaPath: string, mediaState: Media, context: UIContext) {
   if (mediaState.type === 'color') return scroll(getColorControls(mediaPath, mediaState))
-  if (mediaState.type === 'video') return scroll(getVideoControls(mediaPath, mediaState))
+  if (mediaState.type === 'video') return scroll(getVideoControls(mediaPath, mediaState, context))
+  if (mediaState.type === 'sequence')
+    return scroll(getSequenceControls(mediaPath, mediaState, context))
+  if (mediaState.type === 'layers') return scroll(getLayersControls(mediaPath, mediaState, context))
   return scroll([
     {
       $: 'component',

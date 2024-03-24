@@ -3,10 +3,18 @@ import { eg as egInfo } from './eg'
 import { getEGLiveFrame, getEGReadyFrame } from './eg-main'
 import { egSacnService } from './eg-sacn'
 import { createEGViewServer } from './eg-view-server'
-import { MainState, MainStateSchema, Media, defaultMainState } from './state-schema'
-import { getBeatEffects, getEffectsUI, getMediaUI, getQuickEffects, getUIRoot } from './ui'
+import { Effect, MainState, MainStateSchema, Media, defaultMainState } from './state-schema'
+import {
+  UIContext,
+  getBeatEffects,
+  getEffectUI,
+  getEffectsUI,
+  getMediaUI,
+  getQuickEffects,
+  getUIRoot,
+} from './ui'
 import { createWSServer } from './ws-rnt-server'
-import { egVideo } from './eg-video-playback'
+import { EGVideo, egVideo } from './eg-video-playback'
 import { randomUUID } from 'crypto'
 
 let mainState: MainState = defaultMainState
@@ -27,6 +35,10 @@ const liveViewServer = createEGViewServer(3889)
 const readyViewServer = createEGViewServer(3888)
 
 const video = egVideo(egInfo, process.env.EG_MEDIA_PATH || 'eg-media', {
+  // const video = egVideo(egInfo, process.env.EG_MEDIA_PATH || 'eg-media-2', {
+  onPlayerUpdate: (player) => {
+    updateUI()
+  },
   onMediaUpdate: (media) => {
     wsServer.update('videoList', [
       { key: 'none', label: 'None' },
@@ -49,32 +61,72 @@ function mainLoop() {
   readyViewServer.sendFrame(egReadyFrame)
 }
 
-const mainAnimationFPS = 30
-
-setInterval(mainLoop, 1000 / mainAnimationFPS)
+const mainAnimationFPS = 10
 
 const wsServer = createWSServer(3990)
 
 const startTime = Date.now()
+const startTimeExact = performance.now()
+
+const desiredMsPerFrame = 1000 / mainAnimationFPS
+
+performMainLoopStep(desiredMsPerFrame)
+
+const initTime = performance.now()
+let lastFrameTime: number = initTime
+
+mainLoop()
+
+let frameCount = 0
+
+function performMainLoopStep(inMs: number) {
+  const frameScheduleTime = performance.now()
+  setTimeout(() => {
+    const preFrameTime = performance.now()
+    mainLoop()
+    frameCount += 1
+    const afterFrameTime = performance.now()
+    const frameDuration = afterFrameTime - preFrameTime
+    if (frameDuration > desiredMsPerFrame) {
+      console.log('frame took too long', frameDuration)
+    }
+    const frameIdealStartTime = initTime + frameCount * desiredMsPerFrame
+    if (afterFrameTime > frameIdealStartTime) {
+      console.log('frame behind', afterFrameTime - frameIdealStartTime)
+      // missed this frame. just go to the next one
+      frameCount += 1
+      performMainLoopStep(0)
+      return
+    }
+    performMainLoopStep(Math.max(1, frameIdealStartTime - afterFrameTime))
+  }, inMs)
+}
+
 wsServer.update('startTime', startTime)
 
-function updateMediaUI(mediaKey: string) {
-  const mediaState = mainState[mediaKey]
+function updateMediaUI(mediaKey: string, mediaState: Media, uiContext: UIContext) {
   // wsServer.update('readyMedia', getMediaUI('readyMedia', mainState.readyMedia))
-  wsServer.update(mediaKey, getMediaUI(mediaKey, mediaState))
+  wsServer.update(mediaKey, getMediaUI(mediaKey, mediaState, uiContext))
   if (mediaState.type === 'video') {
     // something about effects
     wsServer.update(`${mediaKey}-effects`, getEffectsUI(mediaKey, mediaState.effects))
+    mediaState.effects?.forEach((effect) => {
+      wsServer.update(
+        `${mediaKey}-effects-${effect.key}`,
+        getEffectUI([mediaKey, effect.key], effect)
+      )
+    })
   }
 }
 
 function updateUI() {
+  const uiContext: UIContext = { video }
   wsServer.update('mainState', mainState)
   wsServer.updateRoot(getUIRoot(mainState))
   wsServer.update('quickEffects', getQuickEffects(mainState))
   wsServer.update('beatEffects', getBeatEffects(mainState))
-  updateMediaUI('readyMedia', mainState.readyMedia)
-  updateMediaUI('liveMedia', mainState.liveMedia)
+  updateMediaUI('readyMedia', mainState.readyMedia, uiContext)
+  updateMediaUI('liveMedia', mainState.liveMedia, uiContext)
 }
 updateUI()
 
@@ -251,9 +303,52 @@ wsServer.subscribeEvent((...event) => {
   if (handleMediaEvent('liveMedia', path, name, value)) return
   if (handleMediaEvent('readyMedia', path, name, value)) return
   if (handleTransitionEvent(path, name, value)) return
+  if (handleEffectEvent(path, name, value)) return
 
   console.log('Unknown Event', path, name, value)
 })
+
+function handleEffectEvent(path: string, name: string, value: any): boolean {
+  if (value?.[0] !== 'updateEffect') return false
+  console.log('handleEffect', value)
+  const mediaKey = value?.[1]
+  mainStateUpdate((state) => {
+    const media = state[mediaKey[0]]
+    const effectIndex = media?.effects?.findIndex((effect) => effect.key === mediaKey[1])
+    if (value?.[2] === 'remove') {
+      return {
+        ...state,
+        [mediaKey[0]]: {
+          ...media,
+          effects: media.effects.filter((effect) => {
+            return effect.key !== mediaKey[1]
+          }),
+        },
+      }
+      return state
+    }
+    if (effectIndex != null && effectIndex !== -1) {
+      const field = value[2]
+      const newValue = value[3]
+      const effect = media.effects[effectIndex]
+      const newEffect = { ...effect, [field]: newValue }
+      return {
+        ...state,
+        [mediaKey[0]]: {
+          ...media,
+          effects: media.effects.map((effect) => {
+            if (effect.key === mediaKey[1]) {
+              return newEffect
+            }
+            return effect
+          }),
+        },
+      }
+    }
+    return state
+  })
+  return true
+}
 
 function handleTransitionEvent(path: string, name: string, value: any): boolean {
   if (value?.[0] !== 'updateTransition') return false
@@ -333,6 +428,53 @@ function handleMediaEvent(
         [mediaKey]: { ...state[mediaKey], track },
       }))
       return true
+    }
+    if (action === 'loopBounce') {
+      const loopBounce = value?.[3]
+      mainStateUpdate((state) => {
+        const media = state[mediaKey]
+        if (media.type !== 'video') return state
+        return {
+          ...state,
+          [mediaKey]: {
+            ...media,
+            params: {
+              ...(media.params || {}),
+              loopBounce,
+            },
+          },
+        }
+      })
+      return true
+    }
+    if (action === 'reverse') {
+      const reverse = value?.[3]
+      mainStateUpdate((state) => {
+        const media = state[mediaKey]
+        if (media.type !== 'video') return state
+        return {
+          ...state,
+          [mediaKey]: {
+            ...media,
+            params: {
+              ...(media.params || {}),
+              reverse,
+            },
+          },
+        }
+      })
+      return true
+    }
+    if (action === 'addEffect') {
+      const effectType = value?.[3]
+      const newEffect: Effect = createBlankEffect(effectType)
+      mainStateUpdate((state) => ({
+        ...state,
+        [mediaKey]: {
+          ...state[mediaKey],
+          effects: [...(state[mediaKey].effects || []), newEffect],
+        },
+      }))
       return true
     }
   }
@@ -366,5 +508,44 @@ function createBlankMedia(type: Media['type']): Media {
   if (type === 'video') {
     return { type, track: null, id: randomUUID() }
   }
+  if (type === 'layers') {
+    return { type, layers: [] }
+  }
+  if (type === 'sequence') {
+    return { type, sequence: [] }
+  }
+
   return { type: 'off' }
+}
+
+function createBlankEffect(type: Effect['type']): Effect {
+  if (type === 'hueShift')
+    return {
+      key: randomUUID(),
+      type: 'hueShift',
+      value: 0,
+    }
+  if (type === 'desaturate')
+    return {
+      key: randomUUID(),
+      type: 'desaturate',
+      value: 0,
+    }
+  if (type === 'darken')
+    return {
+      key: randomUUID(),
+      type: 'darken',
+      value: 0,
+    }
+  if (type === 'brighten')
+    return {
+      key: randomUUID(),
+      type: 'brighten',
+      value: 0,
+    }
+  // if (type === 'invert')
+  return {
+    key: randomUUID(),
+    type: 'invert',
+  }
 }

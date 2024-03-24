@@ -26,30 +26,47 @@ import { LinearGradient } from 'tamagui/linear-gradient'
 import QRCode from 'react-native-qrcode-svg'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
+function handleEvent(
+  onTemplateEvent: any,
+  payloadSpec: any,
+  eventName: string,
+  payloadValue?: any
+) {
+  if (payloadSpec == null) return
+  if (typeof payloadSpec === 'object' && payloadSpec['$'] === 'multi')
+    return handleEvents(onTemplateEvent, payloadSpec.events, eventName)
+  const payloadContext = Array.isArray(payloadSpec) ? payloadSpec : [payloadSpec]
+  onTemplateEvent(eventName, [...payloadContext, payloadValue])
+}
+function handleEvents(onTemplateEvent: any, payloadSpecs: any[] = [], eventName: string) {
+  payloadSpecs.forEach((payloadSpec) => {
+    handleEvent(onTemplateEvent, payloadSpec, eventName)
+  })
+}
+
 function TButton(props) {
   return (
     <Button
       backgroundColor={'$color1'}
       {...props}
       onPress={() => {
-        let payload = 'press'
-        if (props.onPress) payload = Array.isArray(props.onPress) ? props.onPress : [props.onPress]
-        if (props.onPress === null) return
-        props?.onTemplateEvent('press', payload)
+        handleEvent(props.onTemplateEvent, props.onPress, 'press')
       }}
       onPressIn={() => {
-        let payload = 'pressIn'
-        if (props.onPressIn)
-          payload = Array.isArray(props.onPressIn) ? props.onPressIn : [props.onPressIn]
-        if (props.onPressIn === null) return
-        props?.onTemplateEvent('pressIn', payload)
+        handleEvent(props.onTemplateEvent, props.onPressIn, 'pressIn')
+        // let payload = 'pressIn'
+        // if (props.onPressIn)
+        //   payload = Array.isArray(props.onPressIn) ? props.onPressIn : [props.onPressIn]
+        // if (props.onPressIn === null) return
+        // props?.onTemplateEvent('pressIn', payload)
       }}
       onPressOut={() => {
-        let payload = 'pressOut'
-        if (props.onPressOut)
-          payload = Array.isArray(props.onPressOut) ? props.onPressOut : [props.onPressOut]
-        if (props.onPressOut === null) return
-        props?.onTemplateEvent('pressOut', payload)
+        handleEvent(props.onTemplateEvent, props.onPressOut, 'pressOut')
+        // let payload = 'pressOut'
+        // if (props.onPressOut)
+        //   payload = Array.isArray(props.onPressOut) ? props.onPressOut : [props.onPressOut]
+        // if (props.onPressOut === null) return
+        // props?.onTemplateEvent('pressOut', payload)
       }}
     />
   )
@@ -107,9 +124,15 @@ function TSlider(props: z.infer<typeof SliderProps> & BaseTemplateProps) {
 function keyExtractor(item: z.infer<typeof SortableListItemSchema>) {
   return item.key
 }
-const SortableListItemSchema = z.object({ key: z.string(), label: z.string() })
+const SortableListItemSchema = z.object({
+  key: z.string(),
+  label: z.string(),
+  onPress: z.string().or(z.array(z.string())),
+})
 const SortableListProps = z.object({
+  footer: z.any(),
   items: z.array(SortableListItemSchema),
+  onReorder: z.string().or(z.array(z.string())),
 })
 function SortableList(props: z.infer<typeof SortableListProps> & BaseTemplateProps) {
   return (
@@ -118,21 +141,26 @@ function SortableList(props: z.infer<typeof SortableListProps> & BaseTemplatePro
         containerStyle={{ flex: 1 }}
         data={props.items}
         keyExtractor={keyExtractor}
+        ListFooterComponent={props.footer}
+        onDragEnd={({ data }) => {
+          const reordered = data.map((item) => item.key)
+          const payload = [
+            ...(Array.isArray(props.onReorder) ? props.onReorder : [props.onReorder]),
+            reordered,
+          ]
+          props.onTemplateEvent('update', payload)
+        }}
         renderItem={(row) => {
           const { item, drag, isActive } = row
           return (
             <ScaleDecorator>
               <TouchableOpacity
                 onPress={() => {
-                  alert('pressed an item')
+                  if (item.onPress) props.onTemplateEvent('press', item.onPress)
                 }}
                 onLongPress={drag}
                 disabled={isActive}
-                style={[
-                  { padding: 10, backgroundColor: 'white', margin: 10 },
-                  // styles.rowItem,
-                  // { backgroundColor: isActive ? "red" : item.backgroundColor },
-                ]}
+                style={[{ padding: 10, backgroundColor: 'white', margin: 10 }]}
               >
                 <Label style={{}}>{item.label}</Label>
               </TouchableOpacity>
@@ -147,7 +175,7 @@ function SortableList(props: z.infer<typeof SortableListProps> & BaseTemplatePro
 const SliderFieldProps = z.object({
   value: z.number().nullable().optional(),
   defaultValue: z.number().optional(),
-  onValue: z.string().or(z.array(z.string())).nullable().optional(),
+  onValue: z.string().or(z.array(z.any())).nullable().optional(),
   min: z.number().optional(),
   max: z.number().optional(),
   step: z.number().optional(),
@@ -194,6 +222,7 @@ function TSliderField(props: z.infer<typeof SliderFieldProps> & BaseTemplateProp
 const SwitchFieldProps = z.object({
   value: z.boolean().nullable().optional(),
   label: z.string().optional(),
+  onValue: z.string().or(z.array(z.string())).nullable().optional(),
 })
 
 function TSwitchField(props: z.infer<typeof SwitchFieldProps> & BaseTemplateProps) {
@@ -204,6 +233,8 @@ function TSwitchField(props: z.infer<typeof SwitchFieldProps> & BaseTemplateProp
         marginVertical={'$4'}
         checked={props.value}
         onCheckedChange={(value) => {
+          //
+          handleEvent(props.onTemplateEvent, props.onValue, 'switch', value)
           props.onTemplateEvent('update', value)
         }}
       >
@@ -235,6 +266,7 @@ type BaseTemplateProps = {
 const SelectFieldProps = z.object({
   value: z.string().nullable(),
   id: z.string().optional(),
+  unselectedLabel: z.string().optional(),
   onValue: z.string().or(z.array(z.string())).nullable().optional(),
   options: z.array(
     z.object({
@@ -264,7 +296,7 @@ function TSelectField({
       // native
     >
       <Select.Trigger iconAfter={ChevronDown}>
-        <Select.Value placeholder="..." />
+        <Select.Value placeholder={props.unselectedLabel || '...'} />
       </Select.Trigger>
 
       <Adapt
@@ -341,7 +373,7 @@ function TSelectField({
             [options]
           )}
           {/* Native gets an extra icon */}
-          {true && (
+          {/* {true && (
             <YStack
               position="absolute"
               right={0}
@@ -354,7 +386,7 @@ function TSelectField({
             >
               <ChevronDown size={getFontSize((props.size as FontSizeTokens) ?? '$true')} />
             </YStack>
-          )}
+          )} */}
         </Select.Viewport>
 
         <Select.ScrollDownButton

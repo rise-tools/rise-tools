@@ -5,6 +5,11 @@ import {
   createSolidHSLFrame,
   createSolidRGBFrame,
   flashEffect,
+  frameBrighten,
+  frameDarken,
+  frameDesaturate,
+  frameHueShift,
+  frameInvert,
   frameTransitionMix,
   waveFrameLayerEffect,
 } from './eg-tools'
@@ -12,12 +17,19 @@ import { EGVideo, VideoPlayer } from './eg-video-playback'
 import { UPRISING } from './flag'
 import {
   ColorMedia,
+  Effects,
+  Effect,
   MainState,
   Media,
   StateContext,
   Transition,
   TransitionState,
   VideoMedia,
+  DesaturateEffect,
+  HueShiftEffect,
+  InvertEffect,
+  BrightenEffect,
+  DarkenEffect,
   // effectTypes,
   // effectsSchema,
 } from './state-schema'
@@ -127,8 +139,9 @@ function colorFrame(media: ColorMedia, ctx: StateContext): Frame {
   return createSolidHSLFrame(egInfo, media.h, media.s, media.l)
 }
 
-function videoFrame(media: VideoMedia, ctx: StateContext): Frame {
+function videoFrameBare(media: VideoMedia, ctx: StateContext): Frame {
   const video = ctx.video.getPlayer(media.id)
+  if (media.params) video.setParams(media.params)
   if (media.track) {
     video.selectVideo(media.track).catch((e) => {
       console.error('Error selecting video', e)
@@ -136,6 +149,48 @@ function videoFrame(media: VideoMedia, ctx: StateContext): Frame {
     return video.readFrame() || blackFrame
   }
   return blackFrame
+}
+
+function withDesaturate(frame: Frame, effect: DesaturateEffect, ctx: StateContext): Frame {
+  return frameDesaturate(egInfo, frame, effect.value)
+}
+
+function withHueShift(frame: Frame, effect: HueShiftEffect, ctx: StateContext): Frame {
+  return frameHueShift(egInfo, frame, effect.value)
+}
+
+function withInvert(frame: Frame, effect: InvertEffect, ctx: StateContext): Frame {
+  return frameInvert(egInfo, frame)
+}
+
+function withBrighten(frame: Frame, effect: BrightenEffect, ctx: StateContext): Frame {
+  return frameBrighten(egInfo, frame, effect.value)
+}
+
+function withDarken(frame: Frame, effect: DarkenEffect, ctx: StateContext): Frame {
+  return frameDarken(egInfo, frame, effect.value)
+}
+
+function withMediaEffect(frame: Frame, effect: Effect, ctx: StateContext): Frame {
+  if (effect.type === 'desaturate') return withDesaturate(frame, effect, ctx)
+  if (effect.type === 'hueShift') return withHueShift(frame, effect, ctx)
+  if (effect.type === 'invert') return withInvert(frame, effect, ctx)
+  if (effect.type === 'brighten') return withBrighten(frame, effect, ctx)
+  if (effect.type === 'darken') return withDarken(frame, effect, ctx)
+  return frame
+}
+
+function withMediaEffects(frame: Frame, effects: Effects | undefined, ctx: StateContext): Frame {
+  let outFrame = frame
+  effects?.forEach((effect) => {
+    outFrame = withMediaEffect(outFrame, effect, ctx)
+  })
+  return outFrame
+}
+
+function videoFrame(media: VideoMedia, ctx: StateContext): Frame {
+  const frame = videoFrameBare(media, ctx)
+  return withMediaEffects(frame, media.effects, ctx)
 }
 
 function mediaFrame(media: Media, ctx: StateContext): Frame {
