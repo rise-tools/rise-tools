@@ -33,7 +33,7 @@ Remove this log in next.config.js.
 
 const plugins = [
   withTamagui({
-    config: '../../packages/config/src/tamagui.config.ts',
+    config: '../../packages/demo-ui/src/tamagui.config.ts',
     components: ['tamagui', '@react-native-templates/demo-ui'],
     importsWhitelist: ['constants.js', 'colors.js'],
     outputCSS: process.env.NODE_ENV === 'production' ? './public/tamagui.css' : null,
