@@ -41,11 +41,13 @@ export function useConnections() {
   function update(updater: (state: ConnectionsState) => ConnectionsState) {
     storage.connections.set(updater(state))
   }
-  function addConnection(connection: Omit<Connection, 'id'>) {
+  function addConnection(connection: Omit<Connection, 'id'> & { id?: string }) {
+    const newConnection = { ...connection, id: connection.id ?? storage.uuid() }
     update((state) => ({
       ...state,
-      connections: [...state.connections, { ...connection, id: storage.uuid() }],
+      connections: [...state.connections, newConnection],
     }))
+    return newConnection.id
   }
   return [state, { update, addConnection }] as const
 }

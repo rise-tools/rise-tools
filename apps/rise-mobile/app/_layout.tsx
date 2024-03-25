@@ -8,6 +8,11 @@ import { ExpoStorageProvider, navigationStore } from '../src/expo-storage'
 import { useEffect } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
+export const unstable_settings = {
+  // https://docs.expo.dev/router/advanced/router-settings/
+  initialRouteName: 'index',
+}
+
 export default function HomeLayout() {
   const pathname = usePathname()
   const router = useRouter()

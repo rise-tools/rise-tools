@@ -16,8 +16,6 @@
     "console-stamp": "^3.1.2",
     "dmx": "^0.2.5",
     "express": "^4.18.2",
-    "gl": "^8.0.2",
-    "gpu.js": "^2.16.0",
     "ip": "^1.1.8",
     "jimp": "^0.22.10",
     "nodemon": "^3.0.2",
@@ -33,10 +31,5 @@
     "@types/ws": "^8.5.10",
     "esbuild": "^0.19.5",
     "esbuild-runner": "^2.2.2"
-  },
-  "dependenciesMeta": {
-    "gl": {
-      "built": false
-    }
   }
 }

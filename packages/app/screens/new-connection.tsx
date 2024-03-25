@@ -28,3 +28,5 @@ export function NewConnectionScreen() {
     </YStack>
   )
 }
+
+// rise://new-connection
