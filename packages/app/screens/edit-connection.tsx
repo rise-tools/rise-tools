@@ -41,7 +41,7 @@ export function EditConnectionScreen() {
       >
         Copy Connection Link
       </Button>
-      <Button
+      {/* <Button
         onPress={() => {
           const connectionString = bs58.encode(Buffer.from(JSON.stringify(connection)))
           router.navigate(`/connect/${connectionString}`)
@@ -50,7 +50,7 @@ export function EditConnectionScreen() {
         theme="green"
       >
         DEV - Navigate to Connect
-      </Button>
+      </Button> */}
 
       <Button
         theme="red"

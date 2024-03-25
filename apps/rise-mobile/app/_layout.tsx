@@ -19,7 +19,7 @@ export default function HomeLayout() {
 
   useEffect(() => {
     const route = navigationStore.getRoute()
-    if (route) {
+    if (route && route !== '/') {
       setTimeout(() => {
         router.push(route)
       }, 500)

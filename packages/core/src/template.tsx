@@ -292,7 +292,7 @@ export function Template({
 
   function renderElement(stateNode: DataState, path: string) {
     if (typeof stateNode === 'string') {
-      return <Text key={path}>{stateNode}</Text>;
+      return stateNode;
     }
     if (typeof stateNode === 'number') {
       return <Text key={path}>{stateNode}</Text>;
