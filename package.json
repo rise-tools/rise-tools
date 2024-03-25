@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "docs"
   ],
   "scripts": {
     "native": "cd apps/rise-mobile && yarn start",

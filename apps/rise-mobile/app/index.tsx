@@ -6,7 +6,7 @@ export default function Screen() {
     <>
       <Stack.Screen
         options={{
-          title: 'Ultimate Remote',
+          title: 'Rise Remote',
         }}
       />
       <HomeScreen />
