@@ -24,7 +24,7 @@
     "expo-clipboard": "~5.0.1",
     "expo-constants": "~15.4.5",
     "expo-crypto": "~12.8.1",
-    "expo-dev-client": "~3.3.10",
+    "expo-dev-client": "~3.3.11",
     "expo-font": "~11.10.3",
     "expo-linear-gradient": "~12.7.2",
     "expo-linking": "~6.2.2",
