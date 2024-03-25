@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./lib/typescript"
+  },
+  "references": [
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../demo-ui"
+    },
+    {
+      "path": "../ws-client"
+    }
+  ]
+}

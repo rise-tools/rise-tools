@@ -1,17 +1,43 @@
 {
-  "name": "app",
-  "version": "0.0.0",
+  "name": "@react-native-templates/app",
+  "version": "0.0.1",
   "license": "Apache-2.0",
-  "main": "index.ts",
-  "private": true,
-  "sideEffects": [
-    "*.css"
+  "description": "",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/src/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
   ],
+  "scripts": {
+    "clean": "del-cli lib",
+    "build": "bob build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ericvicenti/react-native-templates.git",
+    "directory": "packages/app"
+  },
+  "author": "Eric Vicenti <ericvicenti@gmail.com> (https://github.com/ericvicenti)",
+  "contributors": [
+    "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
+  ],
+  "bugs": {
+    "url": "https://github.com/ericvicenti/react-native-templates/issues"
+  },
+  "homepage": "https://github.com/ericvicenti/react-native-templates#readme",
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
-    "@react-native-templates/core": "workspace:*",
-    "@react-native-templates/demo-ui": "workspace:*",
-    "@react-native-templates/ws-client": "workspace:*",
+    "@react-native-templates/core": "0.1.0",
+    "@react-native-templates/demo-ui": "0.0.1",
+    "@react-native-templates/ws-client": "0.1.0",
     "@tamagui/animations-react-native": "1.91.4",
     "@tamagui/colors": "1.91.4",
     "@tamagui/font-inter": "1.91.4",
@@ -31,7 +57,23 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/bs58": "^4.0.4",
     "@types/react": "^18.0.27",
-    "@types/react-native": "^0.71.3"
+    "@types/react-native": "^0.71.3",
+    "react": "^18.2.0",
+    "react-native": "^0.73.5"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-native": "^0.73.5"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
+    ]
   }
 }

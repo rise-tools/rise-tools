@@ -1,4 +1,4 @@
-import { useConnection } from 'app/provider/storage'
+import { useConnection } from 'app/src/provider/storage'
 import { ConnectionScreen } from 'app/screens/connection'
 import { Stack } from 'expo-router'
 import { createParam } from 'solito'
