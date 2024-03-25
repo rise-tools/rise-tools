@@ -67,7 +67,7 @@ export function egVideo(
 
     let playbackParams: PlaybackParams = params
     const MAX_QUEUE_SIZE = 30
-    const batchSize = 5
+    const batchSize = 30
 
     let bufferQueue: Uint8Array[] = []
     let currentBuffer: Buffer = Buffer.alloc(0)
@@ -93,21 +93,17 @@ export function egVideo(
       const fileHandle = await openFile(framesFilePath, 'r')
 
       const totalFrames = fileInfo.size / frameSize
-      let currentFrameIndex = totalFrames - 1
+      let currentFrameIndex = totalFrames - batchSize
       async function readFrames() {
         streamPaused = false
         const framesToRead = Math.min(batchSize, currentFrameIndex + 1)
         const buffer = Buffer.alloc(framesToRead * frameSize)
-        for (let i = 0; i < framesToRead; i++) {
-          const offset = (currentFrameIndex - i) * frameSize
-          await read(fileHandle, buffer, i * frameSize, frameSize, offset)
-        }
-        const frames = []
+        const offset = currentFrameIndex * frameSize
+        await read(fileHandle, buffer, 0, frameSize * framesToRead, offset)
         for (let i = 0; i < framesToRead; i++) {
           const frameBuffer = buffer.slice(i * frameSize, (i + 1) * frameSize)
-          frames.push(new Uint8Array(frameBuffer))
+          bufferQueue.unshift(new Uint8Array(frameBuffer))
         }
-        bufferQueue.push(...frames)
         currentFrameIndex -= framesToRead
         if (currentFrameIndex <= 0) {
           // end of reverse playback
