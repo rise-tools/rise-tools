@@ -1,4 +1,4 @@
-import { StorageContextProvider, Store } from 'app/src/provider/storage'
+import { StorageContextProvider, Store } from '@react-native-templates/app/src/provider/storage'
 import { randomUUID } from 'expo-crypto'
 import { MMKV } from 'react-native-mmkv'
 

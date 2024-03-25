@@ -1,7 +1,8 @@
-import { useConnection } from 'app/src/provider/storage'
-import { ConnectionScreen } from 'app/screens/connection'
+import { useConnection } from '@react-native-templates/app'
+import { ConnectionScreen } from '@react-native-templates/app'
 import { Stack } from 'expo-router'
 import { createParam } from 'solito'
+import React from 'react'
 
 const { useParam } = createParam<{ id: string; path: string }>()
 

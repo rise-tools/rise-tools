@@ -1,8 +1,9 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
-import { Provider } from 'app/src/provider'
+import { Provider } from '@react-native-templates/app/src/provider'
 import { useFonts } from 'expo-font'
 import { Stack, usePathname, useRouter } from 'expo-router'
 import { useColorScheme } from 'react-native'
+import React from 'react'
 
 import { ExpoStorageProvider, navigationStore } from '../src/expo-storage'
 import { useEffect } from 'react'
@@ -45,6 +46,7 @@ export default function HomeLayout() {
             <Stack>
               <Stack.Screen
                 name="connection/[id]"
+                // @ts-ignore
                 getId={({ params }: { params: { id: string; path: string } }) => {
                   return `${params.id}-${params.path}`
                 }}

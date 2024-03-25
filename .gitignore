@@ -76,3 +76,4 @@ android/keystores/debug.keystore
 **/lib
 **/dist
 *.tsbuildinfo
+.tamagui

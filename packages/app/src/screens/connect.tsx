@@ -1,5 +1,5 @@
 import { Button, SizableText, YStack } from '@react-native-templates/demo-ui'
-import { Connection, useConnections } from 'app/src/provider/storage'
+import { Connection, useConnections } from '@react-native-templates/app/src/provider/storage'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
 import { useEffect } from 'react'

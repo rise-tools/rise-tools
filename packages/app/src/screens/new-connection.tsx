@@ -1,6 +1,6 @@
 import { Button, YStack } from '@react-native-templates/demo-ui'
-import { ConnectionForm } from 'app/src/connection-form'
-import { useConnections } from 'app/src/provider/storage'
+import { ConnectionForm } from '@react-native-templates/app/src/connection-form'
+import { useConnections } from '@react-native-templates/app/src/provider/storage'
 import React from 'react'
 import { useLink } from 'solito/link'
 
