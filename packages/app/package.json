@@ -23,7 +23,7 @@
     "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
   ],
   "scripts": {
-    "build": "npx tsc -b",
+    "build": "npx tsc -b -f",
     "watch": "npx tsc -w"
   },
   "bugs": {
