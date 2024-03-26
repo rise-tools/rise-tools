@@ -20,7 +20,7 @@
     "marketing": "yarn build && cd apps/rise-marketing && yarn dev",
     "convert-videos": "cd apps/server && yarn convert-videos",
     "postinstall": "yarn check-deps",
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build --workspace @react-native-templates/app",
     "web": "yarn build && cd apps/next && yarn next",
     "web:prod": "yarn workspace next-app build",
     "web:prod:serve": "yarn workspace next-app serve",
@@ -52,7 +52,6 @@
     "eslint-plugin-simple-import-sort": "^12.0.0",
     "jest": "^28.1.1",
     "prettier": "^3.2.5",
-    "react-native-builder-bob": "^0.23.1",
     "release-it": "^15.4.1",
     "typescript": "^5.1.3"
   },
