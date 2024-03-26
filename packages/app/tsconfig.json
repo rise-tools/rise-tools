@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib"
+  },
+  "references": [
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../demo-ui"
+    },
+    {
+      "path": "../ws-client"
+    }
+  ]
+}

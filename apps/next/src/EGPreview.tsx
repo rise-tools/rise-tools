@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 import { Text, View } from 'tamagui'
 
@@ -59,6 +59,7 @@ function EGPreview({ url, size }: { url: string; size: number }) {
     if (!ctx) return
     ctx.fillStyle = '#000000'
     ctx.fillRect(0, 0, size, size)
+    // @ts-ignore
     writeFrame.current = (frame: Uint8Array) => {
       egCanvasMap.forEach((point, pointIndex) => {
         const startIndex = pointIndex * 3

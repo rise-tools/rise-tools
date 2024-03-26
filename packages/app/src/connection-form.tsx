@@ -1,6 +1,7 @@
-import { AppForm, fields } from 'app/src/form'
 import React from 'react'
 import { z } from 'zod'
+
+import { AppForm, fields } from './form'
 
 const connectionFormSchema = z.object({
   label: fields.text.describe('Connection Label'),
@@ -24,7 +25,10 @@ export function ConnectionForm({
       defaultValues={defaultValues}
       renderAfter={submitButton}
     >
-      {(fields) => <>{Object.values(fields)}</>}
+      {
+        /* @ts-ignore */
+        (fields) => <>{Object.values(fields)}</>
+      }
     </AppForm>
   )
 }

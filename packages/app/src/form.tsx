@@ -1,8 +1,11 @@
-import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
-import { TextField } from './fields'
-import { z } from 'zod'
 import { Form, YStack } from '@react-native-templates/demo-ui'
+// @ts-ignore
+import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
 import { ComponentProps } from 'react'
+import React from 'react'
+import { z } from 'zod'
+
+import { TextField } from './fields'
 
 export const fields = {
   text: z.string(),

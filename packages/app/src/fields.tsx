@@ -1,5 +1,3 @@
-import { useStringFieldInfo, useTsController } from '@ts-react/form'
-import { useId } from 'react'
 import {
   Fieldset,
   Input,
@@ -8,7 +6,10 @@ import {
   Theme,
   useThemeName,
 } from '@react-native-templates/demo-ui'
-
+// @ts-ignore
+import { useStringFieldInfo, useTsController } from '@ts-react/form'
+import { useId } from 'react'
+import React from 'react'
 import { AnimatePresence, Paragraph } from 'tamagui'
 
 const FieldError = ({ message }: { message?: string }) => {

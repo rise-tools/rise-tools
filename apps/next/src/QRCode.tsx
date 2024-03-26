@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
 import { toCanvas } from 'qrcode'
+import { useEffect, useRef } from 'react'
 
 export function QRCode({ value }: { value: string }) {
   const canvas = useRef<HTMLCanvasElement>(null)
