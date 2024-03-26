@@ -3,7 +3,8 @@
   "compilerOptions": {
     "paths": {
       "app/*": ["./packages/app/*"],
-      "@react-native-templates/demo-ui/*": ["./packages/ui/*"],
+      "@react-native-templates/app": ["./packages/app/src"],
+      "@react-native-templates/demo-ui": ["./packages/demo-ui/src"],
       "@react-native-templates/core": ["./packages/core/src"],
       "@react-native-templates/ws-client": ["./packages/ws-client/src"]
     },

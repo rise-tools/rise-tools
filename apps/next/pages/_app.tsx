@@ -4,7 +4,7 @@ import '@tamagui/font-inter/css/700.css'
 import 'raf/polyfill'
 
 import { NextThemeProvider, useRootTheme } from '@tamagui/next-theme'
-import { Provider } from 'app/provider'
+import { Provider } from '@react-native-templates/app'
 import Head from 'next/head'
 import React from 'react'
 import type { SolitoAppProps } from 'solito'

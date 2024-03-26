@@ -63,6 +63,8 @@ module.exports = function () {
     transpilePackages: [
       'solito',
       'react-native-web',
+      '@react-native/assets-registry',
+      'expo-clipboard',
       'expo-linking',
       'expo-constants',
       'expo-modules-core',

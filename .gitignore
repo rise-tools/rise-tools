@@ -77,3 +77,7 @@ android/keystores/debug.keystore
 **/dist
 *.tsbuildinfo
 .tamagui
+
+# Next
+.next
+.vercel
