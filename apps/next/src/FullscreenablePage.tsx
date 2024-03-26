@@ -30,7 +30,7 @@ export function FullscreenablePage({
 function toggleFullScreen() {
   if (!document.fullscreenElement) {
     // If not in fullscreen, request it on the 'content' div
-    var elem = document.getElementById('__next')
+    const elem = document.getElementById('__next')!
     if (elem.requestFullscreen) {
       elem.requestFullscreen()
     } else if (elem.mozRequestFullScreen) {
