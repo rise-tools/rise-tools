@@ -48,7 +48,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.9",
+    "@babel/core": "^7.19.3",
     "@expo/metro-config": "~0.17.1",
     "@tamagui/babel-plugin": "1.91.4",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",

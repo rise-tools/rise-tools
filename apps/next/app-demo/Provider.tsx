@@ -1,19 +1,16 @@
-'use client'
-
-import '@tamagui/core/reset.css'
-import '@tamagui/polyfill-dev'
-
 import { NextThemeProvider, useRootTheme } from '@tamagui/next-theme'
 import { useServerInsertedHTML } from 'next/navigation'
 import React from 'react'
 import { StyleSheet } from 'react-native'
-import { config, TamaguiProvider as TamaguiProviderOG } from '@react-native-templates/demo-ui'
+import { PortalProvider, TamaguiProvider } from 'tamagui'
+import { config } from '@react-native-templates/demo-ui'
 
-export const TamaguiProvider = ({ children }: { children: React.ReactNode }) => {
+export const Provider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useRootTheme()
 
   useServerInsertedHTML(() => {
     // @ts-ignore
+    // tbd: debug this
     const rnwStyle = StyleSheet.getSheet()
     return (
       <>
@@ -38,9 +35,11 @@ export const TamaguiProvider = ({ children }: { children: React.ReactNode }) => 
         setTheme(next as any)
       }}
     >
-      <TamaguiProviderOG config={config} themeClassNameOnRoot defaultTheme={theme}>
-        {children}
-      </TamaguiProviderOG>
+      <TamaguiProvider config={config} defaultTheme={theme}>
+        <PortalProvider shouldAddRootHost>
+          {children}
+        </PortalProvider>
+      </TamaguiProvider>
     </NextThemeProvider>
   )
 }

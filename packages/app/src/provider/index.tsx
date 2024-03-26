@@ -7,7 +7,7 @@ import {
 import React from 'react'
 import { useColorScheme } from 'react-native'
 
-import config from '../../tamagui.config'
+import config from '../tamagui.config'
 import { ToastViewport } from './ToastViewport'
 
 export function Provider({ children, ...rest }: Omit<TamaguiProviderProps, 'config'>) {

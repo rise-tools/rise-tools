@@ -2,7 +2,6 @@
   "extends": "@tsconfig/node18",
   "compilerOptions": {
     "paths": {
-      "app/*": ["./packages/app/*"],
       "@react-native-templates/app": ["./packages/app/src"],
       "@react-native-templates/demo-ui": ["./packages/demo-ui/src"],
       "@react-native-templates/core": ["./packages/core/src"],
@@ -12,12 +11,5 @@
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
     "jsx": "react"
-  },
-  "exclude": [
-    "**/node_modules",
-    "**/dist",
-    "apps/next/out",
-    "apps/next/.next",
-    "apps/next/.tamagui"
-  ]
+  }
 }
