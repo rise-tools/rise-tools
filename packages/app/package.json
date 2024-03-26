@@ -22,10 +22,6 @@
   "contributors": [
     "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
   ],
-  "scripts": {
-    "build": "npx tsc -b -f",
-    "watch": "npx tsc -w"
-  },
   "bugs": {
     "url": "https://github.com/ericvicenti/react-native-templates/issues"
   },

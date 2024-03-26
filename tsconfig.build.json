@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib"
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/demo-ui"
+    },
+    {
+      "path": "./packages/ws-client"
+    },
+    {
+      "path": "./packages/app"
+    }
+  ]
+}
