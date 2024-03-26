@@ -47,7 +47,7 @@
     "@ts-react/form": "^1.8.3",
     "bs58": "^5.0.0",
     "burnt": "^0.12.1",
-    "expo-constants": "~15.4.5",
+    "expo-constants": "^15.4.5",
     "expo-linking": "~6.2.2",
     "nanoid": "^5.0.4",
     "react-hook-form": "^7.49.2",
