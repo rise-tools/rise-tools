@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "serve": "NODE_ENV=production next start --port 8151"
+    "serve": "NODE_ENV=production next start"
   },
   "dependencies": {
     "@react-native-templates/app": "0.0.1",

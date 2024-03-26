@@ -33,28 +33,52 @@ function toggleFullScreen() {
     const elem = document.getElementById('__next')!
     if (elem.requestFullscreen) {
       elem.requestFullscreen()
-    } else if (elem.mozRequestFullScreen) {
+    } else if (
+      // @ts-expect-error
+      elem.mozRequestFullScreen
+    ) {
       /* Firefox */
+      // @ts-expect-error
       elem.mozRequestFullScreen()
-    } else if (elem.webkitRequestFullscreen) {
+    } else if (
+      // @ts-expect-error
+      elem.webkitRequestFullscreen
+    ) {
       /* Chrome, Safari & Opera */
+      // @ts-expect-error
       elem.webkitRequestFullscreen()
-    } else if (elem.msRequestFullscreen) {
+    } else if (
+      // @ts-expect-error
+      elem.msRequestFullscreen
+    ) {
       /* IE/Edge */
+      // @ts-expect-error
       elem.msRequestFullscreen()
     }
   } else {
     // If in fullscreen, exit it
     if (document.exitFullscreen) {
       document.exitFullscreen()
-    } else if (document.mozCancelFullScreen) {
+    } else if (
+      // @ts-expect-error
+      document.mozCancelFullScreen
+    ) {
       /* Firefox */
+      // @ts-expect-error
       document.mozCancelFullScreen()
-    } else if (document.webkitExitFullscreen) {
+    } else if (
+      // @ts-expect-error
+      document.webkitExitFullscreen
+    ) {
       /* Chrome, Safari and Opera */
+      // @ts-expect-error
       document.webkitExitFullscreen()
-    } else if (document.msExitFullscreen) {
+    } else if (
+      // @ts-expect-error
+      document.msExitFullscreen
+    ) {
       /* IE/Edge */
+      // @ts-expect-error
       document.msExitFullscreen()
     }
   }
