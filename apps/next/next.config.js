@@ -5,7 +5,7 @@ const { withExpo } = require('@expo/next-adapter')
 const plugins = [
   withExpo,
   withTamagui({
-    config: '../../packages/demo-ui/src/tamagui.config.ts',
+    config: 'tamagui.config.ts',
     components: ['tamagui', '@react-native-templates/demo-ui'],
     outputCSS: process.env.NODE_ENV === 'production' ? './public/tamagui.css' : null
   }),

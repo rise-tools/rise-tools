@@ -1,4 +1,3 @@
-import { config } from '@react-native-templates/demo-ui'
 import NextDocument, {
   DocumentContext,
   DocumentInitialProps,
@@ -9,6 +8,7 @@ import NextDocument, {
 } from 'next/document'
 import { Children } from 'react'
 import { AppRegistry } from 'react-native'
+import config from 'tamagui.config'
 
 export default class Document extends NextDocument {
   static async getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
