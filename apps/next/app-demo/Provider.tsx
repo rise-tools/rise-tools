@@ -1,7 +1,7 @@
 import { NextThemeProvider, useRootTheme } from '@tamagui/next-theme'
 import React from 'react'
 import { PortalProvider, TamaguiProvider } from 'tamagui'
-import { config } from '@react-native-templates/demo-ui'
+import config from 'tamagui.config'
 
 export const Provider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useRootTheme()
@@ -14,9 +14,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       }}
     >
       <TamaguiProvider config={config} defaultTheme={theme}>
-        <PortalProvider shouldAddRootHost>
-          {children}
-        </PortalProvider>
+        <PortalProvider shouldAddRootHost>{children}</PortalProvider>
       </TamaguiProvider>
     </NextThemeProvider>
   )

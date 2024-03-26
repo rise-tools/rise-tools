@@ -11,6 +11,10 @@ import { AppRegistry } from 'react-native'
 import config from 'tamagui.config'
 
 export default class Document extends NextDocument {
+  /**
+   * Configured as per:
+   * https://tamagui.dev/docs/guides/next-js#pages_documenttsx
+   */
   static async getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
     AppRegistry.registerComponent('Main', () => Main)
     const page = await ctx.renderPage()
@@ -18,10 +22,6 @@ export default class Document extends NextDocument {
     // @ts-ignore
     const { getStyleElement } = AppRegistry.getApplication('Main')
 
-    /**
-     * Note: be sure to keep tamagui styles after react-native-web styles like it is here!
-     * So Tamagui styles can override the react-native-web styles.
-     */
     const styles = [
       getStyleElement(),
       <style
