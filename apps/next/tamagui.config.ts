@@ -6,4 +6,5 @@ declare module 'tamagui' {
   interface TamaguiCustomConfig extends Conf {}
 }
 
+// TBD: do not use demo-ui Tamagui configuration, but prefer custom one unless rendering demo-ui (which is not the case)
 export default config
