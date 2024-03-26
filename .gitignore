@@ -76,7 +76,7 @@ android/keystores/debug.keystore
 ./public/tamagui.css
 
 # Generated
-**/lib
+# **/lib
 **/dist
 *.tsbuildinfo
 .tamagui

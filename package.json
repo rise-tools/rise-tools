@@ -20,7 +20,7 @@
     "marketing": "yarn build && cd apps/rise-marketing && yarn dev",
     "convert-videos": "cd apps/server && yarn convert-videos",
     "postinstall": "yarn check-deps",
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspaces --if-present",
     "web": "yarn build && cd apps/next && yarn next",
     "web:prod": "yarn workspace next-app build",
     "web:prod:serve": "yarn workspace next-app serve",

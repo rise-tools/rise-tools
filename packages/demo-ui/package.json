@@ -3,11 +3,8 @@
   "description": "",
   "version": "0.0.1",
   "license": "Apache-2.0",
-  "main": "lib/commonjs/index",
-  "module": "lib/module/index",
-  "types": "lib/typescript/index.d.ts",
-  "react-native": "src/index",
-  "source": "src/index",
+  "main": "lib",
+  "react-native": "src",
   "files": [
     "src",
     "lib",
@@ -29,10 +26,6 @@
     "url": "https://github.com/ericvicenti/react-native-templates/issues"
   },
   "homepage": "https://github.com/ericvicenti/react-native-templates#readme",
-  "scripts": {
-    "build": "bob build",
-    "clean": "del-cli lib"
-  },
   "dependencies": {
     "@tamagui/animations-react-native": "1.91.4",
     "@tamagui/font-inter": "1.91.4",
@@ -51,14 +44,5 @@
   },
   "peerDependencies": {
     "react": "^18.2.0"
-  },
-  "react-native-builder-bob": {
-    "source": "src",
-    "output": "lib",
-    "targets": [
-      "commonjs",
-      "module",
-      "typescript"
-    ]
   }
 }
