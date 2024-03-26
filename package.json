@@ -80,6 +80,5 @@
         "preset": "angular"
       }
     }
-  },
-  "packageManager": "npm@10.2.4"
+  }
 }
