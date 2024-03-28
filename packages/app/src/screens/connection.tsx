@@ -1,12 +1,25 @@
-import { Template } from '@react-native-templates/core'
 import { useDataSource } from '@react-native-templates/app/src/data-sources'
 import { demoComponents } from '@react-native-templates/app/src/index'
 import { Connection, useConnection } from '@react-native-templates/app/src/provider/storage'
+import { Template } from '@react-native-templates/core'
+import { Stack } from 'expo-router'
 import React from 'react'
 import { createParam } from 'solito'
 import { useRouter } from 'solito/router'
 
 import { NotFoundScreen } from './not-found'
+
+export function Screen(props: { title: string }) {
+  return <Stack.Screen options={{ title: props.title }} />
+}
+
+const components = {
+  ...demoComponents,
+  Screen: {
+    component: Screen,
+    validate: (props) => props,
+  },
+}
 
 const { useParam, useParams } = createParam<{ id: string; path: string }>()
 
@@ -37,7 +50,7 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   return (
     <Template
       // @ts-ignore
-      components={demoComponents}
+      components={components}
       dataSource={dataSource}
       // @ts-ignore
       onEvent={dataSource.sendEvent}
