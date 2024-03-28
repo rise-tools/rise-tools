@@ -1,11 +1,12 @@
-import React, { type Dispatch, type SetStateAction, useEffect, useRef, useState } from 'react'
+import React, {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react'
 import { Text } from 'react-native'
-import { useSyncExternalStore } from 'use-sync-external-store/shim'
-
-export type ComponentDefinition<ComponentProps extends {}> = {
-  component: React.ComponentType<ComponentProps>
-  validator?: (input: any) => ComponentProps | undefined
-}
 
 export type Store<V = unknown> = {
   get: () => V
@@ -21,30 +22,46 @@ export function useStore(store: Store) {
   return useSyncExternalStore(store.subscribe, store.get)
 }
 
-export type ComponentDataState = {
-  key: string
-  $: 'component'
-  component: string
-  children: DataState[]
-  props: PropsState
+/** Data */
+type DataState = ComponentDataState | ReferencedDataState
+enum DataStateType {
+  Component = 'component',
+  Ref = 'ref',
+}
+function isDataState(value: any): value is DataState {
+  return value && typeof value === 'object' && '$' in value
 }
 
-type RefLookup = string | [string, ...(string | number)[]]
-export type ReferencedDataState = {
+/** Components */
+type ComponentRegistry = Record<ComponentIdentifier, ComponentDefinition>
+type ComponentIdentifier = string
+type ComponentDefinition<Props extends ComponentProps = ComponentProps> = {
+  component: React.ComponentType<
+    React.PropsWithChildren<object> & {
+      onTemplateEvent: (name: string, payload: any) => void
+    }
+  >
+  validator?: (input: Props) => Props
+}
+
+type ComponentProp = ComponentProp[] | string | boolean | DataState | null | undefined
+type ComponentProps = Record<string, ComponentProp>
+type ComponentDataState = {
+  $: DataStateType.Component
   key: string
-  $: 'ref'
+  component: ComponentIdentifier
+  children: ComponentProp
+  props: ComponentProps
+}
+
+/** Refs */
+type RefsRecord = Record<string, PropDataState | null>
+type RefLookup = string | [string, ...(string | number)[]]
+type ReferencedDataState = {
+  key: string
+  $: DataStateType.Ref
   ref: RefLookup
 }
-// export type DataState =
-//   | ComponentDataState
-//   | ReferencedDataState
-//   | string
-//   | number
-//   | Record<string, DataState>;
-export type DataState = any
-export type PropDataState = DataState | { key: string | number; $?: undefined }
-export type PropsState = Record<string, PropDataState | PropDataState[]>
-export type RefsRecord = Record<string, PropDataState | null>
 
 function extractRefValue(dataValues: Record<string, DataState | null>, ref: RefLookup) {
   if (typeof ref === 'string') return dataValues[ref]
@@ -89,7 +106,7 @@ function findAllRefs(rootNodeState: DataState, refValues: RefsRecord): Set<strin
         state.children.forEach(searchRefs)
       }
       if (state.props) {
-        Object.entries(state.props).forEach(([_key, value]) => {
+        Object.entries(state.props).forEach(([, value]) => {
           searchRefs(value)
         })
       }
@@ -197,7 +214,12 @@ export function Template({
   onEvent,
   ...props
 }: {
+<<<<<<< HEAD
   components: Record<string, ComponentDefinition<{}>>
+=======
+  components: ComponentRegistry
+  errorComponent: React.ReactNode
+>>>>>>> a1275d9 (chore: rework template package)
   dataSource: DataSource
   onEvent: (key: string, name: string, payload: any) => void
   path: string
@@ -214,114 +236,74 @@ export function Template({
   function renderComponent(stateNode: ComponentDataState, path: string) {
     const componentDefinition = components[stateNode.component]
     if (!componentDefinition) {
-      return (
-        <Text key={path}>
-          Unknown component: {stateNode.component} {Object.keys(components).join(',')}
-        </Text>
-      )
+      throw new RenderError(`Unknown component: ${stateNode.component}`)
     }
+
+    // tbd: validate `components` prop once with `zod` instead of later render stage
     const Component = componentDefinition.component
-    if (!Component) return <Text key={path}>Invalid Component "{stateNode.component}"</Text>
-
-    let componentProps = {}
-
-    if (stateNode.props) {
-      componentProps = Object.fromEntries(
-        Object.entries(stateNode.props).map(([propKey, propValue]) => {
-          let outputValue: unknown = propValue
-          if (
-            propValue &&
-            !Array.isArray(propValue) &&
-            typeof propValue === 'object' &&
-            propValue.$ === 'component'
-          ) {
-            outputValue = renderProp(propValue, `${path}.$props.${propKey}`)
-          }
-          return [propKey, outputValue]
-        })
-      )
+    if (!Component) {
+      throw new RenderError(`Invalid component: ${stateNode.component}`)
     }
-    const [errors, finalProps] = validateProps(componentProps, componentDefinition.validator) as [
-      unknown,
-      PropsState,
-    ]
-    if (errors) {
-      return <Text key={path}>Invalid props: {JSON.stringify(errors)}</Text>
-    }
-    const children = stateNode.children ? renderElements(stateNode.children, path) : null
+
+    const componentProps =
+      typeof componentDefinition.validator === 'function'
+        ? componentDefinition.validator(stateNode.props)
+        : stateNode.props
+
+    const props = Object.fromEntries(
+      Object.entries(componentProps).map(([propKey, propValue]) => {
+        return [propKey, render(propValue, `${path}.$props.${propKey}`)]
+      })
+    )
+
+    const children = stateNode.children ? render(stateNode.children, path) : null
     return (
       <Component
         key={path}
-        {...finalProps}
-        // @ts-expect-error
+        {...props}
         children={children}
         onTemplateEvent={(name: string, payload: any) => onEvent(path, name, payload)}
       />
     )
   }
 
-  function renderProp(stateNode: PropDataState, path: string) {
-    if (typeof stateNode === 'string') {
+  function render(stateNode: ComponentProp, path: string): React.ReactNode {
+    if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
-    if (typeof stateNode === 'number') {
-      return stateNode
+    if (Array.isArray(stateNode)) {
+      return stateNode.map((item, index) => {
+        const childKey = isDataState(item) ? item.key : String(index)
+        const childPath = path === '' ? childKey : `${path}.${childKey}`
+        return render(item, childPath)
+      })
     }
-    if (typeof stateNode !== 'object') {
-      return null
+    if (stateNode.$ === DataStateType.Component) {
+      return <ErrorBoundary>{renderComponent(stateNode, path)}</ErrorBoundary>
     }
-    if (!stateNode) {
-      return null
-    }
-    if (stateNode.$ === 'component') return renderComponent(stateNode, path)
-    return stateNode
-  }
-
-  function renderElement(stateNode: DataState, path: string) {
-    if (typeof stateNode === 'string') {
-      return stateNode
-    }
-    if (typeof stateNode === 'number') {
-      return <Text key={path}>{stateNode}</Text>
-    }
-    if (stateNode?.$ === 'component') {
-      return renderComponent(stateNode, path)
-    }
-    return <Text key={path}>Unknown: {JSON.stringify(stateNode)}</Text>
-  }
-
-  function renderElements(children: DataState | DataState[], path: string) {
-    if (!children) return null
-    if (!Array.isArray(children)) {
-      return renderElement(children, path)
-    }
-    return children.map((child, index) => {
-      const childKey = (child && typeof child === 'object' ? child.key : null) || String(index)
-      const childPath = path === '' ? childKey : `${path}.${childKey}`
-      return renderElement(child, childPath)
-    })
+    // tbd: what to do with ref
+    throw new Error('ref is not supported as a prop yet.')
   }
 
   const rootNodeState = resolveRef(dataValues, props.path)
-  return <>{renderElements(rootNodeState, props.path)}</>
+  return <>{render(rootNodeState, props.path)}</>
 }
 
-type ValidationErrors = any
+/** Error boundary */
+class RenderError extends Error {}
+class ErrorBoundary extends React.Component<
+  React.PropsWithChildren<object>,
+  { error: RenderError | null }
+> {
+  static getDerivedStateFromError(error: RenderError) {
+    return { error }
+  }
 
-function validateProps<Value>(
-  input: any,
-  validator?: (input: any) => Value | undefined
-): [ValidationErrors | null, Value | undefined] {
-  if (!validator) return [null, input]
-  try {
-    const value = validator(input)
-    return [null, value]
-  } catch (e) {
-    console.log(e)
-    return [
-      // @ts-expect-error
-      e.errors,
-      undefined,
-    ]
+  render() {
+    if (this.state.error) {
+      return <Text>Render error: {this.state.error.message}</Text>
+    }
+
+    return this.props.children
   }
 }
