@@ -26,13 +26,9 @@
     "url": "https://github.com/ericvicenti/react-native-templates/issues"
   },
   "homepage": "https://github.com/ericvicenti/react-native-templates#readme",
-  "dependencies": {
-    "use-sync-external-store": "^1.2.0"
-  },
   "devDependencies": {
     "@types/react": "^18.0.27",
     "@types/react-native": "^0.71.3",
-    "@types/use-sync-external-store": "^0.0.6",
     "react": "^18.2.0",
     "react-native": "^0.73.5"
   },
