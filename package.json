@@ -31,8 +31,10 @@
     "build-ios-preview": "cd apps/rise-mobile; eas build -p ios -e preview",
     "build-ios-production": "cd apps/rise-mobile; eas build -p ios -e production --auto-submit",
     "server": "yarn workspace @react-native-templates/rise-server start:dev",
+    "server-demo": "yarn workspace @react-native-templates/rise-server start:demo",
     "test": "jest",
-    "release": "release-it"
+    "release": "release-it",
+    "marketing": "cd apps/rise-marketing && yarn start"
   },
   "devDependencies": {
     "@babel/runtime": "^7.18.9",
