@@ -11,5 +11,11 @@
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
     "jsx": "react"
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "__tests__",
+    "*.test.tsx",
+    "*.test.ts"
+  ]
 }

@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should accept component as a prop 1`] = `
+<DocumentFragment>
+  <section>
+    <header>
+      <div
+        data-testid="$heading.$props.$header"
+      >
+        Header text
+      </div>
+    </header>
+    <footer>
+      <div
+        data-testid="$heading.$props.$footer"
+      >
+        Footer text
+      </div>
+    </footer>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`should render a component 1`] = `
+<div
+  data-testid="$root"
+  height="50"
+/>
+`;
+
+exports[`should render a component with children of different types 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="$heading"
+  >
+    Hello
+    <div
+      data-testid="$heading.$nested"
+    >
+      world!
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`should render an array of components 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="$heading"
+  >
+    Heading
+  </div>
+  <div
+    data-testid="$paragraph"
+  >
+    Hello, world!
+  </div>
+</DocumentFragment>
+`;
