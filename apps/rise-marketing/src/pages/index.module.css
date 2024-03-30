@@ -8,6 +8,35 @@
   text-align: center;
   position: relative;
   overflow: hidden;
+  background-image: url(/img/pexels-mohan-reddy-bg.jpg);
+}
+.header {
+  display: flex;
+  justify-content: center;
+}
+.appIcon {
+  width: 280px;
+}
+
+.headerContainer {
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title {
+  text-align: left;
+  font-size: 4rem;
+  margin: 0;
+  padding: 0;
+}
+
+.subtitle {
+  text-align: left;
+  font-size: 2rem;
+  margin: 0;
+  padding: 0;
 }
 
 @media screen and (max-width: 996px) {
@@ -16,8 +45,13 @@
   }
 }
 
-.buttons {
+.installButtons {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.installBadge {
+  height: 47px;
 }
