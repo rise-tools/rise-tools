@@ -78,10 +78,10 @@ exports[`should use component key when provided 1`] = `
     data-testid="$root[0]"
   >
     <div
-      data-testid="$myCustomKey"
+      data-testid="myCustomKey"
     >
       <div
-        data-testid="$myCustomKey.children"
+        data-testid="myCustomKey.children"
       >
         Hello, world!
       </div>
