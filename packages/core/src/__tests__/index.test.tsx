@@ -98,7 +98,6 @@ it('should accept component as a prop', () => {
     <BaseTemplate
       components={{
         ...BUILT_IN_COMPONENTS,
-        // @ts-ignore figure why this type does not work
         Header,
       }}
       dataState={[

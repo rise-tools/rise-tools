@@ -19,14 +19,12 @@ export enum DataStateType {
 
 /** Components */
 type ComponentIdentifier = string
-export type ComponentRegistry = Record<ComponentIdentifier, ComponentDefinition>
-export type ComponentDefinition<Props extends object = object> = {
-  component: React.ComponentType<
-    {
-      onTemplateEvent: (name: string, payload: any) => void
-      children: ReactNode
-    } & Props
-  >
+type BaseComponentProps = React.PropsWithChildren<{
+  onTemplateEvent: (name: string, payload: any) => void
+}>
+export type ComponentRegistry = Record<ComponentIdentifier, ComponentDefinition<any>>
+export type ComponentDefinition<Props> = {
+  component: React.ComponentType<BaseComponentProps & Props>
   validator?: (input?: ComponentProps) => void
 }
 
@@ -75,17 +73,15 @@ export function BaseTemplate({
 
     const children = stateNode.children ? render(stateNode.children, key) : null
 
-    return (
-      <Component
-        data-testId={key}
-        // tbd: should key be nested with parent, or should it equal to stateNode.key?
-        // I guess we use it for communication with the parent, but also react rendering
-        key={key}
-        children={children}
-        {...props}
-        onTemplateEvent={(name, payload) => onEvent(key, name, payload)}
-      />
-    )
+    // workaround for https://github.com/microsoft/TypeScript/issues/17867
+    const baseProps: BaseComponentProps = {
+      children,
+      onTemplateEvent(name, payload) {
+        onEvent(key, name, payload)
+      },
+    }
+
+    return <Component data-testId={key} key={key} {...props} {...baseProps} />
   }
 
   function render(stateNode: ComponentProp, parentKey?: string): React.ReactNode {
