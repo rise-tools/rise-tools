@@ -33,7 +33,7 @@ type ComponentProp = ComponentProp[] | string | number | boolean | DataState | n
 type ComponentProps = Record<string, ComponentProp>
 type ComponentDataState = {
   $: DataStateType.Component
-  key: string
+  key?: string
   component: ComponentIdentifier
   children?: ComponentProp
   props?: ComponentProps
@@ -68,11 +68,11 @@ export function BaseTemplate({
 
     const props = Object.fromEntries(
       Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
-        return [propKey, render(propValue, `${key}.$props`)]
+        return [propKey, render(propValue, `${key}.props['${propKey}']`)]
       })
     )
 
-    const children = stateNode.children ? render(stateNode.children, key) : null
+    const children = stateNode.children ? render(stateNode.children, `${key}.children`) : null
 
     // workaround for https://github.com/microsoft/TypeScript/issues/17867
     const baseProps: BaseComponentProps = {
@@ -82,28 +82,24 @@ export function BaseTemplate({
       },
     }
 
-    return <Component data-testId={key} key={key} {...props} {...baseProps} />
+    return <Component data-testid={key} key={key} {...props} {...baseProps} />
   }
 
-  function render(stateNode: ComponentProp, parentKey?: string): React.ReactNode {
+  function render(stateNode: ComponentProp, parentKey: string): React.ReactNode {
     if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
     if (Array.isArray(stateNode)) {
-      return stateNode.map((item) => render(item, parentKey))
+      return stateNode.map((item, index) => render(item, `${parentKey}[${index}]`))
     }
     if (stateNode.$ === DataStateType.Component) {
-      return (
-        <ErrorBoundary>
-          {renderComponent(stateNode, parentKey ? `${parentKey}.${stateNode.key}` : stateNode.key)}
-        </ErrorBoundary>
-      )
+      return <ErrorBoundary>{renderComponent(stateNode, stateNode.key || parentKey)}</ErrorBoundary>
     }
     // tbd: what to do with ref
     throw new Error('ref is not supported as a prop yet.')
   }
 
-  return <>{render(dataState)}</>
+  return <>{render(dataState, '$root')}</>
 }
 
 /** Error boundary */

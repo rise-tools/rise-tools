@@ -5,14 +5,14 @@ exports[`should accept component as a prop 1`] = `
   <section>
     <header>
       <div
-        data-testid="$heading.$props.$header"
+        data-testid="$root.props['header']"
       >
         Header text
       </div>
     </header>
     <footer>
       <div
-        data-testid="$heading.$props.$footer"
+        data-testid="$root.props['paragraph']"
       >
         Footer text
       </div>
@@ -31,13 +31,27 @@ exports[`should render a component 1`] = `
 exports[`should render a component with children of different types 1`] = `
 <DocumentFragment>
   <div
-    data-testid="$heading"
+    data-testid="$root"
   >
     Hello
     <div
-      data-testid="$heading.$nested"
+      data-testid="$root.children[1]"
     >
       world!
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`should render a component with single children 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="$root"
+  >
+    <div
+      data-testid="$root.children"
+    >
+      Hello, world!
     </div>
   </div>
 </DocumentFragment>
@@ -46,14 +60,32 @@ exports[`should render a component with children of different types 1`] = `
 exports[`should render an array of components 1`] = `
 <DocumentFragment>
   <div
-    data-testid="$heading"
+    data-testid="$root[0]"
   >
     Heading
   </div>
   <div
-    data-testid="$paragraph"
+    data-testid="$root[1]"
   >
     Hello, world!
+  </div>
+</DocumentFragment>
+`;
+
+exports[`should use component key when provided 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="$root[0]"
+  >
+    <div
+      data-testid="$myCustomKey"
+    >
+      <div
+        data-testid="$myCustomKey.children"
+      >
+        Hello, world!
+      </div>
+    </div>
   </div>
 </DocumentFragment>
 `;
