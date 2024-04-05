@@ -65,7 +65,7 @@ it('should use component key when provided', () => {
           children: {
             $: DataStateType.Component,
             component: 'View',
-            key: '$myCustomKey',
+            key: 'myCustomKey',
             children: {
               $: DataStateType.Component,
               component: 'View',
