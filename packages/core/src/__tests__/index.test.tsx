@@ -19,7 +19,6 @@ it('should render a component', () => {
       components={BUILT_IN_COMPONENTS}
       dataState={{
         $: DataStateType.Component,
-        key: '$root',
         component: 'View',
         props: {
           height: 50,
@@ -39,13 +38,11 @@ it('should render an array of components', () => {
       dataState={[
         {
           $: DataStateType.Component,
-          key: '$heading',
           component: 'View',
           children: 'Heading',
         },
         {
           $: DataStateType.Component,
-          key: '$paragraph',
           component: 'View',
           children: 'Hello, world!',
         },
@@ -57,26 +54,69 @@ it('should render an array of components', () => {
   expect(component.asFragment()).toMatchSnapshot()
 })
 
-it('should render a component with children of different types', () => {
+it('should use component key when provided', () => {
   const component = render(
     <BaseTemplate
       components={BUILT_IN_COMPONENTS}
       dataState={[
         {
           $: DataStateType.Component,
-          key: '$heading',
           component: 'View',
-          children: [
-            'Hello',
-            {
+          children: {
+            $: DataStateType.Component,
+            component: 'View',
+            key: '$myCustomKey',
+            children: {
               $: DataStateType.Component,
-              key: '$nested',
               component: 'View',
-              children: 'world!',
+              children: 'Hello, world!',
             },
-          ],
+          },
         },
       ]}
+      onEvent={jest.fn()}
+    />
+  )
+
+  expect(component.asFragment()).toMatchSnapshot()
+})
+
+it('should render a component with single children', () => {
+  const component = render(
+    <BaseTemplate
+      components={BUILT_IN_COMPONENTS}
+      dataState={{
+        $: DataStateType.Component,
+        component: 'View',
+        children: {
+          $: DataStateType.Component,
+          component: 'View',
+          children: 'Hello, world!',
+        },
+      }}
+      onEvent={jest.fn()}
+    />
+  )
+
+  expect(component.asFragment()).toMatchSnapshot()
+})
+
+it('should render a component with children of different types', () => {
+  const component = render(
+    <BaseTemplate
+      components={BUILT_IN_COMPONENTS}
+      dataState={{
+        $: DataStateType.Component,
+        component: 'View',
+        children: [
+          'Hello',
+          {
+            $: DataStateType.Component,
+            component: 'View',
+            children: 'world!',
+          },
+        ],
+      }}
       onEvent={jest.fn()}
     />
   )
@@ -100,27 +140,22 @@ it('should accept component as a prop', () => {
         ...BUILT_IN_COMPONENTS,
         Header,
       }}
-      dataState={[
-        {
-          $: DataStateType.Component,
-          key: '$heading',
-          component: 'Header',
-          props: {
-            header: {
-              $: DataStateType.Component,
-              key: '$header',
-              component: 'View',
-              children: 'Header text',
-            },
-            paragraph: {
-              $: DataStateType.Component,
-              key: '$footer',
-              component: 'View',
-              children: 'Footer text',
-            },
+      dataState={{
+        $: DataStateType.Component,
+        component: 'Header',
+        props: {
+          header: {
+            $: DataStateType.Component,
+            component: 'View',
+            children: 'Header text',
+          },
+          paragraph: {
+            $: DataStateType.Component,
+            component: 'View',
+            children: 'Footer text',
           },
         },
-      ]}
+      }}
       onEvent={jest.fn()}
     />
   )
