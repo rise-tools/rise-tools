@@ -243,9 +243,9 @@ it('should accept component as a prop', () => {
 
 it('should accept object as a prop', () => {
   const Header: ComponentDefinition<{ user: { name: string } }> = {
-    component: (props) => (
-      <section>
-        <header>{props.user.name}</header>
+    component: ({ user, ...props }) => (
+      <section {...props}>
+        <header>{user.name}</header>
       </section>
     ),
   }
@@ -270,11 +270,13 @@ it('should accept object as a prop', () => {
 
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
-      <section>
+      <section
+        data-testid="root"
+      >
         <header>
           Mike
         </header>
       </section>
     </DocumentFragment>
-  `)
+`)
 })
