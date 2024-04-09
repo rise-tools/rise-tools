@@ -66,7 +66,8 @@
     ]
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "prettierPath": null
   },
   "release-it": {
     "git": {

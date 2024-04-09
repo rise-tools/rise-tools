@@ -28,7 +28,12 @@ it('should render a component', () => {
     />
   )
 
-  expect(component.getByTestId('$root')).toMatchSnapshot()
+  expect(component.getByTestId('root')).toMatchInlineSnapshot(`
+    <div
+      data-testid="root"
+      height="50"
+    />
+  `)
 })
 
 it('should render an array of components', () => {
@@ -51,7 +56,20 @@ it('should render an array of components', () => {
     />
   )
 
-  expect(component.asFragment()).toMatchSnapshot()
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        data-testid="root[0]"
+      >
+        Heading
+      </div>
+      <div
+        data-testid="root[1]"
+      >
+        Hello, world!
+      </div>
+    </DocumentFragment>
+  `)
 })
 
 it('should use component key when provided', () => {
@@ -78,7 +96,23 @@ it('should use component key when provided', () => {
     />
   )
 
-  expect(component.asFragment()).toMatchSnapshot()
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        data-testid="root[0]"
+      >
+        <div
+          data-testid="myCustomKey"
+        >
+          <div
+            data-testid="myCustomKey.children"
+          >
+            Hello, world!
+          </div>
+        </div>
+      </div>
+    </DocumentFragment>
+  `)
 })
 
 it('should render a component with single children', () => {
@@ -98,7 +132,19 @@ it('should render a component with single children', () => {
     />
   )
 
-  expect(component.asFragment()).toMatchSnapshot()
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        data-testid="root"
+      >
+        <div
+          data-testid="root.children"
+        >
+          Hello, world!
+        </div>
+      </div>
+    </DocumentFragment>
+  `)
 })
 
 it('should render a component with children of different types', () => {
@@ -121,7 +167,20 @@ it('should render a component with children of different types', () => {
     />
   )
 
-  expect(component.asFragment()).toMatchSnapshot()
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        data-testid="root"
+      >
+        Hello
+        <div
+          data-testid="root.children[1]"
+        >
+          world!
+        </div>
+      </div>
+    </DocumentFragment>
+  `)
 })
 
 it('should accept component as a prop', () => {
@@ -160,5 +219,62 @@ it('should accept component as a prop', () => {
     />
   )
 
-  expect(component.asFragment()).toMatchSnapshot()
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <section>
+        <header>
+          <div
+            data-testid="root.props['header']"
+          >
+            Header text
+          </div>
+        </header>
+        <footer>
+          <div
+            data-testid="root.props['paragraph']"
+          >
+            Footer text
+          </div>
+        </footer>
+      </section>
+    </DocumentFragment>
+  `)
+})
+
+it('should accept object as a prop', () => {
+  const Header: ComponentDefinition<{ user: { name: string } }> = {
+    component: (props) => (
+      <section>
+        <header>{props.user.name}</header>
+      </section>
+    ),
+  }
+
+  const component = render(
+    <BaseTemplate
+      components={{
+        Header,
+      }}
+      dataState={{
+        $: DataStateType.Component,
+        component: 'Header',
+        props: {
+          user: {
+            name: 'Mike',
+          },
+        },
+      }}
+      onEvent={jest.fn()}
+    />
+  )
+
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <section>
+        <header>
+          Mike
+        </header>
+      </section>
+    </DocumentFragment>
+  `)
 })

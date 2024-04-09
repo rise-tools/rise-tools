@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React from 'react'
 
 export type Store<V = unknown> = {
   get: () => V
@@ -7,14 +7,6 @@ export type Store<V = unknown> = {
 
 export type DataSource = {
   get: (key: string) => Store
-}
-
-/** Data */
-type DataState = ComponentDataState
-// | ReferencedDataState
-export enum DataStateType {
-  Component = 'component',
-  Ref = 'ref',
 }
 
 /** Components */
@@ -28,9 +20,13 @@ export type ComponentDefinition<Props> = {
   validator?: (input?: ComponentProps) => void
 }
 
-// tbd: we should allow objects as props too
-type ComponentProp = ComponentProp[] | string | number | boolean | DataState | null | undefined
-type ComponentProps = Record<string, ComponentProp>
+/** Data state */
+type DataState = ComponentDataState | ReferencedDataState
+export enum DataStateType {
+  Component = 'component',
+  Ref = 'ref',
+}
+
 type ComponentDataState = {
   $: DataStateType.Component
   key?: string
@@ -38,6 +34,28 @@ type ComponentDataState = {
   children?: ComponentProp
   props?: ComponentProps
 }
+type ReferencedDataState = {
+  $: DataStateType.Ref
+}
+function isDataState(obj: any): obj is DataState {
+  return (
+    typeof obj === 'object' &&
+    '$' in obj &&
+    (obj.$ === DataStateType.Component || obj.$ === DataStateType.Ref)
+  )
+}
+
+/* Props */
+type ComponentProps = Record<string, ComponentProp>
+type ComponentProp =
+  | ComponentProp[]
+  | DataState
+  | object
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
 
 // tbd: needs a better name
 export function BaseTemplate({
@@ -68,7 +86,7 @@ export function BaseTemplate({
 
     const props = Object.fromEntries(
       Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
-        return [propKey, render(propValue, `${key}.props['${propKey}']`)]
+        return [propKey, renderProp(propValue, `${key}.props['${propKey}']`)]
       })
     )
 
@@ -92,6 +110,9 @@ export function BaseTemplate({
     if (Array.isArray(stateNode)) {
       return stateNode.map((item, index) => render(item, `${parentKey}[${index}]`))
     }
+    if (!isDataState(stateNode)) {
+      throw new Error('Objects are not valid as a React child.')
+    }
     if (stateNode.$ === DataStateType.Component) {
       return <ErrorBoundary>{renderComponent(stateNode, stateNode.key || parentKey)}</ErrorBoundary>
     }
@@ -99,7 +120,17 @@ export function BaseTemplate({
     throw new Error('ref is not supported as a prop yet.')
   }
 
-  return <>{render(dataState, '$root')}</>
+  function renderProp(stateNode: ComponentProp, parentKey: string): ComponentProp {
+    if (Array.isArray(stateNode)) {
+      return stateNode.map((item, index) => renderProp(item, `${parentKey}[${index}]`))
+    }
+    if (isDataState(stateNode)) {
+      return render(stateNode, parentKey)
+    }
+    return stateNode
+  }
+
+  return <>{render(dataState, 'root')}</>
 }
 
 /** Error boundary */
