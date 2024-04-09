@@ -1,61 +1,51 @@
 import React from 'react'
 
-export type Store<V = unknown> = {
-  get: () => V
-  subscribe: (handler: () => void) => () => void
-}
-
-export type DataSource = {
-  get: (key: string) => Store
-}
-
 /** Components */
 type ComponentIdentifier = string
-type BaseComponentProps = React.PropsWithChildren<{
+type ComponentProps = React.PropsWithChildren<{
   onTemplateEvent: (name: string, payload: any) => void
 }>
 export type ComponentRegistry = Record<ComponentIdentifier, ComponentDefinition<any>>
 export type ComponentDefinition<Props> = {
-  component: React.ComponentType<BaseComponentProps & Props>
-  validator?: (input?: ComponentProps) => void
+  component: React.ComponentType<ComponentProps & Props>
+  validator?: (input?: Record<string, DataState>) => void
 }
 
 /** Data state */
-type DataState = ComponentDataState | ReferencedDataState
 export enum DataStateType {
   Component = 'component',
   Ref = 'ref',
 }
-
-type ComponentDataState = {
-  $: DataStateType.Component
-  key?: string
-  component: ComponentIdentifier
-  children?: ComponentProp
-  props?: ComponentProps
-}
-type ReferencedDataState = {
-  $: DataStateType.Ref
-}
-function isDataState(obj: any): obj is DataState {
-  return (
-    typeof obj === 'object' &&
-    '$' in obj &&
-    (obj.$ === DataStateType.Component || obj.$ === DataStateType.Ref)
-  )
-}
-
-/* Props */
-type ComponentProps = Record<string, ComponentProp>
-type ComponentProp =
-  | ComponentProp[]
-  | DataState
+export type DataState =
+  | DataState[]
+  | ComponentDataState
+  | ReferencedDataState
   | object
   | string
   | number
   | boolean
   | null
   | undefined
+
+type ComponentDataState = {
+  $: DataStateType.Component
+  key?: string
+  component: ComponentIdentifier
+  children?: DataState
+  props?: Record<string, DataState>
+}
+type ReferencedDataState = {
+  $: DataStateType.Ref
+  ref: string
+}
+
+export function isDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
+  return (
+    typeof obj === 'object' &&
+    '$' in obj &&
+    (obj.$ === DataStateType.Component || obj.$ === DataStateType.Ref)
+  )
+}
 
 // tbd: needs a better name
 export function BaseTemplate({
@@ -92,7 +82,7 @@ export function BaseTemplate({
     const children = stateNode.children ? render(stateNode.children, `${key}.children`) : null
 
     // workaround for https://github.com/microsoft/TypeScript/issues/17867
-    const baseProps: BaseComponentProps = {
+    const baseProps: ComponentProps = {
       children,
       onTemplateEvent(name, payload) {
         onEvent(key, name, payload)
@@ -102,7 +92,7 @@ export function BaseTemplate({
     return <Component data-testid={key} key={key} {...props} {...baseProps} />
   }
 
-  function render(stateNode: ComponentProp, parentKey: string): React.ReactNode {
+  function render(stateNode: DataState, parentKey: string): React.ReactNode {
     if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
@@ -119,7 +109,7 @@ export function BaseTemplate({
     throw new Error('ref is not supported as a prop yet.')
   }
 
-  function renderProp(stateNode: ComponentProp, parentKey: string): ComponentProp {
+  function renderProp(stateNode: DataState, parentKey: string): DataState {
     if (Array.isArray(stateNode)) {
       return stateNode.map((item, index) => renderProp(item, `${parentKey}[${index}]`))
     }
