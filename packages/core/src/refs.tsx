@@ -1,6 +1,12 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
-import { BaseTemplate, ComponentRegistry, DataState, DataStateType, isDataState } from './template'
+import {
+  BaseTemplate,
+  ComponentRegistry,
+  DataState,
+  DataStateType,
+  isCompositeDataState,
+} from './template'
 
 export type Store<V = DataState> = {
   get: () => V
@@ -52,7 +58,7 @@ function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> 
       stateNode.forEach(searchRefs)
       return
     }
-    if (!isDataState(stateNode)) {
+    if (!isCompositeDataState(stateNode)) {
       Object.values(stateNode).forEach(searchRefs)
       return
     }
@@ -136,7 +142,7 @@ function resolveValueRefs(dataValues: DataValues, value: DataState): DataState {
     return value.map((item) => resolveValueRefs(dataValues, item))
   }
   if (typeof value === 'object') {
-    if (isDataState(value) && value.$ === DataStateType.Ref) {
+    if (isCompositeDataState(value) && value.$ === DataStateType.Ref) {
       return resolveRef(dataValues, value.ref)
     }
     return Object.fromEntries(

@@ -40,7 +40,7 @@ type ReferencedDataState = {
   ref: string
 }
 
-export function isDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
+export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
   return (
     typeof obj === 'object' &&
     '$' in obj &&
@@ -101,7 +101,7 @@ export function BaseTemplate({
     if (Array.isArray(stateNode)) {
       return stateNode.map((item, index) => render(item, `${parentKey}[${index}]`))
     }
-    if (!isDataState(stateNode)) {
+    if (!isCompositeDataState(stateNode)) {
       throw new Error('Objects are not valid as a React child.')
     }
     if (stateNode.$ === DataStateType.Component) {
@@ -115,7 +115,7 @@ export function BaseTemplate({
     if (Array.isArray(stateNode)) {
       return stateNode.map((item, index) => renderProp(item, `${parentKey}[${index}]`))
     }
-    if (isDataState(stateNode)) {
+    if (isCompositeDataState(stateNode)) {
       return render(stateNode, parentKey)
     }
     return stateNode
