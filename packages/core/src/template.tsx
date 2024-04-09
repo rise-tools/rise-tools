@@ -5,6 +5,7 @@ type ComponentIdentifier = string
 type ComponentProps = React.PropsWithChildren<{
   onTemplateEvent: (name: string, payload: any) => void
 }>
+
 export type ComponentRegistry = Record<ComponentIdentifier, ComponentDefinition<any>>
 export type ComponentDefinition<Props> = {
   component: React.ComponentType<ComponentProps & Props>
