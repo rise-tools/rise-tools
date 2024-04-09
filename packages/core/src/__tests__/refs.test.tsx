@@ -57,11 +57,11 @@ it('should render a component at path', () => {
       components={BUILT_IN_COMPONENTS}
       dataSource={dataSource}
       onEvent={jest.fn()}
-      path={['mainDataSource', 'children']}
+      path={['mainStore', 'children']}
     />
   )
 
-  expect(getStore).toHaveBeenCalledWith('mainDataSource')
+  expect(getStore).toHaveBeenCalledWith('mainStore')
   expect(component.getByTestId('root')).toMatchInlineSnapshot(`
     <div
       data-testid="root"
