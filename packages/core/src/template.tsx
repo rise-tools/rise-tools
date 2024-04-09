@@ -104,7 +104,7 @@ export function BaseTemplate({
       throw new Error('Objects are not valid as a React child.')
     }
     if (stateNode.$ === DataStateType.Component) {
-      return <ErrorBoundary>{renderComponent(stateNode, stateNode.key || parentKey)}</ErrorBoundary>
+      return renderComponent(stateNode, stateNode.key || parentKey)
     }
     // tbd: what to do with ref
     throw new Error('ref is not supported as a prop yet.')
@@ -120,7 +120,7 @@ export function BaseTemplate({
     return stateNode
   }
 
-  return <>{render(dataState, 'root')}</>
+  return <ErrorBoundary>{render(dataState, 'root')}</ErrorBoundary>
 }
 
 /** Error boundary */

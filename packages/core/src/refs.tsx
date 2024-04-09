@@ -164,13 +164,15 @@ export function Template({
   onEvent,
   path = '',
 }: {
-  path?: string
+  path?: RefLookup
   dataSource: DataSource
   components: ComponentRegistry
   onEvent: (key: string, name: string, payload: any) => void
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
-  const refStateManager = useRef(createRefStateManager(setDataValues, dataSource, path))
+  const refStateManager = useRef(
+    createRefStateManager(setDataValues, dataSource, extractRefKey(path))
+  )
   useEffect(() => {
     const release = refStateManager.current.activate()
     return () => release()
