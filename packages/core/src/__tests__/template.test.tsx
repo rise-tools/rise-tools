@@ -7,9 +7,10 @@ import React from 'react'
 
 import { BaseTemplate, ComponentDefinition, ComponentRegistry, DataStateType } from '../template'
 
-const BUILT_IN_COMPONENTS: ComponentRegistry = {
+export const BUILT_IN_COMPONENTS: ComponentRegistry = {
   View: {
-    component: (props) => <div {...props} />,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    component: ({ onTemplateEvent, ...props }) => <div {...props} />,
   },
 }
 
@@ -243,7 +244,8 @@ it('should accept component as a prop', () => {
 
 it('should accept object as a prop', () => {
   const Header: ComponentDefinition<{ user: { name: string } }> = {
-    component: ({ user, ...props }) => (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    component: ({ user, onTemplateEvent, ...props }) => (
       <section {...props}>
         <header>{user.name}</header>
       </section>
