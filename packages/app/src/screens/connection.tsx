@@ -1,5 +1,4 @@
 import { useDataSource } from '@react-native-templates/app/src/data-sources'
-import { demoComponents } from '@react-native-templates/app/src/index'
 import { Connection, useConnection } from '@react-native-templates/app/src/provider/storage'
 import { Template } from '@react-native-templates/core'
 import { Stack } from 'expo-router'
@@ -7,17 +6,19 @@ import React from 'react'
 import { createParam } from 'solito'
 import { useRouter } from 'solito/router'
 
+import { demoComponents } from '../demoComponents'
 import { NotFoundScreen } from './not-found'
 
 export function Screen(props: { title: string }) {
   return <Stack.Screen options={{ title: props.title }} />
 }
 
+console.log('uh', Object.keys(demoComponents || {}))
 const components = {
   ...demoComponents,
   Screen: {
     component: Screen,
-    validate: (props) => props,
+    validate: (props: any) => props,
   },
 }
 
@@ -43,6 +44,7 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
     }
     if (event.value?.[0] === 'navigate-back') {
       router.back()
+      return true
     }
     return false
   })

@@ -1,6 +1,7 @@
-import { z } from 'zod'
-import { EGVideo } from './eg-video-playback'
 import exp from 'constants'
+import { z } from 'zod'
+
+import { EGVideo } from './eg-video-playback'
 
 export type StateContext = {
   time: number
@@ -30,6 +31,15 @@ const desaturateEffectSchema = z.object({
 })
 export type DesaturateEffect = z.infer<typeof desaturateEffectSchema>
 
+const colorizeEffectSchema = z.object({
+  key: z.string(),
+  type: z.literal('colorize'),
+  amount: z.number(),
+  saturation: z.number(),
+  hue: z.number(),
+})
+export type ColorizeEffect = z.infer<typeof colorizeEffectSchema>
+
 const brightenEffectSchema = z.object({
   key: z.string(),
   type: z.literal('brighten'),
@@ -51,6 +61,13 @@ const hueShiftEffectSchema = z.object({
 })
 export type HueShiftEffect = z.infer<typeof hueShiftEffectSchema>
 
+const rotateEffectSchema = z.object({
+  key: z.string(),
+  type: z.literal('rotate'),
+  value: z.number(), // range from 0-1
+})
+export type RotateEffect = z.infer<typeof rotateEffectSchema>
+
 const invertEffectSchema = z.object({
   key: z.string(),
   type: z.literal('invert'),
@@ -59,10 +76,12 @@ export type InvertEffect = z.infer<typeof invertEffectSchema>
 
 const effectSchema = z.discriminatedUnion('type', [
   desaturateEffectSchema,
+  colorizeEffectSchema,
   invertEffectSchema,
   hueShiftEffectSchema,
   brightenEffectSchema,
   darkenEffectSchema,
+  rotateEffectSchema,
 ])
 export type Effect = z.infer<typeof effectSchema>
 
@@ -97,25 +116,27 @@ const offMediaSchema = z.object({
 })
 export type OffMedia = z.infer<typeof offMediaSchema>
 
+export type Layer = {
+  key: string
+  media: Media
+  blendMode: 'add' | 'mix' | 'mask'
+  blendAmount: number
+}
+
+const layerSchema: z.ZodType<Layer> = z.object({
+  key: z.string(),
+  media: z.lazy(() => mediaSchema),
+  blendMode: z.enum(['add', 'mix', 'mask']),
+  blendAmount: z.number(),
+})
+
 export type LayersMedia = {
   type: 'layers'
-  layers: {
-    key: string
-    media: Media
-    mixMode: 'add' | 'mix'
-    mixAmount: number
-  }[]
+  layers: Layer[]
 }
 const layersMediaSchema: z.ZodType<LayersMedia> = z.object({
   type: z.literal('layers'),
-  layers: z.array(
-    z.object({
-      key: z.string(),
-      media: z.lazy(() => mediaSchema),
-      mixMode: z.enum(['add', 'mix']),
-      mixAmount: z.number(),
-    })
-  ),
+  layers: z.array(layerSchema),
 })
 
 export type SequenceMedia = {

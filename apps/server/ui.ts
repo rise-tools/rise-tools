@@ -5,6 +5,7 @@ import {
   ColorMedia,
   Effect,
   Effects,
+  Layer,
   LayersMedia,
   MainState,
   Media,
@@ -203,7 +204,7 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
       children: 'Effects',
       props: {
         icon: icon('Sparkles'),
-        onPress: ['navigate', `${mediaPath}-effects`],
+        onPress: ['navigate', `${mediaPath}:effects`],
       },
     },
   ]
@@ -277,11 +278,13 @@ export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | unde
           unselectedLabel: 'Add Effect...',
           value: null,
           options: [
+            { key: 'colorize', label: 'Colorize' },
             { key: 'desaturate', label: 'Desaturate' },
             { key: 'invert', label: 'Invert' },
             { key: 'hueShift', label: 'Hue Shift' },
             { key: 'brighten', label: 'Brighten' },
             { key: 'darken', label: 'Darken' },
+            { key: 'rotate', label: 'Rotate' },
           ],
           onValue: ['updateMedia', mediaLinkPath, 'addEffect'],
         },
@@ -290,13 +293,9 @@ export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | unde
         return {
           key: effect.key,
           label: effect.type,
-          onPress: ['navigate', `${mediaLinkPath}-effects-${effect.key}`],
+          onPress: ['navigate', `${mediaLinkPath}:effects:${effect.key}`],
         }
       }),
-      // items: [
-      //   { key: 'a', label: 'A Hello Test', onPress: ['navigate', 'a'] },
-      //   { key: 'b', label: 'B Hello Test' },
-      // ],
     },
   }
 }
@@ -344,6 +343,76 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
           max: 180,
           min: -180,
           step: 1,
+        },
+      },
+      removeEffect,
+    ])
+  } else if (effect.type === 'colorize') {
+    return section('Colorize', [
+      {
+        $: 'component',
+        key: 'amount',
+        component: 'SliderField',
+        props: {
+          onValue: ['updateEffect', effectPath, 'amount'],
+          label: 'Amount',
+          value: effect.amount,
+          max: 1,
+          min: 0,
+          step: 0.01,
+        },
+      },
+      {
+        $: 'component',
+        key: 'ColorPreview',
+        component: 'View',
+        props: {
+          height: 50,
+          backgroundColor: hslToHex(effect.hue, effect.saturation, 0.5),
+          borderRadius: '$3',
+        },
+      },
+      {
+        $: 'component',
+        key: 'saturation',
+        component: 'SliderField',
+        props: {
+          onValue: ['updateEffect', effectPath, 'saturation'],
+          label: 'Saturation',
+          value: effect.saturation,
+          max: 1,
+          min: 0,
+          step: 0.01,
+        },
+      },
+      {
+        $: 'component',
+        key: 'hue',
+        component: 'SliderField',
+        props: {
+          onValue: ['updateEffect', effectPath, 'hue'],
+          label: 'Hue',
+          value: effect.hue,
+          max: 360,
+          min: 0,
+          step: 1,
+        },
+      },
+      removeEffect,
+    ])
+  } else if (effect.type === 'rotate') {
+    return section('Rotate', [
+      {
+        $: 'component',
+        key: 'value',
+        component: 'SliderField',
+        props: {
+          onValue: ['updateEffect', effectPath, 'value'],
+          label: 'Value',
+          value: effect.value,
+          max: 1,
+          min: 0,
+          step: 0.01,
         },
       },
       removeEffect,
@@ -623,22 +692,114 @@ function getSequenceControls(
   return []
 }
 
-function getLayersControls(mediaLinkPath: string, state: LayersMedia, context: UIContext): UI[] {
-  return []
+function getLayersControls(
+  mediaLinkPath: string,
+  state: LayersMedia,
+  context: UIContext,
+  footer: UI = []
+): UI {
+  return {
+    $: 'component',
+    component: 'SortableList',
+    props: {
+      onReorder: ['updateMedia', mediaLinkPath, 'layerOrder'],
+      footer: {
+        $: 'component',
+        key: 'addLayer',
+        component: 'YStack',
+        children: [
+          {
+            key: 'addLayer',
+            $: 'component',
+            component: 'SelectField',
+            props: {
+              value: null,
+              onValue: ['updateMedia', mediaLinkPath, 'addLayer'],
+              options: newMediaOptions,
+              unselectedLabel: 'Add Layer...',
+            },
+          },
+          ...footer,
+        ],
+      },
+      items: (state.layers || []).map((layer) => {
+        return {
+          key: layer.key,
+          label: layer.media.type,
+          onPress: ['navigate', `${mediaLinkPath}:layer:${layer.key}`],
+        }
+      }),
+    },
+  }
 }
 
-export function getMediaUI(mediaPath: string, mediaState: Media, context: UIContext) {
-  if (mediaState.type === 'color') return scroll(getColorControls(mediaPath, mediaState))
-  if (mediaState.type === 'video') return scroll(getVideoControls(mediaPath, mediaState, context))
+export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UIContext): UI {
+  return getMediaUI(mediaPath, layer.media, context, [
+    section('Layer Controls', [
+      {
+        $: 'component',
+        key: 'blendMode',
+        component: 'SelectField',
+        props: {
+          value: layer.blendMode,
+          label: 'Blend Mode',
+          onValue: ['updateMedia', mediaPath, 'blendMode'],
+          options: [
+            { key: 'mix', label: 'Blend' },
+            { key: 'add', label: 'Add' },
+            { key: 'mask', label: 'Mask' },
+          ],
+        },
+      },
+      {
+        $: 'component',
+        key: 'blendAmount',
+        component: 'SliderField',
+        props: {
+          onValue: ['updateMedia', mediaPath, 'blendAmount'],
+          label: 'Blend Amount',
+          value: layer.blendAmount,
+          max: 1,
+          min: 0,
+          step: 0.01,
+        },
+      },
+      {
+        $: 'component',
+        key: 'removeLayer',
+        component: 'Button',
+        children: 'Remove Layer',
+        props: {
+          onPress: {
+            $: 'multi',
+            events: [['updateMedia', mediaPath, 'removeLayer', layer.key], 'navigate-back'],
+          },
+        },
+      },
+    ]),
+  ])
+}
+
+export function getMediaUI(
+  mediaPath: string,
+  mediaState: Media,
+  context: UIContext,
+  footer: UI[] = []
+): UI {
+  if (mediaState.type === 'color')
+    return scroll([...getColorControls(mediaPath, mediaState), ...footer])
+  if (mediaState.type === 'video')
+    return scroll([...getVideoControls(mediaPath, mediaState, context), ...footer])
   if (mediaState.type === 'sequence')
-    return scroll(getSequenceControls(mediaPath, mediaState, context))
-  if (mediaState.type === 'layers') return scroll(getLayersControls(mediaPath, mediaState, context))
+    return scroll([...getSequenceControls(mediaPath, mediaState, context), ...footer])
+  if (mediaState.type === 'layers') return getLayersControls(mediaPath, mediaState, context, footer)
   return scroll([
     {
       $: 'component',
       component: 'Text',
       children: mediaState.type,
     },
+    ...footer,
   ])
 }
 

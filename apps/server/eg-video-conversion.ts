@@ -1,19 +1,18 @@
-import { readdir, readFile, writeFile, stat } from 'fs-extra'
-import { egStageMap } from './eg'
-import { basename, extname } from 'path'
+import { createHash } from 'crypto'
 import {
   createReadStream,
   createWriteStream,
   existsSync,
-  read,
   statSync,
-  unlink,
   unlinkSync,
   writeFileSync,
 } from 'fs'
-import { createHash } from 'crypto'
+import { readdir, stat } from 'fs-extra'
+import { basename, extname } from 'path'
 import zlib from 'zlib'
-import { DBFile, DBState, readDb, updateDb } from './eg-video'
+
+import { egStageMap } from './eg'
+import { DBFile, readDb, updateDb } from './eg-video'
 
 const args = process.argv.slice(2)
 const sourceDirPath = args[0]
@@ -83,8 +82,8 @@ async function importFile(
       {}
     )
     const dimensions = dimensionsProbeData.toString().trim().split('x').map(Number)
-    const width = dimensions[0]
-    const height = dimensions[1]
+    let width = dimensions[0]
+    let height = dimensions[1]
 
     const durationProbeData = execFileSync(
       ffprobePath,
@@ -103,7 +102,31 @@ async function importFile(
     console.log(`Video duration: ${durationInSeconds} seconds`)
     console.log(`Video dimensions: ${width}x${height}`)
 
-    if (width !== height) throw new Error('Video must be square')
+    let squareFilePath = filePath
+    if (width !== height) {
+      const newDimension = Math.min(width, height)
+      const cropX = (width - newDimension) / 2
+      const cropY = (height - newDimension) / 2
+      squareFilePath = join(outputDir, `${fileSha256}.square.mp4`)
+      console.log('Video is not square, cropping now...')
+      execFileSync(
+        ffmpegPath,
+        [
+          '-i',
+          filePath,
+          '-vf',
+          `crop=${newDimension}:${newDimension}:${cropX}:${cropY}`,
+          '-y', // overwrite
+          '-c:a', // copy audio
+          'copy',
+          squareFilePath,
+        ],
+        { stdio: ['ignore', 'ignore', 'ignore'] }
+      )
+      console.log('Cropped video to square:', squareFilePath)
+      width = newDimension
+      height = newDimension
+    }
 
     function normalizeCoordinate(v: number): number {
       return Math.max(Math.min(Math.round(v * width), width), 0)
@@ -145,15 +168,16 @@ async function importFile(
 
     try {
       unlinkSync(outputDataFile)
+      console.log('removed existing file ', outputDataFile)
     } catch (e) {
-      console.warn('Failed to delete existing file', outputDataFile)
+      // console.warn('Failed to delete existing file', outputDataFile)
     }
 
     writeFileSync(outputDataFile, Buffer.alloc(0))
 
     const ffmpeg = spawn(ffmpegPath, [
       '-i',
-      filePath,
+      squareFilePath,
       '-f',
       format,
       '-vf',
@@ -184,14 +208,14 @@ async function importFile(
       encoding: 'binary',
     })
 
-    const compressionWriter = zlib.createBrotliCompress({
-      params: {
-        [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_GENERIC,
-        [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.BROTLI_MAX_QUALITY,
-      },
-    })
+    // const compressionWriter = zlib.createBrotliCompress({
+    //   params: {
+    //     [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_GENERIC,
+    //     [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.BROTLI_MAX_QUALITY,
+    //   },
+    // })
 
-    compressionWriter.pipe(fsWriter)
+    // compressionWriter.pipe(fsWriter)
 
     ffmpeg.on('close', (code) => {
       console.log(`ffmpeg process exited with code ${code}`)
@@ -199,7 +223,8 @@ async function importFile(
       const duration = endTime - startTime
       const durationInSeconds = duration / 1000
       console.log('Done in ' + durationInSeconds + ' seconds')
-      compressionWriter.close()
+      // compressionWriter.close()
+      fsWriter.close()
       resolve({
         fileSha256,
         width,
@@ -254,8 +279,9 @@ async function importFile(
     // }
 
     function appendFile(data: Uint8Array) {
-      let buffer = Buffer.from(data.buffer, data.byteOffset, data.byteLength)
-      compressionWriter.write(buffer)
+      const buffer = Buffer.from(data.buffer, data.byteOffset, data.byteLength)
+      // compressionWriter.write(buffer)
+      fsWriter.write(buffer)
     }
 
     function processFrame(frame: Buffer) {

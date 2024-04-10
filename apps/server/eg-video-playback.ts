@@ -1,11 +1,12 @@
-import { createReadStream, read, stat } from 'fs-extra'
-import { EGInfo } from './eg'
-import { DBState, readDb } from './eg-video'
-import { Frame } from './eg-sacn'
-import { join } from 'path'
 import fs from 'fs'
+import { createReadStream, read, stat } from 'fs-extra'
+import { join } from 'path'
 import { promisify } from 'util'
 import zlib from 'zlib'
+
+import { EGInfo } from './eg'
+import { Frame } from './eg-sacn'
+import { DBState, readDb } from './eg-video'
 
 export type VideoPlaybackInstance = {
   readFrame: () => Frame | null
@@ -81,6 +82,9 @@ export function egVideo(
     const fileInfo = await stat(framesFilePath)
     // console.log('fileInfo', fileInfo)
     if (fileInfo.size % frameSize !== 0) {
+      console.log('fileInfo.size', fileInfo.size)
+      console.log('frameSize', frameSize)
+      console.log('frame count', fileInfo.size / frameSize)
       throw new Error('File size is not an exact multiple of the frame size.')
     }
     const frameCount = fileInfo.size / frameSize

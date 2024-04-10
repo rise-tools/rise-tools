@@ -1,21 +1,23 @@
+import { randomUUID } from 'crypto'
 import { readFileSync, writeFile } from 'fs'
+
 import { eg as egInfo } from './eg'
 import { getEGLiveFrame, getEGReadyFrame } from './eg-main'
 import { egSacnService } from './eg-sacn'
+import { EGVideo, egVideo } from './eg-video-playback'
 import { createEGViewServer } from './eg-view-server'
-import { Effect, MainState, MainStateSchema, Media, defaultMainState } from './state-schema'
+import { defaultMainState, Effect, MainState, MainStateSchema, Media } from './state-schema'
 import {
-  UIContext,
   getBeatEffects,
-  getEffectUI,
   getEffectsUI,
+  getEffectUI,
+  getMediaLayerUI,
   getMediaUI,
   getQuickEffects,
   getUIRoot,
+  UIContext,
 } from './ui'
 import { createWSServer } from './ws-rnt-server'
-import { EGVideo, egVideo } from './eg-video-playback'
-import { randomUUID } from 'crypto'
 
 let mainState: MainState = defaultMainState
 
@@ -61,7 +63,7 @@ function mainLoop() {
   readyViewServer.sendFrame(egReadyFrame)
 }
 
-const mainAnimationFPS = 10
+const mainAnimationFPS = 30
 
 const wsServer = createWSServer(3990)
 
@@ -73,7 +75,7 @@ const desiredMsPerFrame = 1000 / mainAnimationFPS
 performMainLoopStep(desiredMsPerFrame)
 
 const initTime = performance.now()
-let lastFrameTime: number = initTime
+const lastFrameTime: number = initTime
 
 mainLoop()
 
@@ -104,18 +106,32 @@ function performMainLoopStep(inMs: number) {
 
 wsServer.update('startTime', startTime)
 
-function updateMediaUI(mediaKey: string, mediaState: Media, uiContext: UIContext) {
-  // wsServer.update('readyMedia', getMediaUI('readyMedia', mainState.readyMedia))
-  wsServer.update(mediaKey, getMediaUI(mediaKey, mediaState, uiContext))
+function updateMediaChildrenUI(mediaKey: string, mediaState: Media, uiContext: UIContext) {
   if (mediaState.type === 'video') {
-    // something about effects
-    wsServer.update(`${mediaKey}-effects`, getEffectsUI(mediaKey, mediaState.effects))
+    wsServer.update(`${mediaKey}:effects`, getEffectsUI(mediaKey, mediaState.effects))
     mediaState.effects?.forEach((effect) => {
       wsServer.update(
-        `${mediaKey}-effects-${effect.key}`,
+        `${mediaKey}:effects:${effect.key}`,
         getEffectUI([mediaKey, effect.key], effect)
       )
     })
+    return
+  }
+}
+
+function updateMediaUI(mediaKey: string, mediaState: Media, uiContext: UIContext) {
+  wsServer.update(mediaKey, getMediaUI(mediaKey, mediaState, uiContext))
+  if (mediaState.type === 'video') {
+    updateMediaChildrenUI(mediaKey, mediaState, uiContext)
+    return
+  }
+  if (mediaState.type === 'layers') {
+    mediaState.layers?.forEach((layer) => {
+      const layerKey = `${mediaKey}:layer:${layer.key}`
+      wsServer.update(layerKey, getMediaLayerUI(layerKey, layer, uiContext))
+      updateMediaChildrenUI(layerKey, layer.media, uiContext)
+    })
+    return
   }
 }
 
@@ -153,7 +169,7 @@ function mainStateEffect(state: MainState, prevState: MainState) {
         transitionState: { manual: null, autoStartTime: null },
       }))
     } else if (state.transitionState.autoStartTime) {
-      let progress = Math.min(
+      const progress = Math.min(
         1,
         (Date.now() - state.transitionState.autoStartTime) / state.transition.duration
       )
@@ -300,8 +316,11 @@ wsServer.subscribeEvent((...event) => {
   //   return
   // }
 
-  if (handleMediaEvent('liveMedia', path, name, value)) return
-  if (handleMediaEvent('readyMedia', path, name, value)) return
+  // const mediaPath = path.split(':')
+  if (value[0] === 'updateMedia') {
+    const [_updateMedia, mediaKey, ...restUpdate] = value
+    if (handleMediaEvent(mediaKey.split(':'), name, restUpdate)) return
+  }
   if (handleTransitionEvent(path, name, value)) return
   if (handleEffectEvent(path, name, value)) return
 
@@ -310,22 +329,20 @@ wsServer.subscribeEvent((...event) => {
 
 function handleEffectEvent(path: string, name: string, value: any): boolean {
   if (value?.[0] !== 'updateEffect') return false
-  console.log('handleEffect', value)
-  const mediaKey = value?.[1]
-  mainStateUpdate((state) => {
-    const media = state[mediaKey[0]]
-    const effectIndex = media?.effects?.findIndex((effect) => effect.key === mediaKey[1])
+  const mediaPath = value?.[1]?.[0]?.split(':')
+  const effectKey = value?.[1]?.[1]
+  console.log('handleEffectEvent', mediaPath, effectKey, value?.[2], value?.[3])
+  rootMediaUpdate(mediaPath, (media) => {
+    if (media.type !== 'video' || !media.effects) return media
+    const effectIndex = media?.effects?.findIndex((effect) => effect.key === effectKey)
+    if (effectIndex === -1) return media
     if (value?.[2] === 'remove') {
       return {
-        ...state,
-        [mediaKey[0]]: {
-          ...media,
-          effects: media.effects.filter((effect) => {
-            return effect.key !== mediaKey[1]
-          }),
-        },
+        ...media,
+        effects: media.effects.filter((effect) => {
+          return effect.key !== effectKey
+        }),
       }
-      return state
     }
     if (effectIndex != null && effectIndex !== -1) {
       const field = value[2]
@@ -333,16 +350,13 @@ function handleEffectEvent(path: string, name: string, value: any): boolean {
       const effect = media.effects[effectIndex]
       const newEffect = { ...effect, [field]: newValue }
       return {
-        ...state,
-        [mediaKey[0]]: {
-          ...media,
-          effects: media.effects.map((effect) => {
-            if (effect.key === mediaKey[1]) {
-              return newEffect
-            }
-            return effect
-          }),
-        },
+        ...media,
+        effects: media.effects.map((effect) => {
+          if (effect.key === effectKey) {
+            return newEffect
+          }
+          return effect
+        }),
       }
     }
     return state
@@ -366,7 +380,7 @@ function handleTransitionEvent(path: string, name: string, value: any): boolean 
     mainStateUpdate((state) => ({
       ...state,
       transition: {
-        ...state.transitionState,
+        ...state.transition,
         duration: value[2],
       },
     }))
@@ -385,98 +399,188 @@ function handleTransitionEvent(path: string, name: string, value: any): boolean 
   return false
 }
 
-function handleMediaEvent(
-  mediaKey: string,
-  path: string,
-  eventName: string,
-  value: string
-): boolean {
-  if (value?.[0] === 'updateMedia' && value?.[1] === mediaKey) {
-    const action = value?.[2]
-    if (action === 'clear') {
-      mainStateUpdate((state) => ({
-        ...state,
-        [mediaKey]: createBlankMedia('off'),
-      }))
+function mediaUpdate(
+  mediaPath: string[],
+  prevMedia: Media,
+  updater: (media: Media) => Media
+): Media {
+  if (mediaPath.length === 0) return updater(prevMedia)
+  const [subMediaKey, ...restMediaPath] = mediaPath
+  if (subMediaKey === 'layer' && prevMedia.type === 'layers') {
+    const [layerKey, ...subMediaPath] = restMediaPath
+    // console.log('layer update', { layerKey, subMediaPath, prevMedia })
+    return {
+      ...prevMedia,
+      layers: prevMedia.layers?.map((layer) => {
+        if (layer.key === layerKey) {
+          return {
+            ...layer,
+            media: mediaUpdate(subMediaPath, layer.media, updater),
+          }
+        }
+        return layer
+      }),
+    }
+  }
+  console.log('unhandled deep mediaUpdate', { subMediaKey, restMediaPath, prevMedia })
+  throw new Error('todo')
+  return prevMedia
+}
+
+function rootMediaUpdate(mediaPath: string[], updater: (media: Media) => Media) {
+  // console.log('mediaUpdate', mediaPath)
+  const [rootMediaKey, ...restMediaPath] = mediaPath
+  if (rootMediaKey !== 'liveMedia' && rootMediaKey !== 'readyMedia') {
+    throw new Error('Invalid root media key')
+  }
+  mainStateUpdate((state) => {
+    const prevMedia = state[rootMediaKey]
+    return {
+      ...state,
+      [rootMediaKey]: mediaUpdate(restMediaPath, prevMedia, updater),
+    }
+  })
+}
+
+function handleMediaEvent(mediaPath: string[], eventName: string, value: any[]): boolean {
+  // console.log('handleMediaEvent', mediaPath, eventName, value)
+  const action = value?.[0]
+  if (action === 'clear') {
+    rootMediaUpdate(mediaPath, () => createBlankMedia('off'))
+    return true
+  }
+  if (action === 'mode') {
+    const mode = value?.[1]
+    rootMediaUpdate(mediaPath, () => createBlankMedia(mode))
+    return true
+  }
+  if (action === 'color') {
+    const colorField = value?.[1]
+    const number = value?.[2]
+    if (colorField === 'h' || colorField === 's' || colorField === 'l') {
+      rootMediaUpdate(mediaPath, (media) => ({ ...media, [colorField]: number }))
       return true
     }
-    if (action === 'mode') {
-      const mode = value?.[3]
-      mainStateUpdate((state) => ({
-        ...state,
-        [mediaKey]: createBlankMedia(mode),
-      }))
-      return true
-    }
-    if (action === 'color') {
-      const colorField = value?.[3]
-      const number = value?.[4]
-      if (colorField === 'h' || colorField === 's' || colorField === 'l') {
-        mainStateUpdate((state) => ({
-          ...state,
-          [mediaKey]: { ...state[mediaKey], [colorField]: number },
-        }))
-        // console.log('color update', colorField, number)
-        return true
+  }
+  if (action === 'track') {
+    const track = value?.[1]
+    // console.log('track update', mediaPath, track)
+    rootMediaUpdate(mediaPath, (media) => ({ ...media, track }))
+    return true
+  }
+  if (action === 'loopBounce' && eventName === 'switch') {
+    const loopBounce = value?.[1]
+    rootMediaUpdate(mediaPath, (media) => ({
+      ...media,
+      params: {
+        ...(media.params || {}),
+        loopBounce,
+      },
+    }))
+    return true
+  }
+  if (action === 'reverse' && eventName === 'switch') {
+    const reverse = value?.[1]
+    rootMediaUpdate(mediaPath, (media) => ({
+      ...media,
+      params: {
+        ...(media.params || {}),
+        reverse,
+      },
+    }))
+    return true
+  }
+  if (action === 'addEffect') {
+    const effectType = value?.[1]
+    const newEffect: Effect = createBlankEffect(effectType)
+    rootMediaUpdate(mediaPath, (media) => ({
+      ...media,
+      effects: [...(media.effects || []), newEffect],
+    }))
+    return true
+  }
+  if (action === 'addLayer') {
+    const mediaType = value?.[1]
+    rootMediaUpdate(mediaPath, (media) => {
+      if (media.type !== 'layers') return media
+      return {
+        ...media,
+        layers: [
+          ...(media.layers || []),
+          {
+            key: randomUUID(),
+            media: createBlankMedia(mediaType),
+            blendMode: 'mix',
+            blendAmount: 0,
+          },
+        ],
       }
-    }
-    if (action === 'track') {
-      const track = value?.[3]
-      console.log('track update', mediaKey, track)
-      mainStateUpdate((state) => ({
-        ...state,
-        [mediaKey]: { ...state[mediaKey], track },
-      }))
-      return true
-    }
-    if (action === 'loopBounce') {
-      const loopBounce = value?.[3]
-      mainStateUpdate((state) => {
-        const media = state[mediaKey]
-        if (media.type !== 'video') return state
-        return {
-          ...state,
-          [mediaKey]: {
-            ...media,
-            params: {
-              ...(media.params || {}),
-              loopBounce,
-            },
-          },
-        }
-      })
-      return true
-    }
-    if (action === 'reverse') {
-      const reverse = value?.[3]
-      mainStateUpdate((state) => {
-        const media = state[mediaKey]
-        if (media.type !== 'video') return state
-        return {
-          ...state,
-          [mediaKey]: {
-            ...media,
-            params: {
-              ...(media.params || {}),
-              reverse,
-            },
-          },
-        }
-      })
-      return true
-    }
-    if (action === 'addEffect') {
-      const effectType = value?.[3]
-      const newEffect: Effect = createBlankEffect(effectType)
-      mainStateUpdate((state) => ({
-        ...state,
-        [mediaKey]: {
-          ...state[mediaKey],
-          effects: [...(state[mediaKey].effects || []), newEffect],
-        },
-      }))
-      return true
-    }
+    })
+    return true
+  }
+  if (action === 'blendMode' && mediaPath.at(-2) === 'layer') {
+    const layerKey = mediaPath.at(-1)
+    const blendMode = value?.[1]
+    const targetPath = mediaPath.slice(0, -2)
+    rootMediaUpdate(targetPath, (media) => {
+      if (media.type !== 'layers') return media
+      return {
+        ...media,
+        layers: (media.layers || []).map((layer) => {
+          if (layer.key === layerKey) {
+            return { ...layer, blendMode }
+          }
+          return layer
+        }),
+      }
+    })
+    return true
+  }
+  if (action === 'blendAmount' && mediaPath.at(-2) === 'layer') {
+    const layerKey = mediaPath.at(-1)
+    const blendAmount = value?.[1]
+    const targetPath = mediaPath.slice(0, -2)
+    rootMediaUpdate(targetPath, (media) => {
+      if (media.type !== 'layers') return media
+      return {
+        ...media,
+        layers: (media.layers || []).map((layer) => {
+          if (layer.key === layerKey) {
+            return { ...layer, blendAmount }
+          }
+          return layer
+        }),
+      }
+    })
+    return true
+  }
+  if (action === 'layerOrder') {
+    const order = value?.[1]
+    rootMediaUpdate(mediaPath, (media) => {
+      if (media.type !== 'layers') return media
+      return {
+        ...media,
+        layers: order.map((key: string) => {
+          const layer = media.layers?.find((layer) => layer.key === key)
+          if (!layer) throw new Error('Invalid layer order')
+          return layer
+        }),
+      }
+    })
+    return true
+  }
+  if (action === 'removeLayer') {
+    const targetPath = mediaPath.slice(0, -2)
+    const layerKey = value?.[1]
+    // console.log('remove layer', layerKey, targetPath)
+    rootMediaUpdate(targetPath, (media) => {
+      if (media.type !== 'layers') return media
+      return {
+        ...media,
+        layers: (media.layers || []).filter((layer) => layer.key !== layerKey),
+      }
+    })
+    return true
   }
 
   return false
@@ -531,6 +635,14 @@ function createBlankEffect(type: Effect['type']): Effect {
       type: 'desaturate',
       value: 0,
     }
+  if (type === 'colorize')
+    return {
+      key: randomUUID(),
+      type: 'colorize',
+      amount: 0,
+      saturation: 1,
+      hue: 180,
+    }
   if (type === 'darken')
     return {
       key: randomUUID(),
@@ -543,6 +655,13 @@ function createBlankEffect(type: Effect['type']): Effect {
       type: 'brighten',
       value: 0,
     }
+  if (type === 'rotate') {
+    return {
+      key: randomUUID(),
+      type: 'rotate',
+      value: 0,
+    }
+  }
   // if (type === 'invert')
   return {
     key: randomUUID(),

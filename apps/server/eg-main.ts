@@ -5,31 +5,38 @@ import {
   createSolidHSLFrame,
   createSolidRGBFrame,
   flashEffect,
+  frameAdd,
   frameBrighten,
+  frameColorize,
   frameDarken,
   frameDesaturate,
   frameHueShift,
   frameInvert,
+  frameMask,
+  frameMix,
+  frameRotate,
   frameTransitionMix,
   waveFrameLayerEffect,
 } from './eg-tools'
 import { EGVideo, VideoPlayer } from './eg-video-playback'
 import { UPRISING } from './flag'
 import {
+  BrightenEffect,
   ColorMedia,
-  Effects,
+  DarkenEffect,
+  DesaturateEffect,
   Effect,
+  Effects,
+  HueShiftEffect,
+  InvertEffect,
+  LayersMedia,
   MainState,
   Media,
+  RotateEffect,
   StateContext,
   Transition,
   TransitionState,
   VideoMedia,
-  DesaturateEffect,
-  HueShiftEffect,
-  InvertEffect,
-  BrightenEffect,
-  DarkenEffect,
   // effectTypes,
   // effectsSchema,
 } from './state-schema'
@@ -62,9 +69,9 @@ function getVideoPlayback(video: EGVideo, fileId: string) {
 //   waveOut: waveFrameLayerEffect(egInfo, false),
 // }
 
-let stagelinqLastBeatTime = 0
-let stagelinqLastMeasureTime = 0
-let stagelinqBpm = 0
+const stagelinqLastBeatTime = 0
+const stagelinqLastMeasureTime = 0
+const stagelinqBpm = 0
 
 const effectDuration = 1000
 function applyEGEffects(mainState: MainState, ctx: StateContext, frame: Uint8Array): Uint8Array {
@@ -151,12 +158,20 @@ function videoFrameBare(media: VideoMedia, ctx: StateContext): Frame {
   return blackFrame
 }
 
+function withColorize(frame: Frame, effect: ColorizeEffect, ctx: StateContext): Frame {
+  return frameColorize(egInfo, frame, effect.amount, effect.hue, effect.saturation)
+}
+
 function withDesaturate(frame: Frame, effect: DesaturateEffect, ctx: StateContext): Frame {
   return frameDesaturate(egInfo, frame, effect.value)
 }
 
 function withHueShift(frame: Frame, effect: HueShiftEffect, ctx: StateContext): Frame {
   return frameHueShift(egInfo, frame, effect.value)
+}
+
+function withRotate(frame: Frame, effect: RotateEffect, ctx: StateContext): Frame {
+  return frameRotate(egInfo, frame, effect.value)
 }
 
 function withInvert(frame: Frame, effect: InvertEffect, ctx: StateContext): Frame {
@@ -172,11 +187,13 @@ function withDarken(frame: Frame, effect: DarkenEffect, ctx: StateContext): Fram
 }
 
 function withMediaEffect(frame: Frame, effect: Effect, ctx: StateContext): Frame {
+  if (effect.type === 'colorize') return withColorize(frame, effect, ctx)
   if (effect.type === 'desaturate') return withDesaturate(frame, effect, ctx)
   if (effect.type === 'hueShift') return withHueShift(frame, effect, ctx)
   if (effect.type === 'invert') return withInvert(frame, effect, ctx)
   if (effect.type === 'brighten') return withBrighten(frame, effect, ctx)
   if (effect.type === 'darken') return withDarken(frame, effect, ctx)
+  if (effect.type === 'rotate') return withRotate(frame, effect, ctx)
   return frame
 }
 
@@ -193,9 +210,33 @@ function videoFrame(media: VideoMedia, ctx: StateContext): Frame {
   return withMediaEffects(frame, media.effects, ctx)
 }
 
+function layerBlend(
+  frameA: Frame,
+  frameB: Frame,
+  blendMode: 'mix' | 'add' | 'mask',
+  blendAmount: number
+): Frame {
+  if (blendMode === 'mix') return frameMix(egInfo, frameA, frameB, blendAmount)
+  if (blendMode === 'add') return frameAdd(egInfo, frameA, frameB, blendAmount)
+  if (blendMode === 'mask') return frameMask(egInfo, frameA, frameB, blendAmount)
+  return frameA
+}
+
+function layersFrame(media: LayersMedia, ctx: StateContext): Frame {
+  const reverseLayers = media.layers.slice(0, -1).reverse()
+  const firstLayer = media.layers.at(-1)
+  if (!firstLayer) return blackFrame
+  let frame = mediaFrame(firstLayer.media, ctx)
+  reverseLayers.forEach((layer) => {
+    frame = layerBlend(frame, mediaFrame(layer.media, ctx), layer.blendMode, layer.blendAmount)
+  })
+  return frame
+}
+
 function mediaFrame(media: Media, ctx: StateContext): Frame {
   if (media.type === 'color') return colorFrame(media, ctx)
   if (media.type === 'video') return videoFrame(media, ctx)
+  if (media.type === 'layers') return layersFrame(media, ctx)
   if (media.type === 'off') return blackFrame
   return blackFrame
 }
@@ -214,7 +255,7 @@ function runTransition(
       (ctx.nowTime - transitionState.autoStartTime) / transition.duration
     )
   }
-  return frameTransitionMix(egInfo, frameA, frameB, transitionProgresss || 0)
+  return frameMix(egInfo, frameA, frameB, transitionProgresss || 0)
 }
 
 export function getEGLiveFrameUPRISING(
