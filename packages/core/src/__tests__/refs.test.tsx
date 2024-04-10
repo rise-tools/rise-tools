@@ -34,7 +34,7 @@ it('should render a component', () => {
   `)
 })
 
-it('should render a component at path', () => {
+it('should render component at a path', () => {
   const getStore = jest.fn().mockReturnValue({
     subscribe: () => jest.fn(),
     get() {
@@ -67,6 +67,58 @@ it('should render a component at path', () => {
       data-testid="root"
     >
       Hello World!
+    </div>
+  `)
+})
+
+it('should resolve a ref', () => {
+  const getStore = jest.fn().mockReturnValue({
+    subscribe: () => jest.fn(),
+    get() {
+      return {
+        $: DataStateType.Component,
+        component: 'View',
+        children: [
+          {
+            $: DataStateType.Component,
+            component: 'View',
+            children: 'Hello World!',
+          },
+          {
+            $: DataStateType.Ref,
+            ref: ['mainStore', 'children', 0],
+          },
+        ],
+      }
+    },
+  })
+  const dataSource = {
+    get: getStore,
+  }
+  const component = render(
+    <Template
+      components={BUILT_IN_COMPONENTS}
+      dataSource={dataSource}
+      onEvent={jest.fn()}
+      path="mainStore"
+    />
+  )
+
+  expect(getStore).toHaveBeenLastCalledWith('mainStore')
+  expect(component.getByTestId('root')).toMatchInlineSnapshot(`
+    <div
+      data-testid="root"
+    >
+      <div
+        data-testid="root.children[0]"
+      >
+        Hello World!
+      </div>
+      <div
+        data-testid="root.children[1]"
+      >
+        Hello World!
+      </div>
     </div>
   `)
 })
