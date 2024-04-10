@@ -122,3 +122,108 @@ it('should resolve a ref', () => {
     </div>
   `)
 })
+
+it('should subscribe to the root store', () => {
+  const mainStoreUnsubscribeFunction = jest.fn()
+  const mainStoreSubscribeFunction = jest.fn().mockReturnValue(mainStoreUnsubscribeFunction)
+  const dataSource = {
+    get: () => ({
+      subscribe: mainStoreSubscribeFunction,
+      get() {
+        return {
+          $: DataStateType.Component,
+          component: 'View',
+        }
+      },
+    }),
+  }
+  const element = render(
+    <Template
+      components={BUILT_IN_COMPONENTS}
+      dataSource={dataSource}
+      onEvent={jest.fn()}
+      path="mainStore"
+    />
+  )
+  expect(mainStoreSubscribeFunction).toHaveBeenCalledTimes(1)
+  expect(mainStoreUnsubscribeFunction).toHaveBeenCalledTimes(0)
+
+  element.unmount()
+  expect(mainStoreUnsubscribeFunction).toHaveBeenCalledTimes(1)
+})
+
+it('should manage subscription to stores referenced by refs', () => {
+  const mainStoreUnsubscribeFunction = jest.fn()
+  const mainStoreSubscribeFunction = jest.fn().mockReturnValue(mainStoreUnsubscribeFunction)
+
+  const secondStoreUnsubscribeFunction = jest.fn()
+  const secondStoreSubscribeFunction = jest.fn().mockReturnValue(secondStoreUnsubscribeFunction)
+
+  const dataSource = {
+    get: (name: string) => {
+      if (name === 'mainStore') {
+        return {
+          subscribe: mainStoreSubscribeFunction,
+          get() {
+            return {
+              $: DataStateType.Component,
+              component: 'View',
+              children: {
+                $: DataStateType.Ref,
+                ref: ['secondStore', 'user', 'profile', 'name'],
+              },
+            }
+          },
+        }
+      } else {
+        return {
+          subscribe: secondStoreSubscribeFunction,
+          get() {
+            return {
+              user: {
+                profile: {
+                  name: 'John Doe',
+                },
+              },
+            }
+          },
+        }
+      }
+    },
+  }
+
+  const element = render(
+    <Template
+      components={BUILT_IN_COMPONENTS}
+      dataSource={dataSource}
+      onEvent={jest.fn()}
+      path="mainStore"
+    />
+  )
+
+  expect(mainStoreSubscribeFunction).toHaveBeenCalledTimes(1)
+  expect(secondStoreSubscribeFunction).toHaveBeenCalledTimes(1)
+
+  expect(element.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        data-testid="root"
+      >
+        John Doe
+      </div>
+    </DocumentFragment>
+  `)
+
+  element.unmount()
+
+  expect(mainStoreUnsubscribeFunction).toHaveBeenCalledTimes(1)
+  expect(secondStoreUnsubscribeFunction).toHaveBeenCalledTimes(1)
+})
+
+it.skip('should remove subscription to refs no longer in use', () => {
+  // todo
+})
+
+it.skip('should resolve new refs after data change', () => {
+  // todo
+})

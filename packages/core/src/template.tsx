@@ -107,8 +107,9 @@ export function BaseTemplate({
     if (stateNode.$ === DataStateType.Component) {
       return renderComponent(stateNode, stateNode.key || parentKey)
     }
-    // tbd: what to do with ref
-    throw new Error('ref is not supported as a prop yet.')
+    if (stateNode.$ === DataStateType.Ref) {
+      throw new Error('Your data includes refs. You must use a <Template /> component instead.')
+    }
   }
 
   function renderProp(stateNode: DataState, parentKey: string): DataState {
