@@ -64,9 +64,11 @@ function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> 
     }
     if (stateNode.$ === DataStateType.Ref) {
       const refKey = extractRefKey(stateNode.ref)
-      currentRefKeys.add(refKey)
-      const lastValue = dataValues[refKey]
-      searchRefs(lastValue)
+      if (!currentRefKeys.has(refKey)) {
+        currentRefKeys.add(refKey)
+        const lastValue = dataValues[refKey]
+        searchRefs(lastValue)
+      }
       return
     }
     if (stateNode.$ === DataStateType.Component) {
