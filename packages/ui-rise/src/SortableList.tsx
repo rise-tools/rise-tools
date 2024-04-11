@@ -49,7 +49,7 @@ export function SortableList(props: z.infer<typeof SortableListProps> & Componen
                 disabled={isActive}
                 style={[{ padding: 10, backgroundColor: 'white', margin: 10 }]}
               >
-                <Label style={{}}>{item.label}</Label>
+                <Label>{item.label}</Label>
               </TouchableOpacity>
             </ScaleDecorator>
           )

@@ -14,9 +14,9 @@ export function Slider(props: z.infer<typeof SliderProps> & ComponentProps) {
   return (
     <TamaguiSlider
       value={[props.value]}
-      max={props.max || 100}
-      min={props.min || 0}
-      step={props.step || 1}
+      max={props.max}
+      min={props.min}
+      step={props.step}
       onValueChange={(value) => {
         props.onTemplateEvent('onValueChange', value)
       }}
@@ -46,9 +46,9 @@ export function SliderField(props: z.infer<typeof SliderFieldProps> & ComponentP
       <TamaguiSlider
         marginVertical={'$4'}
         value={[props.value]}
-        max={props.max || 100}
-        min={props.min || 0}
-        step={props.step || 1}
+        max={props.max}
+        min={props.min}
+        step={props.step}
         onValueChange={(value) => {
           let payload: (string | number)[] = value
           if (props.onValue === null) return

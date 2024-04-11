@@ -9,7 +9,7 @@ const SelectFieldProps = z.object({
   value: z.string().nullable(),
   id: z.string().optional(),
   label: z.string().optional(),
-  unselectedLabel: z.string().optional(),
+  unselectedLabel: z.string().optional().default('...'),
   onValue: z.string().or(z.array(z.string())).nullable().optional(),
   options: z
     .array(
@@ -44,7 +44,7 @@ export function SelectField({
         // native
       >
         <Select.Trigger iconAfter={ChevronDown}>
-          <Select.Value placeholder={props.unselectedLabel || '...'} />
+          <Select.Value placeholder={props.unselectedLabel} />
         </Select.Trigger>
 
         <Adapt

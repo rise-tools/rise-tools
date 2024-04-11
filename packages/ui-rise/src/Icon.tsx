@@ -9,8 +9,11 @@ const IconProps = z.object({
   size: z.number().optional(),
 })
 
-export function Icon({ icon, size = 20, ...rest }: z.infer<typeof IconProps> & ComponentProps) {
-  // @ts-ignore - TypeScript will complain about this, but it's fine
+export function Icon({
+  icon,
+  size = 20,
+  ...rest
+}: z.infer<typeof IconProps> & ComponentProps & { icon: keyof typeof LucideIcons }) {
   const IconComponent = LucideIcons[icon]
   if (IconComponent) {
     return <IconComponent size={size} {...rest} />
