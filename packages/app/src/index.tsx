@@ -1,5 +1,5 @@
 // TBD: refactor this into something more elegant
-export * from './demoComponents'
+
 export { Provider } from './provider'
 export { useConnection } from './provider/storage'
 export * from './screens/connect'

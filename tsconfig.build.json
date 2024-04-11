@@ -13,6 +13,9 @@
       "path": "./packages/ui-tamagui"
     },
     {
+      "path": "./packages/ui-rise"
+    },
+    {
       "path": "./packages/demo-ui"
     },
     {

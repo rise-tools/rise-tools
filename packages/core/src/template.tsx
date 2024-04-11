@@ -2,14 +2,14 @@ import React from 'react'
 
 /** Components */
 type ComponentIdentifier = string
-type ComponentProps = React.PropsWithChildren<{
+export type ComponentProps = React.PropsWithChildren<{
   onTemplateEvent: (name: string, payload: any) => void
 }>
 
 export type ComponentRegistry = Record<ComponentIdentifier, ComponentDefinition<any>>
 export type ComponentDefinition<Props> = {
   component: React.ComponentType<ComponentProps & Props>
-  validator?: (input?: Record<string, DataState>) => void
+  validator?: (input?: Record<string, DataState>) => Record<string, DataState>
 }
 
 /** Data state */
@@ -71,12 +71,14 @@ export function BaseTemplate({
       throw new RenderError(`Invalid component: ${stateNode.component}`)
     }
 
+    let componentProps = stateNode.props || {}
+
     if (typeof componentDefinition.validator === 'function') {
-      componentDefinition.validator(stateNode.props)
+      componentProps = componentDefinition.validator(stateNode.props)
     }
 
-    const props = Object.fromEntries(
-      Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
+    const renderedProps = Object.fromEntries(
+      Object.entries(componentProps).map(([propKey, propValue]) => {
         return [propKey, renderProp(propValue, `${key}.props['${propKey}']`)]
       })
     )
@@ -91,7 +93,7 @@ export function BaseTemplate({
       },
     }
 
-    return <Component data-testid={key} key={key} {...props} {...baseProps} />
+    return <Component data-testid={key} key={key} {...renderedProps} {...baseProps} />
   }
 
   function render(stateNode: DataState, parentKey: string): React.ReactNode {
