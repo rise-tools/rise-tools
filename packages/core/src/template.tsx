@@ -56,7 +56,6 @@ export function BaseTemplate({
   onEvent,
 }: {
   components: ComponentRegistry
-  errorComponent: React.ReactNode
   dataState: DataState | DataState[]
   onEvent: (key: string, name: string, payload: any) => void
 }) {
