@@ -42,6 +42,7 @@ type ReferencedDataState = {
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
   return (
+    obj !== null &&
     typeof obj === 'object' &&
     '$' in obj &&
     (obj.$ === DataStateType.Component || obj.$ === DataStateType.Ref)

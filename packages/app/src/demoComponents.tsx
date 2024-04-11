@@ -268,12 +268,14 @@ const SelectFieldProps = z.object({
   label: z.string().optional(),
   unselectedLabel: z.string().optional(),
   onValue: z.string().or(z.array(z.string())).nullable().optional(),
-  options: z.array(
-    z.object({
-      key: z.string(),
-      label: z.string(),
-    })
-  ),
+  options: z
+    .array(
+      z.object({
+        key: z.string(),
+        label: z.string(),
+      })
+    )
+    .optional(),
 })
 
 function TSelectField({
@@ -363,7 +365,7 @@ function TSelectField({
           >
             {useMemo(
               () =>
-                options.map((item, i) => {
+                options?.map((item, i) => {
                   return (
                     <Select.Item index={i} key={item.key} value={item.key}>
                       <Select.ItemText>{item.label}</Select.ItemText>
