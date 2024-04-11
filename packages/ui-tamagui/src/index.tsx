@@ -1,6 +1,8 @@
 import { ComponentRegistry, wrapEvents } from '@react-native-templates/core'
 import * as t from 'tamagui'
 
+// tbd: check all components and make sure all events are wrapped
+
 const TamaguiComponents: ComponentRegistry = {
   /* https://tamagui.dev/ui/stacks#xstack-ystack-zstack */
   XStack: {
