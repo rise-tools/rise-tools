@@ -10,6 +10,9 @@
       "path": "./packages/core"
     },
     {
+      "path": "./packages/ui-tamagui"
+    },
+    {
       "path": "./packages/demo-ui"
     },
     {
