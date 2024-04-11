@@ -16,6 +16,7 @@
     "node_modules",
     "__tests__",
     "*.test.tsx",
-    "*.test.ts"
+    "*.test.ts",
+    "**/lib"
   ]
 }
