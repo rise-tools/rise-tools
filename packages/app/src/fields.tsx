@@ -1,15 +1,8 @@
-import {
-  Fieldset,
-  Input,
-  InputProps,
-  Label,
-  Theme,
-  useThemeName,
-} from '@react-native-templates/demo-ui'
 // @ts-ignore
 import { useStringFieldInfo, useTsController } from '@ts-react/form'
 import { useId } from 'react'
 import React from 'react'
+import { Fieldset, Input, InputProps, Label, Theme, useThemeName } from 'tamagui'
 import { AnimatePresence, Paragraph } from 'tamagui'
 
 const FieldError = ({ message }: { message?: string }) => {
@@ -19,7 +12,7 @@ const FieldError = ({ message }: { message?: string }) => {
         <Paragraph
           key="error"
           animation="100ms"
-          mt="$2"
+          marginTop="$2"
           theme="alt2"
           enterStyle={{
             y: -6,

@@ -1,8 +1,8 @@
-import { Toast, useToastState } from '@tamagui/toast'
+import { Toast as ToastOg, useToastState } from '@tamagui/toast'
 import React from 'react'
 import { YStack } from 'tamagui'
 
-export const NativeToast = () => {
+export function Toast() {
   const currentToast = useToastState()
 
   if (!currentToast || currentToast.isHandledNatively) {
@@ -10,7 +10,7 @@ export const NativeToast = () => {
   }
 
   return (
-    <Toast
+    <ToastOg
       key={currentToast.id}
       duration={currentToast.duration}
       viewportName={currentToast.viewportName}
@@ -21,10 +21,12 @@ export const NativeToast = () => {
       scale={1}
       animation="quick"
     >
-      <YStack py="$1.5" px="$2">
-        <Toast.Title lh="$1">{currentToast.title}</Toast.Title>
-        {!!currentToast.message && <Toast.Description>{currentToast.message}</Toast.Description>}
+      <YStack paddingVertical="$1.5" paddingHorizontal="$2">
+        <ToastOg.Title lineHeight="$1">{currentToast.title}</ToastOg.Title>
+        {!!currentToast.message && (
+          <ToastOg.Description>{currentToast.message}</ToastOg.Description>
+        )}
       </YStack>
-    </Toast>
+    </ToastOg>
   )
 }

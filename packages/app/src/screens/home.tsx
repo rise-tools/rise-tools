@@ -1,19 +1,10 @@
-import {
-  Button,
-  Image,
-  Separator,
-  Text,
-  View,
-  XStack,
-  YGroup,
-  YStack,
-} from '@react-native-templates/demo-ui'
-import { PlusCircle, Settings } from '@tamagui/lucide-icons'
 import { Connection, useConnections } from '@react-native-templates/app/src/provider/storage'
+import { PlusCircle, Settings } from '@tamagui/lucide-icons'
 import { useAssets } from 'expo-asset'
 import React from 'react'
 import { ImageURISource, ScrollView } from 'react-native'
 import { useLink } from 'solito/link'
+import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
 export function HomeScreen() {
   const [state] = useConnections()
@@ -47,7 +38,7 @@ function HeroImage() {
   if (error) console.error(error)
   if (!assets?.[0]) return null
   return (
-    <XStack maxWidth={'100%'} jc="center">
+    <XStack maxWidth={'100%'} justifyContent="center">
       <View aspectRatio={1} height={200}>
         <Image source={assets[0] as ImageURISource} aspectRatio={1} height={200} />
       </View>
@@ -73,7 +64,7 @@ function ConnectionItem({ connection }: { connection: Connection }) {
         }}
       >
         <XStack>
-          <View f={1} ai="center" jc="center" paddingLeft={'$4'}>
+          <View flex={1} alignItems="center" justifyContent="center" paddingLeft={'$4'}>
             <Text ellipsizeMode="clip" numberOfLines={1}>
               {connection.label}
             </Text>

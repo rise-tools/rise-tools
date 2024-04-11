@@ -1,13 +1,13 @@
+import { Provider } from '@react-native-templates/app'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
-import { Provider } from '@react-native-templates/app/src/provider'
 import { useFonts } from 'expo-font'
 import { Stack, usePathname, useRouter } from 'expo-router'
-import { useColorScheme } from 'react-native'
 import React from 'react'
+import { useEffect } from 'react'
+import { useColorScheme } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import { ExpoStorageProvider, navigationStore } from '../src/expo-storage'
-import { useEffect } from 'react'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 export const unstable_settings = {
   // https://docs.expo.dev/router/advanced/router-settings/

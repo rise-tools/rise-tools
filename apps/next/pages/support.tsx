@@ -1,4 +1,4 @@
-import { SizableText } from '@react-native-templates/demo-ui'
+import { SizableText } from 'tamagui'
 
 export default function SupportPage() {
   return <SizableText>Rise Support</SizableText>

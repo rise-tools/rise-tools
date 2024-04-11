@@ -6,8 +6,9 @@ const plugins = [
   withExpo,
   withTamagui({
     config: 'tamagui.config.ts',
+    // tbd: make sure we list all packages
     components: ['tamagui', '@react-native-templates/demo-ui'],
-    outputCSS: process.env.NODE_ENV === 'production' ? './public/tamagui.css' : null
+    outputCSS: process.env.NODE_ENV === 'production' ? './public/tamagui.css' : null,
   }),
 ]
 
@@ -19,11 +20,11 @@ let config = {
     'expo-clipboard',
     'expo-constants',
     'expo-linear-gradient',
-    'react-native-qrcode-svg'
+    'react-native-qrcode-svg',
   ],
   experimental: {
     scrollRestoration: true,
-  }
+  },
 }
 
 for (const plugin of plugins) {

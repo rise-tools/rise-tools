@@ -16,9 +16,6 @@
       "path": "./packages/ui-rise"
     },
     {
-      "path": "./packages/demo-ui"
-    },
-    {
       "path": "./packages/ws-client"
     },
     {

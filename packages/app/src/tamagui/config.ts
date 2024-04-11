@@ -50,7 +50,7 @@ const bodyFont = createInterFont(
   }
 )
 
-export const config = createTamagui({
+export const tamaguiConfig = createTamagui({
   defaultFont: 'body',
   animations,
   shouldAddPrefersColorThemes: true,

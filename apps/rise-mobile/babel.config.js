@@ -11,6 +11,7 @@ module.exports = function (api) {
             [
               '@tamagui/babel-plugin',
               {
+                // tbd: make sure we have all packages here
                 components: ['@react-native-templates/demo-ui', 'tamagui'],
                 config: './tamagui.config.ts',
               },

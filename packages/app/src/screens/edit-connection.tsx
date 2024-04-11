@@ -1,13 +1,13 @@
-import { Button, Separator, YStack } from '@react-native-templates/demo-ui'
-import { Copy, Trash } from '@tamagui/lucide-icons'
 import { ConnectionForm } from '@react-native-templates/app/src/connection-form'
 import { useConnection } from '@react-native-templates/app/src/provider/storage'
+import { Copy, Trash } from '@tamagui/lucide-icons'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
 import { setStringAsync } from 'expo-clipboard'
 import React from 'react'
 import { createParam } from 'solito'
 import { useLink } from 'solito/link'
+import { Button, Separator, YStack } from 'tamagui'
 
 import { NotFoundScreen } from './not-found'
 
@@ -21,7 +21,7 @@ export function EditConnectionScreen() {
   })
   if (!connection) return <NotFoundScreen />
   return (
-    <YStack f={1} space padding="$4">
+    <YStack flex={1} space padding="$4">
       <ConnectionForm
         onSubmit={(values) => {
           update((conn) => ({ ...conn, ...values }))
