@@ -9,8 +9,7 @@ import { BaseTemplate, ComponentDefinition, ComponentRegistry, DataStateType } f
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
   View: {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    component: ({ onTemplateEvent, ...props }) => <div {...props} />,
+    component: (props) => <div {...props} />,
   },
 }
 
@@ -84,12 +83,20 @@ it('should use component key when provided', () => {
           children: {
             $: DataStateType.Component,
             component: 'View',
-            key: 'myCustomKey',
-            children: {
-              $: DataStateType.Component,
-              component: 'View',
-              children: 'Hello, world!',
-            },
+            key: 'customKey',
+            children: [
+              {
+                $: DataStateType.Component,
+                component: 'View',
+                children: 'Hello',
+              },
+              {
+                $: DataStateType.Component,
+                component: 'View',
+                key: 'customChildKey',
+                children: 'World!',
+              },
+            ],
           },
         },
       ]}
@@ -98,22 +105,27 @@ it('should use component key when provided', () => {
   )
 
   expect(component.asFragment()).toMatchInlineSnapshot(`
-    <DocumentFragment>
+<DocumentFragment>
+  <div
+    data-testid="root[0]"
+  >
+    <div
+      data-testid="root[0].children['customKey']"
+    >
       <div
-        data-testid="root[0]"
+        data-testid="root[0].children['customKey'].children[0]"
       >
-        <div
-          data-testid="myCustomKey"
-        >
-          <div
-            data-testid="myCustomKey.children"
-          >
-            Hello, world!
-          </div>
-        </div>
+        Hello
       </div>
-    </DocumentFragment>
-  `)
+      <div
+        data-testid="root[0].children['customKey'].children['customChildKey']"
+      >
+        World!
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`)
 })
 
 it('should render a component with single children', () => {
@@ -244,8 +256,7 @@ it('should accept component as a prop', () => {
 
 it('should accept object as a prop', () => {
   const Header: ComponentDefinition<{ user: { name: string } }> = {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    component: ({ user, onTemplateEvent, ...props }) => (
+    component: ({ user, ...props }) => (
       <section {...props}>
         <header>{user.name}</header>
       </section>

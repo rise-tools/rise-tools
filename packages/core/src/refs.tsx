@@ -6,6 +6,7 @@ import {
   DataState,
   DataStateType,
   isCompositeDataState,
+  TemplateEvent,
 } from './template'
 
 export type Store<V = DataState> = {
@@ -169,7 +170,7 @@ export function Template({
   path?: RefLookup
   dataSource: DataSource
   components: ComponentRegistry
-  onEvent: (key: string, name: string, payload: any) => void
+  onEvent: (event: TemplateEvent) => void
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(

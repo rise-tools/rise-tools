@@ -1,4 +1,4 @@
-import { ComponentRegistry, wrapEvents } from '@react-native-templates/core'
+import { ComponentRegistry } from '@react-native-templates/core'
 import * as t from 'tamagui'
 
 // tbd: check all components and make sure all events are wrapped
@@ -51,7 +51,7 @@ export const TamaguiComponents: ComponentRegistry = {
   },
   /* https://tamagui.dev/ui/button */
   Button: {
-    component: wrapEvents(t.Button, ['onPress', 'onPressIn', 'onPressOut']),
+    component: t.Button,
   },
   /* https://tamagui.dev/ui/checkbox */
   Checkbox: {

@@ -29,7 +29,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
     "@react-native-templates/core": "0.1.0",
-    "@react-native-templates/ui-rise": "",
+    "@react-native-templates/ui-rise": "0.1.0",
     "@react-native-templates/ui-tamagui": "0.1.0",
     "@react-native-templates/ws-client": "0.1.0",
     "@tamagui/animations-react-native": "^1.94.4",
