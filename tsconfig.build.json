@@ -10,7 +10,10 @@
       "path": "./packages/core"
     },
     {
-      "path": "./packages/demo-ui"
+      "path": "./packages/ui-tamagui"
+    },
+    {
+      "path": "./packages/ui-rise"
     },
     {
       "path": "./packages/ws-client"

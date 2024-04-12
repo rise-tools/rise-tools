@@ -1,7 +1,7 @@
 import { StorageContextProvider, Store } from '@react-native-templates/app/src/provider/storage'
 import { randomUUID } from 'expo-crypto'
-import { MMKV } from 'react-native-mmkv'
 import React from 'react'
+import { MMKV } from 'react-native-mmkv'
 
 const storage = new MMKV()
 
@@ -44,7 +44,7 @@ const storageContext = {
     connections: [],
   }),
 }
-export function ExpoStorageProvider({ children }: React.PropsWithChildren<{}>) {
+export function ExpoStorageProvider({ children }: React.PropsWithChildren<object>) {
   // @ts-ignore
   return <StorageContextProvider value={storageContext}>{children}</StorageContextProvider>
 }

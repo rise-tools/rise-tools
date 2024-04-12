@@ -280,5 +280,7 @@ it('should accept object as a prop', () => {
         </header>
       </section>
     </DocumentFragment>
-`)
+  `)
 })
+
+it.skip('should validate props with a validator', () => {})

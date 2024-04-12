@@ -9,10 +9,13 @@
       "path": "../core"
     },
     {
-      "path": "../demo-ui"
+      "path": "../ui-rise"
     },
     {
       "path": "../ws-client"
+    },
+    {
+      "path": "../ui-tamagui"
     }
   ]
 }

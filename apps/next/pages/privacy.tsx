@@ -1,4 +1,4 @@
-import { SizableText } from '@react-native-templates/demo-ui'
+import { SizableText } from 'tamagui'
 
 export default function PrivacyPage() {
   return <SizableText>Rise Privacy Policy</SizableText>
