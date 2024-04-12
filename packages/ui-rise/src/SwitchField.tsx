@@ -1,4 +1,4 @@
-import { ComponentProps } from '@react-native-templates/core'
+import { ComponentProps, wrapEvents } from '@react-native-templates/core'
 import React from 'react'
 import { Label, Spinner, Switch, XStack } from 'tamagui'
 import { z } from 'zod'
@@ -9,21 +9,19 @@ const SwitchFieldProps = z.object({
   onValue: z.string().or(z.array(z.string())).nullable().optional(),
 })
 
+const WrappedSwitch = wrapEvents(Switch, ['onCheckedChange'])
+
 export function SwitchField(props: z.infer<typeof SwitchFieldProps> & ComponentProps) {
   let content = <Spinner />
   if (typeof props.value === 'boolean') {
     content = (
-      <Switch
+      <WrappedSwitch
         marginVertical={'$4'}
         checked={props.value}
-        onCheckedChange={(value) => {
-          // tbd: this results in onTemplateEvent called twice. Can we change this?
-          // handleEvent(props.onTemplateEvent, props.onValue, 'switch', value)
-          props.onTemplateEvent('update', value)
-        }}
+        onTemplateEvent={props.onTemplateEvent}
       >
         <Switch.Thumb animation="quick" />
-      </Switch>
+      </WrappedSwitch>
     )
   }
   return (

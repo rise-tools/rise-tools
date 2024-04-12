@@ -3,7 +3,13 @@ import React from 'react'
 /** Components */
 type ComponentIdentifier = string
 export type ComponentProps = React.PropsWithChildren<{
-  onTemplateEvent: (name: string, payload: any) => void
+  onTemplateEvent: (
+    name: string,
+    event: {
+      action?: string[]
+      args?: any[]
+    }
+  ) => void
 }>
 
 export type ComponentRegistry = Record<ComponentIdentifier, ComponentDefinition<any>>
@@ -57,7 +63,7 @@ export function BaseTemplate({
 }: {
   components: ComponentRegistry
   dataState: DataState | DataState[]
-  onEvent: (key: string, name: string, payload: any) => void
+  onEvent: (key: string, name: string, payload: any[]) => void
 }) {
   function renderComponent(stateNode: ComponentDataState, key: string) {
     const componentDefinition = components[stateNode.component]

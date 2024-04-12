@@ -8,7 +8,7 @@ import { render } from '@testing-library/react'
 import React from 'react'
 import { createTamagui, TamaguiProvider } from 'tamagui'
 
-import TamaguiComponents from '..'
+import { TamaguiComponents } from '..'
 
 const testAppConfig = createTamagui(config)
 

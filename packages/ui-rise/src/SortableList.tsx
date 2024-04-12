@@ -1,4 +1,4 @@
-import { ComponentProps } from '@react-native-templates/core'
+import { ComponentProps, wrapEvents } from '@react-native-templates/core'
 import React from 'react'
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
 import { TouchableOpacity } from 'react-native-gesture-handler'
@@ -21,30 +21,25 @@ const SortableListProps = z.object({
   onReorder: z.string().or(z.array(z.string())),
 })
 
+const WrappedFlatList = wrapEvents(DraggableFlatList, ['onDragEnd'])
+
 export function SortableList(props: z.infer<typeof SortableListProps> & ComponentProps) {
   return (
     <View flex={1}>
-      <DraggableFlatList
+      <WrappedFlatList
         containerStyle={{ flex: 1 }}
         data={props.items}
         keyExtractor={keyExtractor}
         ListFooterComponent={props.footer}
-        onDragEnd={({ data }) => {
-          const reordered = data.map((item) => item.key)
-          const payload = [
-            ...(Array.isArray(props.onReorder) ? props.onReorder : [props.onReorder]),
-            reordered,
-          ]
-          props.onTemplateEvent('update', payload)
-        }}
+        onTemplateEvent={props.onTemplateEvent}
         renderItem={(row) => {
           const { item, drag, isActive } = row
           return (
             <ScaleDecorator>
               <TouchableOpacity
-                onPress={() => {
-                  if (item.onPress) props.onTemplateEvent('press', item.onPress)
-                }}
+                // onPress={() => {
+                //   if (item.onPress) props.onTemplateEvent('press', [item.onPress])
+                // }}
                 onLongPress={drag}
                 disabled={isActive}
                 style={[{ padding: 10, backgroundColor: 'white', margin: 10 }]}

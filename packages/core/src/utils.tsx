@@ -1,20 +1,29 @@
-import React from 'react'
+import React, { ComponentProps as PropsOf, PropsWithChildren } from 'react'
 
 import { ComponentProps } from '.'
 
-export function wrapEvents(Component: React.ComponentType<ComponentProps>, propsToWrap: string[]) {
-  function Wrapper(passedProps: Record<string, any> & ComponentProps) {
+export function wrapEvents<T extends React.ComponentType<PropsWithChildren<any>>>(
+  Component: T,
+  propsToWrap: (keyof PropsOf<T>)[]
+) {
+  function Wrapper(props: PropsOf<T> & ComponentProps) {
     for (const propName of propsToWrap) {
-      if (passedProps[propName]) {
-        console.warn(
-          `Cannot pass "${propName}" to "${Component.displayName}". Use "onTemplateEvent" instead`
-        )
+      const propValue = props[propName]
+      if (propValue === null) {
+        continue
       }
-      passedProps[propName] = (payload: any) => {
-        passedProps.onTemplateEvent(propName, payload)
+
+      const action = propValue
+        ? [...(Array.isArray(propValue) ? propValue : [propValue])]
+        : undefined
+
+      props[propName] = (...args: any[]) => {
+        props.onTemplateEvent(propName, { action, args })
       }
     }
-    return <Component {...passedProps} />
+
+    // @ts-ignore fix this error
+    return <Component {...props} />
   }
   return Wrapper
 }

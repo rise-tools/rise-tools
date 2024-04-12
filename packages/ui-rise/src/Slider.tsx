@@ -1,4 +1,4 @@
-import { ComponentProps } from '@react-native-templates/core'
+import { ComponentProps, wrapEvents } from '@react-native-templates/core'
 import React from 'react'
 import { Label, Slider as TamaguiSlider, Spinner, YStack } from 'tamagui'
 import { z } from 'zod'
@@ -10,22 +10,22 @@ const SliderProps = z.object({
   step: z.number().optional().default(1),
 })
 
+const WrappedTamaguiSlider = wrapEvents(TamaguiSlider, ['onValueChange'])
+
 export function Slider(props: z.infer<typeof SliderProps> & ComponentProps) {
   return (
-    <TamaguiSlider
+    <WrappedTamaguiSlider
       value={[props.value]}
       max={props.max}
       min={props.min}
       step={props.step}
-      onValueChange={(value) => {
-        props.onTemplateEvent('onValueChange', value)
-      }}
+      onTemplateEvent={props.onTemplateEvent}
     >
       <TamaguiSlider.Track>
         <TamaguiSlider.TrackActive />
       </TamaguiSlider.Track>
       <TamaguiSlider.Thumb index={0} circular elevate />
-    </TamaguiSlider>
+    </WrappedTamaguiSlider>
   )
 }
 
@@ -39,32 +39,25 @@ const SliderFieldProps = SliderProps.extend({
   label: z.string().optional(),
 })
 
+const WrappedSliderField = wrapEvents(TamaguiSlider, ['onValueChange'])
+
 export function SliderField(props: z.infer<typeof SliderFieldProps> & ComponentProps) {
   let content = <Spinner />
   if (typeof props.value === 'number') {
     content = (
-      <TamaguiSlider
+      <WrappedSliderField
         marginVertical={'$4'}
         value={[props.value]}
         max={props.max}
         min={props.min}
         step={props.step}
-        onValueChange={(value) => {
-          let payload: (string | number)[] = value
-          if (props.onValue === null) return
-          if (props.onValue)
-            payload = [
-              ...(Array.isArray(props.onValue) ? props.onValue : [props.onValue]),
-              ...value,
-            ]
-          props.onTemplateEvent('update', payload)
-        }}
+        onTemplateEvent={props.onTemplateEvent}
       >
         <TamaguiSlider.Track>
           <TamaguiSlider.TrackActive />
         </TamaguiSlider.Track>
         <TamaguiSlider.Thumb index={0} circular elevate />
-      </TamaguiSlider>
+      </WrappedSliderField>
     )
   }
   return (
