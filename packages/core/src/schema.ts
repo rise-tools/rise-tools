@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { DataStateType } from './template'
 const SingleEventDataStateSchema = z.object({
   $: z.literal(DataStateType.Event),
-  action: z.string(),
+  action: z.string().optional(),
 })
 export const EventDataStateSchema = z.union([
   SingleEventDataStateSchema,

@@ -46,7 +46,7 @@ type ReferencedDataState = {
 }
 type EventDataState = {
   $: DataStateType.Event
-  action: string
+  action?: string
 }
 
 export type TemplateEvent = {
@@ -55,7 +55,7 @@ export type TemplateEvent = {
     path: string
   }
   name: string
-  action: string
+  action?: string
   payload: any[]
 }
 
