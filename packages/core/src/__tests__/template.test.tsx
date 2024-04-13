@@ -309,7 +309,7 @@ it('should accept event handler as a prop', () => {
         component: 'View',
         props: {
           onClick: {
-            $: 'event',
+            $: DataStateType.Event,
             action: 'navigate',
           },
         },
@@ -346,11 +346,11 @@ it('should accept multiple event handlers as a prop', () => {
         props: {
           onClick: [
             {
-              $: 'event',
+              $: DataStateType.Event,
               action: 'navigate',
             },
             {
-              $: 'event',
+              $: DataStateType.Event,
               action: 'onButtonPressed',
             },
           ],

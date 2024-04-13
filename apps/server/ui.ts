@@ -1,3 +1,5 @@
+import { ComponentDataState, DataState, DataStateType } from '@react-native-templates/core'
+
 import { hslToHex } from './color'
 import { EGVideo } from './eg-video-playback'
 import { UPRISING } from './flag'
@@ -15,31 +17,22 @@ import {
   VideoMedia,
 } from './state-schema'
 
-type UI = any
-
 export type UIContext = {
   video: EGVideo
 }
 
-function icon(name: string) {
+function icon(name: string): ComponentDataState {
   return {
-    $: 'component',
+    $: DataStateType.Component,
     key: 'icon',
     component: 'Icon',
     props: { icon: name },
   }
 }
-function simpleLabel(text: string) {
+
+function section(title: string, children: DataState[], key?: string): DataState {
   return {
-    $: 'component',
-    key: text,
-    component: 'Label',
-    children: text,
-  }
-}
-function section(title: string, children: any, key?: string) {
-  return {
-    $: 'component',
+    $: DataStateType.Component,
     component: 'YStack',
     key: key || title,
     props: {
@@ -48,7 +41,7 @@ function section(title: string, children: any, key?: string) {
     },
     children: [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'title',
         component: 'Label',
         children: title,
@@ -67,7 +60,7 @@ function getModeControls(state: MainState) {
   if (state.mode === 'color') {
     return [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'colorPreview',
         component: 'View',
         props: {
@@ -77,7 +70,7 @@ function getModeControls(state: MainState) {
         },
       },
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'hueSlider',
         component: 'SliderField',
         props: {
@@ -89,7 +82,7 @@ function getModeControls(state: MainState) {
         },
       },
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'saturationSlider',
         component: 'SliderField',
         props: {
@@ -101,7 +94,7 @@ function getModeControls(state: MainState) {
         },
       },
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'lightnessSlider',
         component: 'SliderField',
         props: {
@@ -117,7 +110,7 @@ function getModeControls(state: MainState) {
   if (state.mode === 'video') {
     return [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'selectVideo',
         component: 'SelectField',
         props: {
@@ -126,7 +119,7 @@ function getModeControls(state: MainState) {
         },
       },
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'restart',
         component: 'Button',
         children: 'Restart Video',
@@ -138,7 +131,7 @@ function getModeControls(state: MainState) {
 
 function scroll(children: any[]) {
   return {
-    $: 'component',
+    $: DataStateType.Component,
     component: 'ScrollView',
     props: {
       padding: '$4',
@@ -148,72 +141,87 @@ function scroll(children: any[]) {
   }
 }
 
-function getVideoControls(mediaPath: string, state: VideoMedia, context: UIContext): UI[] {
+function getVideoControls(mediaPath: string, state: VideoMedia, context: UIContext): DataState[] {
   const player = context.video.getPlayer(state.id)
   return [
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'selectVideo',
       component: 'SelectField',
       props: {
         unselectedLabel: 'Select Video...',
         value: state.track,
-        onValue: ['updateMedia', mediaPath, 'track'],
-        options: { $: 'ref', ref: ['videoList'] },
+        onValue: {
+          $: DataStateType.Event,
+          action: ['updateMedia', mediaPath, 'track'],
+        },
+        options: { $: DataStateType.Ref, ref: ['videoList'] },
       },
     },
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'restart',
       component: 'Button',
       children: 'Restart Video',
       props: {
-        onPress: ['updateMedia', mediaPath, 'restart'],
+        onPress: {
+          $: DataStateType.Event,
+          action: ['updateMedia', mediaPath, 'restart'],
+        },
       },
     },
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'loopBounce',
       component: 'SwitchField',
       props: {
         value: state?.params?.loopBounce || false,
         label: 'Loop Bounce',
-        onValue: ['updateMedia', mediaPath, 'loopBounce'],
+        onValue: {
+          $: DataStateType.Event,
+          action: ['updateMedia', mediaPath, 'loopBounce'],
+        },
       },
     },
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'reverse',
       component: 'SwitchField',
       props: {
         value: state?.params?.reverse || false,
         label: 'Reverse Playback',
-        onValue: ['updateMedia', mediaPath, 'reverse'],
+        onValue: {
+          $: DataStateType.Event,
+          action: ['updateMedia', mediaPath, 'reverse'],
+        },
       },
     },
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'info',
       component: 'Label',
       children: `Frame Count: ${player.getFrameCount()}`,
     },
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'effect',
       component: 'Button',
       children: 'Effects',
       props: {
         icon: icon('Sparkles'),
-        onPress: ['navigate', `${mediaPath}:effects`],
+        onPress: {
+          $: DataStateType.Event,
+          action: ['navigate', `${mediaPath}:effects`],
+        },
       },
     },
   ]
 }
 
-function getColorControls(mediaPath: string, state: ColorMedia): UI[] {
+function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
   return [
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'ColorPreview',
       component: 'View',
       props: {
@@ -223,39 +231,48 @@ function getColorControls(mediaPath: string, state: ColorMedia): UI[] {
       },
     },
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'ColorHueSlider',
       component: 'SliderField',
       props: {
         label: 'Hue',
         value: state.h,
-        onValue: ['updateMedia', mediaPath, 'color', 'h'],
+        onValue: {
+          $: DataStateType.Event,
+          action: ['updateMedia', mediaPath, 'color', 'h'],
+        },
         max: 360,
         min: 0,
         step: 1,
       },
     },
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'ColorSaturationSlider',
       component: 'SliderField',
       props: {
         label: 'Saturation',
         value: state.s,
-        onValue: ['updateMedia', mediaPath, 'color', 's'],
+        onValue: {
+          $: DataStateType.Event,
+          action: ['updateMedia', mediaPath, 'color', 's'],
+        },
         max: 1,
         min: 0,
         step: 0.01,
       },
     },
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'ColorLightnessSlider',
       component: 'SliderField',
       props: {
         label: 'Lightness',
         value: state.l,
-        onValue: ['updateMedia', mediaPath, 'color', 'l'],
+        onValue: {
+          $: DataStateType.Event,
+          action: ['updateMedia', mediaPath, 'color', 'l'],
+        },
         max: 1,
         min: 0,
         step: 0.01,
@@ -264,14 +281,14 @@ function getColorControls(mediaPath: string, state: ColorMedia): UI[] {
   ]
 }
 
-export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | undefined): UI {
+export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | undefined): DataState {
   return {
-    $: 'component',
+    $: DataStateType.Component,
     component: 'SortableList',
     props: {
       onReorder: ['updateMedia', mediaLinkPath, 'effectOrder'],
       footer: {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'addEffect',
         component: 'SelectField',
         props: {
@@ -286,14 +303,20 @@ export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | unde
             { key: 'darken', label: 'Darken' },
             { key: 'rotate', label: 'Rotate' },
           ],
-          onValue: ['updateMedia', mediaLinkPath, 'addEffect'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateMedia', mediaLinkPath, 'addEffect'],
+          },
         },
       },
       items: (effectsState || []).map((effect) => {
         return {
           key: effect.key,
           label: effect.type,
-          onPress: ['navigate', `${mediaLinkPath}:effects:${effect.key}`],
+          onPress: {
+            $: DataStateType.Event,
+            action: ['navigate', `${mediaLinkPath}:effects:${effect.key}`],
+          },
         }
       }),
     },
@@ -301,26 +324,35 @@ export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | unde
 }
 
 export function getEffectUI(effectPath: string[], effect: Effect) {
-  const removeEffect = {
-    $: 'component',
+  const removeEffect: ComponentDataState = {
+    $: DataStateType.Component,
     key: 'removeEffect',
     component: 'Button',
     children: 'Remove Effect',
     props: {
-      onPress: {
-        $: 'multi',
-        events: [['updateEffect', effectPath, 'remove'], 'navigate-back'],
-      },
+      onPress: [
+        {
+          $: DataStateType.Event,
+          action: 'navigate-back',
+        },
+        {
+          $: DataStateType.Event,
+          action: ['updateEffect', effectPath, 'remove'],
+        },
+      ],
     },
   }
   if (effect.type === 'desaturate') {
     return section('Desaturate', [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'value',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'value'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateEffect', effectPath, 'value'],
+          },
           label: 'Value',
           value: effect.value,
           max: 1,
@@ -333,11 +365,14 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
   } else if (effect.type === 'hueShift') {
     return section('Hue Shift', [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'value',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'value'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateEffect', effectPath, 'value'],
+          },
           label: 'Value',
           value: effect.value,
           max: 180,
@@ -350,11 +385,14 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
   } else if (effect.type === 'colorize') {
     return section('Colorize', [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'amount',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'amount'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateEffect', effectPath, 'amount'],
+          },
           label: 'Amount',
           value: effect.amount,
           max: 1,
@@ -363,7 +401,7 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         },
       },
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'ColorPreview',
         component: 'View',
         props: {
@@ -373,11 +411,14 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         },
       },
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'saturation',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'saturation'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateEffect', effectPath, 'saturation'],
+          },
           label: 'Saturation',
           value: effect.saturation,
           max: 1,
@@ -386,11 +427,14 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         },
       },
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'hue',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'hue'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateEffect', effectPath, 'hue'],
+          },
           label: 'Hue',
           value: effect.hue,
           max: 360,
@@ -403,11 +447,14 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
   } else if (effect.type === 'rotate') {
     return section('Rotate', [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'value',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'value'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateEffect', effectPath, 'value'],
+          },
           label: 'Value',
           value: effect.value,
           max: 1,
@@ -420,11 +467,14 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
   } else if (effect.type === 'darken') {
     return section('Darken', [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'value',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'value'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateEffect', effectPath, 'value'],
+          },
           label: 'Value',
           value: effect.value,
           max: 1,
@@ -437,11 +487,14 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
   } else if (effect.type === 'brighten') {
     return section('Brighten', [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'value',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'value'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateEffect', effectPath, 'value'],
+          },
           label: 'Value',
           value: effect.value,
           max: 1,
@@ -472,16 +525,19 @@ const newMediaOptions = [
   { key: 'sequence', label: 'Sequence' },
 ]
 
-export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
+export function getMediaControls(state: Media, mediaLinkPath: string): DataState[] {
   if (state.type === 'off') {
     return [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'MediaMode',
         component: 'SelectField',
         props: {
           value: state.type,
-          onValue: ['updateMedia', mediaLinkPath, 'mode'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateMedia', mediaLinkPath, 'mode'],
+          },
           options: newMediaOptions,
         },
       },
@@ -489,31 +545,37 @@ export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
   }
   return [
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'MediaMode',
       component: 'XStack',
       children: [
         {
-          $: 'component',
+          $: DataStateType.Component,
           key: 'link',
           component: 'Button',
           props: {
             f: 1,
-            onPress: ['navigate', mediaLinkPath],
+            onPress: {
+              $: DataStateType.Event,
+              action: ['navigate', mediaLinkPath],
+            },
           },
           children: `Open ${getMediaTitle(state)}`,
         },
         {
-          $: 'component',
+          $: DataStateType.Component,
           key: 'clear',
           component: 'Button',
           props: {
             chromeless: true,
             backgroundColor: '$transparent',
-            onPress: ['updateMedia', mediaLinkPath, 'clear'],
+            onPress: {
+              $: DataStateType.Event,
+              action: ['updateMedia', mediaLinkPath, 'clear'],
+            },
           },
           children: {
-            $: 'component',
+            $: DataStateType.Component,
             key: 'icon',
             component: 'Icon',
             props: { icon: 'X' },
@@ -524,38 +586,47 @@ export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
   ]
 }
 
-export function getTransitionControls(transition: Transition, state: TransitionState): UI[] {
+export function getTransitionControls(transition: Transition, state: TransitionState): DataState[] {
   return [
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'manual',
       component: 'SliderField',
       props: {
         label: 'Manual',
         value: state.manual || 0,
-        onValue: ['updateTransition', 'manual'],
+        onValue: {
+          $: DataStateType.Event,
+          action: ['updateTransition', 'manual'],
+        },
         max: 1,
         min: 0,
         step: 0.01,
       },
     },
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'transition',
       component: 'Button',
       children: 'Start Transition',
       props: {
-        onPress: ['updateTransition', 'startAuto'],
+        onPress: {
+          $: DataStateType.Event,
+          action: ['updateTransition', 'startAuto'],
+        },
       },
     },
     {
-      $: 'component',
+      $: DataStateType.Component,
       key: 'duration',
       component: 'SliderField',
       props: {
         label: `Duration ${Math.round(transition.duration / 100) / 10}sec`,
         value: transition.duration || 0,
-        onValue: ['updateTransition', 'duration'],
+        onValue: {
+          $: DataStateType.Event,
+          action: ['updateTransition', 'duration'],
+        },
         max: 10000,
         min: 0,
         step: 1,
@@ -579,7 +650,7 @@ export function getUIRoot(state: MainState) {
 
 export function getUIRootLegacy(state: MainState) {
   return {
-    $: 'component',
+    $: DataStateType.Component,
     component: 'ScrollView',
     props: {
       padding: '$4',
@@ -587,7 +658,7 @@ export function getUIRootLegacy(state: MainState) {
     },
     children: [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: '1',
         component: 'Paragraph',
         props: {
@@ -595,7 +666,7 @@ export function getUIRootLegacy(state: MainState) {
         },
       },
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'mode',
         component: 'SelectField',
         props: {
@@ -615,7 +686,7 @@ export function getUIRootLegacy(state: MainState) {
       },
 
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'offButton',
         component: 'Button',
         children: 'All Off',
@@ -625,11 +696,11 @@ export function getUIRootLegacy(state: MainState) {
       },
       ...getModeControls(state),
       // {
-      //   $: 'component',
+      //   $: DataStateType.Component,
       //   key: 'button',
       //   component: 'Button',
       //   children: {
-      //     $: 'component',
+      //     $: DataStateType.Component,
       //     component: 'XStack',
       //     key: 'XStack',
       //     props: {
@@ -639,25 +710,28 @@ export function getUIRootLegacy(state: MainState) {
       //     },
       //     children: [
       //       'Quick Effects',
-      //       { $: 'component', key: 'lol', component: 'Icon', props: { icon: 'Sparkles' } },
+      //       { $: DataStateType.Component, key: 'lol', component: 'Icon', props: { icon: 'Sparkles' } },
       //     ],
       //   },
       //   props: {
       //     onPress: ['navigate', 'effects'],
-      //     // icon: { $: 'component', key: 'lol', component: 'Icon', props: { icon: 'Check' } },
+      //     // icon: { $: DataStateType.Component, key: 'lol', component: 'Icon', props: { icon: 'Check' } },
       //   },
       // },
 
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'quickEffects',
         component: 'Button',
         children: 'Quick Effects',
         props: {
-          onPress: ['navigate', 'quickEffects'],
+          onPress: {
+            $: DataStateType.Event,
+            action: ['navigate', 'quickEffects'],
+          },
           spaceFlex: 1,
           iconAfter: {
-            $: 'component',
+            $: DataStateType.Component,
             key: 'icon',
             component: 'Icon',
             props: { icon: 'Sparkles' },
@@ -665,15 +739,18 @@ export function getUIRootLegacy(state: MainState) {
         },
       },
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'beatEffects',
         component: 'Button',
         children: 'Beat Effects',
         props: {
-          onPress: ['navigate', 'beatEffects'],
+          onPress: {
+            $: DataStateType.Event,
+            action: ['navigate', 'beatEffects'],
+          },
           spaceFlex: 1,
           iconAfter: {
-            $: 'component',
+            $: DataStateType.Component,
             key: 'icon',
             component: 'Icon',
             props: { icon: 'HeartPulse' },
@@ -688,7 +765,7 @@ function getSequenceControls(
   mediaLinkPath: string,
   state: SequenceMedia,
   context: UIContext
-): UI[] {
+): DataState[] {
   return []
 }
 
@@ -696,25 +773,31 @@ function getLayersControls(
   mediaLinkPath: string,
   state: LayersMedia,
   context: UIContext,
-  footer: UI = []
-): UI {
+  footer: DataState[] = []
+): DataState {
   return {
-    $: 'component',
+    $: DataStateType.Component,
     component: 'SortableList',
     props: {
-      onReorder: ['updateMedia', mediaLinkPath, 'layerOrder'],
+      onReorder: {
+        $: DataStateType.Event,
+        action: ['updateMedia', mediaLinkPath, 'layerOrder'],
+      },
       footer: {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'addLayer',
         component: 'YStack',
         children: [
           {
             key: 'addLayer',
-            $: 'component',
+            $: DataStateType.Component,
             component: 'SelectField',
             props: {
               value: null,
-              onValue: ['updateMedia', mediaLinkPath, 'addLayer'],
+              onValue: {
+                $: DataStateType.Event,
+                action: ['updateMedia', mediaLinkPath, 'addLayer'],
+              },
               options: newMediaOptions,
               unselectedLabel: 'Add Layer...',
             },
@@ -726,24 +809,30 @@ function getLayersControls(
         return {
           key: layer.key,
           label: layer.media.type,
-          onPress: ['navigate', `${mediaLinkPath}:layer:${layer.key}`],
+          onPress: {
+            $: DataStateType.Event,
+            action: ['navigate', `${mediaLinkPath}:layer:${layer.key}`],
+          },
         }
       }),
     },
   }
 }
 
-export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UIContext): UI {
+export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UIContext): DataState {
   return getMediaUI(mediaPath, layer.media, context, [
     section('Layer Controls', [
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'blendMode',
         component: 'SelectField',
         props: {
           value: layer.blendMode,
           label: 'Blend Mode',
-          onValue: ['updateMedia', mediaPath, 'blendMode'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateMedia', mediaPath, 'blendMode'],
+          },
           options: [
             { key: 'mix', label: 'Blend' },
             { key: 'add', label: 'Add' },
@@ -752,11 +841,14 @@ export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UICont
         },
       },
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'blendAmount',
         component: 'SliderField',
         props: {
-          onValue: ['updateMedia', mediaPath, 'blendAmount'],
+          onValue: {
+            $: DataStateType.Event,
+            action: ['updateMedia', mediaPath, 'blendAmount'],
+          },
           label: 'Blend Amount',
           value: layer.blendAmount,
           max: 1,
@@ -765,15 +857,21 @@ export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UICont
         },
       },
       {
-        $: 'component',
+        $: DataStateType.Component,
         key: 'removeLayer',
         component: 'Button',
         children: 'Remove Layer',
         props: {
-          onPress: {
-            $: 'multi',
-            events: [['updateMedia', mediaPath, 'removeLayer', layer.key], 'navigate-back'],
-          },
+          onPress: [
+            {
+              $: DataStateType.Event,
+              action: ['updateMedia', mediaPath, 'removeLayer', layer.key],
+            },
+            {
+              $: DataStateType.Event,
+              action: 'navigate-back',
+            },
+          ],
         },
       },
     ]),
@@ -784,8 +882,8 @@ export function getMediaUI(
   mediaPath: string,
   mediaState: Media,
   context: UIContext,
-  footer: UI[] = []
-): UI {
+  footer: DataState[] = []
+): DataState {
   if (mediaState.type === 'color')
     return scroll([...getColorControls(mediaPath, mediaState), ...footer])
   if (mediaState.type === 'video')
@@ -795,7 +893,7 @@ export function getMediaUI(
   if (mediaState.type === 'layers') return getLayersControls(mediaPath, mediaState, context, footer)
   return scroll([
     {
-      $: 'component',
+      $: DataStateType.Component,
       component: 'Text',
       children: mediaState.type,
     },
@@ -803,25 +901,25 @@ export function getMediaUI(
   ])
 }
 
-export function getQuickEffects(mainState: MainState) {
+export function getQuickEffects() {
   return {
-    $: 'component',
+    $: DataStateType.Component,
     component: 'YStack',
     props: {
       padding: '$4',
       gap: '$4',
     },
     children: [
-      { $: 'component', key: 'flash', component: 'Button', children: 'Flash' },
-      { $: 'component', key: 'waveIn', component: 'Button', children: 'WaveIn' },
-      { $: 'component', key: 'waveOut', component: 'Button', children: 'WaveOut' },
+      { $: DataStateType.Component, key: 'flash', component: 'Button', children: 'Flash' },
+      { $: DataStateType.Component, key: 'waveIn', component: 'Button', children: 'WaveIn' },
+      { $: DataStateType.Component, key: 'waveOut', component: 'Button', children: 'WaveOut' },
     ],
   }
 }
 
 export function getBeatEffects(mainState: MainState) {
   return {
-    $: 'component',
+    $: DataStateType.Component,
     component: 'YStack',
     props: {
       gap: '$4',
@@ -831,43 +929,43 @@ export function getBeatEffects(mainState: MainState) {
         'Beat Effect',
         [
           {
-            $: 'component',
+            $: DataStateType.Component,
             key: 'intensity',
             component: 'SliderField',
             props: {
               label: 'Intensity',
-              value: { $: 'ref', ref: ['mainState', 'beatEffect', 'intensity'] },
+              value: { $: DataStateType.Ref, ref: ['mainState', 'beatEffect', 'intensity'] },
               max: 100,
               min: 0,
               step: 1,
             },
           },
           {
-            $: 'component',
+            $: DataStateType.Component,
             key: 'waveLength',
             component: 'SliderField',
             props: {
               label: 'Wave Length %',
-              value: { $: 'ref', ref: ['mainState', 'beatEffect', 'waveLength'] },
+              value: { $: DataStateType.Ref, ref: ['mainState', 'beatEffect', 'waveLength'] },
               max: 1,
               min: 0,
               step: 0.01,
             },
           },
           {
-            $: 'component',
+            $: DataStateType.Component,
             key: 'dropoff',
             component: 'SliderField',
             props: {
               label: 'DropOff %',
-              value: { $: 'ref', ref: ['mainState', 'beatEffect', 'dropoff'] },
+              value: { $: DataStateType.Ref, ref: ['mainState', 'beatEffect', 'dropoff'] },
               max: 1,
               min: 0,
               step: 0.01,
             },
           },
           {
-            $: 'component',
+            $: DataStateType.Component,
             key: 'effect',
             component: 'SelectField',
             props: {
@@ -886,23 +984,26 @@ export function getBeatEffects(mainState: MainState) {
         'Manual Beat Pace',
         [
           {
-            $: 'component',
+            $: DataStateType.Component,
             key: 'manualBeatEnabled',
             component: 'SwitchField',
             props: {
               label: 'Enabled',
-              value: { $: 'ref', ref: ['mainState', 'manualBeat', 'enabled'] },
+              value: { $: DataStateType.Ref, ref: ['mainState', 'manualBeat', 'enabled'] },
             },
           },
           {
-            $: 'component',
+            $: DataStateType.Component,
             key: 'tapBeat',
             component: 'Button',
             children: 'Tap Beat',
             props: {
               onPress: null,
               onPressOut: null,
-              onPressIn: 'manualTapBeat',
+              onPressIn: {
+                $: DataStateType.Event,
+                action: 'manualTapBeat',
+              },
               spaceFlex: 1,
               iconAfter: icon('Activity'),
             },
@@ -911,12 +1012,12 @@ export function getBeatEffects(mainState: MainState) {
         'manualBeat'
       ),
       section('Denon Stagelinq', [
-        { $: 'ref', ref: ['stagelinqConnection'] },
+        { $: DataStateType.Ref, ref: ['stagelinqConnection'] },
         // simpleLabel('Coming Soon')
       ]),
 
-      // { $: 'component', key: 'waveIn', component: 'Button', children: 'WaveIn' },
-      // { $: 'component', key: 'waveOut', component: 'Button', children: 'WaveOut' },
+      // { $: DataStateType.Component, key: 'waveIn', component: 'Button', children: 'WaveIn' },
+      // { $: DataStateType.Component, key: 'waveOut', component: 'Button', children: 'WaveOut' },
     ],
   }
 }

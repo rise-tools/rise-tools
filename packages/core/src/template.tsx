@@ -4,7 +4,7 @@ import React from 'react'
 type ComponentIdentifier = string
 
 export type ComponentRegistry = Record<ComponentIdentifier, ComponentDefinition<any>>
-export type ComponentDefinition<T extends Record<string, DataState>> = {
+export type ComponentDefinition<T extends Record<string, JSONValue>> = {
   component: React.ComponentType<T>
   validator?: (input?: T) => T
 }
@@ -22,32 +22,38 @@ export enum DataStateType {
   Ref = 'ref',
   Event = 'event',
 }
-export type DataState =
-  | DataState[]
-  | ComponentDataState
-  | ReferencedDataState
-  | EventDataState
-  | object
+export type DataState = ComponentDataState | ReferencedDataState | EventDataState
+
+export type ComponentDataState = {
+  $: DataStateType.Component
+  key?: string
+  component: ComponentIdentifier
+  children?: JSONValue
+  props?: Record<string, JSONValue>
+}
+type ReferencedDataState = {
+  $: DataStateType.Ref
+  ref: string | string[]
+}
+// tbd: allow for more specific types
+type EventAction = any
+type EventDataState = {
+  $: DataStateType.Event
+  action?: EventAction
+}
+type SafeObject = {
+  [key: string]: JSONValue
+  $?: never
+}
+export type JSONValue =
+  | DataState
+  | SafeObject
   | string
   | number
   | boolean
   | null
   | undefined
-type ComponentDataState = {
-  $: DataStateType.Component
-  key?: string
-  component: ComponentIdentifier
-  children?: DataState
-  props?: Record<string, DataState>
-}
-type ReferencedDataState = {
-  $: DataStateType.Ref
-  ref: string
-}
-type EventDataState = {
-  $: DataStateType.Event
-  action?: string
-}
+  | JSONValue[]
 
 export type TemplateEvent = {
   target: {
@@ -55,7 +61,7 @@ export type TemplateEvent = {
     path: string
   }
   name: string
-  action?: string
+  action?: EventDataState['action']
   payload: any[]
 }
 
@@ -72,14 +78,13 @@ function isEventDataState(obj: any): obj is EventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === DataStateType.Event
 }
 
-// tbd: needs a better name
 export function BaseTemplate({
   components,
   dataState,
   onEvent,
 }: {
   components: ComponentRegistry
-  dataState: DataState | DataState[]
+  dataState: JSONValue | JSONValue[]
   onEvent: (event: TemplateEvent) => void
 }) {
   function renderComponent(stateNode: ComponentDataState, path: string) {
@@ -111,7 +116,7 @@ export function BaseTemplate({
     return <Component data-testid={path} {...renderedProps} children={children} />
   }
 
-  function render(stateNode: DataState, path: string, index?: number): React.ReactNode {
+  function render(stateNode: JSONValue, path: string, index?: number): React.ReactNode {
     if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
@@ -132,10 +137,10 @@ export function BaseTemplate({
 
   function renderProp(
     propKey: string,
-    stateNode: DataState,
+    stateNode: JSONValue,
     parentNode: ComponentDataState,
     path: string
-  ): DataState {
+  ): any {
     if (
       isEventDataState(stateNode) ||
       (Array.isArray(stateNode) && stateNode.every(isEventDataState))
