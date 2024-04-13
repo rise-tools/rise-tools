@@ -111,18 +111,19 @@ export function BaseTemplate({
     return <Component data-testid={path} {...renderedProps} children={children} />
   }
 
-  function render(stateNode: DataState, path: string): React.ReactNode {
+  function render(stateNode: DataState, path: string, index?: number): React.ReactNode {
     if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
     if (Array.isArray(stateNode)) {
-      return stateNode.map((item, index) => render(item, `${path}[${index}]`))
+      return stateNode.map((item, index) => render(item, path, index))
     }
     if (!isCompositeDataState(stateNode)) {
       throw new Error('Objects are not valid as a React child.')
     }
     if (stateNode.$ === DataStateType.Component) {
-      return renderComponent(stateNode, stateNode.key ? `${path}['${stateNode.key}']` : `${path}`)
+      const key = stateNode.key || index?.toString()
+      return renderComponent(stateNode, key ? `${path}[${key}]` : `${path}`)
     }
     if (stateNode.$ === DataStateType.Ref) {
       throw new Error('Your data includes refs. You must use a <Template /> component instead.')
@@ -153,11 +154,11 @@ export function BaseTemplate({
     }
     if (Array.isArray(stateNode)) {
       return stateNode.map((item, index) =>
-        renderProp(propKey, item, parentNode, `${path}.props[${index}]`)
+        renderProp(propKey, item, parentNode, `${path}.props[${propKey}][${index}]`)
       )
     }
     if (isCompositeDataState(stateNode)) {
-      return render(stateNode, `${path}.props['${propKey}']`)
+      return render(stateNode, `${path}.props[${propKey}]`)
     }
     return stateNode
   }

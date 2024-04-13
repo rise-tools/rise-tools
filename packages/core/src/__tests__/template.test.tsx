@@ -110,15 +110,15 @@ it('should use component key when provided', () => {
         data-testid="root[0]"
       >
         <div
-          data-testid="root[0].children['customKey']"
+          data-testid="root[0].children[customKey]"
         >
           <div
-            data-testid="root[0].children['customKey'].children[0]"
+            data-testid="root[0].children[customKey].children[0]"
           >
             Hello
           </div>
           <div
-            data-testid="root[0].children['customKey'].children['customChildKey']"
+            data-testid="root[0].children[customKey].children[customChildKey]"
           >
             World!
           </div>
@@ -237,14 +237,14 @@ it('should accept component as a prop', () => {
       <section>
         <header>
           <div
-            data-testid="root.props['header']"
+            data-testid="root.props[header]"
           >
             Header text
           </div>
         </header>
         <footer>
           <div
-            data-testid="root.props['paragraph']"
+            data-testid="root.props[paragraph]"
           >
             Footer text
           </div>
@@ -314,7 +314,7 @@ it('should accept event handler as a prop', () => {
     />
   )
 
-  fireEvent.click(component.getByTestId("root['button']"))
+  fireEvent.click(component.getByTestId('root[button]'))
 
   expect(onEvent).toHaveBeenCalledTimes(1)
   expect(onEvent.mock.lastCall[0]).toMatchObject({
@@ -322,7 +322,7 @@ it('should accept event handler as a prop', () => {
     name: 'onClick',
     target: {
       key: 'button',
-      path: "root['button']",
+      path: 'root[button]',
     },
   })
 })
