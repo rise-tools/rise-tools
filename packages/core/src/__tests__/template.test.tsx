@@ -76,30 +76,28 @@ it('should use component key when provided', () => {
   const component = render(
     <BaseTemplate
       components={BUILT_IN_COMPONENTS}
-      dataState={[
-        {
+      dataState={{
+        $: DataStateType.Component,
+        component: 'View',
+        children: {
           $: DataStateType.Component,
           component: 'View',
-          children: {
-            $: DataStateType.Component,
-            component: 'View',
-            key: 'customKey',
-            children: [
-              {
-                $: DataStateType.Component,
-                component: 'View',
-                children: 'Hello',
-              },
-              {
-                $: DataStateType.Component,
-                component: 'View',
-                key: 'customChildKey',
-                children: 'World!',
-              },
-            ],
-          },
+          key: 'customKey',
+          children: [
+            {
+              $: DataStateType.Component,
+              component: 'View',
+              children: 'Hello',
+            },
+            {
+              $: DataStateType.Component,
+              component: 'View',
+              key: 'customChildKey',
+              children: 'World!',
+            },
+          ],
         },
-      ]}
+      }}
       onEvent={jest.fn()}
     />
   )
@@ -107,18 +105,18 @@ it('should use component key when provided', () => {
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       <div
-        data-testid="root[0]"
+        data-testid="root"
       >
         <div
-          data-testid="root[0].children[customKey]"
+          data-testid="root.children[customKey]"
         >
           <div
-            data-testid="root[0].children[customKey].children[0]"
+            data-testid="root.children[customKey].children[0]"
           >
             Hello
           </div>
           <div
-            data-testid="root[0].children[customKey].children[customChildKey]"
+            data-testid="root.children[customKey].children[customChildKey]"
           >
             World!
           </div>

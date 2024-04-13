@@ -123,7 +123,7 @@ export function BaseTemplate({
     }
     if (stateNode.$ === DataStateType.Component) {
       const key = stateNode.key || index?.toString()
-      return renderComponent(stateNode, key ? `${path}[${key}]` : `${path}`)
+      return renderComponent(stateNode, key ? `${path}[${key}]` : path)
     }
     if (stateNode.$ === DataStateType.Ref) {
       throw new Error('Your data includes refs. You must use a <Template /> component instead.')
