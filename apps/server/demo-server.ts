@@ -1,80 +1,91 @@
-import { createWSServer } from "./ws-rnt-server";
+import { DataState, DataStateType } from '@react-native-templates/core'
 
-const wsServer = createWSServer(3888);
+import { createWSServer } from './ws-rnt-server'
 
-const startTime = Date.now();
+const wsServer = createWSServer(3888)
 
-wsServer.update("startTime", startTime);
+const startTime = Date.now()
+
+wsServer.update('startTime', startTime)
 
 function updateUI() {
   //   wsServer.update('mainState', mainState)
   wsServer.updateRoot({
-    $: "component",
-    component: "ScrollView",
+    $: 'component',
+    component: 'ScrollView',
     props: {
-      backgroundColor: "$color3",
-      gap: "$4",
+      backgroundColor: '$color3',
+      gap: '$4',
     },
     children: [
       {
-        $: "component",
-        component: "YStack",
-        props: { gap: "$4", margin: "$4" },
+        $: 'component',
+        component: 'YStack',
+        props: { gap: '$4', margin: '$4' },
         children: [
           {
-            $: "component",
-            component: "Button",
-            children: "Demo Robot",
+            $: 'component',
+            component: 'Button',
+            children: 'Demo Robot',
             props: {
               icon: {
-                $: "component",
-                component: "Icon",
+                $: 'component',
+                component: 'Icon',
                 props: {
-                  icon: "Bot",
+                  icon: 'Bot',
                 },
               },
-              onPress: ["navigate", "demoRobot"],
+              onPress: [
+                {
+                  $: DataStateType.Event,
+                  action: 'navigate',
+                },
+                {
+                  $: DataStateType.Event,
+                  action: 'demoRobot',
+                },
+              ],
             },
           },
           {
-            $: "component",
-            component: "Button",
-            children: "Hello",
+            $: 'component',
+            component: 'Button',
+            children: 'Hello',
             props: {
-              onPress: ["navigate", "demoRobot"],
+              onPress: [
+                {
+                  $: DataStateType.Event,
+                  action: 'navigate',
+                },
+                {
+                  $: DataStateType.Event,
+                  action: 'demoRobot',
+                },
+              ],
             },
           },
         ],
       },
-
-      //   {
-      //     $: "component",
-      //     key: "a",
-      //     component: "Text",
-      //     children: "Hello",
-      //     props: { color: "red" },
-      //   },
-      //   { $: "component", key: "b", component: "Text", children: "World" },
     ],
-  });
-  wsServer.update("demoRobot", {
-    $: "component",
-    component: "ScrollView",
+  })
+  wsServer.update('demoRobot', {
+    $: 'component',
+    component: 'ScrollView',
     children: [
       {
-        $: "component",
-        component: "Screen",
+        $: 'component',
+        component: 'Screen',
         props: {
-          title: "Home Bot",
+          title: 'Home Bot',
         },
       },
-      section("Robotbot", [
+      section('Robotbot', [
         {
-          $: "component",
-          component: "SliderField",
-          key: "x",
+          $: 'component',
+          component: 'SliderField',
+          key: 'x',
           props: {
-            label: "Foo",
+            label: 'Foo',
             value: 12,
             min: 0,
             max: 100,
@@ -85,7 +96,7 @@ function updateUI() {
       // task: clean floors
     ],
     props: {},
-  });
+  })
 
   wsServer.update('demoHomeAutomation', {
     // lighting scene
@@ -99,32 +110,31 @@ function updateUI() {
     // colorTheme
     // soundResponse
   })
-
 }
-updateUI();
+updateUI()
 
-function section(title: string, children: any, key?: string) {
+function section(title: string, children: any, key?: string): DataState {
   return {
-    $: "component",
-    component: "YStack",
+    $: DataStateType.Component,
+    component: 'YStack',
     key: key || title,
     props: {
-      padding: "$4",
-      gap: "$2",
+      padding: '$4',
+      gap: '$2',
     },
     children: [
       {
-        $: "component",
-        key: "title",
-        component: "Label",
+        $: DataStateType.Component,
+        key: 'title',
+        component: 'Label',
         children: title,
         props: {
-          fontSize: "$2",
-          fontWeight: "bold",
-          color: "$color10",
+          fontSize: '$2',
+          fontWeight: 'bold',
+          color: '$color10',
         },
       },
       ...children,
     ],
-  };
+  }
 }
