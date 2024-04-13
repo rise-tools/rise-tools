@@ -8,12 +8,12 @@ import { DataSource, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
-  const dataSource = {
+  const dataSource: DataSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
         return {
-          $: 'component' as const,
+          $: 'component',
           component: 'View',
           props: {
             height: 50,
