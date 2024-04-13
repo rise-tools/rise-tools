@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
 import { BaseTemplate, ComponentDefinition, ComponentRegistry, DataStateType } from '../template'
@@ -105,27 +105,27 @@ it('should use component key when provided', () => {
   )
 
   expect(component.asFragment()).toMatchInlineSnapshot(`
-<DocumentFragment>
-  <div
-    data-testid="root[0]"
-  >
-    <div
-      data-testid="root[0].children['customKey']"
-    >
+    <DocumentFragment>
       <div
-        data-testid="root[0].children['customKey'].children[0]"
+        data-testid="root[0]"
       >
-        Hello
+        <div
+          data-testid="root[0].children['customKey']"
+        >
+          <div
+            data-testid="root[0].children['customKey'].children[0]"
+          >
+            Hello
+          </div>
+          <div
+            data-testid="root[0].children['customKey'].children['customChildKey']"
+          >
+            World!
+          </div>
+        </div>
       </div>
-      <div
-        data-testid="root[0].children['customKey'].children['customChildKey']"
-      >
-        World!
-      </div>
-    </div>
-  </div>
-</DocumentFragment>
-`)
+    </DocumentFragment>
+  `)
 })
 
 it('should render a component with single children', () => {
@@ -292,6 +292,39 @@ it('should accept object as a prop', () => {
       </section>
     </DocumentFragment>
   `)
+})
+
+it('should accept event handler as a prop', () => {
+  const onEvent = jest.fn()
+  const component = render(
+    <BaseTemplate
+      components={BUILT_IN_COMPONENTS}
+      dataState={{
+        $: DataStateType.Component,
+        key: 'button',
+        component: 'View',
+        props: {
+          onClick: {
+            $: 'event',
+            action: 'navigate',
+          },
+        },
+      }}
+      onEvent={onEvent}
+    />
+  )
+
+  fireEvent.click(component.getByTestId("root['button']"))
+
+  expect(onEvent).toHaveBeenCalledTimes(1)
+  expect(onEvent.mock.lastCall[0]).toMatchObject({
+    action: 'navigate',
+    name: 'onClick',
+    target: {
+      key: 'button',
+      path: "root['button']",
+    },
+  })
 })
 
 it.skip('should validate props with a validator', () => {})
