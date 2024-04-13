@@ -129,7 +129,7 @@ function getModeControls(state: MainState) {
   return [] as const
 }
 
-function scroll(children: any[]) {
+function scroll(children: any[]): DataState {
   return {
     $: DataStateType.Component,
     component: 'ScrollView',

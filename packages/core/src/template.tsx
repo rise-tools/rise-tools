@@ -84,7 +84,7 @@ export function BaseTemplate({
   onEvent,
 }: {
   components: ComponentRegistry
-  dataState: JSONValue | JSONValue[]
+  dataState: DataState | DataState[]
   onEvent: (event: TemplateEvent) => void
 }) {
   function renderComponent(stateNode: ComponentDataState, path: string) {
