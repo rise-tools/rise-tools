@@ -1,8 +1,7 @@
 import { z } from 'zod'
 
-import { DataStateType } from './template'
 const SingleEventDataStateSchema = z.object({
-  $: z.literal(DataStateType.Event),
+  $: z.literal('event'),
   action: z.string().optional(),
 })
 export const EventDataStateSchema = z.union([

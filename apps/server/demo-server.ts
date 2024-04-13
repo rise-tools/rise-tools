@@ -1,4 +1,4 @@
-import { DataState, DataStateType } from '@react-native-templates/core'
+import { DataState } from '@react-native-templates/core'
 
 import { createWSServer } from './ws-rnt-server'
 
@@ -37,11 +37,11 @@ function updateUI() {
               },
               onPress: [
                 {
-                  $: DataStateType.Event,
+                  $: 'event',
                   action: 'navigate',
                 },
                 {
-                  $: DataStateType.Event,
+                  $: 'event',
                   action: 'demoRobot',
                 },
               ],
@@ -54,11 +54,11 @@ function updateUI() {
             props: {
               onPress: [
                 {
-                  $: DataStateType.Event,
+                  $: 'event',
                   action: 'navigate',
                 },
                 {
-                  $: DataStateType.Event,
+                  $: 'event',
                   action: 'demoRobot',
                 },
               ],
@@ -115,7 +115,7 @@ updateUI()
 
 function section(title: string, children: any, key?: string): DataState {
   return {
-    $: DataStateType.Component,
+    $: 'component',
     component: 'YStack',
     key: key || title,
     props: {
@@ -124,7 +124,7 @@ function section(title: string, children: any, key?: string): DataState {
     },
     children: [
       {
-        $: DataStateType.Component,
+        $: 'component',
         key: 'title',
         component: 'Label',
         children: title,

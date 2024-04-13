@@ -17,28 +17,23 @@ export type TemplateComponentProps<T> = {
 }
 
 /** Data state */
-export enum DataStateType {
-  Component = 'component',
-  Ref = 'ref',
-  Event = 'event',
-}
 export type DataState = ComponentDataState | ReferencedDataState | EventDataState
 
 export type ComponentDataState = {
-  $: DataStateType.Component
+  $: 'component'
   key?: string
   component: ComponentIdentifier
   children?: JSONValue
   props?: Record<string, JSONValue>
 }
-type ReferencedDataState = {
-  $: DataStateType.Ref
-  ref: string | string[]
+export type ReferencedDataState = {
+  $: 'ref'
+  ref: string | [string, ...(string | number)[]]
 }
 // tbd: allow for more specific types
 type EventAction = any
 type EventDataState = {
-  $: DataStateType.Event
+  $: 'event'
   action?: EventAction
 }
 type SafeObject = {
@@ -70,12 +65,12 @@ export function isCompositeDataState(obj: any): obj is ComponentDataState | Refe
     obj !== null &&
     typeof obj === 'object' &&
     '$' in obj &&
-    (obj.$ === DataStateType.Component || obj.$ === DataStateType.Ref)
+    (obj.$ === 'component' || obj.$ === 'ref')
   )
 }
 
 function isEventDataState(obj: any): obj is EventDataState {
-  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === DataStateType.Event
+  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
 }
 
 export function BaseTemplate({
@@ -84,7 +79,7 @@ export function BaseTemplate({
   onEvent,
 }: {
   components: ComponentRegistry
-  dataState: DataState | DataState[]
+  dataState: JSONValue | JSONValue[]
   onEvent: (event: TemplateEvent) => void
 }) {
   function renderComponent(stateNode: ComponentDataState, path: string) {
@@ -126,11 +121,11 @@ export function BaseTemplate({
     if (!isCompositeDataState(stateNode)) {
       throw new Error('Objects are not valid as a React child.')
     }
-    if (stateNode.$ === DataStateType.Component) {
+    if (stateNode.$ === 'component') {
       const key = stateNode.key || index?.toString()
       return renderComponent(stateNode, key ? `${path}[${key}]` : path)
     }
-    if (stateNode.$ === DataStateType.Ref) {
+    if (stateNode.$ === 'ref') {
       throw new Error('Your data includes refs. You must use a <Template /> component instead.')
     }
   }

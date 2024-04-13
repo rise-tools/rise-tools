@@ -5,13 +5,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import {
-  BaseTemplate,
-  ComponentDefinition,
-  ComponentRegistry,
-  DataStateType,
-  TemplateEvent,
-} from '../template'
+import { BaseTemplate, ComponentDefinition, ComponentRegistry, TemplateEvent } from '../template'
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
   View: {
@@ -24,7 +18,7 @@ it('should render a component', () => {
     <BaseTemplate
       components={BUILT_IN_COMPONENTS}
       dataState={{
-        $: DataStateType.Component,
+        $: 'component',
         component: 'View',
         props: {
           height: 50,
@@ -48,12 +42,12 @@ it('should render an array of components', () => {
       components={BUILT_IN_COMPONENTS}
       dataState={[
         {
-          $: DataStateType.Component,
+          $: 'component',
           component: 'View',
           children: 'Heading',
         },
         {
-          $: DataStateType.Component,
+          $: 'component',
           component: 'View',
           children: 'Hello, world!',
         },
@@ -83,20 +77,20 @@ it('should use component key when provided', () => {
     <BaseTemplate
       components={BUILT_IN_COMPONENTS}
       dataState={{
-        $: DataStateType.Component,
+        $: 'component',
         component: 'View',
         children: {
-          $: DataStateType.Component,
+          $: 'component',
           component: 'View',
           key: 'customKey',
           children: [
             {
-              $: DataStateType.Component,
+              $: 'component',
               component: 'View',
               children: 'Hello',
             },
             {
-              $: DataStateType.Component,
+              $: 'component',
               component: 'View',
               key: 'customChildKey',
               children: 'World!',
@@ -137,10 +131,10 @@ it('should render a component with single children', () => {
     <BaseTemplate
       components={BUILT_IN_COMPONENTS}
       dataState={{
-        $: DataStateType.Component,
+        $: 'component',
         component: 'View',
         children: {
-          $: DataStateType.Component,
+          $: 'component',
           component: 'View',
           children: 'Hello, world!',
         },
@@ -169,12 +163,12 @@ it('should render a component with children of different types', () => {
     <BaseTemplate
       components={BUILT_IN_COMPONENTS}
       dataState={{
-        $: DataStateType.Component,
+        $: 'component',
         component: 'View',
         children: [
           'Hello',
           {
-            $: DataStateType.Component,
+            $: 'component',
             component: 'View',
             children: 'world!',
           },
@@ -217,16 +211,16 @@ it('should accept component as a prop', () => {
         Header,
       }}
       dataState={{
-        $: DataStateType.Component,
+        $: 'component',
         component: 'Header',
         props: {
           header: {
-            $: DataStateType.Component,
+            $: 'component',
             component: 'View',
             children: 'Header text',
           },
           paragraph: {
-            $: DataStateType.Component,
+            $: 'component',
             component: 'View',
             children: 'Footer text',
           },
@@ -273,7 +267,7 @@ it('should accept object as a prop', () => {
         Header,
       }}
       dataState={{
-        $: DataStateType.Component,
+        $: 'component',
         component: 'Header',
         props: {
           user: {
@@ -304,12 +298,12 @@ it('should accept event handler as a prop', () => {
     <BaseTemplate
       components={BUILT_IN_COMPONENTS}
       dataState={{
-        $: DataStateType.Component,
+        $: 'component',
         key: 'button',
         component: 'View',
         props: {
           onClick: {
-            $: DataStateType.Event,
+            $: 'event',
             action: 'navigate',
           },
         },
@@ -340,17 +334,17 @@ it('should accept multiple event handlers as a prop', () => {
     <BaseTemplate
       components={BUILT_IN_COMPONENTS}
       dataState={{
-        $: DataStateType.Component,
+        $: 'component',
         key: 'button',
         component: 'View',
         props: {
           onClick: [
             {
-              $: DataStateType.Event,
+              $: 'event',
               action: 'navigate',
             },
             {
-              $: DataStateType.Event,
+              $: 'event',
               action: 'onButtonPressed',
             },
           ],
