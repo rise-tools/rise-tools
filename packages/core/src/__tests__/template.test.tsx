@@ -5,7 +5,13 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { BaseTemplate, ComponentDefinition, ComponentRegistry, DataStateType } from '../template'
+import {
+  BaseTemplate,
+  ComponentDefinition,
+  ComponentRegistry,
+  DataStateType,
+  TemplateEvent,
+} from '../template'
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
   View: {
@@ -315,7 +321,9 @@ it('should accept event handler as a prop', () => {
   fireEvent.click(component.getByTestId('root[button]'))
 
   expect(onEvent).toHaveBeenCalledTimes(1)
-  expect(onEvent.mock.lastCall[0]).toMatchObject({
+
+  const firedEvent = onEvent.mock.lastCall[0] as TemplateEvent
+  expect(firedEvent).toMatchObject({
     action: 'navigate',
     name: 'onClick',
     target: {
@@ -323,6 +331,39 @@ it('should accept event handler as a prop', () => {
       path: 'root[button]',
     },
   })
+  expect(firedEvent.payload?.[0].constructor.name).toBe('SyntheticBaseEvent')
+})
+
+it('should accept multiple event handlers as a prop', () => {
+  const onEvent = jest.fn()
+  const component = render(
+    <BaseTemplate
+      components={BUILT_IN_COMPONENTS}
+      dataState={{
+        $: DataStateType.Component,
+        key: 'button',
+        component: 'View',
+        props: {
+          onClick: [
+            {
+              $: 'event',
+              action: 'navigate',
+            },
+            {
+              $: 'event',
+              action: 'onButtonPressed',
+            },
+          ],
+        },
+      }}
+      onEvent={onEvent}
+    />
+  )
+
+  fireEvent.click(component.getByTestId('root[button]'))
+
+  expect(onEvent).toHaveBeenCalledTimes(2)
+  expect(onEvent.mock.calls.map((c) => c[0].action)).toMatchObject(['navigate', 'onButtonPressed'])
 })
 
 it.skip('should validate props with a validator', () => {})
