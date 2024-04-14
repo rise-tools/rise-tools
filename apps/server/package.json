@@ -1,7 +1,20 @@
 {
   "name": "@react-native-templates/rise-server",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ericvicenti/react-native-templates.git",
+    "directory": "apps/server"
+  },
+  "author": "Eric Vicenti <ericvicenti@gmail.com> (https://github.com/ericvicenti)",
+  "contributors": [
+    "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
+  ],
+  "bugs": {
+    "url": "https://github.com/ericvicenti/react-native-templates/issues"
+  },
+  "homepage": "https://github.com/ericvicenti/react-native-templates#readme",
   "scripts": {
     "start": "tsx server.ts",
     "start:demo": "tsx watch demo-server.ts",
@@ -21,7 +34,6 @@
     "express": "^4.18.2",
     "ip": "^1.1.8",
     "jimp": "^0.22.10",
-    "nodemon": "^3.0.2",
     "sacn": "^4.4.0",
     "ws": "^8.16.0",
     "zod": "^3.22.4"
@@ -33,7 +45,6 @@
     "@types/ip": "^1.1.3",
     "@types/node": "^18.6.4",
     "@types/ws": "^8.5.10",
-    "esbuild": "^0.19.5",
-    "esbuild-runner": "^2.2.2"
+    "tsx": "^4.7.2"
   }
 }
