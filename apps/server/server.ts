@@ -253,7 +253,6 @@ function handleManualTapBeat() {
 }
 
 wsServer.subscribeEvent((event) => {
-  console.log('event', event)
   const {
     target: { key },
     name,
@@ -320,8 +319,6 @@ function handleEffectEvent(event: TemplateEvent<ServerAction>): boolean {
     return false
   }
 
-  console.log('handleEffectEvent', mediaPath, effectKey, effectField, event.payload)
-
   rootMediaUpdate(mediaPath, (media): Media => {
     if (media.type !== 'video' || !media.effects) {
       return media
@@ -340,7 +337,7 @@ function handleEffectEvent(event: TemplateEvent<ServerAction>): boolean {
     }
     if (effectIndex != null && effectIndex !== -1) {
       const effect = media.effects[effectIndex]
-      const newEffect = { ...effect, [effectField]: event.payload }
+      const newEffect = { ...effect, [effectField]: event.payload[0] }
       return {
         ...media,
         effects: media.effects.map((effect) => {
@@ -448,8 +445,6 @@ function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
     return false
   }
 
-  console.log('handleMediaEvent', mediaPath, action, event.payload)
-
   if (action === 'clear') {
     rootMediaUpdate(mediaPath, () => createBlankMedia('off'))
     return true
@@ -461,7 +456,7 @@ function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
   }
   if (action === 'color') {
     const colorField = event.action?.[3]
-    const number = event.payload
+    const number = event.payload[0]
     if (colorField === 'h' || colorField === 's' || colorField === 'l') {
       rootMediaUpdate(mediaPath, (media) => ({ ...media, [colorField]: number }))
       return true
@@ -566,7 +561,7 @@ function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
   }
   if (action === 'blendAmount') {
     const layerKey = mediaPath.at(-1)
-    const blendAmount = event.payload
+    const blendAmount = event.payload[0]
     const targetPath = mediaPath.slice(0, -2)
     rootMediaUpdate(targetPath, (media) => {
       if (media.type !== 'layers') {
