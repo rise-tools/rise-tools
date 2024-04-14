@@ -25,6 +25,9 @@ const components = {
 
 const { useParam, useParams } = createParam<{ id: string; path: string }>()
 
+const hasAction = (eventAction: string[], actionToCheck: string) =>
+  Array.isArray(eventAction) ? eventAction.includes(actionToCheck) : eventAction === actionToCheck
+
 export function ConnectionScreen() {
   const [id] = useParam('id')
   // const router = useRouter()
@@ -39,11 +42,11 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   const [path] = useParam('path')
 
   const dataSource = useDataSource(connection.id, connection.host, (event) => {
-    if (event.action?.[0] === 'navigate') {
+    if (hasAction(event.action, 'navigate')) {
       router.push(`/connection/${params.id}?path=${event.action?.[1]}`)
       return true
     }
-    if (event.action?.[0] === 'navigate-back') {
+    if (hasAction(event.action, 'navigate-back')) {
       router.back()
       return true
     }
