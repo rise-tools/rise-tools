@@ -712,6 +712,9 @@ export function getUIRootLegacy(state: MainState) {
         children: 'All Off',
         props: {
           disabled: state.mode === 'off',
+          onPress: {
+            $: 'event',
+          },
         },
       },
       ...getModeControls(state),

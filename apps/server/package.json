@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "esr server.ts",
-    "start:demo": "nodemon -e js,ts,tsx --exec \"esr demo-server.ts\"",
-    "start:dev": "nodemon -e js,ts,tsx",
-    "convert-videos": "esr eg-video-conversion.ts"
+    "start": "tsx server.ts",
+    "start:demo": "tsx watch demo-server.ts",
+    "start:dev": "tsx watch server.ts",
+    "convert-videos": "tsx eg-video-conversion.ts"
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",

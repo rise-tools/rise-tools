@@ -323,7 +323,7 @@ function handleEffectEvent(event: TemplateEvent<ServerAction>): boolean {
 
   console.log('handleEffectEvent', mediaPath, effectKey, effectField, event.payload)
 
-  rootMediaUpdate(mediaPath, (media) => {
+  rootMediaUpdate(mediaPath, (media): Media => {
     if (media.type !== 'video' || !media.effects) {
       return media
     }
