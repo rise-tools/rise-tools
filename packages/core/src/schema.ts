@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 const SingleEventDataStateSchema = z.object({
   $: z.literal('event'),
-  action: z.string().optional(),
+  action: z.any(),
 })
 export const EventDataStateSchema = z.union([
   SingleEventDataStateSchema,
