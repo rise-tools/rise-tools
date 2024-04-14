@@ -1,7 +1,7 @@
 import { TemplateEvent } from '@react-native-templates/core'
 import { createWSServer } from '@react-native-templates/ws-server'
 import { randomUUID } from 'crypto'
-import { readFileSync, writeFile } from 'fs'
+import { existsSync, readFileSync, writeFile } from 'fs'
 
 import { eg as egInfo } from './eg'
 import { getEGLiveFrame, getEGReadyFrame } from './eg-main'
@@ -22,15 +22,21 @@ import {
 
 let mainState: MainState = defaultMainState
 
-try {
-  const mainStateJson = readFileSync('./main-state.json', { encoding: 'utf-8' })
-  const state = MainStateSchema.safeParse(JSON.parse(mainStateJson))
-  if (!state.success)
-    throw new Error('Invalid saved state: ' + state.error.issues.map((i) => i.message).join(', '))
-  if (!state.data) throw new Error('Invalid saved state')
-  mainState = state.data
-} catch (e) {
-  console.log('Error loading main state', e)
+// Load previous state if there's one present
+if (existsSync('./main-state.json')) {
+  try {
+    const mainStateJson = readFileSync('./main-state.json', { encoding: 'utf-8' })
+    const state = MainStateSchema.safeParse(JSON.parse(mainStateJson))
+    if (!state.success) {
+      throw new Error('Invalid saved state: ' + state.error.issues.map((i) => i.message).join(', '))
+    }
+    if (!state.data) {
+      throw new Error('Invalid saved state')
+    }
+    mainState = state.data
+  } catch (e) {
+    console.log('Error loading main state', e)
+  }
 }
 
 const eg = egSacnService(egInfo)
