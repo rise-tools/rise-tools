@@ -173,6 +173,16 @@ export function BaseTemplate({
     if (isCompositeDataState(stateNode)) {
       return render(stateNode, `${path}.props[${propKey}]`)
     }
+    if (stateNode && typeof stateNode === 'object') {
+      return Object.fromEntries(
+        Object.entries(stateNode).map(([key, value]) => {
+          return [
+            key,
+            renderProp(`${propKey}.${key}`, value, parentNode, `${path}.props[${propKey}][${key}]`),
+          ]
+        })
+      )
+    }
     return stateNode
   }
 

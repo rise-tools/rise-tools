@@ -361,3 +361,5 @@ it('should accept multiple event handlers as a prop', () => {
 })
 
 it.skip('should validate props with a validator', () => {})
+
+it.skip('should accept event handlers as nested values in props', () => {})

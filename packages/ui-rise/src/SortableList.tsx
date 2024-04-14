@@ -12,12 +12,12 @@ function keyExtractor(item: z.infer<typeof SortableListItemSchema>) {
 const SortableListItemSchema = z.object({
   key: z.string(),
   label: z.string(),
+  onPress: EventDataStateSchema.optional(),
 })
 
 const SortableListProps = z.object({
   footer: z.any(),
   items: z.array(SortableListItemSchema),
-  onItemPress: EventDataStateSchema.optional(),
   // tbd: support this event again
   onReorder: EventDataStateSchema.optional(),
 })
@@ -35,7 +35,8 @@ export function SortableList(props: TemplateComponentProps<z.infer<typeof Sortab
           return (
             <ScaleDecorator>
               <TouchableOpacity
-                onPress={() => props.onItemPress?.(item)}
+                // @ts-ignore tbd: update `TemplateComponentProps` to avoid type error
+                onPress={() => item.onPress?.()}
                 onLongPress={drag}
                 disabled={isActive}
                 style={[{ padding: 10, backgroundColor: 'white', margin: 10 }]}

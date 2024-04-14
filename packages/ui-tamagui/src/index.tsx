@@ -5,6 +5,9 @@ import * as t from 'tamagui'
 
 export const TamaguiComponents: ComponentRegistry = {
   /* https://tamagui.dev/ui/stacks#xstack-ystack-zstack */
+  View: {
+    component: t.View,
+  },
   XStack: {
     component: t.XStack,
   },
