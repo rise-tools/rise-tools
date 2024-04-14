@@ -168,7 +168,7 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
       props: {
         unselectedLabel: 'Select Video...',
         value: state.track,
-        onValue: {
+        onValueChange: {
           $: 'event',
           action: ['updateMedia', mediaPath, 'track'],
         },
@@ -320,7 +320,7 @@ export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | unde
             { key: 'darken', label: 'Darken' },
             { key: 'rotate', label: 'Rotate' },
           ],
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateMedia', mediaLinkPath, 'addEffect'],
           },
@@ -551,7 +551,7 @@ export function getMediaControls(state: Media, mediaLinkPath: string): DataState
         component: 'RiseSelectField',
         props: {
           value: state.type,
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateMedia', mediaLinkPath, 'mode'],
           },
@@ -821,7 +821,7 @@ function getLayersControls(
             component: 'RiseSelectField',
             props: {
               value: null,
-              onValue: {
+              onValueChange: {
                 $: 'event',
                 action: ['updateMedia', mediaLinkPath, 'addLayer'],
               },
@@ -856,7 +856,7 @@ export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UICont
         props: {
           value: layer.blendMode,
           label: 'Blend Mode',
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateMedia', mediaPath, 'blendMode'],
           },
