@@ -303,7 +303,10 @@ export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | unde
     $: 'component',
     component: 'RiseSortableList',
     props: {
-      onReorder: ['updateMedia', mediaLinkPath, 'effectOrder'],
+      onReorder: {
+        $: 'event',
+        action: ['updateMedia', mediaLinkPath, 'effectOrder'],
+      },
       footer: {
         $: 'component',
         key: 'addEffect',

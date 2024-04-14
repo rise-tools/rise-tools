@@ -145,7 +145,7 @@ export function BaseTemplate({
   ): any {
     if (
       isEventDataState(stateNode) ||
-      (Array.isArray(stateNode) && stateNode.every(isEventDataState))
+      (Array.isArray(stateNode) && stateNode.length > 0 && stateNode.every(isEventDataState))
     ) {
       return (payload: any) => {
         const nodes = Array.isArray(stateNode) ? stateNode : [stateNode]
