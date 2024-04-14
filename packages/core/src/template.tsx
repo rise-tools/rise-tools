@@ -98,7 +98,13 @@ export function BaseTemplate({
     let componentProps = stateNode.props || {}
 
     if (typeof componentDefinition.validator === 'function') {
-      componentProps = componentDefinition.validator(stateNode.props)
+      try {
+        componentProps = componentDefinition.validator(stateNode.props)
+      } catch (e) {
+        throw new RenderError(
+          `Invalid props for component: ${stateNode.component}, props: ${JSON.stringify(stateNode.props)}. Error: ${JSON.stringify(e)}`
+        )
+      }
     }
 
     const renderedProps = Object.fromEntries(
@@ -144,6 +150,12 @@ export function BaseTemplate({
       return (payload: any) => {
         const nodes = Array.isArray(stateNode) ? stateNode : [stateNode]
         for (const node of nodes) {
+          // React events (e.g. from onPress) contain cyclic structures that can't be serialized
+          // with JSON.stringify and also provide little to no value for the server.
+          // tbd: figure a better way to handle this in a cross-platform way
+          if (payload?.nativeEvent) {
+            payload = '[native code]'
+          }
           onEvent({
             target: { key: parentNode.key, path, component: parentNode.component },
             name: propKey,

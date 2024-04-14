@@ -195,7 +195,7 @@ function sliderUpdate(event: TemplateEvent, pathToCheck: string, statePath: stri
     event.name === 'onValueChange' &&
     event.target.component === 'RiseSliderField'
   ) {
-    mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload))
+    mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload[0]))
     return true
   }
   return false
@@ -253,6 +253,7 @@ function handleManualTapBeat() {
 }
 
 wsServer.subscribeEvent((event) => {
+  console.log('event', event)
   const {
     target: { key },
     name,
@@ -364,7 +365,7 @@ function handleTransitionEvent(event: TemplateEvent<ServerAction>): boolean {
       ...state,
       transitionState: {
         ...state.transitionState,
-        manual: event.payload,
+        manual: event.payload[0],
       },
     }))
     return true
@@ -374,7 +375,7 @@ function handleTransitionEvent(event: TemplateEvent<ServerAction>): boolean {
       ...state,
       transition: {
         ...state.transition,
-        duration: event.payload,
+        duration: event.payload[0],
       },
     }))
     return true
