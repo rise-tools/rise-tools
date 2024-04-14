@@ -1,25 +1,33 @@
 import type { DataSource, JSONValue, Store, TemplateEvent } from '@react-native-templates/core'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
-export type ClientWebsocketMessage =
-  | {
-      $: 'sub'
-      keys: string[]
-    }
-  | {
-      $: 'unsub'
-      keys: string[]
-    }
-  | {
-      $: 'evt'
-      event: TemplateEvent
-    }
+export type SubscribeWebsocketMessage = {
+  $: 'sub'
+  keys: string[]
+}
 
-export type ServerWebsocketMessage = {
+export type UnsubscribeWebsocketMessage = {
+  $: 'unsub'
+  keys: string[]
+}
+
+export type EventWebsocketMessage = {
+  $: 'evt'
+  event: TemplateEvent
+}
+
+export type UpdateWebsocketMessage = {
   $: 'up'
   key: string
   val: JSONValue
 }
+
+export type ClientWebsocketMessage =
+  | SubscribeWebsocketMessage
+  | UnsubscribeWebsocketMessage
+  | EventWebsocketMessage
+
+export type ServerWebsocketMessage = UpdateWebsocketMessage
 
 export function createWSDataSource(
   wsUrl: string,
