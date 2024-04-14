@@ -29,7 +29,7 @@ function updateUI() {
             props: {
               icon: {
                 $: 'component',
-                component: 'Icon',
+                component: 'RiseIcon',
                 props: {
                   icon: 'Bot',
                 },
@@ -81,7 +81,7 @@ function updateUI() {
       section('Robotbot', [
         {
           $: 'component',
-          component: 'SliderField',
+          component: 'RiseSliderField',
           key: 'x',
           props: {
             label: 'Foo',
