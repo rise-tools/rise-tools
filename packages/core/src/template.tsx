@@ -50,7 +50,7 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent<T = EventDataState['action'], K = any[]> = {
+export type TemplateEvent<T = EventDataState['action'], K = any> = {
   target: {
     key?: string
     path: string
@@ -140,7 +140,7 @@ export function BaseTemplate({
       isEventDataState(stateNode) ||
       (Array.isArray(stateNode) && stateNode.every(isEventDataState))
     ) {
-      return (...payload: any[]) => {
+      return (payload: any) => {
         const nodes = Array.isArray(stateNode) ? stateNode : [stateNode]
         for (const node of nodes) {
           onEvent({

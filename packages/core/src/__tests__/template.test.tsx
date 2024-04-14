@@ -325,7 +325,7 @@ it('should accept event handler as a prop', () => {
       path: 'root[button]',
     },
   })
-  expect(firedEvent.payload?.[0].constructor.name).toBe('SyntheticBaseEvent')
+  expect(firedEvent.payload?.constructor.name).toBe('SyntheticBaseEvent')
 })
 
 it('should accept multiple event handlers as a prop', () => {
