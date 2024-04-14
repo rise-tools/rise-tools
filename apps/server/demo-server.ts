@@ -1,6 +1,5 @@
 import { DataState } from '@react-native-templates/core'
-
-import { createWSServer } from './ws-rnt-server'
+import { createWSServer } from '@react-native-templates/ws-server'
 
 const wsServer = createWSServer(3888)
 

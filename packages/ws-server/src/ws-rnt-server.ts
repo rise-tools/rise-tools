@@ -1,5 +1,5 @@
-import { DataState, TemplateEvent } from '@react-native-templates/core'
-import {
+import type { DataState, TemplateEvent } from '@react-native-templates/core'
+import type {
   ClientWebsocketMessage,
   EventWebsocketMessage,
   ServerWebsocketMessage,

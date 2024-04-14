@@ -17,7 +17,7 @@ import {
   getUIRoot,
   UIContext,
 } from './ui'
-import { createWSServer } from './ws-rnt-server'
+import { createWSServer } from '../../packages/ws-server/src/ws-rnt-server'
 
 let mainState: MainState = defaultMainState
 

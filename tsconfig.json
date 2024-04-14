@@ -6,6 +6,7 @@
       "@react-native-templates/demo-ui": ["./packages/demo-ui/src"],
       "@react-native-templates/core": ["./packages/core/src"],
       "@react-native-templates/ws-client": ["./packages/ws-client/src"],
+      "@react-native-templates/ws-server": ["./packages/ws-server/src"],
       "@react-native-templates/ui-tamagui": ["./packages/ui-tamagui/src"],
       "@react-native-templates/ui-rise": ["./packages/ui-rise/src"]
     },
