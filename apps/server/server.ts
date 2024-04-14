@@ -262,14 +262,6 @@ wsServer.subscribeEvent((event) => {
     mainStateUpdate((state) => ({ ...state, mode: 'off' }))
     return
   }
-  if (key === 'whiteoutButton' && name === 'onPress') {
-    mainStateUpdate((state) => ({ ...state, mode: 'white' }))
-    return
-  }
-  if (key === 'rainbowButton' && name === 'onPress') {
-    mainStateUpdate((state) => ({ ...state, mode: 'rainbow' }))
-    return
-  }
   if (key === 'mode' && name === 'onValueChange') {
     mainStateUpdate((state) => ({ ...state, mode: event.payload }))
     return

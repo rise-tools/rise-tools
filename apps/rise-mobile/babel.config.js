@@ -5,18 +5,23 @@ module.exports = function (api) {
     plugins: [
       // if you want reanimated support
       'react-native-reanimated/plugin',
-      ...(process.env.EAS_BUILD_PLATFORM === 'android'
-        ? []
-        : [
-            [
-              '@tamagui/babel-plugin',
-              {
-                // tbd: make sure we have all packages here
-                components: ['@react-native-templates/demo-ui', 'tamagui'],
-                config: './tamagui.config.ts',
-              },
-            ],
-          ]),
+      // Is this needed?
+      // ...(process.env.EAS_BUILD_PLATFORM === 'android'
+      //   ? []
+      //   : [
+      //       [
+      //         '@tamagui/babel-plugin',
+      //         {
+      //           // tbd: make sure we have all packages here
+      //           components: [
+      //             '@react-native-templates/ui-tamagui',
+      //             '@react-native-templates/ui-rise',
+      //             'tamagui',
+      //           ],
+      //           config: 'tamagui.config.ts',
+      //         },
+      //       ],
+      //     ]),
       'transform-inline-environment-variables',
     ],
   }
