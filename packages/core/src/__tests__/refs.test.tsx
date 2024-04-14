@@ -4,16 +4,16 @@
 import { render } from '@testing-library/react'
 import React from 'react'
 
-import { DataStateType, Template } from '..'
+import { DataSource, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
-  const dataSource = {
+  const dataSource: DataSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
         return {
-          $: DataStateType.Component,
+          $: 'component',
           component: 'View',
           props: {
             height: 50,
@@ -39,10 +39,10 @@ it('should render component at a path', () => {
     subscribe: () => jest.fn(),
     get() {
       return {
-        $: DataStateType.Component,
+        $: 'component',
         component: 'View',
         children: {
-          $: DataStateType.Component,
+          $: 'component',
           component: 'View',
           children: 'Hello World!',
         },
@@ -76,16 +76,16 @@ it('should resolve a ref', () => {
     subscribe: () => jest.fn(),
     get() {
       return {
-        $: DataStateType.Component,
+        $: 'component',
         component: 'View',
         children: [
           {
-            $: DataStateType.Component,
+            $: 'component',
             component: 'View',
             children: 'Hello World!',
           },
           {
-            $: DataStateType.Ref,
+            $: 'ref',
             ref: ['mainStore', 'children', 0],
           },
         ],
@@ -126,12 +126,12 @@ it('should resolve a ref', () => {
 it('should subscribe to the root store', () => {
   const mainStoreUnsubscribeFunction = jest.fn()
   const mainStoreSubscribeFunction = jest.fn().mockReturnValue(mainStoreUnsubscribeFunction)
-  const dataSource = {
+  const dataSource: DataSource = {
     get: () => ({
       subscribe: mainStoreSubscribeFunction,
       get() {
         return {
-          $: DataStateType.Component,
+          $: 'component',
           component: 'View',
         }
       },
@@ -159,17 +159,17 @@ it('should manage subscription to stores referenced by refs', () => {
   const secondStoreUnsubscribeFunction = jest.fn()
   const secondStoreSubscribeFunction = jest.fn().mockReturnValue(secondStoreUnsubscribeFunction)
 
-  const dataSource = {
+  const dataSource: DataSource = {
     get: (name: string) => {
       if (name === 'mainStore') {
         return {
           subscribe: mainStoreSubscribeFunction,
           get() {
             return {
-              $: DataStateType.Component,
+              $: 'component',
               component: 'View',
               children: {
-                $: DataStateType.Ref,
+                $: 'ref',
                 ref: ['secondStore', 'user', 'profile', 'name'],
               },
             }

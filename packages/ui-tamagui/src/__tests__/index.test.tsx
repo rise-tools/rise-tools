@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { BaseTemplate, DataStateType } from '@react-native-templates/core'
+import { BaseTemplate } from '@react-native-templates/core'
 import { config } from '@tamagui/config/v3'
 import { render } from '@testing-library/react'
 import React from 'react'
@@ -18,16 +18,16 @@ it('should render a Tamagui component', () => {
       <BaseTemplate
         components={TamaguiComponents}
         dataState={{
-          $: DataStateType.Component,
+          $: 'component',
           component: 'XStack',
           children: [
             {
-              $: DataStateType.Component,
+              $: 'component',
               component: 'H1',
               children: 'Hello',
             },
             {
-              $: DataStateType.Component,
+              $: 'component',
               component: 'Paragraph',
               children: 'Welcome to Tamagui!',
             },

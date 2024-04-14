@@ -1,3 +1,5 @@
+import { ComponentDataState, DataState } from '@react-native-templates/core'
+
 import { hslToHex } from './color'
 import { EGVideo } from './eg-video-playback'
 import { UPRISING } from './flag'
@@ -15,13 +17,11 @@ import {
   VideoMedia,
 } from './state-schema'
 
-type UI = any
-
 export type UIContext = {
   video: EGVideo
 }
 
-function icon(name: string) {
+function icon(name: string): ComponentDataState {
   return {
     $: 'component',
     key: 'icon',
@@ -29,15 +29,8 @@ function icon(name: string) {
     props: { icon: name },
   }
 }
-function simpleLabel(text: string) {
-  return {
-    $: 'component',
-    key: text,
-    component: 'Label',
-    children: text,
-  }
-}
-function section(title: string, children: any, key?: string) {
+
+function section(title: string, children: DataState[], key?: string): DataState {
   return {
     $: 'component',
     component: 'YStack',
@@ -136,7 +129,7 @@ function getModeControls(state: MainState) {
   return [] as const
 }
 
-function scroll(children: any[]) {
+function scroll(children: any[]): DataState {
   return {
     $: 'component',
     component: 'ScrollView',
@@ -148,7 +141,7 @@ function scroll(children: any[]) {
   }
 }
 
-function getVideoControls(mediaPath: string, state: VideoMedia, context: UIContext): UI[] {
+function getVideoControls(mediaPath: string, state: VideoMedia, context: UIContext): DataState[] {
   const player = context.video.getPlayer(state.id)
   return [
     {
@@ -158,7 +151,10 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
       props: {
         unselectedLabel: 'Select Video...',
         value: state.track,
-        onValue: ['updateMedia', mediaPath, 'track'],
+        onValue: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'track'],
+        },
         options: { $: 'ref', ref: ['videoList'] },
       },
     },
@@ -168,7 +164,10 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
       component: 'Button',
       children: 'Restart Video',
       props: {
-        onPress: ['updateMedia', mediaPath, 'restart'],
+        onPress: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'restart'],
+        },
       },
     },
     {
@@ -178,7 +177,10 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
       props: {
         value: state?.params?.loopBounce || false,
         label: 'Loop Bounce',
-        onValue: ['updateMedia', mediaPath, 'loopBounce'],
+        onValue: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'loopBounce'],
+        },
       },
     },
     {
@@ -188,7 +190,10 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
       props: {
         value: state?.params?.reverse || false,
         label: 'Reverse Playback',
-        onValue: ['updateMedia', mediaPath, 'reverse'],
+        onValue: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'reverse'],
+        },
       },
     },
     {
@@ -204,13 +209,16 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
       children: 'Effects',
       props: {
         icon: icon('Sparkles'),
-        onPress: ['navigate', `${mediaPath}:effects`],
+        onPress: {
+          $: 'event',
+          action: ['navigate', `${mediaPath}:effects`],
+        },
       },
     },
   ]
 }
 
-function getColorControls(mediaPath: string, state: ColorMedia): UI[] {
+function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
   return [
     {
       $: 'component',
@@ -229,7 +237,10 @@ function getColorControls(mediaPath: string, state: ColorMedia): UI[] {
       props: {
         label: 'Hue',
         value: state.h,
-        onValue: ['updateMedia', mediaPath, 'color', 'h'],
+        onValue: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'color', 'h'],
+        },
         max: 360,
         min: 0,
         step: 1,
@@ -242,7 +253,10 @@ function getColorControls(mediaPath: string, state: ColorMedia): UI[] {
       props: {
         label: 'Saturation',
         value: state.s,
-        onValue: ['updateMedia', mediaPath, 'color', 's'],
+        onValue: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'color', 's'],
+        },
         max: 1,
         min: 0,
         step: 0.01,
@@ -255,7 +269,10 @@ function getColorControls(mediaPath: string, state: ColorMedia): UI[] {
       props: {
         label: 'Lightness',
         value: state.l,
-        onValue: ['updateMedia', mediaPath, 'color', 'l'],
+        onValue: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'color', 'l'],
+        },
         max: 1,
         min: 0,
         step: 0.01,
@@ -264,7 +281,7 @@ function getColorControls(mediaPath: string, state: ColorMedia): UI[] {
   ]
 }
 
-export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | undefined): UI {
+export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | undefined): DataState {
   return {
     $: 'component',
     component: 'SortableList',
@@ -286,14 +303,20 @@ export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | unde
             { key: 'darken', label: 'Darken' },
             { key: 'rotate', label: 'Rotate' },
           ],
-          onValue: ['updateMedia', mediaLinkPath, 'addEffect'],
+          onValue: {
+            $: 'event',
+            action: ['updateMedia', mediaLinkPath, 'addEffect'],
+          },
         },
       },
       items: (effectsState || []).map((effect) => {
         return {
           key: effect.key,
           label: effect.type,
-          onPress: ['navigate', `${mediaLinkPath}:effects:${effect.key}`],
+          onPress: {
+            $: 'event',
+            action: ['navigate', `${mediaLinkPath}:effects:${effect.key}`],
+          },
         }
       }),
     },
@@ -301,16 +324,22 @@ export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | unde
 }
 
 export function getEffectUI(effectPath: string[], effect: Effect) {
-  const removeEffect = {
+  const removeEffect: ComponentDataState = {
     $: 'component',
     key: 'removeEffect',
     component: 'Button',
     children: 'Remove Effect',
     props: {
-      onPress: {
-        $: 'multi',
-        events: [['updateEffect', effectPath, 'remove'], 'navigate-back'],
-      },
+      onPress: [
+        {
+          $: 'event',
+          action: 'navigate-back',
+        },
+        {
+          $: 'event',
+          action: ['updateEffect', effectPath, 'remove'],
+        },
+      ],
     },
   }
   if (effect.type === 'desaturate') {
@@ -320,7 +349,10 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         key: 'value',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'value'],
+          onValue: {
+            $: 'event',
+            action: ['updateEffect', effectPath, 'value'],
+          },
           label: 'Value',
           value: effect.value,
           max: 1,
@@ -337,7 +369,10 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         key: 'value',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'value'],
+          onValue: {
+            $: 'event',
+            action: ['updateEffect', effectPath, 'value'],
+          },
           label: 'Value',
           value: effect.value,
           max: 180,
@@ -354,7 +389,10 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         key: 'amount',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'amount'],
+          onValue: {
+            $: 'event',
+            action: ['updateEffect', effectPath, 'amount'],
+          },
           label: 'Amount',
           value: effect.amount,
           max: 1,
@@ -377,7 +415,10 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         key: 'saturation',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'saturation'],
+          onValue: {
+            $: 'event',
+            action: ['updateEffect', effectPath, 'saturation'],
+          },
           label: 'Saturation',
           value: effect.saturation,
           max: 1,
@@ -390,7 +431,10 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         key: 'hue',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'hue'],
+          onValue: {
+            $: 'event',
+            action: ['updateEffect', effectPath, 'hue'],
+          },
           label: 'Hue',
           value: effect.hue,
           max: 360,
@@ -407,7 +451,10 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         key: 'value',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'value'],
+          onValue: {
+            $: 'event',
+            action: ['updateEffect', effectPath, 'value'],
+          },
           label: 'Value',
           value: effect.value,
           max: 1,
@@ -424,7 +471,10 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         key: 'value',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'value'],
+          onValue: {
+            $: 'event',
+            action: ['updateEffect', effectPath, 'value'],
+          },
           label: 'Value',
           value: effect.value,
           max: 1,
@@ -441,7 +491,10 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         key: 'value',
         component: 'SliderField',
         props: {
-          onValue: ['updateEffect', effectPath, 'value'],
+          onValue: {
+            $: 'event',
+            action: ['updateEffect', effectPath, 'value'],
+          },
           label: 'Value',
           value: effect.value,
           max: 1,
@@ -472,7 +525,7 @@ const newMediaOptions = [
   { key: 'sequence', label: 'Sequence' },
 ]
 
-export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
+export function getMediaControls(state: Media, mediaLinkPath: string): DataState[] {
   if (state.type === 'off') {
     return [
       {
@@ -481,7 +534,10 @@ export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
         component: 'SelectField',
         props: {
           value: state.type,
-          onValue: ['updateMedia', mediaLinkPath, 'mode'],
+          onValue: {
+            $: 'event',
+            action: ['updateMedia', mediaLinkPath, 'mode'],
+          },
           options: newMediaOptions,
         },
       },
@@ -499,7 +555,10 @@ export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
           component: 'Button',
           props: {
             f: 1,
-            onPress: ['navigate', mediaLinkPath],
+            onPress: {
+              $: 'event',
+              action: ['navigate', mediaLinkPath],
+            },
           },
           children: `Open ${getMediaTitle(state)}`,
         },
@@ -510,7 +569,10 @@ export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
           props: {
             chromeless: true,
             backgroundColor: '$transparent',
-            onPress: ['updateMedia', mediaLinkPath, 'clear'],
+            onPress: {
+              $: 'event',
+              action: ['updateMedia', mediaLinkPath, 'clear'],
+            },
           },
           children: {
             $: 'component',
@@ -524,7 +586,7 @@ export function getMediaControls(state: Media, mediaLinkPath: string): UI[] {
   ]
 }
 
-export function getTransitionControls(transition: Transition, state: TransitionState): UI[] {
+export function getTransitionControls(transition: Transition, state: TransitionState): DataState[] {
   return [
     {
       $: 'component',
@@ -533,7 +595,10 @@ export function getTransitionControls(transition: Transition, state: TransitionS
       props: {
         label: 'Manual',
         value: state.manual || 0,
-        onValue: ['updateTransition', 'manual'],
+        onValue: {
+          $: 'event',
+          action: ['updateTransition', 'manual'],
+        },
         max: 1,
         min: 0,
         step: 0.01,
@@ -545,7 +610,10 @@ export function getTransitionControls(transition: Transition, state: TransitionS
       component: 'Button',
       children: 'Start Transition',
       props: {
-        onPress: ['updateTransition', 'startAuto'],
+        onPress: {
+          $: 'event',
+          action: ['updateTransition', 'startAuto'],
+        },
       },
     },
     {
@@ -555,7 +623,10 @@ export function getTransitionControls(transition: Transition, state: TransitionS
       props: {
         label: `Duration ${Math.round(transition.duration / 100) / 10}sec`,
         value: transition.duration || 0,
-        onValue: ['updateTransition', 'duration'],
+        onValue: {
+          $: 'event',
+          action: ['updateTransition', 'duration'],
+        },
         max: 10000,
         min: 0,
         step: 1,
@@ -654,7 +725,10 @@ export function getUIRootLegacy(state: MainState) {
         component: 'Button',
         children: 'Quick Effects',
         props: {
-          onPress: ['navigate', 'quickEffects'],
+          onPress: {
+            $: 'event',
+            action: ['navigate', 'quickEffects'],
+          },
           spaceFlex: 1,
           iconAfter: {
             $: 'component',
@@ -670,7 +744,10 @@ export function getUIRootLegacy(state: MainState) {
         component: 'Button',
         children: 'Beat Effects',
         props: {
-          onPress: ['navigate', 'beatEffects'],
+          onPress: {
+            $: 'event',
+            action: ['navigate', 'beatEffects'],
+          },
           spaceFlex: 1,
           iconAfter: {
             $: 'component',
@@ -684,11 +761,15 @@ export function getUIRootLegacy(state: MainState) {
   }
 }
 
+// tbd: implement this
 function getSequenceControls(
+  // eslint-disable-next-line
   mediaLinkPath: string,
+  // eslint-disable-next-line
   state: SequenceMedia,
+  // eslint-disable-next-line
   context: UIContext
-): UI[] {
+): DataState[] {
   return []
 }
 
@@ -696,13 +777,16 @@ function getLayersControls(
   mediaLinkPath: string,
   state: LayersMedia,
   context: UIContext,
-  footer: UI = []
-): UI {
+  footer: DataState[] = []
+): DataState {
   return {
     $: 'component',
     component: 'SortableList',
     props: {
-      onReorder: ['updateMedia', mediaLinkPath, 'layerOrder'],
+      onReorder: {
+        $: 'event',
+        action: ['updateMedia', mediaLinkPath, 'layerOrder'],
+      },
       footer: {
         $: 'component',
         key: 'addLayer',
@@ -714,7 +798,10 @@ function getLayersControls(
             component: 'SelectField',
             props: {
               value: null,
-              onValue: ['updateMedia', mediaLinkPath, 'addLayer'],
+              onValue: {
+                $: 'event',
+                action: ['updateMedia', mediaLinkPath, 'addLayer'],
+              },
               options: newMediaOptions,
               unselectedLabel: 'Add Layer...',
             },
@@ -726,14 +813,17 @@ function getLayersControls(
         return {
           key: layer.key,
           label: layer.media.type,
-          onPress: ['navigate', `${mediaLinkPath}:layer:${layer.key}`],
+          onPress: {
+            $: 'event',
+            action: ['navigate', `${mediaLinkPath}:layer:${layer.key}`],
+          },
         }
       }),
     },
   }
 }
 
-export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UIContext): UI {
+export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UIContext): DataState {
   return getMediaUI(mediaPath, layer.media, context, [
     section('Layer Controls', [
       {
@@ -743,7 +833,10 @@ export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UICont
         props: {
           value: layer.blendMode,
           label: 'Blend Mode',
-          onValue: ['updateMedia', mediaPath, 'blendMode'],
+          onValue: {
+            $: 'event',
+            action: ['updateMedia', mediaPath, 'blendMode'],
+          },
           options: [
             { key: 'mix', label: 'Blend' },
             { key: 'add', label: 'Add' },
@@ -756,7 +849,10 @@ export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UICont
         key: 'blendAmount',
         component: 'SliderField',
         props: {
-          onValue: ['updateMedia', mediaPath, 'blendAmount'],
+          onValue: {
+            $: 'event',
+            action: ['updateMedia', mediaPath, 'blendAmount'],
+          },
           label: 'Blend Amount',
           value: layer.blendAmount,
           max: 1,
@@ -770,10 +866,16 @@ export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UICont
         component: 'Button',
         children: 'Remove Layer',
         props: {
-          onPress: {
-            $: 'multi',
-            events: [['updateMedia', mediaPath, 'removeLayer', layer.key], 'navigate-back'],
-          },
+          onPress: [
+            {
+              $: 'event',
+              action: ['updateMedia', mediaPath, 'removeLayer', layer.key],
+            },
+            {
+              $: 'event',
+              action: 'navigate-back',
+            },
+          ],
         },
       },
     ]),
@@ -784,8 +886,8 @@ export function getMediaUI(
   mediaPath: string,
   mediaState: Media,
   context: UIContext,
-  footer: UI[] = []
-): UI {
+  footer: DataState[] = []
+): DataState {
   if (mediaState.type === 'color')
     return scroll([...getColorControls(mediaPath, mediaState), ...footer])
   if (mediaState.type === 'video')
@@ -803,7 +905,7 @@ export function getMediaUI(
   ])
 }
 
-export function getQuickEffects(mainState: MainState) {
+export function getQuickEffects() {
   return {
     $: 'component',
     component: 'YStack',
@@ -902,7 +1004,10 @@ export function getBeatEffects(mainState: MainState) {
             props: {
               onPress: null,
               onPressOut: null,
-              onPressIn: 'manualTapBeat',
+              onPressIn: {
+                $: 'event',
+                action: 'manualTapBeat',
+              },
               spaceFlex: 1,
               iconAfter: icon('Activity'),
             },
