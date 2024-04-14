@@ -184,7 +184,11 @@ function mainStateEffect(state: MainState, prevState: MainState) {
 }
 
 function sliderUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
-  if (event.target.key === pathToCheck && event.name === 'update') {
+  if (
+    event.target.key === pathToCheck &&
+    event.name === 'onValueChange' &&
+    event.target.component === 'RiseSliderField'
+  ) {
     mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload))
     return true
   }
@@ -192,7 +196,11 @@ function sliderUpdate(event: TemplateEvent, pathToCheck: string, statePath: stri
 }
 
 function switchUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
-  if (event.target.key === pathToCheck && event.name === 'update') {
+  if (
+    event.target.key === pathToCheck &&
+    event.name === 'onCheckedChange' &&
+    event.target.component === 'RiseSwitch'
+  ) {
     mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload))
     return true
   }
@@ -244,56 +252,34 @@ wsServer.subscribeEvent((event) => {
     name,
     action,
   } = event
-  if (key === 'offButton' && name === 'press') {
+  if (key === 'offButton' && name === 'onPress') {
     mainStateUpdate((state) => ({ ...state, mode: 'off' }))
     return
   }
-  if (key === 'whiteoutButton' && name === 'press') {
+  if (key === 'whiteoutButton' && name === 'onPress') {
     mainStateUpdate((state) => ({ ...state, mode: 'white' }))
     return
   }
-  if (key === 'rainbowButton' && name === 'press') {
+  if (key === 'rainbowButton' && name === 'onPress') {
     mainStateUpdate((state) => ({ ...state, mode: 'rainbow' }))
     return
   }
-  if (key === 'mode' && name === 'update') {
-    mainStateUpdate((state) => ({ ...state, mode: action as MainState['mode'] }))
+  if (key === 'mode' && name === 'onValueChange') {
+    mainStateUpdate((state) => ({ ...state, mode: event.payload }))
     return
   }
-  if (key === 'testSlider' && name === 'update') {
-    wsServer.update('testValue', event.action)
-    return
-  }
-
-  // tbd: bring back slider update, no longer automatic
   if (sliderUpdate(event, 'hueSlider', ['color', 'h'])) return
   if (sliderUpdate(event, 'saturationSlider', ['color', 's'])) return
   if (sliderUpdate(event, 'lightnessSlider', ['color', 'l'])) return
-  if (sliderUpdate(event, 'beatEffects.effect.intensity', ['beatEffect', 'intensity'])) return
-  if (sliderUpdate(event, 'beatEffects.effect.waveLength', ['beatEffect', 'waveLength'])) return
-  if (sliderUpdate(event, 'beatEffects.effect.dropoff', ['beatEffect', 'dropoff'])) return
-
-  // tbd: bring back switch updates, no longer automatic
-  if (switchUpdate(event, 'beatEffects.manualBeat.manualBeatEnabled', ['manualBeat', 'enabled']))
-    return
-  // const matchingEffect: undefined | keyof typeof effectsSchema = effectTypes.find(
-  //   (effect) => 'quickEffects.' + effect === path
-  // )
-  // if (name === 'press' && matchingEffect) {
-  //   mainStateUpdate((state) => ({
-  //     ...state,
-  //     effects: { ...state.effects, [matchingEffect]: Date.now() },
-  //   }))
-  //   return
-  // }
-  // manual beat
-
+  if (sliderUpdate(event, 'intensitySlider', ['beatEffect', 'intensity'])) return
+  if (sliderUpdate(event, 'waveLengthSlider', ['beatEffect', 'waveLength'])) return
+  if (sliderUpdate(event, 'dropoffSlider', ['beatEffect', 'dropoff'])) return
+  if (switchUpdate(event, 'manualBeatEnabledSwitch', ['manualBeat', 'enabled'])) return
   if (action === 'manualTapBeat') {
     handleManualTapBeat()
     return
   }
-
-  if (key === 'beatEffects.effect.effect' && name === 'update') {
+  if (key === 'effectSelect' && name === 'onValueChange') {
     mainStateUpdate((state) => ({
       ...state,
       beatEffect: {
@@ -303,27 +289,18 @@ wsServer.subscribeEvent((event) => {
     }))
     return
   }
-
-  if (key === 'selectVideo' && name === 'update') {
+  if (key === 'selectVideo' && name === 'onValueChange') {
     mainStateUpdate((state) => ({
       ...state,
       video: { ...state.video, track: event.payload as string },
     }))
     return
   }
-  // if (path === 'restart' && name === 'press') {
-  //   const player = getVideoPlayback(mainState.video.track)
-  //   if (player) {
-  //     player.restart()
-  //   }
-  //   return
-  // }
-
   if (handleMediaEvent(event)) return
   if (handleTransitionEvent(event)) return
   if (handleEffectEvent(event)) return
 
-  console.log('Unknown Event', event)
+  console.log('Unknown event', event)
 })
 
 // tbd: convert this to EffectEvent type and type all possible occurences

@@ -54,6 +54,7 @@ export type TemplateEvent<T = EventDataState['action'], K = any> = {
   target: {
     key?: string
     path: string
+    component: string
   }
   name: string
   action: T
@@ -144,7 +145,7 @@ export function BaseTemplate({
         const nodes = Array.isArray(stateNode) ? stateNode : [stateNode]
         for (const node of nodes) {
           onEvent({
-            target: { key: parentNode.key, path },
+            target: { key: parentNode.key, path, component: parentNode.component },
             name: propKey,
             action: node.action,
             payload,
