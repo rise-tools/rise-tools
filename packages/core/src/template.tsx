@@ -50,14 +50,14 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent = {
+export type TemplateEvent<T = EventDataState['action'], K = any[]> = {
   target: {
     key?: string
     path: string
   }
   name: string
-  action?: EventDataState['action']
-  payload: any[]
+  action: T
+  payload: K
 }
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
