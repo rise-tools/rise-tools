@@ -1,12 +1,32 @@
-import type { DataSource, Store } from '@react-native-templates/core'
+import type { DataSource, JSONValue, Store, TemplateEvent } from '@react-native-templates/core'
 import ReconnectingWebSocket from 'reconnecting-websocket'
+
+export type ClientWebsocketMessage =
+  | {
+      $: 'sub'
+      keys: string[]
+    }
+  | {
+      $: 'unsub'
+      keys: string[]
+    }
+  | {
+      $: 'evt'
+      event: TemplateEvent
+    }
+
+export type ServerWebsocketMessage = {
+  $: 'up'
+  key: string
+  val: JSONValue
+}
 
 export function createWSDataSource(
   wsUrl: string,
-  interceptEvent?: (event: any) => boolean
+  interceptEvent?: (event: TemplateEvent) => boolean
 ): DataSource {
   const rws = new ReconnectingWebSocket(wsUrl)
-  function send(payload: any) {
+  function send(payload: ClientWebsocketMessage) {
     rws.send(JSON.stringify(payload))
   }
   const subscriptions = new Map<string, Set<() => void>>()
@@ -22,6 +42,8 @@ export function createWSDataSource(
       keys,
     })
   })
+
+  // tbd: what's this type?
   rws.onmessage = (eventData) => {
     const event = JSON.parse(eventData.data)
     if (event['$'] === 'up') {
@@ -71,17 +93,21 @@ export function createWSDataSource(
       },
     }
   }
-  const dataSource = {
+  const dataSource: DataSource = {
     get: (key: string) => {
       const store = stores.get(key)
-      if (store) return store
+      if (store) {
+        return store
+      }
       const newStore = createStore(key)
       stores.set(key, newStore)
       return newStore
     },
-    sendEvent: (path: string, name: string, value: any) => {
-      if (interceptEvent?.({ path, name, value })) return
-      send({ $: 'evt', path, name, value })
+    sendEvent: (event) => {
+      if (interceptEvent?.(event)) {
+        return
+      }
+      send({ $: 'evt', event })
     },
   }
   return dataSource

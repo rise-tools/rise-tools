@@ -21,10 +21,9 @@ it('should render a component', () => {
         }
       },
     }),
+    sendEvent: jest.fn(),
   }
-  const component = render(
-    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} onEvent={jest.fn()} />
-  )
+  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
 
   expect(component.getByTestId('root')).toMatchInlineSnapshot(`
     <div
@@ -49,14 +48,14 @@ it('should render component at a path', () => {
       }
     },
   })
-  const dataSource = {
+  const dataSource: DataSource = {
     get: getStore,
+    sendEvent: jest.fn(),
   }
   const component = render(
     <Template
       components={BUILT_IN_COMPONENTS}
       dataSource={dataSource}
-      onEvent={jest.fn()}
       path={['mainStore', 'children']}
     />
   )
@@ -92,16 +91,12 @@ it('should resolve a ref', () => {
       }
     },
   })
-  const dataSource = {
+  const dataSource: DataSource = {
     get: getStore,
+    sendEvent: jest.fn(),
   }
   const component = render(
-    <Template
-      components={BUILT_IN_COMPONENTS}
-      dataSource={dataSource}
-      onEvent={jest.fn()}
-      path="mainStore"
-    />
+    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} path="mainStore" />
   )
 
   expect(getStore).toHaveBeenLastCalledWith('mainStore')
@@ -136,14 +131,10 @@ it('should subscribe to the root store', () => {
         }
       },
     }),
+    sendEvent: jest.fn(),
   }
   const element = render(
-    <Template
-      components={BUILT_IN_COMPONENTS}
-      dataSource={dataSource}
-      onEvent={jest.fn()}
-      path="mainStore"
-    />
+    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} path="mainStore" />
   )
   expect(mainStoreSubscribeFunction).toHaveBeenCalledTimes(1)
   expect(mainStoreUnsubscribeFunction).toHaveBeenCalledTimes(0)
@@ -190,15 +181,11 @@ it('should manage subscription to stores referenced by refs', () => {
         }
       }
     },
+    sendEvent: jest.fn(),
   }
 
   const element = render(
-    <Template
-      components={BUILT_IN_COMPONENTS}
-      dataSource={dataSource}
-      onEvent={jest.fn()}
-      path="mainStore"
-    />
+    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} path="mainStore" />
   )
 
   expect(mainStoreSubscribeFunction).toHaveBeenCalledTimes(1)

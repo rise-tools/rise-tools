@@ -1,5 +1,3 @@
-import { useDataSource } from '@react-native-templates/app/src/data-sources'
-import { Connection, useConnection } from '@react-native-templates/app/src/provider/storage'
 import { Template } from '@react-native-templates/core'
 import { RiseComponents } from '@react-native-templates/ui-rise'
 import { TamaguiComponents } from '@react-native-templates/ui-tamagui'
@@ -8,6 +6,8 @@ import React from 'react'
 import { createParam } from 'solito'
 import { useRouter } from 'solito/router'
 
+import { useDataSource } from '../data-sources'
+import { Connection, useConnection } from '../provider/storage'
 import { NotFoundScreen } from './not-found'
 
 export function Screen(props: { title: string }) {
@@ -39,24 +39,16 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   const [path] = useParam('path')
 
   const dataSource = useDataSource(connection.id, connection.host, (event) => {
-    if (event.value?.[0] === 'navigate') {
-      router.push(`/connection/${params.id}?path=${event.value?.[1]}`)
+    if (event.action?.[0] === 'navigate') {
+      router.push(`/connection/${params.id}?path=${event.action?.[1]}`)
       return true
     }
-    if (event.value?.[0] === 'navigate-back') {
+    if (event.action?.[0] === 'navigate-back') {
       router.back()
       return true
     }
     return false
   })
   if (!dataSource) return null
-  return (
-    <Template
-      components={components}
-      dataSource={dataSource}
-      // @ts-ignore
-      onEvent={dataSource.sendEvent}
-      path={path}
-    />
-  )
+  return <Template components={components} dataSource={dataSource} path={path} />
 }
