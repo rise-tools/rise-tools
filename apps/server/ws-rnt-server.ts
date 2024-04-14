@@ -44,13 +44,13 @@ export function createWSServer(port: number) {
       }
       sender({ $: 'up', key, val: values.get(key) })
     }
-    const handlers: Map<string, () => void> = clientSubscribers.has(key)
-      ? clientSubscribers.get(key)
-      : (() => {
-          const handlers = new Map<string, () => void>()
-          clientSubscribers.set(key, handlers)
-          return handlers
-        })()
+    const handlers =
+      clientSubscribers.get(key) ||
+      (() => {
+        const handlers = new Map<string, () => void>()
+        clientSubscribers.set(key, handlers)
+        return handlers
+      })()
     handlers.set(clientId, send)
     send()
   }
