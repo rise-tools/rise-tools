@@ -52,6 +52,8 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
     }
     return false
   })
-  if (!dataSource) return null
+  if (!dataSource) {
+    return null
+  }
   return <Template components={components} dataSource={dataSource} path={path} />
 }
