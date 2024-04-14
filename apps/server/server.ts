@@ -1,10 +1,11 @@
+import { createWSServer } from '@react-native-templates/ws-server'
 import { randomUUID } from 'crypto'
 import { readFileSync, writeFile } from 'fs'
 
 import { eg as egInfo } from './eg'
 import { getEGLiveFrame, getEGReadyFrame } from './eg-main'
 import { egSacnService } from './eg-sacn'
-import { EGVideo, egVideo } from './eg-video-playback'
+import { egVideo } from './eg-video-playback'
 import { createEGViewServer } from './eg-view-server'
 import { defaultMainState, Effect, MainState, MainStateSchema, Media } from './state-schema'
 import {
@@ -17,7 +18,6 @@ import {
   getUIRoot,
   UIContext,
 } from './ui'
-import { createWSServer } from '../../packages/ws-server/src/ws-rnt-server'
 
 let mainState: MainState = defaultMainState
 
