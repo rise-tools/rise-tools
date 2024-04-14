@@ -1,4 +1,4 @@
-import { ComponentProps, wrapEvents } from '@react-native-templates/core'
+import { EventDataStateSchema, TemplateComponentProps } from '@react-native-templates/core'
 import React from 'react'
 import { Label, Slider as TamaguiSlider, Spinner, YStack } from 'tamagui'
 import { z } from 'zod'
@@ -8,24 +8,23 @@ const SliderProps = z.object({
   min: z.number().optional().default(0),
   max: z.number().optional().default(100),
   step: z.number().optional().default(1),
+  onValueChange: EventDataStateSchema.optional(),
 })
 
-const WrappedTamaguiSlider = wrapEvents(TamaguiSlider, ['onValueChange'])
-
-export function Slider(props: z.infer<typeof SliderProps> & ComponentProps) {
+export function Slider(props: TemplateComponentProps<z.infer<typeof SliderProps>>) {
   return (
-    <WrappedTamaguiSlider
+    <TamaguiSlider
       value={[props.value]}
       max={props.max}
       min={props.min}
       step={props.step}
-      onTemplateEvent={props.onTemplateEvent}
+      onValueChange={props.onValueChange}
     >
       <TamaguiSlider.Track>
         <TamaguiSlider.TrackActive />
       </TamaguiSlider.Track>
       <TamaguiSlider.Thumb index={0} circular elevate />
-    </WrappedTamaguiSlider>
+    </TamaguiSlider>
   )
 }
 
@@ -35,29 +34,27 @@ Slider.validate = (props: any) => {
 
 const SliderFieldProps = SliderProps.extend({
   defaultValue: z.number().optional(),
-  onValue: z.string().or(z.array(z.any())).nullable().optional(),
+  onValueChange: EventDataStateSchema.optional(),
   label: z.string().optional(),
 })
 
-const WrappedSliderField = wrapEvents(TamaguiSlider, ['onValueChange'])
-
-export function SliderField(props: z.infer<typeof SliderFieldProps> & ComponentProps) {
+export function SliderField(props: TemplateComponentProps<z.infer<typeof SliderFieldProps>>) {
   let content = <Spinner />
   if (typeof props.value === 'number') {
     content = (
-      <WrappedSliderField
+      <TamaguiSlider
         marginVertical={'$4'}
+        onValueChange={props.onValueChange}
         value={[props.value]}
         max={props.max}
         min={props.min}
         step={props.step}
-        onTemplateEvent={props.onTemplateEvent}
       >
         <TamaguiSlider.Track>
           <TamaguiSlider.TrackActive />
         </TamaguiSlider.Track>
         <TamaguiSlider.Thumb index={0} circular elevate />
-      </WrappedSliderField>
+      </TamaguiSlider>
     )
   }
   return (

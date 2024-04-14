@@ -1,4 +1,3 @@
-import { ComponentProps } from '@react-native-templates/core'
 import * as LucideIcons from '@tamagui/lucide-icons'
 import React from 'react'
 import { SizableText } from 'tamagui'
@@ -13,7 +12,7 @@ export function Icon({
   icon,
   size = 20,
   ...rest
-}: z.infer<typeof IconProps> & ComponentProps & { icon: keyof typeof LucideIcons }) {
+}: z.infer<typeof IconProps> & { icon: keyof typeof LucideIcons }) {
   const IconComponent = LucideIcons[icon]
   if (IconComponent) {
     return <IconComponent size={size} {...rest} />

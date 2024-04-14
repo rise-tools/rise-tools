@@ -1,4 +1,4 @@
-import { ComponentProps, wrapEvents } from '@react-native-templates/core'
+import { EventDataStateSchema, TemplateComponentProps } from '@react-native-templates/core'
 import React from 'react'
 import { Label, Spinner, Switch, XStack } from 'tamagui'
 import { z } from 'zod'
@@ -6,22 +6,16 @@ import { z } from 'zod'
 const SwitchFieldProps = z.object({
   value: z.boolean().nullable().optional(),
   label: z.string().optional(),
-  onValue: z.string().or(z.array(z.string())).nullable().optional(),
+  onCheckedChange: EventDataStateSchema.optional(),
 })
 
-const WrappedSwitch = wrapEvents(Switch, ['onCheckedChange'])
-
-export function SwitchField(props: z.infer<typeof SwitchFieldProps> & ComponentProps) {
+export function SwitchField(props: TemplateComponentProps<z.infer<typeof SwitchFieldProps>>) {
   let content = <Spinner />
   if (typeof props.value === 'boolean') {
     content = (
-      <WrappedSwitch
-        marginVertical={'$4'}
-        checked={props.value}
-        onTemplateEvent={props.onTemplateEvent}
-      >
+      <Switch marginVertical={'$4'} checked={props.value} onCheckedChange={props.onCheckedChange}>
         <Switch.Thumb animation="quick" />
-      </WrappedSwitch>
+      </Switch>
     )
   }
   return (

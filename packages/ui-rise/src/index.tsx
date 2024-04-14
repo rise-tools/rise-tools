@@ -35,5 +35,3 @@ export const RiseComponents = {
     validator: SwitchField.validate,
   },
 }
-
-export { Icon, QRCode, SelectField, Slider, SliderField, SortableList, SwitchField }

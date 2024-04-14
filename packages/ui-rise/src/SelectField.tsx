@@ -1,4 +1,4 @@
-import { ComponentProps, wrapEvents } from '@react-native-templates/core'
+import { EventDataStateSchema, TemplateComponentProps } from '@react-native-templates/core'
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import React, { useMemo } from 'react'
@@ -10,7 +10,7 @@ const SelectFieldProps = z.object({
   id: z.string().optional(),
   label: z.string().optional(),
   unselectedLabel: z.string().optional().default('...'),
-  onValue: z.string().or(z.array(z.string())).nullable().optional(),
+  onValueChange: EventDataStateSchema.optional(),
   options: z
     .array(
       z.object({
@@ -21,21 +21,16 @@ const SelectFieldProps = z.object({
     .optional(),
 })
 
-const WrappedSelect = wrapEvents(Select, ['onValueChange'])
-
-export function SelectField({
-  onTemplateEvent,
-  ...props
-}: z.infer<typeof SelectFieldProps> & ComponentProps) {
+export function SelectField(props: TemplateComponentProps<z.infer<typeof SelectFieldProps>>) {
   const { value, options } = props
   return (
     <YStack>
       <Label>{props.label}</Label>
-      <WrappedSelect
+      <Select
         id={props.id}
         // @ts-ignore
         value={value}
-        onTemplateEvent={onTemplateEvent}
+        onValueChange={props.onValueChange}
         disablePreventBodyScroll
         // native
       >
@@ -152,7 +147,7 @@ export function SelectField({
             />
           </Select.ScrollDownButton>
         </Select.Content>
-      </WrappedSelect>
+      </Select>
     </YStack>
   )
 }
