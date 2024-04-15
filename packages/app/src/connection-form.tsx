@@ -1,11 +1,11 @@
 import React from 'react'
 import { z } from 'zod'
 
-import { AppForm, LabelSchema, UrlSchema } from './form'
+import { AppForm, LabelSchema } from './form'
 
 const connectionFormSchema = z.object({
   label: LabelSchema.describe('Connection Label'),
-  host: UrlSchema.describe('Websocket URL // ws://demo-remote.verse.link'),
+  host: z.string().url().toLowerCase().describe('Websocket URL // ws://demo-remote.verse.link'),
   path: z.string().describe('Path/Location (optional) // Root Location'),
 })
 

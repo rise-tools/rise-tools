@@ -44,7 +44,7 @@ export const TextField = ({
     error,
     formState: { isSubmitting },
   } = useTsController<string>()
-  const { label, placeholder, isOptional, maxLength } = useStringFieldInfo()
+  const { label, placeholder, isOptional, isURL, maxLength } = useStringFieldInfo()
 
   const themeName = useThemeName()
   const disabled = isSubmitting
@@ -62,10 +62,11 @@ export const TextField = ({
           maxLength={maxLength}
           placeholderTextColor="$color10"
           value={field.value}
-          onChangeText={(text) => field.onChange(text)}
+          onChangeText={(text) => field.onChange(isURL ? text.toLowerCase() : text)}
           onBlur={field.onBlur}
           ref={field.ref}
           placeholder={placeholder}
+          keyboardType={isURL ? 'url' : 'default'}
           autoCapitalize={autoCapitalize}
           spellCheck={spellCheck}
           autoCorrect={autoCorrect}

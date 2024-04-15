@@ -15,13 +15,11 @@ function FormComponent({ children, ...props }: ComponentProps<typeof Form>) {
 }
 
 export const LabelSchema = createUniqueFieldSchema(z.string(), 'label')
-export const UrlSchema = createUniqueFieldSchema(z.string().url().toLowerCase(), 'url')
 
 export const AppForm = createTsForm(
   [
     [z.string(), TextField],
     [LabelSchema, PrettyTextField],
-    [UrlSchema, TextField],
   ],
   {
     FormComponent,
