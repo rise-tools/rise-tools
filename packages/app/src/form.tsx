@@ -1,17 +1,10 @@
-// @ts-ignore
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
 import { ComponentProps } from 'react'
 import React from 'react'
 import { Form, YStack } from 'tamagui'
 import { z } from 'zod'
 
-import { TextField } from './fields'
-
-export const fields = {
-  text: z.string(),
-  url: z.string().url(),
-  path: createUniqueFieldSchema(z.string(), 'path'),
-}
+import { PrettyTextField, TextField } from './fields'
 
 function FormComponent({ children, ...props }: ComponentProps<typeof Form>) {
   return (
@@ -21,12 +14,15 @@ function FormComponent({ children, ...props }: ComponentProps<typeof Form>) {
   )
 }
 
+export const LabelSchema = createUniqueFieldSchema(z.string(), 'label')
+export const UrlSchema = createUniqueFieldSchema(z.string().url().toLowerCase(), 'url')
+
 export const AppForm = createTsForm(
   [
-    [fields.text, TextField],
-    [fields.url, TextField],
-    [fields.path, TextField],
-  ] as const,
+    [z.string(), TextField],
+    [LabelSchema, PrettyTextField],
+    [UrlSchema, TextField],
+  ],
   {
     FormComponent,
   }

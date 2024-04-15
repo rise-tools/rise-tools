@@ -12,7 +12,8 @@
     "composite": true,
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
-    "jsx": "react"
+    "jsx": "react",
+    "strict": true
   },
   "exclude": [
     "**/node_modules",

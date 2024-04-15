@@ -1,6 +1,5 @@
 // @ts-ignore
 import { useStringFieldInfo, useTsController } from '@ts-react/form'
-import { useId } from 'react'
 import React from 'react'
 import { Fieldset, Input, InputProps, Label, Theme, useThemeName } from 'tamagui'
 import { AnimatePresence, Paragraph } from 'tamagui'
@@ -35,23 +34,26 @@ const FieldError = ({ message }: { message?: string }) => {
   )
 }
 
-export const TextField = (props: Pick<InputProps, 'size' | 'autoFocus' | 'secureTextEntry'>) => {
+export const TextField = ({
+  autoCapitalize = 'none',
+  spellCheck = false,
+  autoCorrect = false,
+}: Pick<InputProps, 'autoCapitalize' | 'spellCheck' | 'autoCorrect'>) => {
   const {
     field,
     error,
     formState: { isSubmitting },
   } = useTsController<string>()
-  const { label, placeholder, isOptional, maxLength, isEmail, isURL, uniqueId } =
-    useStringFieldInfo()
+  const { label, placeholder, isOptional, maxLength } = useStringFieldInfo()
+
   const themeName = useThemeName()
-  const id = useId()
   const disabled = isSubmitting
-  const isPrettyName = !isURL && !isEmail && uniqueId !== 'path'
+
   return (
     <Theme name={error ? 'red' : themeName} forceClassName>
       <Fieldset>
         {!!label && (
-          <Label theme="alt1" size={props.size || '$3'} htmlFor={id}>
+          <Label theme="alt1">
             {label} {isOptional && `(Optional)`}
           </Label>
         )}
@@ -59,19 +61,21 @@ export const TextField = (props: Pick<InputProps, 'size' | 'autoFocus' | 'secure
           disabled={disabled}
           maxLength={maxLength}
           placeholderTextColor="$color10"
-          spellCheck={isPrettyName ? false : undefined}
-          autoCapitalize={isPrettyName ? 'none' : undefined}
-          keyboardType={isEmail ? 'email-address' : undefined}
           value={field.value}
           onChangeText={(text) => field.onChange(text)}
           onBlur={field.onBlur}
           ref={field.ref}
           placeholder={placeholder}
-          id={id}
-          {...props}
+          autoCapitalize={autoCapitalize}
+          spellCheck={spellCheck}
+          autoCorrect={autoCorrect}
         />
         <FieldError message={error?.errorMessage} />
       </Fieldset>
     </Theme>
   )
 }
+
+export const PrettyTextField = () => (
+  <TextField autoCapitalize="words" spellCheck={true} autoCorrect={true} />
+)
