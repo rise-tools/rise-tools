@@ -115,7 +115,7 @@ export function BaseTemplate({
 
     const children = stateNode.children ? render(stateNode.children, `${path}.children`) : null
 
-    return <Component data-testid={path} {...renderedProps} children={children} />
+    return <Component key={path} data-testid={path} {...renderedProps} children={children} />
   }
 
   function render(stateNode: JSONValue, path: string, index?: number): React.ReactNode {
