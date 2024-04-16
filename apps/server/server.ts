@@ -287,13 +287,13 @@ wsServer.subscribeEvent((event) => {
     }))
     return
   }
-  if (key === 'selectVideo' && name === 'onValueChange') {
-    mainStateUpdate((state) => ({
-      ...state,
-      video: { ...state.video, track: event.payload as string },
-    }))
-    return
-  }
+  // if (key === 'selectVideo' && name === 'onValueChange') {
+  //   mainStateUpdate((state) => ({
+  //     ...state,
+  //     video: { ...state.video, track: event.payload as string },
+  //   }))
+  //   return
+  // }
   if (handleMediaEvent(event)) return
   if (handleTransitionEvent(event)) return
   if (handleEffectEvent(event)) return
