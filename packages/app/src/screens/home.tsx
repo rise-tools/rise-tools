@@ -34,7 +34,7 @@ export function HomeScreen() {
 }
 
 function HeroImage() {
-  const [assets, error] = useAssets([require('../assets/RiseMainIcon.png')])
+  const [assets, error] = useAssets([require('../../assets/RiseMainIcon.png')])
   if (error) console.error(error)
   if (!assets?.[0]) return null
   return (

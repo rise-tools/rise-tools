@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ComponentProps } from 'react'
 import { z } from 'zod'
 
 import { AppForm, LabelSchema } from './form'
@@ -15,7 +15,7 @@ export function ConnectionForm({
   submitButton,
 }: {
   onSubmit: (values: z.infer<typeof connectionFormSchema>) => void
-  defaultValues: z.infer<typeof connectionFormSchema>
+  defaultValues: ComponentProps<typeof AppForm>['defaultValues']
   submitButton: (input: { submit: () => void }) => React.ReactNode
 }) {
   return (

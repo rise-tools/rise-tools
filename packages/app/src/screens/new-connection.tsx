@@ -4,12 +4,12 @@ import { Button, YStack } from 'tamagui'
 import { z } from 'zod'
 
 import { ConnectionForm } from '../connection-form'
-import { LabelSchema, UrlSchema } from '../form'
+import { LabelSchema } from '../form'
 import { useConnections } from '../provider/storage'
 
 const defaultNewConnection = {
   label: '' as z.infer<typeof LabelSchema>,
-  host: '' as z.infer<typeof UrlSchema>,
+  host: '' as string,
   path: '',
 }
 

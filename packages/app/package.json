@@ -7,6 +7,7 @@
   "react-native": "src",
   "files": [
     "src",
+    "assets",
     "lib",
     "!**/__tests__",
     "!**/__fixtures__",
