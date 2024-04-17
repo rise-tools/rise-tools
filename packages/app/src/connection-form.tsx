@@ -1,12 +1,12 @@
 import React from 'react'
 import { z } from 'zod'
 
-import { AppForm, fields } from './form'
+import { AppForm, LabelSchema } from './form'
 
 const connectionFormSchema = z.object({
-  label: fields.text.describe('Connection Label'),
-  host: fields.url.describe('Websocket URL // wss://demo-remote.verse.link').toLowerCase(),
-  path: fields.path.describe('Path/Location (optional) // Root Location'),
+  label: LabelSchema.describe('Connection Label'),
+  host: z.string().url().toLowerCase().describe('Websocket URL // ws://demo-remote.verse.link'),
+  path: z.string().describe('Path/Location (optional) // Root Location'),
 })
 
 export function ConnectionForm({
@@ -24,11 +24,6 @@ export function ConnectionForm({
       onSubmit={onSubmit}
       defaultValues={defaultValues}
       renderAfter={submitButton}
-    >
-      {
-        /* @ts-ignore */
-        (fields) => <>{Object.values(fields)}</>
-      }
-    </AppForm>
+    />
   )
 }

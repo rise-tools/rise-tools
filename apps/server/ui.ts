@@ -25,7 +25,7 @@ function icon(name: string): ComponentDataState {
   return {
     $: 'component',
     key: 'icon',
-    component: 'Icon',
+    component: 'RiseIcon',
     props: { icon: name },
   }
 }
@@ -72,37 +72,46 @@ function getModeControls(state: MainState) {
       {
         $: 'component',
         key: 'hueSlider',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
           label: 'Hue',
           value: state.color.h,
           max: 360,
           min: 0,
           step: 1,
+          onValueChange: {
+            $: 'event',
+          },
         },
       },
       {
         $: 'component',
         key: 'saturationSlider',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
           label: 'Saturation',
           value: state.color.s,
           max: 1,
           min: 0,
           step: 0.01,
+          onValueChange: {
+            $: 'event',
+          },
         },
       },
       {
         $: 'component',
         key: 'lightnessSlider',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
           label: 'Lightness',
           value: state.color.l,
           max: 1,
           min: 0,
           step: 0.01,
+          onValueChange: {
+            $: 'event',
+          },
         },
       },
     ] as const
@@ -112,9 +121,12 @@ function getModeControls(state: MainState) {
       {
         $: 'component',
         key: 'selectVideo',
-        component: 'SelectField',
+        component: 'RiseSelectField',
         props: {
           value: state.video.track,
+          onValueChange: {
+            $: 'event',
+          },
           options: { $: 'ref', ref: ['videoList'] },
         },
       },
@@ -123,6 +135,11 @@ function getModeControls(state: MainState) {
         key: 'restart',
         component: 'Button',
         children: 'Restart Video',
+        props: {
+          onPress: {
+            $: 'event',
+          },
+        },
       },
     ]
   }
@@ -147,11 +164,11 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
     {
       $: 'component',
       key: 'selectVideo',
-      component: 'SelectField',
+      component: 'RiseSelectField',
       props: {
         unselectedLabel: 'Select Video...',
         value: state.track,
-        onValue: {
+        onValueChange: {
           $: 'event',
           action: ['updateMedia', mediaPath, 'track'],
         },
@@ -173,11 +190,11 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
     {
       $: 'component',
       key: 'loopBounce',
-      component: 'SwitchField',
+      component: 'RiseSwitchField',
       props: {
         value: state?.params?.loopBounce || false,
         label: 'Loop Bounce',
-        onValue: {
+        onCheckedChange: {
           $: 'event',
           action: ['updateMedia', mediaPath, 'loopBounce'],
         },
@@ -186,11 +203,11 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
     {
       $: 'component',
       key: 'reverse',
-      component: 'SwitchField',
+      component: 'RiseSwitchField',
       props: {
         value: state?.params?.reverse || false,
         label: 'Reverse Playback',
-        onValue: {
+        onCheckedChange: {
           $: 'event',
           action: ['updateMedia', mediaPath, 'reverse'],
         },
@@ -233,11 +250,11 @@ function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
     {
       $: 'component',
       key: 'ColorHueSlider',
-      component: 'SliderField',
+      component: 'RiseSliderField',
       props: {
         label: 'Hue',
         value: state.h,
-        onValue: {
+        onValueChange: {
           $: 'event',
           action: ['updateMedia', mediaPath, 'color', 'h'],
         },
@@ -249,11 +266,11 @@ function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
     {
       $: 'component',
       key: 'ColorSaturationSlider',
-      component: 'SliderField',
+      component: 'RiseSliderField',
       props: {
         label: 'Saturation',
         value: state.s,
-        onValue: {
+        onValueChange: {
           $: 'event',
           action: ['updateMedia', mediaPath, 'color', 's'],
         },
@@ -265,11 +282,11 @@ function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
     {
       $: 'component',
       key: 'ColorLightnessSlider',
-      component: 'SliderField',
+      component: 'RiseSliderField',
       props: {
         label: 'Lightness',
         value: state.l,
-        onValue: {
+        onValueChange: {
           $: 'event',
           action: ['updateMedia', mediaPath, 'color', 'l'],
         },
@@ -284,13 +301,16 @@ function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
 export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | undefined): DataState {
   return {
     $: 'component',
-    component: 'SortableList',
+    component: 'RiseSortableList',
     props: {
-      onReorder: ['updateMedia', mediaLinkPath, 'effectOrder'],
+      onReorder: {
+        $: 'event',
+        action: ['updateMedia', mediaLinkPath, 'effectOrder'],
+      },
       footer: {
         $: 'component',
         key: 'addEffect',
-        component: 'SelectField',
+        component: 'RiseSelectField',
         props: {
           unselectedLabel: 'Add Effect...',
           value: null,
@@ -303,7 +323,7 @@ export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | unde
             { key: 'darken', label: 'Darken' },
             { key: 'rotate', label: 'Rotate' },
           ],
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateMedia', mediaLinkPath, 'addEffect'],
           },
@@ -347,9 +367,9 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
       {
         $: 'component',
         key: 'value',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateEffect', effectPath, 'value'],
           },
@@ -367,9 +387,9 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
       {
         $: 'component',
         key: 'value',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateEffect', effectPath, 'value'],
           },
@@ -387,9 +407,9 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
       {
         $: 'component',
         key: 'amount',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateEffect', effectPath, 'amount'],
           },
@@ -413,9 +433,9 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
       {
         $: 'component',
         key: 'saturation',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateEffect', effectPath, 'saturation'],
           },
@@ -429,9 +449,9 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
       {
         $: 'component',
         key: 'hue',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateEffect', effectPath, 'hue'],
           },
@@ -449,9 +469,9 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
       {
         $: 'component',
         key: 'value',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateEffect', effectPath, 'value'],
           },
@@ -469,9 +489,9 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
       {
         $: 'component',
         key: 'value',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateEffect', effectPath, 'value'],
           },
@@ -489,9 +509,9 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
       {
         $: 'component',
         key: 'value',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateEffect', effectPath, 'value'],
           },
@@ -531,10 +551,10 @@ export function getMediaControls(state: Media, mediaLinkPath: string): DataState
       {
         $: 'component',
         key: 'MediaMode',
-        component: 'SelectField',
+        component: 'RiseSelectField',
         props: {
           value: state.type,
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateMedia', mediaLinkPath, 'mode'],
           },
@@ -577,7 +597,7 @@ export function getMediaControls(state: Media, mediaLinkPath: string): DataState
           children: {
             $: 'component',
             key: 'icon',
-            component: 'Icon',
+            component: 'RiseIcon',
             props: { icon: 'X' },
           },
         },
@@ -591,11 +611,11 @@ export function getTransitionControls(transition: Transition, state: TransitionS
     {
       $: 'component',
       key: 'manual',
-      component: 'SliderField',
+      component: 'RiseSliderField',
       props: {
         label: 'Manual',
         value: state.manual || 0,
-        onValue: {
+        onValueChange: {
           $: 'event',
           action: ['updateTransition', 'manual'],
         },
@@ -619,11 +639,11 @@ export function getTransitionControls(transition: Transition, state: TransitionS
     {
       $: 'component',
       key: 'duration',
-      component: 'SliderField',
+      component: 'RiseSliderField',
       props: {
         label: `Duration ${Math.round(transition.duration / 100) / 10}sec`,
         value: transition.duration || 0,
-        onValue: {
+        onValueChange: {
           $: 'event',
           action: ['updateTransition', 'duration'],
         },
@@ -668,9 +688,12 @@ export function getUIRootLegacy(state: MainState) {
       {
         $: 'component',
         key: 'mode',
-        component: 'SelectField',
+        component: 'RiseSelectField',
         props: {
           value: state.mode,
+          onValueChange: {
+            $: 'event',
+          },
           options: [
             { key: 'off', label: 'Off' },
             { key: 'white', label: 'White' },
@@ -692,6 +715,9 @@ export function getUIRootLegacy(state: MainState) {
         children: 'All Off',
         props: {
           disabled: state.mode === 'off',
+          onPress: {
+            $: 'event',
+          },
         },
       },
       ...getModeControls(state),
@@ -710,12 +736,12 @@ export function getUIRootLegacy(state: MainState) {
       //     },
       //     children: [
       //       'Quick Effects',
-      //       { $: 'component', key: 'lol', component: 'Icon', props: { icon: 'Sparkles' } },
+      //       { $: 'component', key: 'lol', component: 'RiseIcon', props: { icon: 'Sparkles' } },
       //     ],
       //   },
       //   props: {
       //     onPress: ['navigate', 'effects'],
-      //     // icon: { $: 'component', key: 'lol', component: 'Icon', props: { icon: 'Check' } },
+      //     // icon: { $: 'component', key: 'lol', component: 'RiseIcon', props: { icon: 'Check' } },
       //   },
       // },
 
@@ -733,7 +759,7 @@ export function getUIRootLegacy(state: MainState) {
           iconAfter: {
             $: 'component',
             key: 'icon',
-            component: 'Icon',
+            component: 'RiseIcon',
             props: { icon: 'Sparkles' },
           },
         },
@@ -752,7 +778,7 @@ export function getUIRootLegacy(state: MainState) {
           iconAfter: {
             $: 'component',
             key: 'icon',
-            component: 'Icon',
+            component: 'RiseIcon',
             props: { icon: 'HeartPulse' },
           },
         },
@@ -781,7 +807,7 @@ function getLayersControls(
 ): DataState {
   return {
     $: 'component',
-    component: 'SortableList',
+    component: 'RiseSortableList',
     props: {
       onReorder: {
         $: 'event',
@@ -795,10 +821,10 @@ function getLayersControls(
           {
             key: 'addLayer',
             $: 'component',
-            component: 'SelectField',
+            component: 'RiseSelectField',
             props: {
               value: null,
-              onValue: {
+              onValueChange: {
                 $: 'event',
                 action: ['updateMedia', mediaLinkPath, 'addLayer'],
               },
@@ -829,11 +855,11 @@ export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UICont
       {
         $: 'component',
         key: 'blendMode',
-        component: 'SelectField',
+        component: 'RiseSelectField',
         props: {
           value: layer.blendMode,
           label: 'Blend Mode',
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateMedia', mediaPath, 'blendMode'],
           },
@@ -847,9 +873,9 @@ export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UICont
       {
         $: 'component',
         key: 'blendAmount',
-        component: 'SliderField',
+        component: 'RiseSliderField',
         props: {
-          onValue: {
+          onValueChange: {
             $: 'event',
             action: ['updateMedia', mediaPath, 'blendAmount'],
           },
@@ -934,44 +960,53 @@ export function getBeatEffects(mainState: MainState) {
         [
           {
             $: 'component',
-            key: 'intensity',
-            component: 'SliderField',
+            key: 'intensitySlider',
+            component: 'RiseSliderField',
             props: {
               label: 'Intensity',
               value: { $: 'ref', ref: ['mainState', 'beatEffect', 'intensity'] },
               max: 100,
               min: 0,
               step: 1,
+              onValueChange: {
+                $: 'event',
+              },
             },
           },
           {
             $: 'component',
-            key: 'waveLength',
-            component: 'SliderField',
+            key: 'waveLengthSlider',
+            component: 'RiseSliderField',
             props: {
               label: 'Wave Length %',
               value: { $: 'ref', ref: ['mainState', 'beatEffect', 'waveLength'] },
               max: 1,
               min: 0,
               step: 0.01,
+              onValueChange: {
+                $: 'event',
+              },
             },
           },
           {
             $: 'component',
-            key: 'dropoff',
-            component: 'SliderField',
+            key: 'dropoffSlider',
+            component: 'RiseSliderField',
             props: {
               label: 'DropOff %',
               value: { $: 'ref', ref: ['mainState', 'beatEffect', 'dropoff'] },
               max: 1,
               min: 0,
               step: 0.01,
+              onValueChange: {
+                $: 'event',
+              },
             },
           },
           {
             $: 'component',
-            key: 'effect',
-            component: 'SelectField',
+            key: 'effectSelect',
+            component: 'RiseSelectField',
             props: {
               value: mainState.beatEffect.effect,
               options: [
@@ -979,6 +1014,9 @@ export function getBeatEffects(mainState: MainState) {
                 { key: 'waveIn', label: 'waveIn' },
                 { key: 'waveOut', label: 'waveOut' },
               ],
+              onValueChange: {
+                $: 'event',
+              },
             },
           },
         ],
@@ -989,11 +1027,14 @@ export function getBeatEffects(mainState: MainState) {
         [
           {
             $: 'component',
-            key: 'manualBeatEnabled',
-            component: 'SwitchField',
+            key: 'manualBeatEnabledSwitch',
+            component: 'RiseSwitchField',
             props: {
               label: 'Enabled',
               value: { $: 'ref', ref: ['mainState', 'manualBeat', 'enabled'] },
+              onCheckedChange: {
+                $: 'event',
+              },
             },
           },
           {

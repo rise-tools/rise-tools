@@ -1,13 +1,13 @@
-import { useDataSource } from '@react-native-templates/app/src/data-sources'
-import { Connection, useConnection } from '@react-native-templates/app/src/provider/storage'
-import { Template } from '@react-native-templates/core'
+import { Template, TemplateEvent } from '@react-native-templates/core'
 import { RiseComponents } from '@react-native-templates/ui-rise'
 import { TamaguiComponents } from '@react-native-templates/ui-tamagui'
 import { Stack } from 'expo-router'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { createParam } from 'solito'
 import { useRouter } from 'solito/router'
 
+import { useDataSource } from '../data-sources'
+import { Connection, useConnection } from '../provider/storage'
 import { NotFoundScreen } from './not-found'
 
 export function Screen(props: { title: string }) {
@@ -38,25 +38,26 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   const { params } = useParams()
   const [path] = useParam('path')
 
-  const dataSource = useDataSource(connection.id, connection.host, (event) => {
-    if (event.value?.[0] === 'navigate') {
-      router.push(`/connection/${params.id}?path=${event.value?.[1]}`)
-      return true
-    }
-    if (event.value?.[0] === 'navigate-back') {
-      router.back()
-      return true
-    }
-    return false
-  })
-  if (!dataSource) return null
-  return (
-    <Template
-      components={components}
-      dataSource={dataSource}
-      // @ts-ignore
-      onEvent={dataSource.sendEvent}
-      path={path}
-    />
+  const dataSource = useDataSource(connection.id, connection.host)
+  if (!dataSource) {
+    return null
+  }
+
+  const onEvent = useCallback(
+    (event: TemplateEvent) => {
+      const [action, path] = Array.isArray(event.action) ? event.action : [event.action, '']
+      if (action === 'navigate') {
+        router.push(`/connection/${params.id}?path=${path}`)
+        return
+      }
+      if (action === 'navigate-back') {
+        router.back()
+        return
+      }
+      dataSource.sendEvent(event)
+    },
+    [dataSource]
   )
+
+  return <Template components={components} dataSource={dataSource} path={path} onEvent={onEvent} />
 }

@@ -50,14 +50,15 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent = {
+export type TemplateEvent<T = EventDataState['action'], K = any> = {
   target: {
     key?: string
     path: string
+    component: string
   }
   name: string
-  action?: EventDataState['action']
-  payload: any[]
+  action: T
+  payload: K
 }
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
@@ -79,8 +80,8 @@ export function BaseTemplate({
   onEvent,
 }: {
   components: ComponentRegistry
-  dataState: JSONValue | JSONValue[]
-  onEvent: (event: TemplateEvent) => void
+  dataState: JSONValue
+  onEvent?: (event: TemplateEvent) => void
 }) {
   function renderComponent(stateNode: ComponentDataState, path: string) {
     const componentDefinition = components[stateNode.component]
@@ -97,7 +98,13 @@ export function BaseTemplate({
     let componentProps = stateNode.props || {}
 
     if (typeof componentDefinition.validator === 'function') {
-      componentProps = componentDefinition.validator(stateNode.props)
+      try {
+        componentProps = componentDefinition.validator(stateNode.props)
+      } catch (e) {
+        throw new RenderError(
+          `Invalid props for component: ${stateNode.component}, props: ${JSON.stringify(stateNode.props)}. Error: ${JSON.stringify(e)}`
+        )
+      }
     }
 
     const renderedProps = Object.fromEntries(
@@ -108,7 +115,7 @@ export function BaseTemplate({
 
     const children = stateNode.children ? render(stateNode.children, `${path}.children`) : null
 
-    return <Component data-testid={path} {...renderedProps} children={children} />
+    return <Component key={path} data-testid={path} {...renderedProps} children={children} />
   }
 
   function render(stateNode: JSONValue, path: string, index?: number): React.ReactNode {
@@ -138,13 +145,19 @@ export function BaseTemplate({
   ): any {
     if (
       isEventDataState(stateNode) ||
-      (Array.isArray(stateNode) && stateNode.every(isEventDataState))
+      (Array.isArray(stateNode) && stateNode.length > 0 && stateNode.every(isEventDataState))
     ) {
-      return (...payload: any[]) => {
+      return (payload: any) => {
         const nodes = Array.isArray(stateNode) ? stateNode : [stateNode]
         for (const node of nodes) {
-          onEvent({
-            target: { key: parentNode.key, path },
+          // React events (e.g. from onPress) contain cyclic structures that can't be serialized
+          // with JSON.stringify and also provide little to no value for the server.
+          // tbd: figure a better way to handle this in a cross-platform way
+          if (payload?.nativeEvent) {
+            payload = '[native code]'
+          }
+          onEvent?.({
+            target: { key: parentNode.key, path, component: parentNode.component },
             name: propKey,
             action: node.action,
             payload,
@@ -159,6 +172,16 @@ export function BaseTemplate({
     }
     if (isCompositeDataState(stateNode)) {
       return render(stateNode, `${path}.props[${propKey}]`)
+    }
+    if (stateNode && typeof stateNode === 'object') {
+      return Object.fromEntries(
+        Object.entries(stateNode).map(([key, value]) => {
+          return [
+            key,
+            renderProp(`${propKey}.${key}`, value, parentNode, `${path}.props[${propKey}][${key}]`),
+          ]
+        })
+      )
     }
     return stateNode
   }

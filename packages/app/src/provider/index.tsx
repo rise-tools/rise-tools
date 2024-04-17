@@ -3,20 +3,13 @@ import React from 'react'
 import { useColorScheme } from 'react-native'
 import { TamaguiProvider, TamaguiProviderProps } from 'tamagui'
 
-import { tamaguiConfig } from '..'
 import { Toast } from './Toast'
 import { ToastViewport } from './ToastViewport'
 
-export function Provider({ children, ...rest }: Omit<TamaguiProviderProps, 'config'>) {
+export function Provider({ children, ...rest }: TamaguiProviderProps) {
   const scheme = useColorScheme()
-
   return (
-    <TamaguiProvider
-      config={tamaguiConfig}
-      disableInjectCSS
-      defaultTheme={scheme === 'dark' ? 'dark' : 'light'}
-      {...rest}
-    >
+    <TamaguiProvider disableInjectCSS defaultTheme={scheme === 'dark' ? 'dark' : 'light'} {...rest}>
       <ToastProvider
         swipeDirection="horizontal"
         duration={6000}

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
 import {
   BaseTemplate,
@@ -16,6 +16,7 @@ export type Store<V = JSONValue> = {
 
 export type DataSource = {
   get: (key: string) => Store
+  sendEvent: (event: TemplateEvent) => void
 }
 
 /** Refs */
@@ -162,13 +163,12 @@ function resolveRef(dataValues: DataValues, lookup: ReferencedDataState['ref']):
 export function Template({
   components,
   dataSource,
-  onEvent,
   path = '',
 }: {
   path?: ReferencedDataState['ref']
   dataSource: DataSource
   components: ComponentRegistry
-  onEvent: (event: TemplateEvent) => void
+  onEvent: ComponentProps<typeof BaseTemplate>['onEvent']
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
@@ -179,5 +179,11 @@ export function Template({
     return () => release()
   }, [])
   const rootDataState = resolveRef(dataValues, path)
-  return <BaseTemplate components={components} dataState={rootDataState} onEvent={onEvent} />
+  return (
+    <BaseTemplate
+      components={components}
+      dataState={rootDataState}
+      onEvent={dataSource.sendEvent}
+    />
+  )
 }

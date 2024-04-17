@@ -1,4 +1,3 @@
-import { Connection, useConnections } from '@react-native-templates/app/src/provider/storage'
 import { PlusCircle, Settings } from '@tamagui/lucide-icons'
 import { useAssets } from 'expo-asset'
 import React from 'react'
@@ -6,9 +5,10 @@ import { ImageURISource, ScrollView } from 'react-native'
 import { useLink } from 'solito/link'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
+import { Connection, useConnections } from '../provider/storage'
+
 export function HomeScreen() {
   const [state] = useConnections()
-
   return (
     <ScrollView>
       <YStack padding="$4" gap="$4">
@@ -34,7 +34,7 @@ export function HomeScreen() {
 }
 
 function HeroImage() {
-  const [assets, error] = useAssets([require('../assets/RiseMainIcon.png')])
+  const [assets, error] = useAssets([require('../../assets/RiseMainIcon.png')])
   if (error) console.error(error)
   if (!assets?.[0]) return null
   return (

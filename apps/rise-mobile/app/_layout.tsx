@@ -1,4 +1,4 @@
-import { Provider } from '@react-native-templates/app'
+import { Provider, tamaguiConfig } from '@react-native-templates/app'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
 import { Stack, usePathname, useRouter } from 'expo-router'
@@ -34,12 +34,11 @@ export default function HomeLayout() {
     InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
   })
   const scheme = useColorScheme()
-
   if (!loaded) {
     return null
   }
   return (
-    <Provider>
+    <Provider config={tamaguiConfig}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
           <ExpoStorageProvider>

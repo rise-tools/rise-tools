@@ -1,6 +1,5 @@
 import { DataState } from '@react-native-templates/core'
-
-import { createWSServer } from './ws-rnt-server'
+import { createWSServer } from '@react-native-templates/ws-server'
 
 const wsServer = createWSServer(3888)
 
@@ -30,7 +29,7 @@ function updateUI() {
             props: {
               icon: {
                 $: 'component',
-                component: 'Icon',
+                component: 'RiseIcon',
                 props: {
                   icon: 'Bot',
                 },
@@ -82,7 +81,7 @@ function updateUI() {
       section('Robotbot', [
         {
           $: 'component',
-          component: 'SliderField',
+          component: 'RiseSliderField',
           key: 'x',
           props: {
             label: 'Foo',
