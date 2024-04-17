@@ -67,7 +67,10 @@
   },
   "jest": {
     "preset": "react-native",
-    "prettierPath": null
+    "prettierPath": null,
+    "moduleNameMapper": {
+      "@react-native-templates/(.*)": "<rootDir>/packages/$1/src"
+    }
   },
   "release-it": {
     "git": {
