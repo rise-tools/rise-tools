@@ -1,6 +1,6 @@
 // @ts-ignore
 import { useStringFieldInfo, useTsController } from '@ts-react/form'
-import React from 'react'
+import React, { useId } from 'react'
 import { Fieldset, Input, InputProps, Label, Theme, useThemeName } from 'tamagui'
 import { AnimatePresence, Paragraph } from 'tamagui'
 
@@ -49,11 +49,13 @@ export const TextField = ({
   const themeName = useThemeName()
   const disabled = isSubmitting
 
+  const id = useId()
+
   return (
     <Theme name={error ? 'red' : themeName} forceClassName>
       <Fieldset>
         {!!label && (
-          <Label theme="alt1">
+          <Label theme="alt1" htmlFor={id}>
             {label} {isOptional && `(Optional)`}
           </Label>
         )}
@@ -65,6 +67,7 @@ export const TextField = ({
           onChangeText={(text) => field.onChange(isURL ? text.toLowerCase() : text)}
           onBlur={field.onBlur}
           ref={field.ref}
+          id={id}
           placeholder={placeholder}
           keyboardType={isURL ? 'url' : 'default'}
           autoCapitalize={autoCapitalize}
