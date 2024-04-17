@@ -31,10 +31,7 @@ export type ServerWebsocketMessage = UpdateWebsocketMessage
 
 type Handler = () => void
 
-export function createWSDataSource(
-  wsUrl: string,
-  interceptEvent?: (event: TemplateEvent) => boolean
-): DataSource {
+export function createWSDataSource(wsUrl: string): DataSource {
   const rws = new ReconnectingWebSocket(wsUrl)
   function send(payload: ClientWebsocketMessage) {
     rws.send(JSON.stringify(payload))
@@ -116,9 +113,6 @@ export function createWSDataSource(
       return newStore
     },
     sendEvent: (event) => {
-      if (interceptEvent?.(event)) {
-        return
-      }
       send({ $: 'evt', event })
     },
   }

@@ -81,7 +81,7 @@ export function BaseTemplate({
 }: {
   components: ComponentRegistry
   dataState: JSONValue
-  onEvent: (event: TemplateEvent) => void
+  onEvent?: (event: TemplateEvent) => void
 }) {
   function renderComponent(stateNode: ComponentDataState, path: string) {
     const componentDefinition = components[stateNode.component]
@@ -156,7 +156,7 @@ export function BaseTemplate({
           if (payload?.nativeEvent) {
             payload = '[native code]'
           }
-          onEvent({
+          onEvent?.({
             target: { key: parentNode.key, path, component: parentNode.component },
             name: propKey,
             action: node.action,

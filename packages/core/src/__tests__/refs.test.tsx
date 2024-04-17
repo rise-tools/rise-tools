@@ -23,7 +23,13 @@ it('should render a component', () => {
     }),
     sendEvent: jest.fn(),
   }
-  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  const component = render(
+    <Template
+      components={BUILT_IN_COMPONENTS}
+      dataSource={dataSource}
+      onEvent={dataSource.sendEvent}
+    />
+  )
 
   expect(component.getByTestId('root')).toMatchInlineSnapshot(`
     <div
@@ -56,6 +62,7 @@ it('should render component at a path', () => {
     <Template
       components={BUILT_IN_COMPONENTS}
       dataSource={dataSource}
+      onEvent={dataSource.sendEvent}
       path={['mainStore', 'children']}
     />
   )
@@ -96,7 +103,12 @@ it('should resolve a ref', () => {
     sendEvent: jest.fn(),
   }
   const component = render(
-    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} path="mainStore" />
+    <Template
+      components={BUILT_IN_COMPONENTS}
+      dataSource={dataSource}
+      onEvent={dataSource.sendEvent}
+      path="mainStore"
+    />
   )
 
   expect(getStore).toHaveBeenLastCalledWith('mainStore')
@@ -134,7 +146,12 @@ it('should subscribe to the root store', () => {
     sendEvent: jest.fn(),
   }
   const element = render(
-    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} path="mainStore" />
+    <Template
+      components={BUILT_IN_COMPONENTS}
+      dataSource={dataSource}
+      onEvent={dataSource.sendEvent}
+      path="mainStore"
+    />
   )
   expect(mainStoreSubscribeFunction).toHaveBeenCalledTimes(1)
   expect(mainStoreUnsubscribeFunction).toHaveBeenCalledTimes(0)
@@ -185,7 +202,12 @@ it('should manage subscription to stores referenced by refs', () => {
   }
 
   const element = render(
-    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} path="mainStore" />
+    <Template
+      components={BUILT_IN_COMPONENTS}
+      dataSource={dataSource}
+      onEvent={dataSource.sendEvent}
+      path="mainStore"
+    />
   )
 
   expect(mainStoreSubscribeFunction).toHaveBeenCalledTimes(1)

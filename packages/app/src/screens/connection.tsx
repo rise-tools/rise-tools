@@ -1,8 +1,8 @@
-import { Template } from '@react-native-templates/core'
+import { Template, TemplateEvent } from '@react-native-templates/core'
 import { RiseComponents } from '@react-native-templates/ui-rise'
 import { TamaguiComponents } from '@react-native-templates/ui-tamagui'
 import { Stack } from 'expo-router'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { createParam } from 'solito'
 import { useRouter } from 'solito/router'
 
@@ -38,20 +38,26 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   const { params } = useParams()
   const [path] = useParam('path')
 
-  const dataSource = useDataSource(connection.id, connection.host, (event) => {
-    const [action, path] = Array.isArray(event.action) ? event.action : [event.action, '']
-    if (action === 'navigate') {
-      router.push(`/connection/${params.id}?path=${path}`)
-      return true
-    }
-    if (action === 'navigate-back') {
-      router.back()
-      return true
-    }
-    return false
-  })
+  const dataSource = useDataSource(connection.id, connection.host)
   if (!dataSource) {
     return null
   }
-  return <Template components={components} dataSource={dataSource} path={path} />
+
+  const onEvent = useCallback(
+    (event: TemplateEvent) => {
+      const [action, path] = Array.isArray(event.action) ? event.action : [event.action, '']
+      if (action === 'navigate') {
+        router.push(`/connection/${params.id}?path=${path}`)
+        return
+      }
+      if (action === 'navigate-back') {
+        router.back()
+        return
+      }
+      dataSource.sendEvent(event)
+    },
+    [dataSource]
+  )
+
+  return <Template components={components} dataSource={dataSource} path={path} onEvent={onEvent} />
 }

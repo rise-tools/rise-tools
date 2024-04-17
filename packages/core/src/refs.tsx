@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
 import {
   BaseTemplate,
@@ -168,6 +168,7 @@ export function Template({
   path?: ReferencedDataState['ref']
   dataSource: DataSource
   components: ComponentRegistry
+  onEvent: ComponentProps<typeof BaseTemplate>['onEvent']
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
