@@ -1,12 +1,15 @@
-import { Button, YStack } from '@react-native-templates/demo-ui'
-import { ConnectionForm } from '@react-native-templates/app/src/connection-form'
-import { useConnections } from '@react-native-templates/app/src/provider/storage'
 import React from 'react'
 import { useLink } from 'solito/link'
+import { Button, YStack } from 'tamagui'
+import { z } from 'zod'
+
+import { ConnectionForm } from '../connection-form'
+import { LabelSchema } from '../form'
+import { useConnections } from '../provider/storage'
 
 const defaultNewConnection = {
-  label: '',
-  host: '',
+  label: '' as z.infer<typeof LabelSchema>,
+  host: '' as string,
   path: '',
 }
 
@@ -16,10 +19,9 @@ export function NewConnectionScreen() {
   })
   const [, { addConnection }] = useConnections()
   return (
-    <YStack f={1} space padding="$4">
+    <YStack flex={1} space padding="$4">
       <ConnectionForm
         onSubmit={(values) => {
-          // @ts-ignore
           addConnection(values)
           goHomeLink.onPress()
         }}

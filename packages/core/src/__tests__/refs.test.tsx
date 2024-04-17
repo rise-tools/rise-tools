@@ -1,19 +1,16 @@
-/**
- * @jest-environment jsdom
- */
 import { render } from '@testing-library/react'
 import React from 'react'
 
-import { DataStateType, Template } from '..'
+import { DataSource, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
-  const dataSource = {
+  const dataSource: DataSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
         return {
-          $: DataStateType.Component,
+          $: 'component',
           component: 'View',
           props: {
             height: 50,
@@ -21,9 +18,14 @@ it('should render a component', () => {
         }
       },
     }),
+    sendEvent: jest.fn(),
   }
   const component = render(
-    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} onEvent={jest.fn()} />
+    <Template
+      components={BUILT_IN_COMPONENTS}
+      dataSource={dataSource}
+      onEvent={dataSource.sendEvent}
+    />
   )
 
   expect(component.getByTestId('root')).toMatchInlineSnapshot(`
@@ -39,24 +41,25 @@ it('should render component at a path', () => {
     subscribe: () => jest.fn(),
     get() {
       return {
-        $: DataStateType.Component,
+        $: 'component',
         component: 'View',
         children: {
-          $: DataStateType.Component,
+          $: 'component',
           component: 'View',
           children: 'Hello World!',
         },
       }
     },
   })
-  const dataSource = {
+  const dataSource: DataSource = {
     get: getStore,
+    sendEvent: jest.fn(),
   }
   const component = render(
     <Template
       components={BUILT_IN_COMPONENTS}
       dataSource={dataSource}
-      onEvent={jest.fn()}
+      onEvent={dataSource.sendEvent}
       path={['mainStore', 'children']}
     />
   )
@@ -76,30 +79,31 @@ it('should resolve a ref', () => {
     subscribe: () => jest.fn(),
     get() {
       return {
-        $: DataStateType.Component,
+        $: 'component',
         component: 'View',
         children: [
           {
-            $: DataStateType.Component,
+            $: 'component',
             component: 'View',
             children: 'Hello World!',
           },
           {
-            $: DataStateType.Ref,
+            $: 'ref',
             ref: ['mainStore', 'children', 0],
           },
         ],
       }
     },
   })
-  const dataSource = {
+  const dataSource: DataSource = {
     get: getStore,
+    sendEvent: jest.fn(),
   }
   const component = render(
     <Template
       components={BUILT_IN_COMPONENTS}
       dataSource={dataSource}
-      onEvent={jest.fn()}
+      onEvent={dataSource.sendEvent}
       path="mainStore"
     />
   )
@@ -126,22 +130,23 @@ it('should resolve a ref', () => {
 it('should subscribe to the root store', () => {
   const mainStoreUnsubscribeFunction = jest.fn()
   const mainStoreSubscribeFunction = jest.fn().mockReturnValue(mainStoreUnsubscribeFunction)
-  const dataSource = {
+  const dataSource: DataSource = {
     get: () => ({
       subscribe: mainStoreSubscribeFunction,
       get() {
         return {
-          $: DataStateType.Component,
+          $: 'component',
           component: 'View',
         }
       },
     }),
+    sendEvent: jest.fn(),
   }
   const element = render(
     <Template
       components={BUILT_IN_COMPONENTS}
       dataSource={dataSource}
-      onEvent={jest.fn()}
+      onEvent={dataSource.sendEvent}
       path="mainStore"
     />
   )
@@ -159,17 +164,17 @@ it('should manage subscription to stores referenced by refs', () => {
   const secondStoreUnsubscribeFunction = jest.fn()
   const secondStoreSubscribeFunction = jest.fn().mockReturnValue(secondStoreUnsubscribeFunction)
 
-  const dataSource = {
+  const dataSource: DataSource = {
     get: (name: string) => {
       if (name === 'mainStore') {
         return {
           subscribe: mainStoreSubscribeFunction,
           get() {
             return {
-              $: DataStateType.Component,
+              $: 'component',
               component: 'View',
               children: {
-                $: DataStateType.Ref,
+                $: 'ref',
                 ref: ['secondStore', 'user', 'profile', 'name'],
               },
             }
@@ -190,13 +195,14 @@ it('should manage subscription to stores referenced by refs', () => {
         }
       }
     },
+    sendEvent: jest.fn(),
   }
 
   const element = render(
     <Template
       components={BUILT_IN_COMPONENTS}
       dataSource={dataSource}
-      onEvent={jest.fn()}
+      onEvent={dataSource.sendEvent}
       path="mainStore"
     />
   )

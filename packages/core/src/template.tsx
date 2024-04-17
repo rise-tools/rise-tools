@@ -2,42 +2,63 @@ import React from 'react'
 
 /** Components */
 type ComponentIdentifier = string
-type ComponentProps = React.PropsWithChildren<{
-  onTemplateEvent: (name: string, payload: any) => void
-}>
 
 export type ComponentRegistry = Record<ComponentIdentifier, ComponentDefinition<any>>
-export type ComponentDefinition<Props> = {
-  component: React.ComponentType<ComponentProps & Props>
-  validator?: (input?: Record<string, DataState>) => void
+export type ComponentDefinition<T extends Record<string, JSONValue>> = {
+  component: React.ComponentType<T>
+  validator?: (input?: T) => T
+}
+
+/* Component props */
+export type TemplateComponentProps<T> = {
+  [P in keyof T]: T[P] extends EventDataState | EventDataState[] | undefined
+    ? (...args: any[]) => void
+    : T[P]
 }
 
 /** Data state */
-export enum DataStateType {
-  Component = 'component',
-  Ref = 'ref',
+export type DataState = ComponentDataState | ReferencedDataState | EventDataState
+
+export type ComponentDataState = {
+  $: 'component'
+  key?: string
+  component: ComponentIdentifier
+  children?: JSONValue
+  props?: Record<string, JSONValue>
 }
-export type DataState =
-  | DataState[]
-  | ComponentDataState
-  | ReferencedDataState
-  | object
+export type ReferencedDataState = {
+  $: 'ref'
+  ref: string | [string, ...(string | number)[]]
+}
+// tbd: allow for more specific types
+type EventAction = any
+type EventDataState = {
+  $: 'event'
+  action?: EventAction
+}
+type SafeObject = {
+  [key: string]: JSONValue
+  $?: never
+}
+export type JSONValue =
+  | DataState
+  | SafeObject
   | string
   | number
   | boolean
   | null
   | undefined
+  | JSONValue[]
 
-type ComponentDataState = {
-  $: DataStateType.Component
-  key?: string
-  component: ComponentIdentifier
-  children?: DataState
-  props?: Record<string, DataState>
-}
-type ReferencedDataState = {
-  $: DataStateType.Ref
-  ref: string
+export type TemplateEvent<T = EventDataState['action'], K = any> = {
+  target: {
+    key?: string
+    path: string
+    component: string
+  }
+  name: string
+  action: T
+  payload: K
 }
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
@@ -45,21 +66,24 @@ export function isCompositeDataState(obj: any): obj is ComponentDataState | Refe
     obj !== null &&
     typeof obj === 'object' &&
     '$' in obj &&
-    (obj.$ === DataStateType.Component || obj.$ === DataStateType.Ref)
+    (obj.$ === 'component' || obj.$ === 'ref')
   )
 }
 
-// tbd: needs a better name
+function isEventDataState(obj: any): obj is EventDataState {
+  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
+}
+
 export function BaseTemplate({
   components,
   dataState,
   onEvent,
 }: {
   components: ComponentRegistry
-  dataState: DataState | DataState[]
-  onEvent: (key: string, name: string, payload: any) => void
+  dataState: JSONValue
+  onEvent?: (event: TemplateEvent) => void
 }) {
-  function renderComponent(stateNode: ComponentDataState, key: string) {
+  function renderComponent(stateNode: ComponentDataState, path: string) {
     const componentDefinition = components[stateNode.component]
     if (!componentDefinition) {
       throw new RenderError(`Unknown component: ${stateNode.component}`)
@@ -71,53 +95,93 @@ export function BaseTemplate({
       throw new RenderError(`Invalid component: ${stateNode.component}`)
     }
 
+    let componentProps = stateNode.props || {}
+
     if (typeof componentDefinition.validator === 'function') {
-      componentDefinition.validator(stateNode.props)
+      try {
+        componentProps = componentDefinition.validator(stateNode.props)
+      } catch (e) {
+        throw new RenderError(
+          `Invalid props for component: ${stateNode.component}, props: ${JSON.stringify(stateNode.props)}. Error: ${JSON.stringify(e)}`
+        )
+      }
     }
 
-    const props = Object.fromEntries(
-      Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
-        return [propKey, renderProp(propValue, `${key}.props['${propKey}']`)]
+    const renderedProps = Object.fromEntries(
+      Object.entries(componentProps).map(([propKey, propValue]) => {
+        return [propKey, renderProp(propKey, propValue, stateNode, path)]
       })
     )
 
-    const children = stateNode.children ? render(stateNode.children, `${key}.children`) : null
+    const children = stateNode.children ? render(stateNode.children, `${path}.children`) : null
 
-    // workaround for https://github.com/microsoft/TypeScript/issues/17867
-    const baseProps: ComponentProps = {
-      children,
-      onTemplateEvent(name, payload) {
-        onEvent(key, name, payload)
-      },
-    }
-
-    return <Component data-testid={key} key={key} {...props} {...baseProps} />
+    return <Component key={path} data-testid={path} {...renderedProps} children={children} />
   }
 
-  function render(stateNode: DataState, parentKey: string): React.ReactNode {
+  function render(stateNode: JSONValue, path: string, index?: number): React.ReactNode {
     if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
     if (Array.isArray(stateNode)) {
-      return stateNode.map((item, index) => render(item, `${parentKey}[${index}]`))
+      return stateNode.map((item, index) => render(item, path, index))
     }
     if (!isCompositeDataState(stateNode)) {
       throw new Error('Objects are not valid as a React child.')
     }
-    if (stateNode.$ === DataStateType.Component) {
-      return renderComponent(stateNode, stateNode.key || parentKey)
+    if (stateNode.$ === 'component') {
+      const key = stateNode.key || index?.toString()
+      return renderComponent(stateNode, key ? `${path}[${key}]` : path)
     }
-    if (stateNode.$ === DataStateType.Ref) {
+    if (stateNode.$ === 'ref') {
       throw new Error('Your data includes refs. You must use a <Template /> component instead.')
     }
   }
 
-  function renderProp(stateNode: DataState, parentKey: string): DataState {
+  function renderProp(
+    propKey: string,
+    stateNode: JSONValue,
+    parentNode: ComponentDataState,
+    path: string
+  ): any {
+    if (
+      isEventDataState(stateNode) ||
+      (Array.isArray(stateNode) && stateNode.length > 0 && stateNode.every(isEventDataState))
+    ) {
+      return (payload: any) => {
+        const nodes = Array.isArray(stateNode) ? stateNode : [stateNode]
+        for (const node of nodes) {
+          // React events (e.g. from onPress) contain cyclic structures that can't be serialized
+          // with JSON.stringify and also provide little to no value for the server.
+          // tbd: figure a better way to handle this in a cross-platform way
+          if (payload?.nativeEvent) {
+            payload = '[native code]'
+          }
+          onEvent?.({
+            target: { key: parentNode.key, path, component: parentNode.component },
+            name: propKey,
+            action: node.action,
+            payload,
+          })
+        }
+      }
+    }
     if (Array.isArray(stateNode)) {
-      return stateNode.map((item, index) => renderProp(item, `${parentKey}[${index}]`))
+      return stateNode.map((item, index) =>
+        renderProp(propKey, item, parentNode, `${path}.props[${propKey}][${index}]`)
+      )
     }
     if (isCompositeDataState(stateNode)) {
-      return render(stateNode, parentKey)
+      return render(stateNode, `${path}.props[${propKey}]`)
+    }
+    if (stateNode && typeof stateNode === 'object') {
+      return Object.fromEntries(
+        Object.entries(stateNode).map(([key, value]) => {
+          return [
+            key,
+            renderProp(`${propKey}.${key}`, value, parentNode, `${path}.props[${propKey}][${key}]`),
+          ]
+        })
+      )
     }
     return stateNode
   }

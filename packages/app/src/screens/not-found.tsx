@@ -1,10 +1,10 @@
-import { Paragraph, YStack } from '@react-native-templates/demo-ui'
 import React from 'react'
+import { Paragraph, YStack } from 'tamagui'
 
 export function NotFoundScreen() {
   return (
-    <YStack f={1} jc="center" ai="center" space>
-      <Paragraph ta="center" fow="700">
+    <YStack flex={1} justifyContent="center" alignItems="center" space>
+      <Paragraph textAlign="center" fontWeight="700">
         Not Found
       </Paragraph>
     </YStack>

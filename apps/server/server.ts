@@ -1,10 +1,12 @@
+import { TemplateEvent } from '@react-native-templates/core'
+import { createWSServer } from '@react-native-templates/ws-server'
 import { randomUUID } from 'crypto'
-import { readFileSync, writeFile } from 'fs'
+import { existsSync, readFileSync, writeFile } from 'fs'
 
 import { eg as egInfo } from './eg'
 import { getEGLiveFrame, getEGReadyFrame } from './eg-main'
 import { egSacnService } from './eg-sacn'
-import { EGVideo, egVideo } from './eg-video-playback'
+import { egVideo } from './eg-video-playback'
 import { createEGViewServer } from './eg-view-server'
 import { defaultMainState, Effect, MainState, MainStateSchema, Media } from './state-schema'
 import {
@@ -17,19 +19,24 @@ import {
   getUIRoot,
   UIContext,
 } from './ui'
-import { createWSServer } from './ws-rnt-server'
 
 let mainState: MainState = defaultMainState
 
-try {
-  const mainStateJson = readFileSync('./main-state.json', { encoding: 'utf-8' })
-  const state = MainStateSchema.safeParse(JSON.parse(mainStateJson))
-  if (!state.success)
-    throw new Error('Invalid saved state: ' + state.error.issues.map((i) => i.message).join(', '))
-  if (!state.data) throw new Error('Invalid saved state')
-  mainState = state.data
-} catch (e) {
-  console.log('Error loading main state', e)
+// Load previous state if there's one present
+if (existsSync('./main-state.json')) {
+  try {
+    const mainStateJson = readFileSync('./main-state.json', { encoding: 'utf-8' })
+    const state = MainStateSchema.safeParse(JSON.parse(mainStateJson))
+    if (!state.success) {
+      throw new Error('Invalid saved state: ' + state.error.issues.map((i) => i.message).join(', '))
+    }
+    if (!state.data) {
+      throw new Error('Invalid saved state')
+    }
+    mainState = state.data
+  } catch (e) {
+    console.log('Error loading main state', e)
+  }
 }
 
 const eg = egSacnService(egInfo)
@@ -38,7 +45,7 @@ const readyViewServer = createEGViewServer(3888)
 
 const video = egVideo(egInfo, process.env.EG_MEDIA_PATH || 'eg-media', {
   // const video = egVideo(egInfo, process.env.EG_MEDIA_PATH || 'eg-media-2', {
-  onPlayerUpdate: (player) => {
+  onPlayerUpdate: () => {
     updateUI()
   },
   onMediaUpdate: (media) => {
@@ -139,7 +146,7 @@ function updateUI() {
   const uiContext: UIContext = { video }
   wsServer.update('mainState', mainState)
   wsServer.updateRoot(getUIRoot(mainState))
-  wsServer.update('quickEffects', getQuickEffects(mainState))
+  wsServer.update('quickEffects', getQuickEffects())
   wsServer.update('beatEffects', getBeatEffects(mainState))
   updateMediaUI('readyMedia', mainState.readyMedia, uiContext)
   updateMediaUI('liveMedia', mainState.liveMedia, uiContext)
@@ -182,29 +189,25 @@ function mainStateEffect(state: MainState, prevState: MainState) {
   }, 80)
 }
 
-function sliderUpdate(
-  event: readonly [string, string, number, any],
-  pathToCheck: string,
-  statePath: string[]
-): boolean {
-  const [path, name, value] = event
-
-  if (path === pathToCheck && name === 'update') {
-    mainStateUpdate((state: MainState) => updateState(state, statePath, value[0]))
+function sliderUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
+  if (
+    event.target.key === pathToCheck &&
+    event.name === 'onValueChange' &&
+    event.target.component === 'RiseSliderField'
+  ) {
+    mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload[0]))
     return true
   }
   return false
 }
 
-function switchUpdate(
-  event: readonly [string, string, boolean, any],
-  pathToCheck: string,
-  statePath: string[]
-): boolean {
-  const [path, name, value] = event
-
-  if (path === pathToCheck && name === 'update') {
-    mainStateUpdate((state: MainState) => updateState(state, statePath, value))
+function switchUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
+  if (
+    event.target.key === pathToCheck &&
+    event.name === 'onCheckedChange' &&
+    event.target.component === 'RiseSwitch'
+  ) {
+    mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload))
     return true
   }
   return false
@@ -249,94 +252,82 @@ function handleManualTapBeat() {
   }, 2000)
 }
 
-wsServer.subscribeEvent((...event) => {
-  const [path, name, value] = event
-  if (path === 'offButton' && name === 'press') {
+wsServer.subscribeEvent((event) => {
+  const {
+    target: { key },
+    name,
+    action,
+  } = event
+  if (key === 'offButton' && name === 'onPress') {
     mainStateUpdate((state) => ({ ...state, mode: 'off' }))
     return
   }
-  if (path === 'whiteoutButton' && name === 'press') {
-    mainStateUpdate((state) => ({ ...state, mode: 'white' }))
-    return
-  }
-  if (path === 'rainbowButton' && name === 'press') {
-    mainStateUpdate((state) => ({ ...state, mode: 'rainbow' }))
-    return
-  }
-  if (path === 'mode' && name === 'update') {
-    mainStateUpdate((state) => ({ ...state, mode: value as MainState['mode'] }))
+  if (key === 'mode' && name === 'onValueChange') {
+    mainStateUpdate((state) => ({ ...state, mode: event.payload }))
     return
   }
   if (sliderUpdate(event, 'hueSlider', ['color', 'h'])) return
   if (sliderUpdate(event, 'saturationSlider', ['color', 's'])) return
   if (sliderUpdate(event, 'lightnessSlider', ['color', 'l'])) return
-  if (sliderUpdate(event, 'beatEffects.effect.intensity', ['beatEffect', 'intensity'])) return
-  if (sliderUpdate(event, 'beatEffects.effect.waveLength', ['beatEffect', 'waveLength'])) return
-  if (sliderUpdate(event, 'beatEffects.effect.dropoff', ['beatEffect', 'dropoff'])) return
-  if (path === 'testSlider' && name === 'update') {
-    wsServer.update('testValue', value)
-    return
-  }
-  // const matchingEffect: undefined | keyof typeof effectsSchema = effectTypes.find(
-  //   (effect) => 'quickEffects.' + effect === path
-  // )
-  // if (name === 'press' && matchingEffect) {
-  //   mainStateUpdate((state) => ({
-  //     ...state,
-  //     effects: { ...state.effects, [matchingEffect]: Date.now() },
-  //   }))
-  //   return
-  // }
-  // manual beat
-  if (switchUpdate(event, 'beatEffects.manualBeat.manualBeatEnabled', ['manualBeat', 'enabled']))
-    return
-  if (value[0] === 'manualTapBeat') {
+  if (sliderUpdate(event, 'intensitySlider', ['beatEffect', 'intensity'])) return
+  if (sliderUpdate(event, 'waveLengthSlider', ['beatEffect', 'waveLength'])) return
+  if (sliderUpdate(event, 'dropoffSlider', ['beatEffect', 'dropoff'])) return
+  if (switchUpdate(event, 'manualBeatEnabledSwitch', ['manualBeat', 'enabled'])) return
+  if (action === 'manualTapBeat') {
     handleManualTapBeat()
     return
   }
-  if (path === 'beatEffects.effect.effect' && name === 'update') {
+  if (key === 'effectSelect' && name === 'onValueChange') {
     mainStateUpdate((state) => ({
       ...state,
-      beatEffect: { ...state.beatEffect, effect: value as MainState['beatEffect']['effect'] },
+      beatEffect: {
+        ...state.beatEffect,
+        effect: event.payload as MainState['beatEffect']['effect'],
+      },
     }))
     return
   }
-  if (path === 'selectVideo' && name === 'update') {
-    mainStateUpdate((state) => ({
-      ...state,
-      video: { ...state.video, track: value as string },
-    }))
-    return
-  }
-  // if (path === 'restart' && name === 'press') {
-  //   const player = getVideoPlayback(mainState.video.track)
-  //   if (player) {
-  //     player.restart()
-  //   }
+  // if (key === 'selectVideo' && name === 'onValueChange') {
+  //   mainStateUpdate((state) => ({
+  //     ...state,
+  //     video: { ...state.video, track: event.payload as string },
+  //   }))
   //   return
   // }
+  if (handleMediaEvent(event)) return
+  if (handleTransitionEvent(event)) return
+  if (handleEffectEvent(event)) return
 
-  // const mediaPath = path.split(':')
-  if (value[0] === 'updateMedia') {
-    const [_updateMedia, mediaKey, ...restUpdate] = value
-    if (handleMediaEvent(mediaKey.split(':'), name, restUpdate)) return
-  }
-  if (handleTransitionEvent(path, name, value)) return
-  if (handleEffectEvent(path, name, value)) return
-
-  console.log('Unknown Event', path, name, value)
+  console.log('Unknown event', event)
 })
 
-function handleEffectEvent(path: string, name: string, value: any): boolean {
-  if (value?.[0] !== 'updateEffect') return false
-  const mediaPath = value?.[1]?.[0]?.split(':')
-  const effectKey = value?.[1]?.[1]
-  console.log('handleEffectEvent', mediaPath, effectKey, value?.[2], value?.[3])
-  rootMediaUpdate(mediaPath, (media) => {
-    if (media.type !== 'video' || !media.effects) return media
-    const effectIndex = media?.effects?.findIndex((effect) => effect.key === effectKey)
-    if (effectIndex === -1) return media
-    if (value?.[2] === 'remove') {
+// tbd: convert this to EffectEvent type and type all possible occurences
+type ServerAction = string | string[]
+
+function handleEffectEvent(event: TemplateEvent<ServerAction>): boolean {
+  const actionName = event.action?.[0]
+  if (actionName !== 'updateEffect') {
+    return false
+  }
+
+  const mediaPath = event.action?.[1]?.[0]?.split(':')
+  const effectKey = event.action?.[1]?.[1]
+  const effectField = event.action?.[2]
+
+  if (!mediaPath || !effectKey || !effectField) {
+    console.warn('Invalid effect event', event)
+    return false
+  }
+
+  rootMediaUpdate(mediaPath, (media): Media => {
+    if (media.type !== 'video' || !media.effects) {
+      return media
+    }
+    const effectIndex = media.effects.findIndex((effect) => effect.key === effectKey)
+    if (effectIndex === -1) {
+      return media
+    }
+    if (effectField === 'remove') {
       return {
         ...media,
         effects: media.effects.filter((effect) => {
@@ -345,10 +336,8 @@ function handleEffectEvent(path: string, name: string, value: any): boolean {
       }
     }
     if (effectIndex != null && effectIndex !== -1) {
-      const field = value[2]
-      const newValue = value[3]
       const effect = media.effects[effectIndex]
-      const newEffect = { ...effect, [field]: newValue }
+      const newEffect = { ...effect, [effectField]: event.payload[0] }
       return {
         ...media,
         effects: media.effects.map((effect) => {
@@ -359,34 +348,36 @@ function handleEffectEvent(path: string, name: string, value: any): boolean {
         }),
       }
     }
-    return state
+    return media
   })
   return true
 }
 
-function handleTransitionEvent(path: string, name: string, value: any): boolean {
-  if (value?.[0] !== 'updateTransition') return false
-  if (value?.[1] === 'manual') {
+function handleTransitionEvent(event: TemplateEvent<ServerAction>): boolean {
+  if (event.action?.[0] !== 'updateTransition') {
+    return false
+  }
+  if (event.action?.[1] === 'manual') {
     mainStateUpdate((state) => ({
       ...state,
       transitionState: {
         ...state.transitionState,
-        manual: value[2],
+        manual: event.payload[0],
       },
     }))
     return true
   }
-  if (value?.[1] === 'duration') {
+  if (event.action?.[1] === 'duration') {
     mainStateUpdate((state) => ({
       ...state,
       transition: {
         ...state.transition,
-        duration: value[2],
+        duration: event.payload[0],
       },
     }))
     return true
   }
-  if (value?.[1] === 'startAuto') {
+  if (event.action?.[1] === 'startAuto') {
     mainStateUpdate((state) => ({
       ...state,
       transitionState: {
@@ -428,7 +419,6 @@ function mediaUpdate(
 }
 
 function rootMediaUpdate(mediaPath: string[], updater: (media: Media) => Media) {
-  // console.log('mediaUpdate', mediaPath)
   const [rootMediaKey, ...restMediaPath] = mediaPath
   if (rootMediaKey !== 'liveMedia' && rootMediaKey !== 'readyMedia') {
     throw new Error('Invalid root media key')
@@ -442,67 +432,97 @@ function rootMediaUpdate(mediaPath: string[], updater: (media: Media) => Media) 
   })
 }
 
-function handleMediaEvent(mediaPath: string[], eventName: string, value: any[]): boolean {
-  // console.log('handleMediaEvent', mediaPath, eventName, value)
-  const action = value?.[0]
+// function handleMediaEvent(mediaPath: string[], eventName: string, value: any[]): boolean {
+function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
+  if (event.action?.[0] !== 'updateMedia') {
+    return false
+  }
+
+  const mediaPath = event.action?.[1]?.split(':')
+  const action = event.action?.[2]
+  if (!mediaPath || !action) {
+    console.warn('Invalid media event', event)
+    return false
+  }
+
   if (action === 'clear') {
     rootMediaUpdate(mediaPath, () => createBlankMedia('off'))
     return true
   }
   if (action === 'mode') {
-    const mode = value?.[1]
+    const mode = event.payload
     rootMediaUpdate(mediaPath, () => createBlankMedia(mode))
     return true
   }
   if (action === 'color') {
-    const colorField = value?.[1]
-    const number = value?.[2]
+    const colorField = event.action?.[3]
+    const number = event.payload[0]
     if (colorField === 'h' || colorField === 's' || colorField === 'l') {
       rootMediaUpdate(mediaPath, (media) => ({ ...media, [colorField]: number }))
       return true
     }
   }
   if (action === 'track') {
-    const track = value?.[1]
-    // console.log('track update', mediaPath, track)
+    const track = event.payload
     rootMediaUpdate(mediaPath, (media) => ({ ...media, track }))
     return true
   }
-  if (action === 'loopBounce' && eventName === 'switch') {
-    const loopBounce = value?.[1]
-    rootMediaUpdate(mediaPath, (media) => ({
-      ...media,
-      params: {
-        ...(media.params || {}),
-        loopBounce,
-      },
-    }))
+  if (action === 'loopBounce') {
+    const loopBounce = event.payload
+    rootMediaUpdate(mediaPath, (media) => {
+      if (media.type !== 'video') {
+        console.warn('loopBounce on non-video media', media)
+        return media
+      }
+      return {
+        ...media,
+        params: {
+          ...(media.params || {}),
+          loopBounce,
+        },
+      }
+    })
     return true
   }
-  if (action === 'reverse' && eventName === 'switch') {
-    const reverse = value?.[1]
-    rootMediaUpdate(mediaPath, (media) => ({
-      ...media,
-      params: {
-        ...(media.params || {}),
-        reverse,
-      },
-    }))
+  if (action === 'reverse') {
+    const reverse = event.payload
+    rootMediaUpdate(mediaPath, (media) => {
+      if (media.type !== 'video') {
+        console.warn('reverse on non-video media', media)
+        return media
+      }
+      return {
+        ...media,
+        params: {
+          ...(media.params || {}),
+          reverse,
+        },
+      }
+    })
     return true
   }
   if (action === 'addEffect') {
-    const effectType = value?.[1]
+    const effectType = event.payload
     const newEffect: Effect = createBlankEffect(effectType)
-    rootMediaUpdate(mediaPath, (media) => ({
-      ...media,
-      effects: [...(media.effects || []), newEffect],
-    }))
+    rootMediaUpdate(mediaPath, (media) => {
+      if (media.type !== 'video') {
+        console.warn('addEffect on non-video media', media)
+        return media
+      }
+      return {
+        ...media,
+        effects: [...(media.effects || []), newEffect],
+      }
+    })
     return true
   }
   if (action === 'addLayer') {
-    const mediaType = value?.[1]
+    const mediaType = event.payload
     rootMediaUpdate(mediaPath, (media) => {
-      if (media.type !== 'layers') return media
+      if (media.type !== 'layers') {
+        console.warn('addLayer on non-layer media', media)
+        return media
+      }
       return {
         ...media,
         layers: [
@@ -518,12 +538,15 @@ function handleMediaEvent(mediaPath: string[], eventName: string, value: any[]):
     })
     return true
   }
-  if (action === 'blendMode' && mediaPath.at(-2) === 'layer') {
+  if (action === 'blendMode') {
     const layerKey = mediaPath.at(-1)
-    const blendMode = value?.[1]
+    const blendMode = event.payload
     const targetPath = mediaPath.slice(0, -2)
     rootMediaUpdate(targetPath, (media) => {
-      if (media.type !== 'layers') return media
+      if (media.type !== 'layers') {
+        console.warn('blendMode on non-layer media', media)
+        return media
+      }
       return {
         ...media,
         layers: (media.layers || []).map((layer) => {
@@ -536,12 +559,15 @@ function handleMediaEvent(mediaPath: string[], eventName: string, value: any[]):
     })
     return true
   }
-  if (action === 'blendAmount' && mediaPath.at(-2) === 'layer') {
+  if (action === 'blendAmount') {
     const layerKey = mediaPath.at(-1)
-    const blendAmount = value?.[1]
+    const blendAmount = event.payload[0]
     const targetPath = mediaPath.slice(0, -2)
     rootMediaUpdate(targetPath, (media) => {
-      if (media.type !== 'layers') return media
+      if (media.type !== 'layers') {
+        console.warn('blendMode on non-layer media', media)
+        return media
+      }
       return {
         ...media,
         layers: (media.layers || []).map((layer) => {
@@ -555,7 +581,7 @@ function handleMediaEvent(mediaPath: string[], eventName: string, value: any[]):
     return true
   }
   if (action === 'layerOrder') {
-    const order = value?.[1]
+    const order = event.payload
     rootMediaUpdate(mediaPath, (media) => {
       if (media.type !== 'layers') return media
       return {
@@ -571,8 +597,7 @@ function handleMediaEvent(mediaPath: string[], eventName: string, value: any[]):
   }
   if (action === 'removeLayer') {
     const targetPath = mediaPath.slice(0, -2)
-    const layerKey = value?.[1]
-    // console.log('remove layer', layerKey, targetPath)
+    const layerKey = event.payload
     rootMediaUpdate(targetPath, (media) => {
       if (media.type !== 'layers') return media
       return {
@@ -585,22 +610,6 @@ function handleMediaEvent(mediaPath: string[], eventName: string, value: any[]):
 
   return false
 }
-
-// stagelinqInterface({
-//   quiet: true,
-//   onConnectionStatus: (status) => {
-//     // console.log('stagelinq connection status', status)
-//     wsServer.update('stagelinqConnection', status)
-//   },
-//   newBeatInfo: (info) => {
-//     // console.log(info.lastBeatTime)
-//     // console.log('new beat info', info)
-//     stagelinqBpm = info.bpm
-//     stagelinqLastBeatTime = info.lastBeatTime
-//     stagelinqLastMeasureTime = info.lastMeasureTime
-//     // info.bpm
-//   },
-// })
 
 function createBlankMedia(type: Media['type']): Media {
   if (type === 'off') {

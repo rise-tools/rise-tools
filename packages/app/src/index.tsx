@@ -1,7 +1,10 @@
-// TBD: refactor this into something more elegant
-export * from './demoComponents'
 export { Provider } from './provider'
 export { useConnection } from './provider/storage'
+
+// Tamagui configuration
+export * from './tamagui/config'
+
+// Screens
 export * from './screens/connect'
 export * from './screens/connection'
 export * from './screens/edit-connection'

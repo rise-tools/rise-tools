@@ -1,4 +1,4 @@
-import { ToastViewport as ToastViewportOg } from '@react-native-templates/demo-ui'
+import { ToastViewport as ToastViewportOg } from '@tamagui/toast'
 import React from 'react'
 
 export const ToastViewport = () => {

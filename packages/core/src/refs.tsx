@@ -1,28 +1,28 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
 import {
   BaseTemplate,
   ComponentRegistry,
-  DataState,
-  DataStateType,
   isCompositeDataState,
+  JSONValue,
+  ReferencedDataState,
+  TemplateEvent,
 } from './template'
 
-export type Store<V = DataState> = {
+export type Store<V = JSONValue> = {
   get: () => V
   subscribe: (handler: () => void) => () => void
 }
 
 export type DataSource = {
   get: (key: string) => Store
+  sendEvent: (event: TemplateEvent) => void
 }
 
 /** Refs */
-type DataValues = Record<string, DataState>
+type DataValues = Record<string, JSONValue>
 
-type RefLookup = string | [string, ...(string | number)[]]
-
-function extractRefValue(dataValues: DataValues, ref: RefLookup) {
+function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
   if (typeof ref === 'string') {
     return dataValues[ref]
   }
@@ -41,16 +41,16 @@ function extractRefValue(dataValues: DataValues, ref: RefLookup) {
   return lookupValue
 }
 
-function extractRefKey(ref: RefLookup) {
+function extractRefKey(ref: ReferencedDataState['ref']) {
   if (typeof ref === 'string') {
     return ref
   }
   return ref[0]
 }
 
-function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> {
+function findAllRefs(stateNode: JSONValue, dataValues: DataValues): Set<string> {
   const currentRefKeys = new Set<string>()
-  function searchRefs(stateNode: DataState) {
+  function searchRefs(stateNode: JSONValue) {
     if (!stateNode || typeof stateNode !== 'object') {
       return
     }
@@ -62,7 +62,7 @@ function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> 
       Object.values(stateNode).forEach(searchRefs)
       return
     }
-    if (stateNode.$ === DataStateType.Ref) {
+    if (stateNode.$ === 'ref') {
       const refKey = extractRefKey(stateNode.ref)
       if (!currentRefKeys.has(refKey)) {
         currentRefKeys.add(refKey)
@@ -71,7 +71,7 @@ function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> 
       }
       return
     }
-    if (stateNode.$ === DataStateType.Component) {
+    if (stateNode.$ === 'component') {
       searchRefs(stateNode.children)
       searchRefs(stateNode.props)
       return
@@ -90,7 +90,7 @@ function createRefStateManager(
     [rootKey]: dataSource.get(rootKey).get(),
   }
   let refSubscriptions: Record<string, () => void> = {}
-  function setRefValue(refKey: string, value: DataState) {
+  function setRefValue(refKey: string, value: JSONValue) {
     if (dataValues[refKey] !== value) {
       dataValues = { ...dataValues, [refKey]: value }
       setDataValues(dataValues)
@@ -136,7 +136,7 @@ function createRefStateManager(
   }
 }
 
-function resolveValueRefs(dataValues: DataValues, value: DataState): DataState {
+function resolveValueRefs(dataValues: DataValues, value: JSONValue): JSONValue {
   if (!value || typeof value !== 'object') {
     return value
   }
@@ -144,7 +144,7 @@ function resolveValueRefs(dataValues: DataValues, value: DataState): DataState {
     return value.map((item) => resolveValueRefs(dataValues, item))
   }
   if (typeof value === 'object') {
-    if (isCompositeDataState(value) && value.$ === DataStateType.Ref) {
+    if (isCompositeDataState(value) && value.$ === 'ref') {
       return resolveRef(dataValues, value.ref)
     }
     return Object.fromEntries(
@@ -155,7 +155,7 @@ function resolveValueRefs(dataValues: DataValues, value: DataState): DataState {
   }
 }
 
-function resolveRef(dataValues: DataValues, lookup: RefLookup): DataState {
+function resolveRef(dataValues: DataValues, lookup: ReferencedDataState['ref']): JSONValue {
   const value = extractRefValue(dataValues, lookup)
   return resolveValueRefs(dataValues, value)
 }
@@ -163,13 +163,12 @@ function resolveRef(dataValues: DataValues, lookup: RefLookup): DataState {
 export function Template({
   components,
   dataSource,
-  onEvent,
   path = '',
 }: {
-  path?: RefLookup
+  path?: ReferencedDataState['ref']
   dataSource: DataSource
   components: ComponentRegistry
-  onEvent: (key: string, name: string, payload: any) => void
+  onEvent: ComponentProps<typeof BaseTemplate>['onEvent']
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
@@ -180,5 +179,11 @@ export function Template({
     return () => release()
   }, [])
   const rootDataState = resolveRef(dataValues, path)
-  return <BaseTemplate components={components} dataState={rootDataState} onEvent={onEvent} />
+  return (
+    <BaseTemplate
+      components={components}
+      dataState={rootDataState}
+      onEvent={dataSource.sendEvent}
+    />
+  )
 }

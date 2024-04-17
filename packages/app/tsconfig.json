@@ -2,17 +2,22 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "module": "preserve",
+    "moduleResolution": "bundler"
   },
   "references": [
     {
       "path": "../core"
     },
     {
-      "path": "../demo-ui"
+      "path": "../ui-rise"
     },
     {
       "path": "../ws-client"
+    },
+    {
+      "path": "../ui-tamagui"
     }
   ]
 }

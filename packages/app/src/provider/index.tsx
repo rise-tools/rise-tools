@@ -1,24 +1,15 @@
-import {
-  CustomToast,
-  TamaguiProvider,
-  TamaguiProviderProps,
-  ToastProvider,
-} from '@react-native-templates/demo-ui'
+import { ToastProvider } from '@tamagui/toast'
 import React from 'react'
 import { useColorScheme } from 'react-native'
+import { TamaguiProvider, TamaguiProviderProps } from 'tamagui'
 
-import config from '../tamagui.config'
+import { Toast } from './Toast'
 import { ToastViewport } from './ToastViewport'
 
-export function Provider({ children, ...rest }: Omit<TamaguiProviderProps, 'config'>) {
+export function Provider({ children, ...rest }: TamaguiProviderProps) {
   const scheme = useColorScheme()
   return (
-    <TamaguiProvider
-      config={config}
-      disableInjectCSS
-      defaultTheme={scheme === 'dark' ? 'dark' : 'light'}
-      {...rest}
-    >
+    <TamaguiProvider disableInjectCSS defaultTheme={scheme === 'dark' ? 'dark' : 'light'} {...rest}>
       <ToastProvider
         swipeDirection="horizontal"
         duration={6000}
@@ -30,8 +21,7 @@ export function Provider({ children, ...rest }: Omit<TamaguiProviderProps, 'conf
         }
       >
         {children}
-
-        <CustomToast />
+        <Toast />
         <ToastViewport />
       </ToastProvider>
     </TamaguiProvider>

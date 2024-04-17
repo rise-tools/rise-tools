@@ -1,10 +1,12 @@
-import { config } from '@react-native-templates/demo-ui'
+import { config } from '@tamagui/config/v3'
+import { createTamagui } from 'tamagui'
 
-type Conf = typeof config
+const tamaguiConfig = createTamagui(config)
+
+type Conf = typeof tamaguiConfig
 
 declare module 'tamagui' {
   interface TamaguiCustomConfig extends Conf {}
 }
 
-// TBD: do not use demo-ui Tamagui configuration, but prefer custom one unless rendering demo-ui (which is not the case)
-export default config
+export default tamaguiConfig
