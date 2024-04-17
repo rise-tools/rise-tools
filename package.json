@@ -66,8 +66,15 @@
     ]
   },
   "jest": {
-    "preset": "react-native",
-    "prettierPath": null
+    "testEnvironment": "jsdom",
+    "prettierPath": null,
+    "moduleNameMapper": {
+      "@react-native-templates/(.*)": "<rootDir>/packages/$1/src",
+      "^react-native$": "react-native-web"
+    },
+    "setupFiles": [
+      "<rootDir>/jest/setup.js"
+    ]
   },
   "release-it": {
     "git": {
