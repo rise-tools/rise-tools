@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Mobile Expo",
+      "type": "shell",
+      "command": "cd ./apps/mobile && npm start",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        
+      }
+    },
+    {
+      "label": "EG server",
+      "type": "shell",
+      "command": "cd ./example/server && npm run dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+      }
+    },
+    {
+      "label": "EG dashboard",
+      "type": "shell",
+      "command": "cd ./example/dashboard && npm run dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+      }
+    },
+    {
+      "label": "Start all servers",
+      "dependsOn": ["Mobile Expo", "EG server", "EG dashboard"]
+    }
+  ]
+}
