@@ -164,6 +164,7 @@ export function Template({
   components,
   dataSource,
   path = '',
+  onEvent,
 }: {
   path?: ReferencedDataState['ref']
   dataSource: DataSource
@@ -179,11 +180,5 @@ export function Template({
     return () => release()
   }, [])
   const rootDataState = resolveRef(dataValues, path)
-  return (
-    <BaseTemplate
-      components={components}
-      dataState={rootDataState}
-      onEvent={dataSource.sendEvent}
-    />
-  )
+  return <BaseTemplate components={components} dataState={rootDataState} onEvent={onEvent} />
 }
