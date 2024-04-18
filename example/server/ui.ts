@@ -1,6 +1,7 @@
 import { ComponentDataState, DataState } from '@final-ui/react'
 
 import { hslToHex } from './color'
+import { getSequenceActiveItem } from './eg-main'
 import { EGVideo } from './eg-video-playback'
 import { UPRISING } from './flag'
 import {
@@ -11,6 +12,7 @@ import {
   LayersMedia,
   MainState,
   Media,
+  SequenceItem,
   SequenceMedia,
   Transition,
   TransitionState,
@@ -223,7 +225,7 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
       $: 'component',
       key: 'info',
       component: 'Label',
-      children: `Duration: ${player.getFrameCount() / 30} sec`,
+      children: `Duration: ${(player.getFrameCount() || 0) / 30} sec`,
     },
     {
       $: 'component',
@@ -539,6 +541,8 @@ function getVideoTitle(state: VideoMedia): string {
 }
 function getMediaTitle(state: Media): string {
   if (state.type === 'color') return 'Color'
+  if (state.type === 'sequence') return 'Sequence'
+  if (state.type === 'layers') return 'Layers'
   if (state.type === 'video') return getVideoTitle(state)
   return 'Media'
 }
@@ -793,19 +797,7 @@ export function getUIRootLegacy(state: MainState) {
   }
 }
 
-// tbd: implement this
-function getSequenceControls(
-  // eslint-disable-next-line
-  mediaLinkPath: string,
-  // eslint-disable-next-line
-  state: SequenceMedia,
-  // eslint-disable-next-line
-  context: UIContext
-): DataState[] {
-  return []
-}
-
-function getLayersList(
+function getLayersControls(
   mediaLinkPath: string,
   state: LayersMedia,
   context: UIContext,
@@ -855,6 +847,70 @@ function getLayersList(
             $: 'event',
             action: ['navigate', `${mediaLinkPath}:layer:${layer.key}`],
           },
+        }
+      }),
+    },
+  }
+}
+
+function getSequenceControls(
+  mediaLinkPath: string,
+  state: SequenceMedia,
+  context: UIContext,
+  footer: DataState[] = []
+): DataState {
+  const activeMedia = getSequenceActiveItem(state)
+  return {
+    $: 'component',
+    component: 'RiseSortableList',
+    props: {
+      onReorder: { $: 'event', action: ['updateMedia', mediaLinkPath, 'layerOrder'] },
+      header: {
+        $: 'component',
+        key: 'header',
+        component: 'YStack',
+        children: [
+          {
+            key: 'goNext',
+            $: 'component',
+            component: 'Button',
+            children: 'Go Next',
+            props: {
+              onPress: {
+                $: 'event',
+                action: ['updateMedia', mediaLinkPath, 'goNext'],
+              },
+            },
+          },
+        ],
+      },
+      footer: {
+        $: 'component',
+        key: 'footer',
+        component: 'YStack',
+        children: [
+          {
+            key: 'addToSequence',
+            $: 'component',
+            component: 'RiseSelectField',
+            props: {
+              value: null,
+              onValueChange: {
+                $: 'event',
+                action: ['updateMedia', mediaLinkPath, 'addToSequence'],
+              },
+              options: newMediaOptions,
+              unselectedLabel: 'Add to Sequence...',
+            },
+          },
+          ...footer,
+        ],
+      },
+      items: (state.sequence || []).map((item) => {
+        return {
+          key: item.key,
+          label: `${item.media.type}${item.key === activeMedia?.key ? ' (Active)' : ''}`,
+          onPress: { $: 'event', action: ['navigate', `${mediaLinkPath}:item:${item.key}`] },
         }
       }),
     },
@@ -962,6 +1018,74 @@ function getLayerForm(mediaPath: string, layer: Layer): ComponentDataState {
   }
 }
 
+function getSequenceItemMaxDuration(mediaPath: string, item: SequenceItem): DataState[] {
+  const checkField: DataState = {
+    $: 'component',
+    key: 'maxDurationSwitch',
+    component: 'RiseSwitchField',
+    props: {
+      label: 'Max Duration',
+      value: !!item.maxDuration,
+      onCheckedChange: {
+        $: 'event',
+        action: ['updateMedia', mediaPath, 'maxDuration'],
+      },
+    },
+  }
+  if (item.maxDuration == null) return [checkField]
+  return [
+    checkField,
+    {
+      $: 'component',
+      key: 'maxDurationSlider',
+      component: 'RiseSliderField',
+      props: {
+        label: `Max Duration - ${item.maxDuration}sec`,
+        value: item.maxDuration,
+        onValueChange: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'maxDuration'],
+        },
+        max: 60,
+        min: 0.1,
+        step: 0.1,
+      },
+    },
+  ]
+}
+
+export function getMediaSequenceUI(
+  mediaPath: string,
+  item: SequenceItem,
+  context: UIContext
+): DataState {
+  return getMediaUI(mediaPath, item.media, context, {
+    header: [
+      section('Sequence Item Controls', [
+        ...getSequenceItemMaxDuration(mediaPath, item),
+        {
+          $: 'component',
+          key: 'removeItem',
+          component: 'Button',
+          children: 'Remove Item',
+          props: {
+            onPress: [
+              {
+                $: 'event',
+                action: ['updateMedia', mediaPath, 'removeItem', item.key],
+              },
+              {
+                $: 'event',
+                action: 'navigate-back',
+              },
+            ],
+          },
+        },
+      ]),
+    ],
+  })
+}
+
 export function getMediaUI(
   mediaPath: string,
   mediaState: Media,
@@ -975,10 +1099,10 @@ export function getMediaUI(
     return scroll([...header, ...getVideoControls(mediaPath, mediaState, context), ...footer])
   }
   if (mediaState.type === 'sequence') {
-    return scroll([...header, ...getSequenceControls(mediaPath, mediaState, context), ...footer])
+    return getSequenceControls(mediaPath, mediaState, context)
   }
   if (mediaState.type === 'layers') {
-    return getLayersList(mediaPath, mediaState, context, { header, footer })
+    return getLayersControls(mediaPath, mediaState, context, { header, footer })
   }
   return scroll([
     ...header,

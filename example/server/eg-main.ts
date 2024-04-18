@@ -33,6 +33,8 @@ import {
   MainState,
   Media,
   RotateEffect,
+  SequenceItem,
+  SequenceMedia,
   StateContext,
   Transition,
   TransitionState,
@@ -233,10 +235,22 @@ function layersFrame(media: LayersMedia, ctx: StateContext): Frame {
   return frame
 }
 
+export function getSequenceActiveItem(media: SequenceMedia): SequenceItem | undefined {
+  const { sequence, activeKey } = media
+  return sequence.find((media) => media.key === activeKey) || media.sequence[0]
+}
+
+function sequenceFrame(media: SequenceMedia, ctx: StateContext): Frame {
+  const activeMedia = getSequenceActiveItem(media)
+  if (!activeMedia) return blackFrame
+  return mediaFrame(activeMedia.media, ctx)
+}
+
 function mediaFrame(media: Media, ctx: StateContext): Frame {
   if (media.type === 'color') return colorFrame(media, ctx)
   if (media.type === 'video') return videoFrame(media, ctx)
   if (media.type === 'layers') return layersFrame(media, ctx)
+  if (media.type === 'sequence') return sequenceFrame(media, ctx)
   if (media.type === 'off') return blackFrame
   return blackFrame
 }

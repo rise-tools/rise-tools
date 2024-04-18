@@ -140,21 +140,24 @@ const layersMediaSchema: z.ZodType<LayersMedia> = z.object({
   layers: z.array(layerSchema),
 })
 
+const sequenceItemSchema = z.object({
+  key: z.string(),
+  maxDuration: z.number().nullable().optional(),
+  media: z.lazy(() => mediaSchema),
+})
+export type SequenceItem = { key: string; maxDuration?: null | number; media: Media }
+
 export type SequenceMedia = {
   type: 'sequence'
-  sequence: {
-    key: string
-    media: Media
-  }[]
+  activeKey?: string | undefined
+  lastTransitionTime?: number | undefined
+  sequence: SequenceItem[]
 }
 const sequenceMediaSchema: z.ZodType<SequenceMedia> = z.object({
   type: z.literal('sequence'),
-  sequence: z.array(
-    z.object({
-      key: z.string(),
-      media: z.lazy(() => mediaSchema),
-    })
-  ),
+  activeKey: z.string().optional(),
+  lastTransitionTime: z.number().optional(),
+  sequence: z.array(sequenceItemSchema),
 })
 
 export type Media = OffMedia | ColorMedia | VideoMedia | LayersMedia | SequenceMedia
