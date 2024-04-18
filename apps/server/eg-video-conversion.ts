@@ -410,7 +410,10 @@ async function main(scanPath: string, outputDir: string) {
     const dbFile = await importFile(videoFilePath, outputDir, prevFile)
     console.log('Done with export', { dbFile })
     await updateDb(outputDir, (state) => {
-      return { ...state, files: [...state.files, dbFile] }
+      return {
+        ...state,
+        files: [...state.files.filter((f) => f.fileSha256 !== dbFile.fileSha256), dbFile],
+      }
     })
   }
 }

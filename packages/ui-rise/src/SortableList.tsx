@@ -17,6 +17,7 @@ const SortableListItemSchema = z.object({
 
 const SortableListProps = z.object({
   footer: z.any(),
+  header: z.any(),
   items: z.array(SortableListItemSchema),
   // tbd: support this event again
   onReorder: EventDataStateSchema.optional(),
@@ -29,7 +30,8 @@ export function SortableList(props: TemplateComponentProps<z.infer<typeof Sortab
         containerStyle={{ flex: 1 }}
         data={props.items}
         keyExtractor={keyExtractor}
-        ListFooterComponent={props.footer}
+        ListFooterComponent={() => props.footer}
+        ListHeaderComponent={() => props.header}
         renderItem={(row) => {
           const { item, drag, isActive } = row
           return (
