@@ -1,4 +1,4 @@
-import { RiseComponents } from '@final-ui/components'
+import { RiseComponents } from '@final-ui/kit'
 import { Template, TemplateEvent } from '@final-ui/react'
 import { TamaguiComponents } from '@final-ui/tamagui'
 import { Stack } from 'expo-router'

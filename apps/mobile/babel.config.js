@@ -15,7 +15,7 @@ module.exports = function (api) {
       //           // tbd: make sure we have all packages here
       //           components: [
       //             '@final-ui/tamagui',
-      //             '@final-ui/components',
+      //             '@final-ui/kit',
       //             'tamagui',
       //           ],
       //           config: 'tamagui.config.ts',

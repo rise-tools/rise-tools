@@ -30,7 +30,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
     "@final-ui/react": "0.1.0",
-    "@final-ui/components": "0.1.0",
+    "@final-ui/kit": "0.1.0",
     "@final-ui/tamagui": "0.1.0",
     "@final-ui/ws-client": "0.1.0",
     "@tamagui/animations-react-native": "^1.94.4",

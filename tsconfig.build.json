@@ -13,7 +13,7 @@
       "path": "./packages/tamagui"
     },
     {
-      "path": "./packages/components"
+      "path": "./packages/kit"
     },
     {
       "path": "./packages/ws-client"
