@@ -1,4 +1,4 @@
-import type { DataSource, JSONValue, Store, TemplateEvent } from '@react-native-templates/core'
+import type { DataSource, JSONValue, Store, TemplateEvent } from '@final-ui/react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
 export type SubscribeWebsocketMessage = {

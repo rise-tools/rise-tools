@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../playground/src",
+    "outDir": "../playground/lib",
+    "module": "preserve",
+    "moduleResolution": "bundler"
+  },
+  "references": [
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../components"
+    },
+    {
+      "path": "../ws-client"
+    },
+    {
+      "path": "../tamagui"
+    }
+  ]
+}

@@ -18,10 +18,10 @@ I am building an app+server to control a large art project with 25,000 LEDs, and
 
 This repo contains the following sub-projects:
 
-- React Native Templates core - `packages/core`
-- Demo Component Library - `packages/app/demoComponents.tsx`
-- Websocket Data source client+server `packages/ws-client` and `apps/server/ws-rnt-server.ts`
-- Art project server - `apps/server`
+- React Native Templates core - `packages/react`
+- Demo Component Library - `packages/playground/demoComponents.tsx`
+- Websocket Data source client+server `packages/ws-client` and `example/server/ws-rnt-server.ts`
+- Art project server - `example/server`
 - Rise App: app with UI that is entirely server-defined, used as a remote control for the art project - `apps/rise-mobile`
 
 Later in 2024 I will hopefully focus on the open source side of things.
@@ -36,10 +36,10 @@ React Native Templates (RNT) can be described with 3 core primitives:
 
 ## Template Component
 
-This will be published from `@react-native-templates/core`
+This will be published from `@final-ui/react`
 
 ```ts
-import { Template } from '@react-native-templates/core`
+import { Template } from '@final-ui/react`
 
 // then, render it:
 
@@ -162,7 +162,7 @@ Docs coming soon. tldr: define `onTemplateEvent` on your library component. List
 
 ## Rise Component Library
 
-This is a messy set of components that I am using for the development of Rise. It is mostly based on Tamagui and should eventually be published as `@react-native-templates/tamagui-components` and/or `/rise-components`
+This is a messy set of components that I am using for the development of Rise. It is mostly based on Tamagui and should eventually be published as `@final-ui/tamagui-components` and/or `/rise-components`
 
 ## WebSocket Data Source
 
@@ -184,7 +184,7 @@ Usually I develop by running the `apps/rise-mobile` app in the iOS simulator.
 
 Step 2. `yarn ios`
 
-Then I run `apps/server`, which is focused on the LED art project and various integrations.
+Then I run `example/server`, which is focused on the LED art project and various integrations.
 
 Step 3. `yarn server`
 
@@ -193,7 +193,7 @@ Step 3. `yarn server`
 - Publish Rise app to the iOS and Android app stores
 - Move `ws-rnt-server.ts` to standalone package `ws-source-server`
 - Move `demoComponents.tsx` to standalone package `tamagui-components`
-- Publish packages to NPM under the `@react-native-templates` org:
+- Publish packages to NPM under the `@final-ui` org:
   - `core`
   - `ws-source-client`
   - `ws-source-server`

@@ -41,11 +41,11 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          editUrl: 'https://github.com/ericvicenti/react-native-templates/tree/main/docs',
+          editUrl: 'https://github.com/final-ui/final/tree/main/docs',
         },
         blog: {
           showReadingTime: false,
-          editUrl: 'https://github.com/ericvicenti/react-native-templates/tree/main/docs',
+          editUrl: 'https://github.com/final-ui/final/tree/main/docs',
         },
         theme: {
           customCss: './src/css/custom.css',

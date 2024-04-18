@@ -2,12 +2,12 @@
   "extends": "@tsconfig/node18",
   "compilerOptions": {
     "paths": {
-      "@react-native-templates/app": ["./packages/app/src"],
-      "@react-native-templates/core": ["./packages/core/src"],
-      "@react-native-templates/ws-client": ["./packages/ws-client/src"],
-      "@react-native-templates/ws-server": ["./packages/ws-server/src"],
-      "@react-native-templates/ui-tamagui": ["./packages/ui-tamagui/src"],
-      "@react-native-templates/ui-rise": ["./packages/ui-rise/src"]
+      "@final-ui/app": ["./packages/playground/src"],
+      "@final-ui/react": ["./packages/react/src"],
+      "@final-ui/ws-client": ["./packages/ws-client/src"],
+      "@final-ui/ws-server": ["./packages/ws-server/src"],
+      "@final-ui/tamagui": ["./packages/tamagui/src"],
+      "@final-ui/components": ["./packages/components/src"]
     },
     "composite": true,
     "strictNullChecks": true,
