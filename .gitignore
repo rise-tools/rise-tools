@@ -7,7 +7,6 @@ THUMBS_DB
 .expo/
 
 # VSCode
-.vscode/
 jsconfig.json
 
 # Xcode
