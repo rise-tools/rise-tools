@@ -221,6 +221,12 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
     },
     {
       $: 'component',
+      key: 'info',
+      component: 'Label',
+      children: `Duration: ${player.getFrameCount() / 30} sec`,
+    },
+    {
+      $: 'component',
       key: 'effect',
       component: 'Button',
       children: 'Effects',
