@@ -10,21 +10,21 @@ Your UI, defined with any data source
 - Extensible Events
 - WS Server - Build custom apps entirely on the server
 
-### This repo is a MESSY WORK IN PROGRESS. Please, do not use this yet! At the moment I would welcome contributors but I cannot support any consumers of the system
+> [!WARNING]  
+> This repo is a WORK IN PROGRESS. Please, do not use this yet! At the moment, we would welcome contributors but we cannot support any consumers of the system. For now, you can view this repo as inspiration for how easy and powerful it is to leverage server-driven UI.
 
-For now, you can view this repo as inspiration for how easy and powerful it is to leverage server-driven UI.
+This repo contains the following packages:
 
-I am building an app+server to control a large art project with 25,000 LEDs, and that is my current focus of this side project.
+- `packages/core` - React Native Templates core library
+- `packages/ui-tamagui` - Component library based on Tamagui to use with React Native Templates
+- `packages/ui-rise` - Component library used by Rise App 
+- `packages/ws-client` - Websocket client to use with the Websocket server
+- `packages/ws-server` - Websocket server 
 
-This repo contains the following sub-projects:
-
-- React Native Templates core - `packages/core`
-- Demo Component Library - `packages/app/demoComponents.tsx`
-- Websocket Data source client+server `packages/ws-client` and `apps/server/ws-rnt-server.ts`
-- Art project server - `apps/server`
-- Rise App: app with UI that is entirely server-defined, used as a remote control for the art project - `apps/rise-mobile`
-
-Later in 2024 I will hopefully focus on the open source side of things.
+As well as the following applications:
+- `apps/rise-mobile` - Rise App: an application to display UI from any remote data source or QR code
+- `apps/rise-marketing` - Landing page for the Rise App
+- `apps/server` - Art project server and preview web application  
 
 ## Overview
 
@@ -103,44 +103,46 @@ export type Store<V = unknown> = {
 }
 ```
 
-### Component Data
+### WebSocket Data Source
+
+This is a reference implementation of the data source, built with websockets. The server allows you to define UI that will be updated in realtime from the client.
+
+## Component Data
 
 This is the base functionality of RNT, to specify which components will be rendered in your `<Template>`
 
 ```ts
 {
-    $: 'component',
-    key: 'myRow', // used to specify sort order
-    component: 'XStack', // this component must be defined in your Component Library
-    props: {
-        gap: '$2'
+  $: 'component',
+  key: 'myRow', // used to specify sort order
+  component: 'XStack', // this component must be defined in your Component Library
+  props: {
+    gap: '$2'
+  },
+  children: [
+    {
+      $: 'component',
+      component: 'Button',
+      children: 'Tap A'
     },
-    children: [
-        {
-            $: 'component',
-            key: 'a',
-            component: 'Button',
-            children: 'Tap A'
-        },
-        {
-            $: 'component',
-            key: 'b',
-            component: 'Button',
-            children: 'Tap B'
-        }
-    ]
+    {
+      $: 'component',
+      component: 'Button',
+      children: 'Tap B'
+    }
+  ]
 }
 ```
 
-### Ref Data
+## Ref Data
 
 Your store data can include references to data from other stores.
 
 ```ts
 {
-    $: 'ref',
-    key: 'myOtherThing',
-    ref: 'otherPath'
+  $: 'ref',
+  key: 'myOtherThing',
+  ref: 'otherPath'
 }
 ```
 
@@ -148,25 +150,102 @@ Refs can be specified as arrays, to look up data within objects and arrays of th
 
 ```ts
 {
-    $: 'ref',
-    key: 'myOtherThing',
-    ref: ['otherPath', 'key1', 0, 'key3']
+  $: 'ref',
+  key: 'myOtherThing',
+  ref: ['otherPath', 'key1', 0, 'key3']
 }
 ```
 
 You can specify Refs as children components or props of any component. (Maybe even deep props?)
 
-### Events
+## Events
 
-Docs coming soon. tldr: define `onTemplateEvent` on your library component. Listen with the `onEvent` prop on `<Template>`. Pass custom values in the props of the event in the component data. For an example, see how Rise handles navigation.
+In order to listen to events trigerred by given components, you have to pass a special object as a prop to an event handler:
 
-## Rise Component Library
+```ts
+{
+  $: 'component',
+  component: 'TouchableOpacity',
+  props: {
+    onPress: {
+      $: 'event',
+    }
+  },
+```
 
-This is a messy set of components that I am using for the development of Rise. It is mostly based on Tamagui and should eventually be published as `@react-native-templates/tamagui-components` and/or `/rise-components`
+You can then listen to the events with the `onEvent` prop on `<Template>`.
 
-## WebSocket Data Source
+```tsx
+<Template
+  components={components}
+  dataSource={dataSource} 
+  onEvent={(event) => {
+    // this will be : "TouchableOpacity"
+    console.log(event.target.component)
+  }} 
+/>
+```
 
-This is a reference implementation of the data source, built with websockets. The server allows you to define UI that will be updated in realtime from the client.
+The event object contains a bunch of helpful properties to let you handle events more efficiently:
+
+```ts
+type TemplateEvent<T = any, K = any> = {
+  target: {
+    key?: string
+    path: string
+    component: string
+  }
+  name: string
+  action: T
+  payload: K
+}
+```
+
+### `target`
+
+Describes the component that trigerred the event:
+- `key` - optional, present only if it was explicitly set by you
+- `path` - path to the component in a rendered tree 
+- `component` - name of the component that trigerred the event, e.g. "TouchableOpacity"
+
+### `name`
+
+Name of the event handler, e.g. `onPress`.
+
+### `payload`
+
+First argument that was passed to the event handler, shape is specific to the component that trigerred the event. Note that native events are not serialised and passed. For `TouchableOpacity`'s `onPress`, you will receive `[native code]` instead.
+
+### `action`
+
+Optional field that can be helpful to differntiate events within the application or trigger certain actions. Its shape is opaque to this library and can be set to anything that works for your use case.
+
+For example, it can be a string, e.g. `navigation:goBack` or an array: `['navigation', 'goBack']`. 
+
+Then, in the `onEvent` handler, you may want to do as follows:
+```tsx
+<Template
+  components={components}
+  dataSource={dataSource} 
+  onEvent={(event) => {
+    // assumes event.action is an array
+    if (event.action?.includes('navigation')) {
+      return handleNavigationEvent(event)
+    }
+    handleGenericEvent(event)
+  }} 
+/>
+```
+
+## Built-in component libraries
+
+### Tamagui Component library
+
+Contains all Tamagui components to be used immediately with React Native Templates. 
+
+### Rise Component Library
+
+Contains more sophisticated components that are available in the Rise mobile app. It is mostly based on Tamagui. You may use it to reduce boilerplate required to e.g. define a select field with Tamagui.
 
 ## Rise App
 
@@ -176,23 +255,23 @@ The Rise app allows the user to specify different "connections", which are WebSo
 
 Also, Rise supports navigation between different screens in the app. With a custom event definition such as `props: { onPress: [ 'navigate', 'myOtherPath' ] }`
 
-## Dev Workflow
+## Contributing
 
-Step 1. Checkout and run `yarn`
+Step 1. Checkout and run `npm install`
 
-Usually I develop by running the `apps/rise-mobile` app in the iOS simulator.
+You can develop by running the Rise app in the iOS simulator.
 
-Step 2. `yarn ios`
+Step 2. `cd apps/rise-mobile && npm start`
 
-Then I run `apps/server`, which is focused on the LED art project and various integrations.
+Then run the Websocket server, which is focused on the LED art project and various integrations.
 
-Step 3. `yarn server`
+Step 3. `cd apps/server && npm start`
+
+Finally, open up Rise app and create new connection that points to the Websocket server.
 
 ## Big TODOs:
 
 - Publish Rise app to the iOS and Android app stores
-- Move `ws-rnt-server.ts` to standalone package `ws-source-server`
-- Move `demoComponents.tsx` to standalone package `tamagui-components`
 - Publish packages to NPM under the `@react-native-templates` org:
   - `core`
   - `ws-source-client`
