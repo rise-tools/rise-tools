@@ -77,8 +77,8 @@
         ],
         "additionalManifests": {
           "dependencyUpdates": [
-            "./apps/*/package.json",
-            "./example/*/package.json"
+            "apps/*/package.json",
+            "example/*/package.json"
           ]
         }
       }
