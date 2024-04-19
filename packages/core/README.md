@@ -1,2 +1,0 @@
-@react-native-templates/core
-=====

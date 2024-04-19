@@ -1,5 +1,5 @@
 {
-  "name": "@react-native-templates/ws-client",
+  "name": "@final-ui/ws-client",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "description": "",
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ericvicenti/react-native-templates.git",
+    "url": "https://github.com/final-ui/final.git",
     "directory": "packages/ws-client"
   },
   "author": "Eric Vicenti <ericvicenti@gmail.com> (https://github.com/ericvicenti)",
@@ -23,16 +23,16 @@
     "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
   ],
   "bugs": {
-    "url": "https://github.com/ericvicenti/react-native-templates/issues"
+    "url": "https://github.com/final-ui/final/issues"
   },
-  "homepage": "https://github.com/ericvicenti/react-native-templates#readme",
+  "homepage": "https://github.com/final-ui/final#readme",
   "dependencies": {
     "reconnecting-websocket": "^4.4.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
     "react": "^18.2.0",
-    "@react-native-templates/core": "0.1.0",
+    "@final-ui/react": "0.1.0",
     "metro-react-native-babel-preset": "^0.77.0"
   },
   "peerDependencies": {

@@ -7,19 +7,19 @@
   "files": [],
   "references": [
     {
-      "path": "./packages/core"
+      "path": "./packages/react"
     },
     {
-      "path": "./packages/ui-tamagui"
+      "path": "./packages/tamagui"
     },
     {
-      "path": "./packages/ui-rise"
+      "path": "./packages/kit"
     },
     {
       "path": "./packages/ws-client"
     },
     {
-      "path": "./packages/app"
+      "path": "./packages/playground"
     }
   ]
 }

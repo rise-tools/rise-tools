@@ -1,2 +1,2 @@
-@react-native-templates/ws-server
+@final-ui/ws-server
 =====
