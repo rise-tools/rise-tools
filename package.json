@@ -73,7 +73,7 @@
       },
       "@release-it-plugins/workspaces": {
         "workspaces": [
-          "./packages/*"
+          "packages/*"
         ],
         "additionalManifests": {
           "dependencyUpdates": [
