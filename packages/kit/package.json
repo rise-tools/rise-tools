@@ -1,6 +1,6 @@
 {
   "name": "@final-ui/kit",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "license": "Apache-2.0",
   "description": "",
   "main": "lib",
@@ -18,13 +18,16 @@
     "url": "https://github.com/final-ui/final.git",
     "directory": "packages/kit"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "bugs": {
     "url": "https://github.com/final-ui/final/issues"
   },
   "homepage": "https://github.com/final-ui/final#readme",
   "devDependencies": {
-    "@final-ui/react": "0.1.0",
+    "@final-ui/react": "0.1.2",
     "@tamagui/config": "^1.94.4",
     "@types/react": "^18.0.27",
     "react": "^18.2.0",

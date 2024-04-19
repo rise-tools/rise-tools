@@ -11,7 +11,7 @@
       "path": "../react"
     },
     {
-      "path": "../components"
+      "path": "../kit"
     },
     {
       "path": "../ws-client"
