@@ -1,28 +1,20 @@
-import { EventDataStateSchema, TemplateComponentProps } from '@final-ui/react'
+import { EventDataState, TemplateComponentProps } from '@final-ui/react'
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import React, { useMemo } from 'react'
 import { Adapt, Label, Select, Sheet, YStack } from 'tamagui'
-import { z } from 'zod'
 
-const SelectFieldProps = z.object({
-  value: z.string().nullable(),
-  id: z.string().optional(),
-  label: z.string().optional(),
-  unselectedLabel: z.string().optional().default('...'),
-  onValueChange: EventDataStateSchema.optional(),
-  options: z
-    .array(
-      z.object({
-        key: z.string(),
-        label: z.string(),
-      })
-    )
-    .optional(),
-})
+export type SelectFieldProps = {
+  value?: string
+  id?: string
+  label?: string
+  unselectedLabel?: string
+  onValueChange?: EventDataState | EventDataState[]
+  options?: { key: string; label: string }[]
+}
 
-export function SelectField(props: TemplateComponentProps<z.infer<typeof SelectFieldProps>>) {
-  const { value, options } = props
+export function SelectField(props: TemplateComponentProps<SelectFieldProps>) {
+  const { value, options, unselectedLabel = '...' } = props
   return (
     <YStack>
       <Label>{props.label}</Label>
@@ -35,7 +27,7 @@ export function SelectField(props: TemplateComponentProps<z.infer<typeof SelectF
         // native
       >
         <Select.Trigger iconAfter={ChevronDown}>
-          <Select.Value placeholder={props.unselectedLabel} />
+          <Select.Value placeholder={unselectedLabel} />
         </Select.Trigger>
 
         <Adapt
@@ -150,8 +142,4 @@ export function SelectField(props: TemplateComponentProps<z.infer<typeof SelectF
       </Select>
     </YStack>
   )
-}
-
-SelectField.validate = (props: any) => {
-  return SelectFieldProps.parse(props)
 }

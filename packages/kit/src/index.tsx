@@ -1,37 +1,39 @@
-import { Icon } from './Icon'
-import { QRCode } from './QRCode'
-import { SelectField } from './SelectField'
-import { Slider, SliderField } from './Slider'
-import { SortableList } from './SortableList'
-import { SwitchField } from './SwitchField'
+import { assert } from 'typia'
+
+import { Icon, IconProps } from './Icon'
+import { QRCode, QRCodeProps } from './QRCode'
+import { SelectField, SelectFieldProps } from './SelectField'
+import { Slider, SliderField, SliderFieldProps, SliderProps } from './Slider'
+import { SortableList, SortableListProps } from './SortableList'
+import { SwitchField, SwitchFieldProps } from './SwitchField'
 
 export const RiseComponents = {
   RiseQRCode: {
     component: QRCode,
-    validator: QRCode.validate,
+    validator: (props: any) => assert<QRCodeProps>(props),
   },
   RiseIcon: {
     component: Icon,
-    validator: Icon.validate,
+    validator: (props: any) => assert<IconProps>(props),
   },
   RiseSelectField: {
     component: SelectField,
-    validator: SelectField.validate,
+    validator: (props: any) => assert<SelectFieldProps>(props),
   },
   RiseSlider: {
     component: Slider,
-    validator: Slider.validate,
+    validator: (props: any) => assert<SliderProps>(props),
   },
   RiseSliderField: {
     component: SliderField,
-    validator: SliderField.validate,
+    validator: (props: any) => assert<SliderFieldProps>(props),
   },
   RiseSortableList: {
     component: SortableList,
-    validator: SortableList.validate,
+    validator: (props: any) => assert<SortableListProps>(props),
   },
   RiseSwitchField: {
     component: SwitchField,
-    validator: SwitchField.validate,
+    validator: (props: any) => assert<SwitchFieldProps>(props),
   },
 }
