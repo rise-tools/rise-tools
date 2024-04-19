@@ -9,13 +9,19 @@ const connectionFormSchema = z.object({
   path: z.string().describe('Path/Location (optional) // Root Location'),
 })
 
+type ConnectionForm = z.infer<typeof connectionFormSchema>
+
+type DefaultValues = {
+  [P in keyof ConnectionForm]: ConnectionForm[P] extends string ? string : ConnectionForm[P]
+}
+
 export function ConnectionForm({
   onSubmit,
   defaultValues,
   submitButton,
 }: {
-  onSubmit: (values: z.infer<typeof connectionFormSchema>) => void
-  defaultValues: z.infer<typeof connectionFormSchema>
+  onSubmit: (values: ConnectionForm) => void
+  defaultValues: DefaultValues
   submitButton: (input: { submit: () => void }) => React.ReactNode
 }) {
   return (
