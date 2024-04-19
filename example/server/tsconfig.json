@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "lib": ["ESNext"],
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "sourceMap": true
+  },
+  "exclude": ["node_modules"],
+  "references": [{
+    "path": "../../packages/react"
+  }, {
+    "path": "../../packages/ws-server"
+  }]
+}

@@ -2,14 +2,22 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "module": "preserve",
+    "moduleResolution": "bundler"
   },
   "references": [
     {
       "path": "../react"
     },
     {
+      "path": "../components"
+    },
+    {
       "path": "../ws-client"
+    },
+    {
+      "path": "../tamagui"
     }
   ]
 }

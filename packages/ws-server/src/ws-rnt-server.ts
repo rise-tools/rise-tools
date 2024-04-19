@@ -1,11 +1,11 @@
-import type { DataState, TemplateEvent } from '@react-native-templates/core'
+import type { DataState, TemplateEvent } from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
   EventWebsocketMessage,
   ServerWebsocketMessage,
   SubscribeWebsocketMessage,
   UnsubscribeWebsocketMessage,
-} from '@react-native-templates/ws-client'
+} from '@final-ui/ws-client'
 import WebSocket from 'ws'
 
 type EventHandler = (

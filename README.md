@@ -15,16 +15,16 @@ Your UI, defined with any data source
 
 This repo contains the following packages:
 
-- `packages/core` - React Native Templates core library
-- `packages/ui-tamagui` - Component library based on Tamagui to use with React Native Templates
-- `packages/ui-rise` - Component library used by Rise App 
+- `packages/react` - React Native Templates core library
+- `packages/tamagui` - Component library based on Tamagui to use with React Native Templates
+- `packages/kit` - Component library used by the Playground 
 - `packages/ws-client` - Websocket client to use with the Websocket server
 - `packages/ws-server` - Websocket server 
 
 As well as the following applications:
-- `apps/rise-mobile` - Rise App: an application to display UI from any remote data source or QR code
+- `apps/mobile` - Mobile application to display UI from any remote data source or QR code
 - `apps/rise-marketing` - Landing page for the Rise App
-- `apps/server` - Art project server and preview web application  
+- `example/server` and `example/dashboard` - Art project server and preview web application  
 
 ## Overview
 
@@ -36,10 +36,10 @@ React Native Templates (RNT) can be described with 3 core primitives:
 
 ## Template Component
 
-This will be published from `@react-native-templates/core`
+This will be published from `@final-ui/react`
 
 ```ts
-import { Template } from '@react-native-templates/core`
+import { Template } from '@final-ui/react`
 
 // then, render it:
 
@@ -259,27 +259,26 @@ Also, Rise supports navigation between different screens in the app. With a cust
 
 Step 1. Checkout and run `npm install`
 
-You can develop by running the Rise app in the iOS simulator.
+You can develop by running the Playground in the iOS simulator.
 
-Step 2. `cd apps/rise-mobile && npm start`
+Step 2. `cd apps/mobile && npm start`
 
 Then run the Websocket server, which is focused on the LED art project and various integrations.
 
-Step 3. `cd apps/server && npm start`
+Step 3. `cd example/server && npm start`
 
-Finally, open up Rise app and create new connection that points to the Websocket server.
+Finally, open up the mobile app and create new connection that points to the Websocket server.
+
+> ![NOTE]
+> If you are using VSCode, you can run a task: "Start all servers" to do all the above at once.
 
 ## Big TODOs:
 
-- Publish Rise app to the iOS and Android app stores
-- Publish packages to NPM under the `@react-native-templates` org:
-  - `core`
-  - `ws-source-client`
-  - `ws-source-server`
-  - `tamagui-components` and/or `rise-components`
-- RNT Documentation
-- Rise app Website
+- Publish the Playground to the iOS and Android app stores
+- Publish packages to NPM under the `@final-ui` org
+- Documentation
+- Landing page
 - API Reference
-- Move lighting-related server code to independent repo
+- Move lighting-related server code (`example`) to independent repo
 - Improve type safety across the system
 - Web support

@@ -1,10 +1,11 @@
 {
-  "name": "rnt",
+  "name": "final-ui",
   "license": "Apache-2.0",
   "private": true,
   "workspaces": [
     "apps/*",
     "packages/*",
+    "example/*",
     "docs"
   ],
   "engines": {
@@ -13,10 +14,10 @@
   "scripts": {
     "native": "cd apps/rise-mobile && yarn start",
     "ios": "cd apps/rise-mobile && yarn ios",
-    "serverw": "yarn workspace @react-native-templates/rise-server",
-    "expow": "yarn workspace @react-native-templates/rise-mobile",
+    "serverw": "yarn workspace eg-dashboard",
+    "expow": "yarn workspace @final-ui/rise-mobile",
     "vercel:install": "yarn set version 3.5 && yarn install",
-    "convert-videos": "cd apps/server && yarn convert-videos",
+    "convert-videos": "cd example/server && yarn convert-videos",
     "postinstall": "yarn check-deps",
     "packages:build": "tsc --build tsconfig.build.json --force --verbose",
     "packages:watch": "tsc --build tsconfig.build.json --watch",
@@ -30,8 +31,8 @@
     "build-ios-device": "cd apps/rise-mobile; eas build -p ios -e dev-device",
     "build-ios-preview": "cd apps/rise-mobile; eas build -p ios -e preview",
     "build-ios-production": "cd apps/rise-mobile; eas build -p ios -e production --auto-submit",
-    "server": "yarn workspace @react-native-templates/rise-server start:dev",
-    "server-demo": "yarn workspace @react-native-templates/rise-server start:demo",
+    "server": "yarn workspace eg-dashboard start:dev",
+    "server-demo": "yarn workspace eg-dashboard start:demo",
     "test": "jest",
     "release": "release-it",
     "marketing": "cd apps/rise-marketing && yarn start"
@@ -69,7 +70,7 @@
     "testEnvironment": "jsdom",
     "prettierPath": null,
     "moduleNameMapper": {
-      "@react-native-templates/(.*)": "<rootDir>/packages/$1/src",
+      "@final-ui/(.*)": "<rootDir>/packages/$1/src",
       "^react-native$": "react-native-web"
     },
     "setupFiles": [
