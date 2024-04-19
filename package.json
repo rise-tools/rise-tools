@@ -66,22 +66,23 @@
       "commitMessage": "chore: release ${version}",
       "tagName": "v${version}"
     },
-    "npm": {
-      "publish": true
-    },
-    "github": {
-      "release": true
-    },
+    "npm": false,
     "plugins": {
       "@release-it/conventional-changelog": {
         "preset": "angular"
       },
       "@release-it-plugins/workspaces": {
-        "workspaces": ["./packages/*"],
+        "workspaces": [
+          "./packages/*"
+        ],
         "additionalManifests": {
-          "dependencyUpdates": ["./apps/*/package.json", "./example/*/package.json"]
+          "dependencyUpdates": [
+            "./apps/*/package.json",
+            "./example/*/package.json"
+          ]
         }
       }
     }
-  }
+  },
+  "version": "0.1.0"
 }
