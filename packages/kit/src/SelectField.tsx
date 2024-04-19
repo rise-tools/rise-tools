@@ -5,7 +5,7 @@ import React, { useMemo } from 'react'
 import { Adapt, Label, Select, Sheet, YStack } from 'tamagui'
 
 export type SelectFieldProps = {
-  value?: string
+  value?: string | null
   id?: string
   label?: string
   unselectedLabel?: string

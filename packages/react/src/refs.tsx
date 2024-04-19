@@ -22,7 +22,7 @@ export type DataSource = {
 /** Refs */
 type DataValues = Record<string, JSONValue>
 
-function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']): JSONValue {
+function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
   if (typeof ref === 'string') {
     return dataValues[ref] || null
   }
