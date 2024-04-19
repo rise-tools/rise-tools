@@ -50,7 +50,7 @@ function extractRefKey(ref: ReferencedDataState['ref']) {
 
 function findAllRefs(stateNode: JSONValue, dataValues: DataValues): Set<string> {
   const currentRefKeys = new Set<string>()
-  function searchRefs(stateNode: JSONValue) {
+  function searchRefs(stateNode?: JSONValue) {
     if (!stateNode || typeof stateNode !== 'object') {
       return
     }
@@ -136,23 +136,21 @@ function createRefStateManager(
   }
 }
 
-function resolveValueRefs(dataValues: DataValues, value: JSONValue): JSONValue {
+function resolveValueRefs(dataValues: DataValues, value?: JSONValue): JSONValue {
   if (!value || typeof value !== 'object') {
-    return value
+    return null
   }
   if (Array.isArray(value)) {
     return value.map((item) => resolveValueRefs(dataValues, item))
   }
-  if (typeof value === 'object') {
-    if (isCompositeDataState(value) && value.$ === 'ref') {
-      return resolveRef(dataValues, value.ref)
-    }
-    return Object.fromEntries(
-      Object.entries(value).map(([key, item]) => {
-        return [key, resolveValueRefs(dataValues, item)]
-      })
-    )
+  if (isCompositeDataState(value) && value.$ === 'ref') {
+    return resolveRef(dataValues, value.ref)
   }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, item]) => {
+      return [key, resolveValueRefs(dataValues, item)]
+    })
+  ) as typeof value
 }
 
 function resolveRef(dataValues: DataValues, lookup: ReferencedDataState['ref']): JSONValue {

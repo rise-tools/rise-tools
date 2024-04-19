@@ -38,17 +38,10 @@ type EventDataState = {
 }
 type SafeObject = {
   [key: string]: JSONValue
+  // @ts-expect-error
   $?: never
 }
-export type JSONValue =
-  | DataState
-  | SafeObject
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | JSONValue[]
+export type JSONValue = DataState | SafeObject | string | number | boolean | null | JSONValue[]
 
 export type TemplateEvent<T = EventDataState['action'], K = any> = {
   target: {
