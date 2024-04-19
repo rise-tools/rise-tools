@@ -23,6 +23,7 @@
   "devDependencies": {
     "@babel/runtime": "^7.18.9",
     "@commitlint/config-conventional": "^17.0.2",
+    "@release-it-plugins/workspaces": "^4.2.0",
     "@release-it/conventional-changelog": "^5.0.0",
     "@testing-library/react": "^14.2.2",
     "@testing-library/react-native": "^12.4.5",
@@ -74,6 +75,12 @@
     "plugins": {
       "@release-it/conventional-changelog": {
         "preset": "angular"
+      },
+      "@release-it-plugins/workspaces": {
+        "workspaces": ["./packages/*"],
+        "additionalManifests": {
+          "dependencyUpdates": ["./apps/*/package.json", "./example/*/package.json"]
+        }
       }
     }
   }
