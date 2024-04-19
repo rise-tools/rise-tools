@@ -4,7 +4,6 @@
   "license": "Apache-2.0",
   "description": "",
   "main": "lib",
-  "react-native": "src",
   "files": [
     "src",
     "assets",
