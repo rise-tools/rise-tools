@@ -2,9 +2,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "strictNullChecks": true,
+    "strict": true
   },
-  "references": [{
-    "path": "../react"
-  }]
+  "references": [
+    {
+      "path": "../react"
+    }
+  ]
 }

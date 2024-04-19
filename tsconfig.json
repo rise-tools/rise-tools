@@ -13,7 +13,12 @@
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
     "jsx": "react",
-    "strict": true
+    "strict": true,
+    "plugins": [
+      {
+        "transform": "typia/lib/transform"
+      }
+    ],
   },
   "exclude": [
     "**/node_modules",

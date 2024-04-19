@@ -1,5 +1,6 @@
 import type { DataSource, JSONValue, Store, TemplateEvent } from '@final-ui/react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
+import { assert } from 'typia'
 
 export type SubscribeWebsocketMessage = {
   $: 'sub'
@@ -54,7 +55,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
   })
 
   rws.onmessage = (eventData) => {
-    const event = JSON.parse(eventData.data) as ServerWebsocketMessage
+    const event = assert<ServerWebsocketMessage>(eventData.data)
     if (event['$'] === 'up') {
       cache.set(event.key, event.val)
       const handlers = subscriptions.get(event.key)
