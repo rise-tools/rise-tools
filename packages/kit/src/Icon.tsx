@@ -3,11 +3,11 @@ import React from 'react'
 import { SizableText } from 'tamagui'
 
 export type IconProps = {
-  icon: keyof typeof LucideIcons
+  icon: string
   size?: number
 }
 
-export function Icon({ icon, size = 20 }: IconProps) {
+export function Icon({ icon, size = 20 }: IconProps & { icon: keyof typeof LucideIcons }) {
   const IconComponent = LucideIcons[icon]
   if (IconComponent) {
     return <IconComponent size={size} />
