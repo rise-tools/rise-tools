@@ -22,9 +22,9 @@ export type DataSource = {
 /** Refs */
 type DataValues = Record<string, JSONValue>
 
-function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
+function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']): JSONValue {
   if (typeof ref === 'string') {
-    return dataValues[ref]
+    return dataValues[ref] || null
   }
 
   const [refKey, ...lookupKeys] = ref
@@ -32,13 +32,13 @@ function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']
   let lookupValue = dataValues[refKey]
   for (const key of lookupKeys) {
     if (!lookupValue || typeof lookupValue !== 'object') {
-      return undefined
+      return null
     }
     // @ts-ignore
     lookupValue = lookupValue[key]
   }
 
-  return lookupValue
+  return lookupValue || null
 }
 
 function extractRefKey(ref: ReferencedDataState['ref']) {
@@ -136,9 +136,9 @@ function createRefStateManager(
   }
 }
 
-function resolveValueRefs(dataValues: DataValues, value?: JSONValue): JSONValue {
+function resolveValueRefs(dataValues: DataValues, value: JSONValue): JSONValue {
   if (!value || typeof value !== 'object') {
-    return null
+    return value
   }
   if (Array.isArray(value)) {
     return value.map((item) => resolveValueRefs(dataValues, item))

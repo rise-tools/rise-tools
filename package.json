@@ -57,7 +57,6 @@
     "testEnvironment": "jsdom",
     "prettierPath": null,
     "moduleNameMapper": {
-      "@final-ui/(.*)": "<rootDir>/packages/$1/src",
       "^react-native$": "react-native-web"
     },
     "setupFiles": [
