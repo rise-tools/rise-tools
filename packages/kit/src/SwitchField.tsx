@@ -1,11 +1,11 @@
-import { EventDataState, TemplateComponentProps } from '@final-ui/react'
+import { EventDataStateProp, TemplateComponentProps } from '@final-ui/react'
 import React from 'react'
 import { Label, Spinner, Switch, XStack } from 'tamagui'
 
 export type SwitchFieldProps = {
   value?: boolean
   label?: string
-  onCheckedChange?: EventDataState
+  onCheckedChange?: EventDataStateProp
 }
 
 export function SwitchField(props: TemplateComponentProps<SwitchFieldProps>) {

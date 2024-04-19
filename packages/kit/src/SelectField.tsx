@@ -1,4 +1,4 @@
-import { EventDataState, TemplateComponentProps } from '@final-ui/react'
+import { EventDataStateProp, TemplateComponentProps } from '@final-ui/react'
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import React, { useMemo } from 'react'
@@ -9,7 +9,7 @@ export type SelectFieldProps = {
   id?: string
   label?: string
   unselectedLabel?: string
-  onValueChange?: EventDataState | EventDataState[]
+  onValueChange?: EventDataStateProp
   options?: { key: string; label: string }[]
 }
 

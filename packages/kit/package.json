@@ -39,6 +39,7 @@
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-gesture-handler": "^2.16.0",
     "react-native-qrcode-svg": "^6.3.0",
+    "typia": "^6.0.3",
     "zod": "^3.22.4"
   },
   "peerDependencies": {

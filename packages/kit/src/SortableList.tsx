@@ -1,4 +1,4 @@
-import { EventDataState, TemplateComponentProps } from '@final-ui/react'
+import { EventDataStateProp, TemplateComponentProps } from '@final-ui/react'
 import React from 'react'
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
 import { TouchableOpacity } from 'react-native-gesture-handler'
@@ -11,14 +11,14 @@ function keyExtractor(item: SortableListItem) {
 type SortableListItem = {
   key: string
   label: string
-  onPress?: EventDataState
+  onPress?: EventDataStateProp
 }
 
 export type SortableListProps = {
   footer: any
   items: SortableListItem[]
   // tbd: support this event again
-  onReorder?: EventDataState
+  onReorder?: EventDataStateProp
 }
 
 export function SortableList(props: TemplateComponentProps<SortableListProps>) {

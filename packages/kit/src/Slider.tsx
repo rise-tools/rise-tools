@@ -1,4 +1,4 @@
-import { EventDataState, TemplateComponentProps } from '@final-ui/react'
+import { EventDataStateProp, TemplateComponentProps } from '@final-ui/react'
 import React from 'react'
 import { Label, Slider as TamaguiSlider, Spinner, YStack } from 'tamagui'
 
@@ -7,7 +7,7 @@ export type SliderProps = {
   min?: number
   max?: number
   step?: number
-  onValueChange?: EventDataState | EventDataState[]
+  onValueChange?: EventDataStateProp
 }
 
 export function Slider({

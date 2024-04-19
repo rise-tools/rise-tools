@@ -11,9 +11,7 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
 
 /* Component props */
 export type TemplateComponentProps<T> = {
-  [P in keyof T]: T[P] extends EventDataState | EventDataState[] | undefined
-    ? (...args: any[]) => void
-    : T[P]
+  [P in keyof T]: T[P] extends EventDataStateProp | undefined ? (...args: any[]) => void : T[P]
 }
 
 /** Data state */
@@ -31,11 +29,11 @@ export type ReferencedDataState = {
   ref: string | [string, ...(string | number)[]]
 }
 // tbd: allow for more specific types
-type EventAction = any
 type EventDataState = {
   $: 'event'
-  action?: EventAction
+  action?: any
 }
+export type EventDataStateProp = EventDataState | EventDataState[]
 type SafeObject = {
   [key: string]: JSONValue
   // @ts-expect-error
@@ -43,7 +41,7 @@ type SafeObject = {
 }
 export type JSONValue = DataState | SafeObject | string | number | boolean | null | JSONValue[]
 
-export type TemplateEvent<T = EventDataState['action'], K = any> = {
+export type TemplateEvent<T = any, K = any> = {
   target: {
     key?: string
     path: string
