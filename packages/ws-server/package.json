@@ -18,6 +18,9 @@
     "url": "https://github.com/final-ui/final.git",
     "directory": "packages/ws-server"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "bugs": {
     "url": "https://github.com/final-ui/final/issues"

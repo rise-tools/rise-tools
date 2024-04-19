@@ -18,6 +18,9 @@
     "url": "https://github.com/final-ui/final.git",
     "directory": "packages/react"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Eric Vicenti <ericvicenti@gmail.com> (https://github.com/ericvicenti)",
   "contributors": [
     "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
