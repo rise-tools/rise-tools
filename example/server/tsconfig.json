@@ -7,11 +7,15 @@
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "sourceMap": true
+    "sourceMap": true,
+    "jsx": "react",
+    "jsxFactory": "jsx",
   },
   "exclude": ["node_modules"],
   "references": [{
     "path": "../../packages/react"
+  }, {
+    "path": "../../packages/kit"
   }, {
     "path": "../../packages/ws-server"
   }]
