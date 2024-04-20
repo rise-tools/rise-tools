@@ -2,8 +2,8 @@ import { ComponentDataState, JSONValue } from './template'
 
 export function jsx(
   componentFactory: (props: any) => string,
-  { key, ...props }: { key: string } & Record<string, JSONValue>,
-  children: JSONValue
+  { children, ...props }: Record<string, JSONValue>,
+  key: string
 ): ComponentDataState {
   return {
     $: 'component',

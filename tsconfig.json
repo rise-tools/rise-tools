@@ -4,6 +4,7 @@
     "paths": {
       "@final-ui/app": ["./packages/playground/src"],
       "@final-ui/react": ["./packages/react/src"],
+      "@final-ui/react/jsx-runtime": ["./packages/react/src/jsx"],
       "@final-ui/ws-client": ["./packages/ws-client/src"],
       "@final-ui/ws-server": ["./packages/ws-server/src"],
       "@final-ui/tamagui": ["./packages/tamagui/src"],

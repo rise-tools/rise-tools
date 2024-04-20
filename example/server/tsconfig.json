@@ -8,8 +8,8 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "sourceMap": true,
-    "jsx": "react",
-    "jsxFactory": "jsx",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@final-ui/react",
   },
   "exclude": ["node_modules"],
   "references": [{
