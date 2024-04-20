@@ -6,13 +6,15 @@ import zlib from 'zlib'
 
 import { EGInfo } from './eg'
 import { Frame } from './eg-sacn'
-import { DBState, readDb } from './eg-video'
+import { DBFile, DBState, readDb } from './eg-video'
 
 export type VideoPlaybackInstance = {
   readFrame: () => Frame | null
   restart: () => void
   setParams: (params: PlaybackParams) => void
   frameCount: number
+  playingFrame: number | null
+  info: DBFile
 }
 
 export type VideoPlayer = {
@@ -22,6 +24,8 @@ export type VideoPlayer = {
   id: string
   setParams: (params: PlaybackParams) => void
   getFrameCount: () => number | null
+  getPlayingFrame: () => number | null
+  getInfo: () => DBFile | null
 }
 
 export type PlaybackParams = {
@@ -92,6 +96,7 @@ export function egVideo(
     let pause = () => {}
 
     async function startReadbackReverse() {
+      playback.playingFrame = 0
       const readbackInstance = playCount++
       console.log('startReadbackReverse', readbackInstance)
       const fileHandle = await openFile(framesFilePath, 'r')
@@ -129,6 +134,7 @@ export function egVideo(
     }
 
     function startReadbackForward() {
+      playback.playingFrame = 0
       let totalBufferRead = 0
       const readbackInstance = playCount++
       console.log('startReadbackForward', readbackInstance)
@@ -190,13 +196,11 @@ export function egVideo(
         startReadbackForward()
       }
     }
-    if (playbackParams.reverse) {
-      startReadbackReverse()
-    } else {
-      startReadbackForward()
-    }
     function readFrame(): Frame | null {
       if (bufferQueue.length > 0) {
+        if (playback.playingFrame != null) {
+          playback.playingFrame = playback.playingFrame + 1
+        }
         const frame = bufferQueue.shift()
         if (streamPaused && bufferQueue.length < MAX_QUEUE_SIZE) {
           resume()
@@ -208,12 +212,20 @@ export function egVideo(
     function setParams(params: PlaybackParams) {
       playbackParams = params
     }
-    return {
+    const playback: VideoPlaybackInstance = {
       readFrame,
       restart,
       setParams,
       frameCount,
+      playingFrame: null,
+      info: file,
     }
+    if (playbackParams.reverse) {
+      startReadbackReverse()
+    } else {
+      startReadbackForward()
+    }
+    return playback
   }
 
   function createPlayer(id: string): VideoPlayer {
@@ -253,7 +265,29 @@ export function egVideo(
       }
       return null
     }
-    const player: VideoPlayer = { readFrame, selectVideo, setParams, restart, getFrameCount, id }
+
+    function getPlayingFrame(): number | null {
+      if (videoInstance) {
+        return videoInstance.playingFrame
+      }
+      return null
+    }
+    function getInfo(): DBFile | null {
+      if (videoInstance) {
+        return videoInstance.info
+      }
+      return null
+    }
+    const player: VideoPlayer = {
+      readFrame,
+      selectVideo,
+      setParams,
+      restart,
+      getFrameCount,
+      getPlayingFrame,
+      getInfo,
+      id,
+    }
 
     return player
   }

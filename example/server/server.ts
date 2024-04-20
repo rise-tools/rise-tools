@@ -2,7 +2,9 @@ import { TemplateEvent } from '@final-ui/react'
 import { createWSServer } from '@final-ui/ws-server'
 import { randomUUID } from 'crypto'
 import { existsSync, readFileSync, writeFile } from 'fs'
+import { join } from 'path'
 
+import { AudioPlayer, playAudio } from './audio-playback'
 import { eg as egInfo } from './eg'
 import { getEGLiveFrame, getEGReadyFrame, getSequenceActiveItem } from './eg-main'
 import { egSacnService } from './eg-sacn'
@@ -44,7 +46,9 @@ const eg = egSacnService(egInfo)
 const liveViewServer = createEGViewServer(3889)
 const readyViewServer = createEGViewServer(3888)
 
-const video = egVideo(egInfo, process.env.EG_MEDIA_PATH || 'eg-media', {
+const mediaFilesPath = process.env.EG_MEDIA_PATH || 'eg-media'
+
+const video = egVideo(egInfo, mediaFilesPath, {
   // const video = egVideo(egInfo, process.env.EG_MEDIA_PATH || 'eg-media-2', {
   onPlayerUpdate: () => {
     updateUI()
@@ -176,6 +180,7 @@ function mainStateUpdate(updater: (state: MainState) => MainState) {
 }
 
 const sequenceAutoTransitions: Record<string, undefined | NodeJS.Timeout> = {}
+const sequenceVideoEndTransitions: Record<string, undefined | NodeJS.Timeout> = {}
 
 function mainStateEffect(state: MainState, prevState: MainState) {
   setTimeout(() => {
@@ -206,20 +211,100 @@ function mainStateEffect(state: MainState, prevState: MainState) {
       if (!activeItem || !activeItem.maxDuration) {
         return false
       }
-      clearTimeout(sequenceAutoTransitions[mediaPath.join(':')])
+      const mediaPathString = mediaPath.join(':')
+      clearTimeout(sequenceAutoTransitions[mediaPathString])
       const maxDurationMs = 1_000 * activeItem.maxDuration
       const timeUntilMaxDuration = media.lastTransitionTime
         ? media.lastTransitionTime + maxDurationMs - Date.now()
         : maxDurationMs
-      sequenceAutoTransitions[mediaPath.join(':')] = setTimeout(
-        () => goNext(mediaPath),
+      sequenceAutoTransitions[mediaPathString] = setTimeout(
+        () => {
+          delete sequenceVideoEndTransitions[mediaPathString]
+          delete sequenceAutoTransitions[mediaPathString]
+          goNext(mediaPath)
+        },
         Math.max(1, timeUntilMaxDuration)
       )
       return true
     }
     return false
   })
+  handleVideoEndBehavior()
+
+  handleAudioPlayback(state, prevState)
 }
+
+const audioPlayers: Record<string, AudioPlayer> = {}
+
+function handleAudioPlayback(state: MainState, prevState: MainState) {
+  const isFirstEffect = prevState === state
+  const prevVideoNodes = isFirstEffect
+    ? []
+    : matchActiveMedia(prevState, (media) => media.type === 'video')
+  const videoNodes = matchActiveMedia(state, (media) => media.type === 'video')
+  const videoNodesToStart = videoNodes.filter(
+    (videoNode) => !prevVideoNodes.some((prevVideoNode) => prevVideoNode[1].id === videoNode[1].id)
+  )
+  const videoNodesToStop = prevVideoNodes.filter(
+    (prevVideoNode) => !videoNodes.some((videoNode) => prevVideoNode[1].id === videoNode[1].id)
+  )
+  videoNodesToStart.forEach(([mediaPath, media]) => {
+    if (media.type !== 'video') return
+    const player = video.getPlayer(media.id)
+    if (!player) return
+    setTimeout(() => {
+      const info = player.getInfo()
+      if (!info?.audioFile) return
+      if (!audioPlayers[media.id]) {
+        audioPlayers[media.id] = playAudio(join(mediaFilesPath, info.audioFile))
+      }
+    }, 20)
+    console.log('starting audio', player.getInfo())
+  })
+
+  videoNodesToStop.forEach(([mediaPath, media]) => {
+    if (media.type !== 'video') return
+    const audioPlayer = audioPlayers[media.id]
+    if (!audioPlayer) return
+    audioPlayer.stop()
+    delete audioPlayers[media.id]
+  })
+  // console.log('videoNodesToStart', videoNodesToStart)
+  // console.log('videoNodesToStop', videoNodesToStop)
+}
+
+function handleVideoEndBehavior() {
+  matchAllMedia(mainState, (media, mediaPath) => {
+    if (media.type !== 'sequence') return false
+    const activeItem = getSequenceActiveItem(media)
+    if (!activeItem) return false
+    if (activeItem.media.type !== 'video') return false
+    if (!activeItem.goOnVideoEnd) return false
+    const player = video.getPlayer(activeItem.media.id)
+    if (!player) return false
+    const playingFrame = player.getPlayingFrame()
+    const frameCount = player.getFrameCount()
+    if (playingFrame === null || frameCount === null) return false
+    const framesRemaining = frameCount - playingFrame
+    const approxTimeRemaining = (1000 * framesRemaining) / mainAnimationFPS
+    const mediaPathString = mediaPath.join(':')
+    clearTimeout(sequenceVideoEndTransitions[mediaPathString])
+    sequenceVideoEndTransitions[mediaPathString] = setTimeout(
+      () => {
+        console.log('video ended. going next.')
+        delete sequenceVideoEndTransitions[mediaPathString]
+        delete sequenceAutoTransitions[mediaPathString]
+        goNext(mediaPath)
+      },
+      Math.max(1, approxTimeRemaining)
+    )
+    // console.log('player', approxTimeRemaining)
+  })
+}
+
+setInterval(() => {
+  handleVideoEndBehavior()
+}, 250)
 
 mainStateEffect(mainState, mainState)
 
@@ -243,6 +328,31 @@ function fetchAllMedia(state: MainState): [string[], Media][] {
   return [
     ...fetchMedia(state.liveMedia, ['liveMedia']),
     ...fetchMedia(state.readyMedia, ['readyMedia']),
+  ]
+}
+
+function fetchActiveMedia(media: Media, path: string[]): [string[], Media][] {
+  if (media.type === 'layers') {
+    return [
+      [path, media],
+      ...media.layers.flatMap((layer) =>
+        fetchActiveMedia(layer.media, [...path, 'layer', layer.key])
+      ),
+    ]
+  }
+  if (media.type === 'sequence') {
+    const active = getSequenceActiveItem(media)
+    if (active) {
+      return [[path, media], ...fetchActiveMedia(active.media, [...path, 'item', active.key])]
+    }
+  }
+  return [[path, media]]
+}
+
+function fetchAllActiveMedia(state: MainState): [string[], Media][] {
+  return [
+    ...fetchActiveMedia(state.liveMedia, ['liveMedia']),
+    ...fetchActiveMedia(state.readyMedia, ['readyMedia']),
   ]
 }
 
@@ -275,6 +385,19 @@ function matchAllMedia(
 ): [string[], Media][] {
   const allMedia = fetchAllMedia(state)
   return allMedia.filter(([mediaPath, media]) => filter(media, mediaPath))
+}
+
+function matchActiveMedia(
+  state: MainState,
+  filter: (media: Media, mediaPath: string[]) => boolean
+): [string[], Media][] {
+  const allMedia = fetchAllActiveMedia(state)
+  return allMedia.filter(([mediaPath, media]) => {
+    if (mediaPath[0] === 'liveMedia') {
+      return filter(media, mediaPath)
+    }
+    return false
+  })
 }
 
 function sliderUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
@@ -771,7 +894,24 @@ function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
         }),
       }
     })
-    console.log('maxDuration', event)
+    return true
+  }
+  if (action === 'goOnVideoEnd') {
+    const targetPath = mediaPath.slice(0, -2)
+    const itemKey = mediaPath.at(-1)
+    rootMediaUpdate(targetPath, (media) => {
+      if (media.type !== 'sequence') return media
+      return {
+        ...media,
+        sequence: (media.sequence || []).map((item) => {
+          if (item.key === itemKey) {
+            return { ...item, goOnVideoEnd: event.payload }
+          }
+          return item
+        }),
+      }
+    })
+    return true
   }
 
   return false

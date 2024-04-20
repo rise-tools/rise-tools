@@ -1059,10 +1059,29 @@ export function getMediaSequenceUI(
   item: SequenceItem,
   context: UIContext
 ): DataState {
+  let videoEnd: DataState[] = []
+  if (item.media.type === 'video') {
+    videoEnd = [
+      {
+        $: 'component',
+        key: 'videoEnd',
+        component: 'RiseSwitchField',
+        props: {
+          value: item.goOnVideoEnd || false,
+          label: 'Go Next on Video End',
+          onCheckedChange: {
+            $: 'event',
+            action: ['updateMedia', mediaPath, 'goOnVideoEnd'],
+          },
+        },
+      },
+    ]
+  }
   return getMediaUI(mediaPath, item.media, context, {
     header: [
       section('Sequence Item Controls', [
         ...getSequenceItemMaxDuration(mediaPath, item),
+        ...videoEnd,
         {
           $: 'component',
           key: 'removeItem',
