@@ -12,7 +12,7 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
 /* Component props */
 export type TemplateComponentProps<T> = {
   [P in keyof T]: T[P] extends EventDataState | EventDataState[] | undefined
-    ? (...args: any[]) => void
+    ? (...args: any[]) => Promise<void>
     : T[P]
 }
 
@@ -147,7 +147,7 @@ export function BaseTemplate({
       isEventDataState(stateNode) ||
       (Array.isArray(stateNode) && stateNode.length > 0 && stateNode.every(isEventDataState))
     ) {
-      return (payload: any) => {
+      return async (payload: any) => {
         const nodes = Array.isArray(stateNode) ? stateNode : [stateNode]
         for (const node of nodes) {
           // React events (e.g. from onPress) contain cyclic structures that can't be serialized
@@ -156,6 +156,8 @@ export function BaseTemplate({
           if (payload?.nativeEvent) {
             payload = '[native code]'
           }
+          // tbd: in the future, this should resolve with whatever server responded as a result of the event
+          // this is going to be more efficient and universal than the current approach
           onEvent?.({
             target: { key: parentNode.key, path, component: parentNode.component },
             name: propKey,

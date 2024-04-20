@@ -17,7 +17,7 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ]
 
-config.resolver.blockList = exclusionList([/apps\/server\/.*/])
+config.resolver.blockList = exclusionList([/example\/.*/])
 
 config.transformer = { ...config.transformer, unstable_allowRequireContext: true }
 config.transformer.minifierPath = require.resolve('metro-minify-terser')

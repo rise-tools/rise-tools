@@ -1,3 +1,4 @@
+import { RiseForm, RiseSubmitButton, RiseTextField } from './Form'
 import { Icon } from './Icon'
 import { QRCode } from './QRCode'
 import { SelectField } from './SelectField'
@@ -33,5 +34,17 @@ export const RiseComponents = {
   RiseSwitchField: {
     component: SwitchField,
     validator: SwitchField.validate,
+  },
+  RiseForm: {
+    component: RiseForm,
+    validator: RiseForm.validate,
+  },
+  RiseTextField: {
+    component: RiseTextField,
+    validator: RiseTextField.validate,
+  },
+  RiseSubmitButton: {
+    component: RiseSubmitButton,
+    validator: RiseSubmitButton.validate,
   },
 }

@@ -177,6 +177,41 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
     },
     {
       $: 'component',
+      component: 'RiseForm',
+      props: {
+        onSubmit: {
+          $: 'event',
+        },
+      },
+      children: [
+        {
+          $: 'component',
+          component: 'RiseTextField',
+          props: {
+            name: 'title',
+            label: {
+              $: 'component',
+              component: 'Label',
+              children: 'Layer title',
+              props: {
+                htmlFor: 'title',
+              },
+            },
+            value: state.id,
+            placeholder: 'Enter title...',
+            autoCapitalize: 'none',
+            autoCorrect: false,
+          },
+        },
+        {
+          $: 'component',
+          component: 'RiseSubmitButton',
+          children: 'Submit',
+        },
+      ],
+    },
+    {
+      $: 'component',
       key: 'restart',
       component: 'Button',
       children: 'Restart Video',
