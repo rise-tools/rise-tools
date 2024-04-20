@@ -21,9 +21,7 @@ export type UIContext = {
   video: EGVideo
 }
 
-import { getJSXElement } from './ui-new'
-
-console.log(getJSXElement())
+import './ui-new'
 
 function icon(name: string): ComponentDataState {
   return {

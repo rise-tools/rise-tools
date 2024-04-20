@@ -5,3 +5,12 @@ const RiseSelectField = (props: { unselectedLabel: string; value: string }) => '
 export function getJSXElement() {
   return <RiseSelectField key="selectVideo" unselectedLabel="Select Video..." value={'5'} />
 }
+
+console.log(getJSXElement())
+// {
+//   '$': 'component',
+//   component: 'RiseSelectField',
+//   key: 'selectVideo',
+//   props: { unselectedLabel: 'Select Video...', value: '5' },
+//   children: undefined
+// }
