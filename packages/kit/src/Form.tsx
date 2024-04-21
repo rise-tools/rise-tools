@@ -28,7 +28,7 @@ export function RiseForm({ children, onSubmit, ...props }: ComponentProps<typeof
     setSubmitting(true)
     // @ts-ignore
     // tbd: in the future, parse response from the server and perform update locally
-    await onSubmit?.(values)
+    onSubmit?.(values)
     setSubmitting(false)
   }
 

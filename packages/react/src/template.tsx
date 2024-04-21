@@ -147,7 +147,7 @@ export function BaseTemplate({
       isEventDataState(stateNode) ||
       (Array.isArray(stateNode) && stateNode.length > 0 && stateNode.every(isEventDataState))
     ) {
-      return async (payload: any) => {
+      return (payload: any) => {
         const nodes = Array.isArray(stateNode) ? stateNode : [stateNode]
         for (const node of nodes) {
           // React events (e.g. from onPress) contain cyclic structures that can't be serialized
