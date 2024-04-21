@@ -103,7 +103,7 @@ export function BaseTemplate({
 
     if (typeof componentDefinition.validator === 'function') {
       try {
-        componentProps = componentDefinition.validator(stateNode.props)
+        componentProps = componentDefinition.validator(componentProps)
       } catch (e) {
         throw new RenderError(
           `Invalid props for component: ${stateNode.component}, props: ${JSON.stringify(stateNode.props)}. Error: ${JSON.stringify(e)}`
