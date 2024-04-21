@@ -8,7 +8,8 @@
       "@final-ui/ws-client": ["./packages/ws-client/src"],
       "@final-ui/ws-server": ["./packages/ws-server/src"],
       "@final-ui/tamagui": ["./packages/tamagui/src"],
-      "@final-ui/kit": ["./packages/kit/src"]
+      "@final-ui/kit": ["./packages/kit/src"],
+      "@final-ui/kit/runtime": ["./packages/kit/src/runtime"]
     },
     "composite": true,
     "strictNullChecks": true,

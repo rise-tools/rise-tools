@@ -95,7 +95,11 @@ export function BaseTemplate({
       throw new RenderError(`Invalid component: ${stateNode.component}`)
     }
 
-    let componentProps = stateNode.props || {}
+    let componentProps = Object.fromEntries(
+      Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
+        return [propKey, renderProp(propKey, propValue, stateNode, path)]
+      })
+    )
 
     if (typeof componentDefinition.validator === 'function') {
       try {
@@ -107,15 +111,9 @@ export function BaseTemplate({
       }
     }
 
-    const renderedProps = Object.fromEntries(
-      Object.entries(componentProps).map(([propKey, propValue]) => {
-        return [propKey, renderProp(propKey, propValue, stateNode, path)]
-      })
-    )
-
     const children = stateNode.children ? render(stateNode.children, `${path}.children`) : null
 
-    return <Component key={path} data-testid={path} {...renderedProps} children={children} />
+    return <Component key={path} data-testid={path} {...componentProps} children={children} />
   }
 
   function render(stateNode: JSONValue, path: string, index?: number): React.ReactNode {

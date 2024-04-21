@@ -1,4 +1,3 @@
-import { EventDataStateSchema, TemplateComponentProps } from '@final-ui/react'
 import React from 'react'
 import { Label, Spinner, Switch, XStack } from 'tamagui'
 import { z } from 'zod'
@@ -6,10 +5,10 @@ import { z } from 'zod'
 const SwitchFieldProps = z.object({
   value: z.boolean().nullable().optional(),
   label: z.string().optional(),
-  onCheckedChange: EventDataStateSchema.optional(),
+  onCheckedChange: z.function().optional(),
 })
 
-export function SwitchField(props: TemplateComponentProps<z.infer<typeof SwitchFieldProps>>) {
+export function SwitchField(props: z.infer<typeof SwitchFieldProps>) {
   let content = <Spinner />
   if (typeof props.value === 'boolean') {
     content = (

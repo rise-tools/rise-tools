@@ -1,28 +1,15 @@
-import { EventDataStateSchema, TemplateComponentProps } from '@final-ui/react'
 import React from 'react'
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Label, View } from 'tamagui'
-import { z } from 'zod'
 
-function keyExtractor(item: z.infer<typeof SortableListItemSchema>) {
+import { SortableListItemSchema, SortableListProps } from '.'
+
+function keyExtractor(item: SortableListItemSchema) {
   return item.key
 }
 
-const SortableListItemSchema = z.object({
-  key: z.string(),
-  label: z.string(),
-  onPress: EventDataStateSchema.optional(),
-})
-
-const SortableListProps = z.object({
-  footer: z.any(),
-  items: z.array(SortableListItemSchema),
-  // tbd: support this event again
-  onReorder: EventDataStateSchema.optional(),
-})
-
-export function SortableList(props: TemplateComponentProps<z.infer<typeof SortableListProps>>) {
+export function SortableList(props: SortableListProps) {
   return (
     <View flex={1}>
       <DraggableFlatList
@@ -35,7 +22,6 @@ export function SortableList(props: TemplateComponentProps<z.infer<typeof Sortab
           return (
             <ScaleDecorator>
               <TouchableOpacity
-                // @ts-ignore tbd: update `TemplateComponentProps` to avoid type error
                 onPress={() => item.onPress?.()}
                 onLongPress={drag}
                 disabled={isActive}
@@ -49,8 +35,4 @@ export function SortableList(props: TemplateComponentProps<z.infer<typeof Sortab
       />
     </View>
   )
-}
-
-SortableList.validate = (props: any) => {
-  return SortableListProps.parse(props)
 }

@@ -1,13 +1,17 @@
 import { ComponentDataState, JSONValue } from './template'
 
 export function jsx(
-  componentFactory: (props: any) => string,
-  { children, ...props }: Record<string, JSONValue>,
+  componentFactory: (props: any) => React.ReactElement,
+  { children, ...passedProps }: Record<string, JSONValue>,
   key: string
 ): ComponentDataState {
+  const { props, type } = componentFactory(passedProps)
+  if (typeof type !== 'string') {
+    throw new Error('Invalid component.')
+  }
   return {
     $: 'component',
-    component: componentFactory(props),
+    component: type,
     key,
     props,
     children,
