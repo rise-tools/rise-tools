@@ -12,7 +12,7 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
 /* Component props */
 export type TemplateComponentProps<T> = {
   [P in keyof T]: T[P] extends EventDataState | EventDataState[] | undefined
-    ? (...args: any[]) => Promise<void>
+    ? (...args: any[]) => void
     : T[P]
 }
 
