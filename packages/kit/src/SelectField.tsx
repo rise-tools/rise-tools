@@ -1,4 +1,3 @@
-import { EventDataStateSchema, TemplateComponentProps } from '@final-ui/react'
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import React, { useMemo } from 'react'
@@ -10,7 +9,7 @@ const SelectFieldProps = z.object({
   id: z.string().optional(),
   label: z.string().optional(),
   unselectedLabel: z.string().optional().default('...'),
-  onValueChange: EventDataStateSchema.optional(),
+  onValueChange: z.function().args(z.string()).optional(),
   options: z
     .array(
       z.object({
@@ -21,7 +20,7 @@ const SelectFieldProps = z.object({
     .optional(),
 })
 
-export function SelectField(props: TemplateComponentProps<z.infer<typeof SelectFieldProps>>) {
+export function SelectField(props: z.infer<typeof SelectFieldProps>) {
   const { value, options } = props
   return (
     <YStack>

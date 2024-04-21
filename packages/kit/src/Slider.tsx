@@ -1,4 +1,3 @@
-import { EventDataStateSchema, TemplateComponentProps } from '@final-ui/react'
 import React from 'react'
 import { Label, Slider as TamaguiSlider, Spinner, YStack } from 'tamagui'
 import { z } from 'zod'
@@ -8,10 +7,10 @@ const SliderProps = z.object({
   min: z.number().optional().default(0),
   max: z.number().optional().default(100),
   step: z.number().optional().default(1),
-  onValueChange: EventDataStateSchema.optional(),
+  onValueChange: z.function().args(z.array(z.number())).optional(),
 })
 
-export function Slider(props: TemplateComponentProps<z.infer<typeof SliderProps>>) {
+export function Slider(props: z.infer<typeof SliderProps>) {
   return (
     <TamaguiSlider
       value={[props.value]}
@@ -34,11 +33,11 @@ Slider.validate = (props: any) => {
 
 const SliderFieldProps = SliderProps.extend({
   defaultValue: z.number().optional(),
-  onValueChange: EventDataStateSchema.optional(),
+  onValueChange: z.function().args(z.array(z.number())).optional(),
   label: z.string().optional(),
 })
 
-export function SliderField(props: TemplateComponentProps<z.infer<typeof SliderFieldProps>>) {
+export function SliderField(props: z.infer<typeof SliderFieldProps>) {
   let content = <Spinner />
   if (typeof props.value === 'number') {
     content = (
