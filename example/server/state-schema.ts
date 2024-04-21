@@ -118,6 +118,7 @@ export type OffMedia = z.infer<typeof offMediaSchema>
 
 export type Layer = {
   key: string
+  name?: string
   media: Media
   blendMode: 'add' | 'mix' | 'mask'
   blendAmount: number

@@ -8,7 +8,7 @@ import { getEGLiveFrame, getEGReadyFrame } from './eg-main'
 import { egSacnService } from './eg-sacn'
 import { egVideo } from './eg-video-playback'
 import { createEGViewServer } from './eg-view-server'
-import { defaultMainState, Effect, MainState, MainStateSchema, Media } from './state-schema'
+import { defaultMainState, Effect, Layer, MainState, MainStateSchema, Media } from './state-schema'
 import {
   getBeatEffects,
   getEffectsUI,
@@ -404,6 +404,9 @@ function mediaUpdate(
       ...prevMedia,
       layers: prevMedia.layers?.map((layer) => {
         if (layer.key === layerKey) {
+          if (subMediaPath.length === 0) {
+            throw new Error('Invalid media path.')
+          }
           return {
             ...layer,
             media: mediaUpdate(subMediaPath, layer.media, updater),
@@ -413,9 +416,31 @@ function mediaUpdate(
       }),
     }
   }
-  console.log('unhandled deep mediaUpdate', { subMediaKey, restMediaPath, prevMedia })
-  throw new Error('todo')
-  return prevMedia
+  throw new Error(
+    `Unhandled deep mediaUpdate: ${JSON.stringify({ subMediaKey, restMediaPath, prevMedia })}`
+  )
+}
+
+function layerUpdate(
+  mediaPath: string[],
+  prevMedia: Media,
+  updater: (layer: Layer) => Layer
+): Media {
+  const [subMediaKey, layerKey] = mediaPath
+  if (subMediaKey === 'layer' && prevMedia.type === 'layers') {
+    return {
+      ...prevMedia,
+      layers: prevMedia.layers?.map((layer) => {
+        if (layer.key === layerKey) {
+          return updater(layer)
+        }
+        return layer
+      }),
+    }
+  }
+  throw new Error(
+    `Unhandled deep layerUpdate: ${JSON.stringify({ subMediaKey, layerKey, prevMedia })}`
+  )
 }
 
 function rootMediaUpdate(mediaPath: string[], updater: (media: Media) => Media) {
@@ -432,6 +457,20 @@ function rootMediaUpdate(mediaPath: string[], updater: (media: Media) => Media) 
   })
 }
 
+function rootLayerUpdate(mediaPath: string[], updater: (layer: Layer) => Layer) {
+  const [rootMediaKey, ...restMediaPath] = mediaPath
+  if (rootMediaKey !== 'liveMedia' && rootMediaKey !== 'readyMedia') {
+    throw new Error('Invalid root media key')
+  }
+  mainStateUpdate((state) => {
+    const prevMedia = state[rootMediaKey]
+    return {
+      ...state,
+      [rootMediaKey]: layerUpdate(restMediaPath, prevMedia, updater),
+    }
+  })
+}
+
 // function handleMediaEvent(mediaPath: string[], eventName: string, value: any[]): boolean {
 function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
   if (event.action?.[0] !== 'updateMedia') {
@@ -444,7 +483,10 @@ function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
     console.warn('Invalid media event', event)
     return false
   }
-
+  if (action === 'metadata') {
+    rootLayerUpdate(mediaPath, (layer) => ({ ...layer, name: event.payload.name }))
+    return true
+  }
   if (action === 'clear') {
     rootMediaUpdate(mediaPath, () => createBlankMedia('off'))
     return true
