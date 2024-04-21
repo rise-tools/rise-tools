@@ -9,14 +9,28 @@ export function jsx(
   if (typeof type !== 'string') {
     throw new Error('Invalid component.')
   }
+  const serialisedProps = Object.fromEntries<typeof props>(
+    Object.entries(props).map(([key, value]) => {
+      // tbd: create a global handler registry and register this callback
+      // make sure to clean-up when no longer needed
+      if (typeof value === 'function') {
+        const uuid = 'generate-uuid-for-handler'
+        return [
+          key,
+          {
+            $: 'event',
+            action: uuid,
+          },
+        ]
+      }
+      return [key, value]
+    })
+  )
   return {
     $: 'component',
     component: type,
     key,
-    props,
+    props: serialisedProps,
     children,
   }
 }
-
-// tbd: we could use componentFactory() to validation props on the server
-// while making client faster
