@@ -799,11 +799,11 @@ function getSequenceControls(
   return []
 }
 
-function getLayersControls(
+function getLayersList(
   mediaLinkPath: string,
   state: LayersMedia,
   context: UIContext,
-  footer: DataState[] = []
+  { header = [], footer = [] }: { header?: DataState[]; footer?: DataState[] } = {}
 ): DataState {
   return {
     $: 'component',
@@ -813,11 +813,17 @@ function getLayersControls(
         $: 'event',
         action: ['updateMedia', mediaLinkPath, 'layerOrder'],
       },
+      header: {
+        $: 'component',
+        component: 'YStack',
+        children: header,
+      },
       footer: {
         $: 'component',
         key: 'addLayer',
         component: 'YStack',
         children: [
+          ...header,
           {
             key: 'addLayer',
             $: 'component',
@@ -965,11 +971,11 @@ export function getMediaUI(
   if (mediaState.type === 'sequence') {
     return scroll([...header, ...getSequenceControls(mediaPath, mediaState, context), ...footer])
   }
-
-  // tbd: locate where this happens and whether we need header there too
-  if (mediaState.type === 'layers') return getLayersControls(mediaPath, mediaState, context, footer)
-
+  if (mediaState.type === 'layers') {
+    return getLayersList(mediaPath, mediaState, context, { header, footer })
+  }
   return scroll([
+    ...header,
     {
       $: 'component',
       component: 'Text',
