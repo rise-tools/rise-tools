@@ -119,6 +119,7 @@ export type OffMedia = z.infer<typeof offMediaSchema>
 export type Layer = {
   key: string
   media: Media
+  name?: string
   blendMode: 'add' | 'mix' | 'mask'
   blendAmount: number
 }
@@ -132,7 +133,6 @@ const layerSchema: z.ZodType<Layer> = z.object({
 
 export type LayersMedia = {
   type: 'layers'
-  name?: string
   layers: Layer[]
 }
 const layersMediaSchema: z.ZodType<LayersMedia> = z.object({

@@ -29,8 +29,8 @@ export function SortableList(props: z.infer<typeof SortableListProps>) {
         containerStyle={{ flex: 1 }}
         data={props.items}
         keyExtractor={keyExtractor}
-        ListHeaderComponent={props.header}
-        ListFooterComponent={props.footer}
+        ListHeaderComponent={() => props.header}
+        ListFooterComponent={() => props.footer}
         renderItem={(row) => {
           const { item, drag, isActive } = row
           return (
