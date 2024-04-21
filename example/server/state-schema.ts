@@ -132,6 +132,7 @@ const layerSchema: z.ZodType<Layer> = z.object({
 
 export type LayersMedia = {
   type: 'layers'
+  name?: string
   layers: Layer[]
 }
 const layersMediaSchema: z.ZodType<LayersMedia> = z.object({

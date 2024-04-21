@@ -154,6 +154,8 @@ export function BaseTemplate({
           if (payload?.nativeEvent) {
             payload = '[native code]'
           }
+          // tbd: in the future, this should resolve with whatever server responded as a result of the event
+          // this is going to be more efficient and universal than the current approach
           onEvent?.({
             target: { key: parentNode.key, path, component: parentNode.component },
             name: propKey,
