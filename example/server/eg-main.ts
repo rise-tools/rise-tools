@@ -71,13 +71,13 @@ function getVideoPlayback(video: EGVideo, fileId: string) {
 //   waveOut: waveFrameLayerEffect(egInfo, false),
 // }
 
-const stagelinqLastBeatTime = 0
-const stagelinqLastMeasureTime = 0
-const stagelinqBpm = 0
+// const stagelinqLastBeatTime = 0
+// const stagelinqLastMeasureTime = 0
+// const stagelinqBpm = 0
 
-const effectDuration = 1000
+// const effectDuration = 1000
 function applyEGEffects(mainState: MainState, ctx: StateContext, frame: Uint8Array): Uint8Array {
-  let outputFrame = frame
+  const outputFrame = frame
   const { nowTime } = ctx
   // effectTypes.forEach((effectName) => {
   //   const applier = egEffectAppliers[effectName]
@@ -93,51 +93,51 @@ function applyEGEffects(mainState: MainState, ctx: StateContext, frame: Uint8Arr
   //   }
   // })
   // apply manual beat effect
-  if (mainState.manualBeat.enabled && false) {
-    const manualBeatEffectDuration = 60_000 / mainState.manualBeat.bpm
-    const applyEffect = egEffectAppliers[mainState.beatEffect.effect]
-    const beatsPassed = ~~((nowTime - mainState.manualBeat.lastBeatTime) / manualBeatEffectDuration)
-    const lastEffectTime =
-      mainState.manualBeat.lastBeatTime + beatsPassed * manualBeatEffectDuration
-    if (lastEffectTime !== null) {
-      const beatEffectProgress = Math.min(
-        1,
-        Math.max(0, (nowTime - lastEffectTime) / manualBeatEffectDuration)
-      )
-      if (beatEffectProgress > 0) {
-        outputFrame = applyEffect(
-          outputFrame,
-          beatEffectProgress,
-          (mainState.beatEffect.intensity / 100) *
-            (1 - mainState.beatEffect.dropoff * beatEffectProgress),
-          mainState.beatEffect.waveLength
-        )
-      }
-    }
-  }
+  // if (mainState.manualBeat.enabled && false) {
+  //   const manualBeatEffectDuration = 60_000 / mainState.manualBeat.bpm
+  //   const applyEffect = egEffectAppliers[mainState.beatEffect.effect]
+  //   const beatsPassed = ~~((nowTime - mainState.manualBeat.lastBeatTime) / manualBeatEffectDuration)
+  //   const lastEffectTime =
+  //     mainState.manualBeat.lastBeatTime + beatsPassed * manualBeatEffectDuration
+  //   if (lastEffectTime !== null) {
+  //     const beatEffectProgress = Math.min(
+  //       1,
+  //       Math.max(0, (nowTime - lastEffectTime) / manualBeatEffectDuration)
+  //     )
+  //     if (beatEffectProgress > 0) {
+  //       outputFrame = applyEffect(
+  //         outputFrame,
+  //         beatEffectProgress,
+  //         (mainState.beatEffect.intensity / 100) *
+  //           (1 - mainState.beatEffect.dropoff * beatEffectProgress),
+  //         mainState.beatEffect.waveLength
+  //       )
+  //     }
+  //   }
+  // }
 
-  if (stagelinqBpm && stagelinqLastMeasureTime && false) {
-    const beatEffectDuration = (60_000 / stagelinqBpm) * 4
-    const applyEffect = egEffectAppliers[mainState.beatEffect.effect]
-    const beatsPassed = ~~((nowTime - stagelinqLastMeasureTime) / beatEffectDuration)
-    const lastEffectTime = stagelinqLastMeasureTime + beatsPassed * beatEffectDuration
-    if (lastEffectTime !== null) {
-      const beatEffectProgress = Math.min(
-        1,
-        Math.max(0, (nowTime - lastEffectTime) / beatEffectDuration)
-      )
-      // console.log('beat effect progress', beatEffectProgress, stagelinqBpm, stagelinqLastBeatTime)
-      if (beatEffectProgress > 0) {
-        outputFrame = applyEffect(
-          outputFrame,
-          beatEffectProgress,
-          (mainState.beatEffect.intensity / 100) *
-            (1 - mainState.beatEffect.dropoff * beatEffectProgress),
-          mainState.beatEffect.waveLength
-        )
-      }
-    }
-  }
+  // if (stagelinqBpm && stagelinqLastMeasureTime && false) {
+  //   const beatEffectDuration = (60_000 / stagelinqBpm) * 4
+  //   const applyEffect = egEffectAppliers[mainState.beatEffect.effect]
+  //   const beatsPassed = ~~((nowTime - stagelinqLastMeasureTime) / beatEffectDuration)
+  //   const lastEffectTime = stagelinqLastMeasureTime + beatsPassed * beatEffectDuration
+  //   if (lastEffectTime !== null) {
+  //     const beatEffectProgress = Math.min(
+  //       1,
+  //       Math.max(0, (nowTime - lastEffectTime) / beatEffectDuration)
+  //     )
+  //     // console.log('beat effect progress', beatEffectProgress, stagelinqBpm, stagelinqLastBeatTime)
+  //     if (beatEffectProgress > 0) {
+  //       outputFrame = applyEffect(
+  //         outputFrame,
+  //         beatEffectProgress,
+  //         (mainState.beatEffect.intensity / 100) *
+  //           (1 - mainState.beatEffect.dropoff * beatEffectProgress),
+  //         mainState.beatEffect.waveLength
+  //       )
+  //     }
+  //   }
+  // }
   return outputFrame
 }
 

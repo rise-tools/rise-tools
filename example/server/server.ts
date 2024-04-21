@@ -1,7 +1,16 @@
 import { TemplateEvent } from '@final-ui/react'
 import { createWSServer } from '@final-ui/ws-server'
 import { randomUUID } from 'crypto'
-import { existsSync, readFileSync, writeFile } from 'fs'
+import {
+  existsSync,
+  mkdir,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  unlinkSync,
+  writeFile,
+  writeFileSync,
+} from 'fs'
 import { join } from 'path'
 
 import { AudioPlayer, playAudio } from './audio-playback'
@@ -15,8 +24,11 @@ import {
   getBeatEffects,
   getEffectsUI,
   getEffectUI,
+  getLibraryKeyUI,
+  getLibraryUI,
   getMediaLayerUI,
   getMediaSequenceUI,
+  getMediaTitle,
   getMediaUI,
   getQuickEffects,
   getUIRoot,
@@ -25,10 +37,18 @@ import {
 
 let mainState: MainState = defaultMainState
 
+const statePath = process.env.EG_STATE_PATH || './eg-state'
+const mainStatePath = join(statePath, 'main.json')
+const libraryPath = join(statePath, 'library')
+
+if (!existsSync(statePath)) {
+  mkdirSync(statePath)
+}
+
 // Load previous state if there's one present
-if (existsSync('./main-state.json')) {
+if (existsSync(mainStatePath)) {
   try {
-    const mainStateJson = readFileSync('./main-state.json', { encoding: 'utf-8' })
+    const mainStateJson = readFileSync(mainStatePath, { encoding: 'utf-8' })
     const state = MainStateSchema.safeParse(JSON.parse(mainStateJson))
     if (!state.success) {
       throw new Error('Invalid saved state: ' + state.error.issues.map((i) => i.message).join(', '))
@@ -38,7 +58,41 @@ if (existsSync('./main-state.json')) {
     }
     mainState = state.data
   } catch (e) {
-    console.log('Error loading main state', e)
+    console.warn('Could not load main state. Creating new one.')
+  }
+}
+
+let libraryKeys: string[] = []
+if (existsSync(libraryPath)) {
+  libraryKeys = readdirSync(libraryPath).map((file) => file.replace('.json', ''))
+} else {
+  mkdirSync(libraryPath)
+}
+
+function updateLibraryKeys(updater: (keys: string[]) => string[]) {
+  libraryKeys = updater(libraryKeys)
+  updateLibraryUI()
+}
+
+function saveMedia(key: string, mediaValue: Media) {
+  const realKey = key.replaceAll('/', '.')
+  const newMediaLocation = join(libraryPath, `${realKey}.json`)
+  writeFileSync(newMediaLocation, JSON.stringify(mediaValue, null, 2), {})
+  updateLibraryKeys((keys) => [...keys, realKey])
+}
+
+function readLibraryKey(key: string): Media {
+  const newMediaLocation = join(libraryPath, `${key}.json`)
+  const mediaJson = readFileSync(newMediaLocation, { encoding: 'utf-8' })
+  return JSON.parse(mediaJson)
+}
+
+function deleteLibraryKey(key: string) {
+  const newMediaLocation = join(libraryPath, `${key}.json`)
+  if (existsSync(newMediaLocation)) {
+    updateLibraryKeys((keys) => keys.filter((k) => k !== key))
+    unlinkSync(newMediaLocation)
+    return
   }
 }
 
@@ -159,11 +213,20 @@ function updateUI() {
   const uiContext: UIContext = { video }
   wsServer.update('mainState', mainState)
   wsServer.updateRoot(getUIRoot(mainState))
-  wsServer.update('quickEffects', getQuickEffects())
-  wsServer.update('beatEffects', getBeatEffects(mainState))
+  // wsServer.update('quickEffects', getQuickEffects())
+  // wsServer.update('beatEffects', getBeatEffects(mainState))
   updateMediaUI('readyMedia', mainState.readyMedia, uiContext)
   updateMediaUI('liveMedia', mainState.liveMedia, uiContext)
 }
+
+function updateLibraryUI() {
+  wsServer.update('library', getLibraryUI(libraryKeys))
+  libraryKeys.forEach((key) => {
+    wsServer.update(`library/${key}`, getLibraryKeyUI(key))
+  })
+}
+
+updateLibraryUI()
 updateUI()
 
 let mainStateToDiskTimeout: undefined | NodeJS.Timeout = undefined
@@ -174,7 +237,7 @@ function mainStateUpdate(updater: (state: MainState) => MainState) {
   mainState = updater(mainState)
   updateUI()
   mainStateToDiskTimeout = setTimeout(() => {
-    writeFile('./main-state.json', JSON.stringify(mainState), () => {})
+    writeFile(mainStatePath, JSON.stringify(mainState), () => {})
   }, 500)
   mainStateEffect(mainState, prevState)
 }
@@ -433,35 +496,35 @@ function updateState(state: any, path: string[], value: any): any {
   }
 }
 
-let manualTapBeatCount = 0
-let manualTapBeatStart = 0
-let manualTapBeatLastTime = 0
-let manualTapBeatTimeout: undefined | NodeJS.Timeout = undefined
+// let manualTapBeatCount = 0
+// let manualTapBeatStart = 0
+// let manualTapBeatLastTime = 0
+// let manualTapBeatTimeout: undefined | NodeJS.Timeout = undefined
 
-function handleManualTapBeat() {
-  const now = Date.now()
-  manualTapBeatCount += 1
-  manualTapBeatLastTime = now
-  if (manualTapBeatStart === 0) {
-    manualTapBeatStart = now
-  }
-  if (manualTapBeatCount > 2) {
-    const bpm = (manualTapBeatCount - 1) / ((now - manualTapBeatStart) / 60_000)
-    const lastBeatTime = now
-    console.log('manual tap beat update', bpm, lastBeatTime)
-    mainStateUpdate((state) => ({
-      ...state,
-      manualBeat: { ...state.manualBeat, bpm, lastBeatTime: manualTapBeatLastTime },
-    }))
-  }
+// function handleManualTapBeat() {
+//   const now = Date.now()
+//   manualTapBeatCount += 1
+//   manualTapBeatLastTime = now
+//   if (manualTapBeatStart === 0) {
+//     manualTapBeatStart = now
+//   }
+//   if (manualTapBeatCount > 2) {
+//     const bpm = (manualTapBeatCount - 1) / ((now - manualTapBeatStart) / 60_000)
+//     const lastBeatTime = now
+//     console.log('manual tap beat update', bpm, lastBeatTime)
+//     mainStateUpdate((state) => ({
+//       ...state,
+//       manualBeat: { ...state.manualBeat, bpm, lastBeatTime: manualTapBeatLastTime },
+//     }))
+//   }
 
-  clearTimeout(manualTapBeatTimeout)
-  manualTapBeatTimeout = setTimeout(() => {
-    manualTapBeatCount = 0
-    manualTapBeatStart = 0
-    manualTapBeatLastTime = 0
-  }, 2000)
-}
+//   clearTimeout(manualTapBeatTimeout)
+//   manualTapBeatTimeout = setTimeout(() => {
+//     manualTapBeatCount = 0
+//     manualTapBeatStart = 0
+//     manualTapBeatLastTime = 0
+//   }, 2000)
+// }
 
 wsServer.subscribeEvent((event) => {
   const {
@@ -484,20 +547,20 @@ wsServer.subscribeEvent((event) => {
   if (sliderUpdate(event, 'waveLengthSlider', ['beatEffect', 'waveLength'])) return
   if (sliderUpdate(event, 'dropoffSlider', ['beatEffect', 'dropoff'])) return
   if (switchUpdate(event, 'manualBeatEnabledSwitch', ['manualBeat', 'enabled'])) return
-  if (action === 'manualTapBeat') {
-    handleManualTapBeat()
-    return
-  }
-  if (key === 'effectSelect' && name === 'onValueChange') {
-    mainStateUpdate((state) => ({
-      ...state,
-      beatEffect: {
-        ...state.beatEffect,
-        effect: event.payload as MainState['beatEffect']['effect'],
-      },
-    }))
-    return
-  }
+  // if (action === 'manualTapBeat') {
+  //   handleManualTapBeat()
+  //   return
+  // }
+  // if (key === 'effectSelect' && name === 'onValueChange') {
+  //   mainStateUpdate((state) => ({
+  //     ...state,
+  //     beatEffect: {
+  //       ...state.beatEffect,
+  //       effect: event.payload as MainState['beatEffect']['effect'],
+  //     },
+  //   }))
+  //   return
+  // }
   // if (key === 'selectVideo' && name === 'onValueChange') {
   //   mainStateUpdate((state) => ({
   //     ...state,
@@ -508,6 +571,7 @@ wsServer.subscribeEvent((event) => {
   if (handleMediaEvent(event)) return
   if (handleTransitionEvent(event)) return
   if (handleEffectEvent(event)) return
+  if (handleLibraryEvent(event)) return
 
   console.log('Unknown event', event)
 })
@@ -610,14 +674,10 @@ function mediaUpdate(
   const [subMediaKey, ...restMediaPath] = mediaPath
   if (subMediaKey === 'layer' && prevMedia.type === 'layers') {
     const [layerKey, ...subMediaPath] = restMediaPath
-    // console.log('layer update', { layerKey, subMediaPath, prevMedia })
     return {
       ...prevMedia,
       layers: prevMedia.layers?.map((layer) => {
         if (layer.key === layerKey) {
-          if (subMediaPath.length === 0) {
-            throw new Error('Invalid media path.')
-          }
           return {
             ...layer,
             media: mediaUpdate(subMediaPath, layer.media, updater),
@@ -662,6 +722,29 @@ function rootMediaUpdate(mediaPath: string[], updater: (media: Media) => Media) 
   })
 }
 
+function handleLibraryEvent(event: TemplateEvent<ServerAction>): boolean {
+  if (event.action?.[0] !== 'libraryAction') {
+    return false
+  }
+  const libraryKey = event.action?.[1]
+  const action = event.action?.[2]
+  if (action === 'goReady' && libraryKey) {
+    console.log('goReady', libraryKey)
+    const media = readLibraryKey(libraryKey)
+    mainStateUpdate((mainState) => ({
+      ...mainState,
+      readyMedia: media,
+    }))
+    return true
+  }
+  if (action === 'delete' && libraryKey) {
+    deleteLibraryKey(libraryKey)
+    // console.log('delete', libraryKey)
+    return true
+  }
+  return false
+}
+
 function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
   if (event.action?.[0] !== 'updateMedia') {
     return false
@@ -673,9 +756,14 @@ function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
     console.warn('Invalid media event', event)
     return false
   }
+  if (action === 'saveMedia') {
+    const mediaValue = getMedia(mainState, mediaPath)
+    const key = `${getMediaTitle(mediaValue)} - ${new Date().toLocaleString()}`
+    saveMedia(key, mediaValue)
+    return true
+  }
   if (action === 'metadata') {
-    console.log('unhandled metadata update', event)
-    // rootMediaUpdate(mediaPath, (layer) => ({ ...layer, name: event.payload.name }))
+    rootMediaUpdate(mediaPath, (media) => ({ ...media, label: event.payload.label }))
     return true
   }
   if (action === 'clear') {
@@ -877,9 +965,10 @@ function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
     return true
   }
   if (action === 'maxDuration') {
-    let duration = event.payload
-    if (Array.isArray(duration)) duration = duration[0] // slider gives us an array
-    if (duration === true) duration = 10
+    let duration: null | number = null
+    if (Array.isArray(event.payload)) duration = event.payload[0] // slider gives us an array
+    if (event.payload === true) duration = 10
+    if (event.payload === false) duration = null
     const targetPath = mediaPath.slice(0, -2)
     const itemKey = mediaPath.at(-1)
     rootMediaUpdate(targetPath, (media) => {
