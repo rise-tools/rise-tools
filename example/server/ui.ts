@@ -799,7 +799,7 @@ function getSequenceControls(
   return []
 }
 
-function getLayersList(
+function getLayersControls(
   mediaLinkPath: string,
   state: LayersMedia,
   context: UIContext,
@@ -823,7 +823,6 @@ function getLayersList(
         key: 'addLayer',
         component: 'YStack',
         children: [
-          ...header,
           {
             key: 'addLayer',
             $: 'component',
@@ -972,7 +971,7 @@ export function getMediaUI(
     return scroll([...header, ...getSequenceControls(mediaPath, mediaState, context), ...footer])
   }
   if (mediaState.type === 'layers') {
-    return getLayersList(mediaPath, mediaState, context, { header, footer })
+    return getLayersControls(mediaPath, mediaState, context, { header, footer })
   }
   return scroll([
     ...header,
