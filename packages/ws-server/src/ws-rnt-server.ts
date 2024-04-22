@@ -1,4 +1,10 @@
-import type { DataState, TemplateEvent } from '@final-ui/react'
+import {
+  ActionEventDataState,
+  type DataState,
+  handleEvent,
+  isHandlerEvent,
+  type TemplateEvent,
+} from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
   EventWebsocketMessage,
@@ -9,7 +15,7 @@ import type {
 import WebSocket from 'ws'
 
 type EventHandler = (
-  event: TemplateEvent,
+  event: TemplateEvent<ActionEventDataState>,
   eventOpts: {
     time: number
     clientId: string
@@ -68,8 +74,21 @@ export function createWSServer(port: number) {
     message.keys.forEach((key: string) => clientUnsubscribe(clientId, key))
   }
 
-  function handleEvent(clientId: string, message: EventWebsocketMessage) {
-    eventSubscribers.forEach((handler) => handler(message.event, { time: Date.now(), clientId }))
+  async function handleMessage(clientId: string, message: EventWebsocketMessage) {
+    if (!isHandlerEvent(message.event)) {
+      eventSubscribers.forEach((handler) => handler(message.event, { time: Date.now(), clientId }))
+      return
+    }
+
+    const res = await handleEvent(message.event)
+
+    if (message.event.dataState.async) {
+      clientSenders.get(clientId)?.({
+        $: 'evt-res',
+        key: message.event.dataState.key,
+        val: res,
+      })
+    }
   }
 
   wss.on('connection', function connection(ws) {
@@ -96,7 +115,7 @@ export function createWSServer(port: number) {
         case 'unsub':
           return clientUnsubscribes(clientId, message)
         case 'evt':
-          return handleEvent(clientId, message)
+          return handleMessage(clientId, message)
         default:
           console.log('Unrecognized message:', messageString)
           return

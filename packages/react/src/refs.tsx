@@ -16,7 +16,7 @@ export type Store<V = JSONValue> = {
 
 export type DataSource = {
   get: (key: string) => Store
-  sendEvent: (event: TemplateEvent) => void
+  sendEvent: (event: TemplateEvent) => Promise<any>
 }
 
 /** Refs */

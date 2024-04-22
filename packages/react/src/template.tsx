@@ -9,13 +9,6 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
   validator?: (input?: T) => T
 }
 
-/* Component props */
-export type TemplateComponentProps<T> = {
-  [P in keyof T]: T[P] extends EventDataState | EventDataState[] | undefined
-    ? (...args: any[]) => void
-    : T[P]
-}
-
 /** Data state */
 export type DataState = ComponentDataState | ReferencedDataState | EventDataState
 
@@ -30,12 +23,30 @@ export type ReferencedDataState = {
   $: 'ref'
   ref: string | [string, ...(string | number)[]]
 }
-// tbd: allow for more specific types
-type EventAction = any
-type EventDataState = {
+type EventDataState = ActionEventDataState | AsyncHandlerEventDataState | HandlerEventDataState
+export type ActionEventDataState<T = any> = {
   $: 'event'
-  action?: EventAction
+  action?: T
 }
+export type AsyncHandlerEventDataState = {
+  $: 'event'
+  key: string
+  async: true
+}
+export type HandlerEventDataState = {
+  $: 'event'
+  key: string
+  async: false
+}
+export function isHandlerEvent(
+  event: TemplateEvent
+): event is TemplateEvent<HandlerEventDataState | AsyncHandlerEventDataState> {
+  return isEventDataState(event.dataState) && 'key' in event.dataState
+}
+export function isActionEvent(event: TemplateEvent): event is TemplateEvent<ActionEventDataState> {
+  return isEventDataState(event.dataState) && 'action' in event.dataState
+}
+
 type SafeObject = {
   [key: string]: JSONValue
   $?: never
@@ -50,16 +61,17 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent<T = EventDataState['action'], K = any> = {
+export type TemplateEvent<T = EventDataState, K = any> = {
   target: {
     key?: string
     path: string
     component: string
+    propKey: string
   }
-  name: string
-  action: T
+  dataState: T
   payload: K
 }
+export type BasicTemplateEvent<T = any, K = any> = TemplateEvent<ActionEventDataState<T>, K>
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
   return (
@@ -70,7 +82,7 @@ export function isCompositeDataState(obj: any): obj is ComponentDataState | Refe
   )
 }
 
-function isEventDataState(obj: any): obj is EventDataState {
+function isEventDataState(obj: JSONValue): obj is EventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
 }
 
@@ -81,7 +93,7 @@ export function BaseTemplate({
 }: {
   components: ComponentRegistry
   dataState: JSONValue
-  onEvent?: (event: TemplateEvent) => void
+  onEvent?: (event: TemplateEvent) => Promise<any>
 }) {
   function renderComponent(stateNode: ComponentDataState, path: string) {
     const componentDefinition = components[stateNode.component]
@@ -141,28 +153,19 @@ export function BaseTemplate({
     parentNode: ComponentDataState,
     path: string
   ): any {
-    if (
-      isEventDataState(stateNode) ||
-      (Array.isArray(stateNode) && stateNode.length > 0 && stateNode.every(isEventDataState))
-    ) {
-      return (payload: any) => {
-        const nodes = Array.isArray(stateNode) ? stateNode : [stateNode]
-        for (const node of nodes) {
-          // React events (e.g. from onPress) contain cyclic structures that can't be serialized
-          // with JSON.stringify and also provide little to no value for the server.
-          // tbd: figure a better way to handle this in a cross-platform way
-          if (payload?.nativeEvent) {
-            payload = '[native code]'
-          }
-          // tbd: in the future, this should resolve with whatever server responded as a result of the event
-          // this is going to be more efficient and universal than the current approach
-          onEvent?.({
-            target: { key: parentNode.key, path, component: parentNode.component },
-            name: propKey,
-            action: node.action,
-            payload,
-          })
+    if (isEventDataState(stateNode)) {
+      return async (payload: any) => {
+        // React events (e.g. from onPress) contain cyclic structures that can't be serialized
+        // with JSON.stringify and also provide little to no value for the server.
+        // tbd: figure a better way to handle this in a cross-platform way
+        if (payload?.nativeEvent) {
+          payload = '[native code]'
         }
+        return onEvent?.({
+          target: { key: parentNode.key, path, component: parentNode.component, propKey },
+          dataState: stateNode,
+          payload,
+        })
       }
     }
     if (Array.isArray(stateNode)) {
