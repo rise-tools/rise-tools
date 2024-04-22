@@ -965,7 +965,7 @@ function getLayerForm(mediaPath: string, layer: Layer): ComponentDataState {
                       component: 'Label',
                       children: 'Layer title',
                       props: {
-                        htmlFor: 'title',
+                        htmlFor: 'name',
                       },
                     },
                     value: layer.name,
