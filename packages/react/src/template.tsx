@@ -95,11 +95,15 @@ export function BaseTemplate({
       throw new RenderError(`Invalid component: ${stateNode.component}`)
     }
 
-    let componentProps = stateNode.props || {}
+    let componentProps = Object.fromEntries(
+      Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
+        return [propKey, renderProp(propKey, propValue, stateNode, path)]
+      })
+    )
 
     if (typeof componentDefinition.validator === 'function') {
       try {
-        componentProps = componentDefinition.validator(stateNode.props)
+        componentProps = componentDefinition.validator(componentProps)
       } catch (e) {
         throw new RenderError(
           `Invalid props for component: ${stateNode.component}, props: ${JSON.stringify(stateNode.props)}. Error: ${JSON.stringify(e)}`
@@ -107,15 +111,9 @@ export function BaseTemplate({
       }
     }
 
-    const renderedProps = Object.fromEntries(
-      Object.entries(componentProps).map(([propKey, propValue]) => {
-        return [propKey, renderProp(propKey, propValue, stateNode, path)]
-      })
-    )
-
     const children = stateNode.children ? render(stateNode.children, `${path}.children`) : null
 
-    return <Component key={path} data-testid={path} {...renderedProps} children={children} />
+    return <Component key={path} data-testid={path} {...componentProps} children={children} />
   }
 
   function render(stateNode: JSONValue, path: string, index?: number): React.ReactNode {
@@ -156,6 +154,8 @@ export function BaseTemplate({
           if (payload?.nativeEvent) {
             payload = '[native code]'
           }
+          // tbd: in the future, this should resolve with whatever server responded as a result of the event
+          // this is going to be more efficient and universal than the current approach
           onEvent?.({
             target: { key: parentNode.key, path, component: parentNode.component },
             name: propKey,

@@ -799,11 +799,11 @@ function getSequenceControls(
   return []
 }
 
-function getLayersControls(
+function getLayersList(
   mediaLinkPath: string,
   state: LayersMedia,
   context: UIContext,
-  footer: DataState[] = []
+  { header = [], footer = [] }: { header?: DataState[]; footer?: DataState[] } = {}
 ): DataState {
   return {
     $: 'component',
@@ -813,11 +813,17 @@ function getLayersControls(
         $: 'event',
         action: ['updateMedia', mediaLinkPath, 'layerOrder'],
       },
+      header: {
+        $: 'component',
+        component: 'YStack',
+        children: header,
+      },
       footer: {
         $: 'component',
         key: 'addLayer',
         component: 'YStack',
         children: [
+          ...header,
           {
             key: 'addLayer',
             $: 'component',
@@ -838,7 +844,7 @@ function getLayersControls(
       items: (state.layers || []).map((layer) => {
         return {
           key: layer.key,
-          label: layer.media.type,
+          label: layer.name || layer.media.type,
           onPress: {
             $: 'event',
             action: ['navigate', `${mediaLinkPath}:layer:${layer.key}`],
@@ -850,78 +856,126 @@ function getLayersControls(
 }
 
 export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UIContext): DataState {
-  return getMediaUI(mediaPath, layer.media, context, [
-    section('Layer Controls', [
-      {
-        $: 'component',
-        key: 'blendMode',
-        component: 'RiseSelectField',
-        props: {
-          value: layer.blendMode,
-          label: 'Blend Mode',
-          onValueChange: {
-            $: 'event',
-            action: ['updateMedia', mediaPath, 'blendMode'],
-          },
-          options: [
-            { key: 'mix', label: 'Blend' },
-            { key: 'add', label: 'Add' },
-            { key: 'mask', label: 'Mask' },
-          ],
-        },
-      },
-      {
-        $: 'component',
-        key: 'blendAmount',
-        component: 'RiseSliderField',
-        props: {
-          onValueChange: {
-            $: 'event',
-            action: ['updateMedia', mediaPath, 'blendAmount'],
-          },
-          label: 'Blend Amount',
-          value: layer.blendAmount,
-          max: 1,
-          min: 0,
-          step: 0.01,
-        },
-      },
-      {
-        $: 'component',
-        key: 'removeLayer',
-        component: 'Button',
-        children: 'Remove Layer',
-        props: {
-          onPress: [
-            {
+  return getMediaUI(mediaPath, layer.media, context, {
+    header: [getLayerForm(mediaPath, layer)],
+    footer: [
+      section('Layer Controls', [
+        {
+          $: 'component',
+          key: 'blendMode',
+          component: 'RiseSelectField',
+          props: {
+            value: layer.blendMode,
+            label: 'Blend Mode',
+            onValueChange: {
               $: 'event',
-              action: ['updateMedia', mediaPath, 'removeLayer', layer.key],
+              action: ['updateMedia', mediaPath, 'blendMode'],
             },
-            {
+            options: [
+              { key: 'mix', label: 'Blend' },
+              { key: 'add', label: 'Add' },
+              { key: 'mask', label: 'Mask' },
+            ],
+          },
+        },
+        {
+          $: 'component',
+          key: 'blendAmount',
+          component: 'RiseSliderField',
+          props: {
+            onValueChange: {
               $: 'event',
-              action: 'navigate-back',
+              action: ['updateMedia', mediaPath, 'blendAmount'],
             },
-          ],
+            label: 'Blend Amount',
+            value: layer.blendAmount,
+            max: 1,
+            min: 0,
+            step: 0.01,
+          },
+        },
+        {
+          $: 'component',
+          key: 'removeLayer',
+          component: 'Button',
+          children: 'Remove Layer',
+          props: {
+            onPress: [
+              {
+                $: 'event',
+                action: ['updateMedia', mediaPath, 'removeLayer', layer.key],
+              },
+              {
+                $: 'event',
+                action: 'navigate-back',
+              },
+            ],
+          },
+        },
+      ]),
+    ],
+  })
+}
+
+function getLayerForm(mediaPath: string, layer: Layer): ComponentDataState {
+  return {
+    $: 'component',
+    component: 'RiseForm',
+    props: {
+      onSubmit: {
+        $: 'event',
+        action: ['updateMedia', mediaPath, 'metadata'],
+      },
+    },
+    children: [
+      {
+        $: 'component',
+        component: 'RiseTextField',
+        props: {
+          name: 'name',
+          label: {
+            $: 'component',
+            component: 'Label',
+            children: 'Layer title',
+            props: {
+              htmlFor: 'title',
+            },
+          },
+          value: layer.name,
+          placeholder: 'Enter title...',
+          autoCapitalize: 'none',
+          autoCorrect: false,
         },
       },
-    ]),
-  ])
+      {
+        $: 'component',
+        component: 'RiseSubmitButton',
+        children: 'Submit',
+      },
+    ],
+  }
 }
 
 export function getMediaUI(
   mediaPath: string,
   mediaState: Media,
   context: UIContext,
-  footer: DataState[] = []
+  { header = [], footer = [] }: { header?: DataState[]; footer?: DataState[] } = {}
 ): DataState {
-  if (mediaState.type === 'color')
-    return scroll([...getColorControls(mediaPath, mediaState), ...footer])
-  if (mediaState.type === 'video')
-    return scroll([...getVideoControls(mediaPath, mediaState, context), ...footer])
-  if (mediaState.type === 'sequence')
-    return scroll([...getSequenceControls(mediaPath, mediaState, context), ...footer])
-  if (mediaState.type === 'layers') return getLayersControls(mediaPath, mediaState, context, footer)
+  if (mediaState.type === 'color') {
+    return scroll([...header, ...getColorControls(mediaPath, mediaState), ...footer])
+  }
+  if (mediaState.type === 'video') {
+    return scroll([...header, ...getVideoControls(mediaPath, mediaState, context), ...footer])
+  }
+  if (mediaState.type === 'sequence') {
+    return scroll([...header, ...getSequenceControls(mediaPath, mediaState, context), ...footer])
+  }
+  if (mediaState.type === 'layers') {
+    return getLayersList(mediaPath, mediaState, context, { header, footer })
+  }
   return scroll([
+    ...header,
     {
       $: 'component',
       component: 'Text',
