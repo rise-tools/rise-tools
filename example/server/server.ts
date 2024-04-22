@@ -260,7 +260,7 @@ function handleManualTapBeat() {
   }, 2000)
 }
 
-wsServer.subscribeEvent((event) => {
+wsServer.onActionEvent((event) => {
   const {
     target: { key, propKey },
     dataState: { action },

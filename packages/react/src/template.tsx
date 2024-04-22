@@ -71,7 +71,7 @@ export type TemplateEvent<T = EventDataState, K = any> = {
   dataState: T
   payload: K
 }
-export type BasicTemplateEvent<T = any, K = any> = TemplateEvent<ActionEventDataState<T>, K>
+export type ActionEvent<T = any, K = any> = TemplateEvent<ActionEventDataState<T>, K>
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
   return (

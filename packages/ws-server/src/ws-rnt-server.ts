@@ -1,10 +1,4 @@
-import {
-  ActionEventDataState,
-  type DataState,
-  handleEvent,
-  isHandlerEvent,
-  type TemplateEvent,
-} from '@final-ui/react'
+import { ActionEvent, type DataState, handleEvent, isHandlerEvent } from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
   EventWebsocketMessage,
@@ -15,7 +9,7 @@ import type {
 import WebSocket from 'ws'
 
 type EventHandler = (
-  event: TemplateEvent<ActionEventDataState>,
+  event: ActionEvent,
   eventOpts: {
     time: number
     clientId: string
@@ -127,7 +121,7 @@ export function createWSServer(port: number) {
     update('', value)
   }
 
-  function subscribeEvent(handler: EventHandler) {
+  function onActionEvent(handler: EventHandler) {
     eventSubscribers.add(handler)
     return () => eventSubscribers.delete(handler)
   }
@@ -153,5 +147,5 @@ export function createWSServer(port: number) {
     console.log(`WebSocket server started on port ${port}`)
   })
 
-  return { update, subscribeEvent, subscribe, get, updateRoot }
+  return { update, onActionEvent, subscribe, get, updateRoot }
 }
