@@ -308,6 +308,13 @@ export function egVideo(
   return {
     loadVideo,
     updateDb,
+    getDb() {
+      return mediaDb
+    },
+    getTrackTitle(trackId: string) {
+      const track = mediaDb?.files.find((file) => file.fileSha256 === trackId)
+      return track?.title || trackId
+    },
     getPlayer,
     incrementTime,
   }

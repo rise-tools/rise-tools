@@ -1,10 +1,8 @@
 import { eg as egInfo } from './eg'
 import { Frame } from './eg-sacn'
 import {
-  createRainbowFrame,
   createSolidHSLFrame,
   createSolidRGBFrame,
-  flashEffect,
   frameAdd,
   frameBrighten,
   frameColorize,
@@ -15,13 +13,10 @@ import {
   frameMask,
   frameMix,
   frameRotate,
-  frameTransitionMix,
-  waveFrameLayerEffect,
 } from './eg-tools'
-import { EGVideo, VideoPlayer } from './eg-video-playback'
-import { UPRISING } from './flag'
 import {
   BrightenEffect,
+  ColorizeEffect,
   ColorMedia,
   DarkenEffect,
   DesaturateEffect,
@@ -36,31 +31,27 @@ import {
   SequenceItem,
   SequenceMedia,
   StateContext,
-  Transition,
-  TransitionState,
   VideoMedia,
-  // effectTypes,
-  // effectsSchema,
 } from './state-schema'
 
-const readyVideoPlayers: Record<string, undefined | VideoPlayer> = {}
-const loadingVideoPlayers: Record<string, undefined | Promise<void>> = {}
+// const readyVideoPlayers: Record<string, undefined | VideoPlayer> = {}
+// const loadingVideoPlayers: Record<string, undefined | Promise<void>> = {}
 
-function getVideoPlayback(video: EGVideo, fileId: string) {
-  if (readyVideoPlayers[fileId]) return readyVideoPlayers[fileId]
-  if (loadingVideoPlayers[fileId]) return null
-  loadingVideoPlayers[fileId] = video
-    .loadVideo(fileId)
-    .then((player) => {
-      readyVideoPlayers[fileId] = player
-    })
-    .catch((e) => {
-      console.error('Error loading video', e)
-    })
-    .finally(() => {
-      delete loadingVideoPlayers[fileId]
-    })
-}
+// function getVideoPlayback(video: EGVideo, fileId: string) {
+//   if (readyVideoPlayers[fileId]) return readyVideoPlayers[fileId]
+//   if (loadingVideoPlayers[fileId]) return null
+//   loadingVideoPlayers[fileId] = video
+//     .loadVideo(fileId)
+//     .then((player) => {
+//       readyVideoPlayers[fileId] = player
+//     })
+//     .catch((e) => {
+//       console.error('Error loading video', e)
+//     })
+//     .finally(() => {
+//       delete loadingVideoPlayers[fileId]
+//     })
+// }
 
 // const egEffectAppliers: Record<
 //   keyof typeof effectsSchema,
@@ -76,140 +67,208 @@ function getVideoPlayback(video: EGVideo, fileId: string) {
 // const stagelinqBpm = 0
 
 // const effectDuration = 1000
-function applyEGEffects(mainState: MainState, ctx: StateContext, frame: Uint8Array): Uint8Array {
-  const outputFrame = frame
-  const { nowTime } = ctx
-  // effectTypes.forEach((effectName) => {
-  //   const applier = egEffectAppliers[effectName]
-  //   const lastEffectTime = mainState.effects[effectName]
-  //   if (lastEffectTime !== null) {
-  //     const quickEffectAmount = Math.min(
-  //       1,
-  //       Math.max(0, (nowTime - lastEffectTime) / effectDuration)
-  //     )
-  //     if (quickEffectAmount > 0) {
-  //       outputFrame = applier(outputFrame, quickEffectAmount, 1, 0.5)
-  //     }
-  //   }
-  // })
-  // apply manual beat effect
-  // if (mainState.manualBeat.enabled && false) {
-  //   const manualBeatEffectDuration = 60_000 / mainState.manualBeat.bpm
-  //   const applyEffect = egEffectAppliers[mainState.beatEffect.effect]
-  //   const beatsPassed = ~~((nowTime - mainState.manualBeat.lastBeatTime) / manualBeatEffectDuration)
-  //   const lastEffectTime =
-  //     mainState.manualBeat.lastBeatTime + beatsPassed * manualBeatEffectDuration
-  //   if (lastEffectTime !== null) {
-  //     const beatEffectProgress = Math.min(
-  //       1,
-  //       Math.max(0, (nowTime - lastEffectTime) / manualBeatEffectDuration)
-  //     )
-  //     if (beatEffectProgress > 0) {
-  //       outputFrame = applyEffect(
-  //         outputFrame,
-  //         beatEffectProgress,
-  //         (mainState.beatEffect.intensity / 100) *
-  //           (1 - mainState.beatEffect.dropoff * beatEffectProgress),
-  //         mainState.beatEffect.waveLength
-  //       )
-  //     }
-  //   }
-  // }
+// function applyEGEffects(mainState: MainState, ctx: StateContext, frame: Uint8Array): Uint8Array {
+//   const outputFrame = frame
+//   const { nowTime } = ctx
+//   effectTypes.forEach((effectName) => {
+//     const applier = egEffectAppliers[effectName]
+//     const lastEffectTime = mainState.effects[effectName]
+//     if (lastEffectTime !== null) {
+//       const quickEffectAmount = Math.min(
+//         1,
+//         Math.max(0, (nowTime - lastEffectTime) / effectDuration)
+//       )
+//       if (quickEffectAmount > 0) {
+//         outputFrame = applier(outputFrame, quickEffectAmount, 1, 0.5)
+//       }
+//     }
+//   })
+//   apply manual beat effect
+//   if (mainState.manualBeat.enabled && false) {
+//     const manualBeatEffectDuration = 60_000 / mainState.manualBeat.bpm
+//     const applyEffect = egEffectAppliers[mainState.beatEffect.effect]
+//     const beatsPassed = ~~((nowTime - mainState.manualBeat.lastBeatTime) / manualBeatEffectDuration)
+//     const lastEffectTime =
+//       mainState.manualBeat.lastBeatTime + beatsPassed * manualBeatEffectDuration
+//     if (lastEffectTime !== null) {
+//       const beatEffectProgress = Math.min(
+//         1,
+//         Math.max(0, (nowTime - lastEffectTime) / manualBeatEffectDuration)
+//       )
+//       if (beatEffectProgress > 0) {
+//         outputFrame = applyEffect(
+//           outputFrame,
+//           beatEffectProgress,
+//           (mainState.beatEffect.intensity / 100) *
+//             (1 - mainState.beatEffect.dropoff * beatEffectProgress),
+//           mainState.beatEffect.waveLength
+//         )
+//       }
+//     }
+//   }
 
-  // if (stagelinqBpm && stagelinqLastMeasureTime && false) {
-  //   const beatEffectDuration = (60_000 / stagelinqBpm) * 4
-  //   const applyEffect = egEffectAppliers[mainState.beatEffect.effect]
-  //   const beatsPassed = ~~((nowTime - stagelinqLastMeasureTime) / beatEffectDuration)
-  //   const lastEffectTime = stagelinqLastMeasureTime + beatsPassed * beatEffectDuration
-  //   if (lastEffectTime !== null) {
-  //     const beatEffectProgress = Math.min(
-  //       1,
-  //       Math.max(0, (nowTime - lastEffectTime) / beatEffectDuration)
-  //     )
-  //     // console.log('beat effect progress', beatEffectProgress, stagelinqBpm, stagelinqLastBeatTime)
-  //     if (beatEffectProgress > 0) {
-  //       outputFrame = applyEffect(
-  //         outputFrame,
-  //         beatEffectProgress,
-  //         (mainState.beatEffect.intensity / 100) *
-  //           (1 - mainState.beatEffect.dropoff * beatEffectProgress),
-  //         mainState.beatEffect.waveLength
-  //       )
-  //     }
-  //   }
-  // }
-  return outputFrame
-}
+//   if (stagelinqBpm && stagelinqLastMeasureTime && false) {
+//     const beatEffectDuration = (60_000 / stagelinqBpm) * 4
+//     const applyEffect = egEffectAppliers[mainState.beatEffect.effect]
+//     const beatsPassed = ~~((nowTime - stagelinqLastMeasureTime) / beatEffectDuration)
+//     const lastEffectTime = stagelinqLastMeasureTime + beatsPassed * beatEffectDuration
+//     if (lastEffectTime !== null) {
+//       const beatEffectProgress = Math.min(
+//         1,
+//         Math.max(0, (nowTime - lastEffectTime) / beatEffectDuration)
+//       )
+//       // console.log('beat effect progress', beatEffectProgress, stagelinqBpm, stagelinqLastBeatTime)
+//       if (beatEffectProgress > 0) {
+//         outputFrame = applyEffect(
+//           outputFrame,
+//           beatEffectProgress,
+//           (mainState.beatEffect.intensity / 100) *
+//             (1 - mainState.beatEffect.dropoff * beatEffectProgress),
+//           mainState.beatEffect.waveLength
+//         )
+//       }
+//     }
+//   }
+//   return outputFrame
+// }
 
 const blackFrame = createSolidRGBFrame(egInfo, 0, 0, 0)
-const whiteFrame = createSolidRGBFrame(egInfo, 255, 255, 255)
 
-function colorFrame(media: ColorMedia, ctx: StateContext): Frame {
-  return createSolidHSLFrame(egInfo, media.h, media.s, media.l)
+function getSmoothingRatio(valuePath: string) {
+  return 0.05
+}
+
+function applyGradientValue(destValue: number, valuePath: string, ctx: StateContext) {
+  let nextValue = destValue
+  const recentValue = ctx.recentGradientValues[valuePath]
+  if (recentValue != null) {
+    const smoothingRatio = getSmoothingRatio(valuePath)
+    nextValue = destValue * smoothingRatio + recentValue * (1 - smoothingRatio)
+  }
+  ctx.recentGradientValues[valuePath] = nextValue
+  return nextValue
+}
+
+function colorFrame(media: ColorMedia, ctx: StateContext, mediaPath: string): Frame {
+  const h = applyGradientValue(media.h, `${mediaPath}.h`, ctx)
+  const s = applyGradientValue(media.s, `${mediaPath}.s`, ctx)
+  const l = applyGradientValue(media.l, `${mediaPath}.l`, ctx)
+  return createSolidHSLFrame(egInfo, h, s, l)
 }
 
 function videoFrameBare(media: VideoMedia, ctx: StateContext): Frame {
   const video = ctx.video.getPlayer(media.id)
   if (media.params) video.setParams(media.params)
   if (media.track) {
-    video.selectVideo(media.track).catch((e) => {
-      console.error('Error selecting video', e)
-    })
+    video.selectVideo(media.track)
     return video.readFrame() || blackFrame
   }
   return blackFrame
 }
 
-function withColorize(frame: Frame, effect: ColorizeEffect, ctx: StateContext): Frame {
-  return frameColorize(egInfo, frame, effect.amount, effect.hue, effect.saturation)
+function withColorize(
+  frame: Frame,
+  effect: ColorizeEffect,
+  ctx: StateContext,
+  mediaPath: string
+): Frame {
+  const amount = applyGradientValue(effect.amount, `${mediaPath}.amount`, ctx)
+  const hue = applyGradientValue(effect.hue, `${mediaPath}.hue`, ctx)
+  const saturation = applyGradientValue(effect.saturation, `${mediaPath}.saturation`, ctx)
+  return frameColorize(egInfo, frame, amount, hue, saturation)
 }
 
-function withDesaturate(frame: Frame, effect: DesaturateEffect, ctx: StateContext): Frame {
-  return frameDesaturate(egInfo, frame, effect.value)
+function withDesaturate(
+  frame: Frame,
+  effect: DesaturateEffect,
+  ctx: StateContext,
+  mediaPath: string
+): Frame {
+  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx)
+  return frameDesaturate(egInfo, frame, value)
 }
 
-function withHueShift(frame: Frame, effect: HueShiftEffect, ctx: StateContext): Frame {
-  return frameHueShift(egInfo, frame, effect.value)
+function withHueShift(
+  frame: Frame,
+  effect: HueShiftEffect,
+  ctx: StateContext,
+  mediaPath: string
+): Frame {
+  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx)
+  return frameHueShift(egInfo, frame, value)
 }
 
-function withRotate(frame: Frame, effect: RotateEffect, ctx: StateContext): Frame {
-  return frameRotate(egInfo, frame, effect.value)
+function withRotate(
+  frame: Frame,
+  effect: RotateEffect,
+  ctx: StateContext,
+  mediaPath: string
+): Frame {
+  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx)
+  return frameRotate(egInfo, frame, value)
 }
 
-function withInvert(frame: Frame, effect: InvertEffect, ctx: StateContext): Frame {
+function withInvert(
+  frame: Frame,
+  effect: InvertEffect,
+  ctx: StateContext,
+  mediaPath: string
+): Frame {
   return frameInvert(egInfo, frame)
 }
 
-function withBrighten(frame: Frame, effect: BrightenEffect, ctx: StateContext): Frame {
-  return frameBrighten(egInfo, frame, effect.value)
+function withBrighten(
+  frame: Frame,
+  effect: BrightenEffect,
+  ctx: StateContext,
+  mediaPath: string
+): Frame {
+  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx)
+  return frameBrighten(egInfo, frame, value)
 }
 
-function withDarken(frame: Frame, effect: DarkenEffect, ctx: StateContext): Frame {
-  return frameDarken(egInfo, frame, effect.value)
+function withDarken(
+  frame: Frame,
+  effect: DarkenEffect,
+  ctx: StateContext,
+  mediaPath: string
+): Frame {
+  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx)
+  return frameDarken(egInfo, frame, value)
 }
 
-function withMediaEffect(frame: Frame, effect: Effect, ctx: StateContext): Frame {
-  if (effect.type === 'colorize') return withColorize(frame, effect, ctx)
-  if (effect.type === 'desaturate') return withDesaturate(frame, effect, ctx)
-  if (effect.type === 'hueShift') return withHueShift(frame, effect, ctx)
-  if (effect.type === 'invert') return withInvert(frame, effect, ctx)
-  if (effect.type === 'brighten') return withBrighten(frame, effect, ctx)
-  if (effect.type === 'darken') return withDarken(frame, effect, ctx)
-  if (effect.type === 'rotate') return withRotate(frame, effect, ctx)
+function withMediaEffect(
+  frame: Frame,
+  effect: Effect,
+  ctx: StateContext,
+  mediaPath: string
+): Frame {
+  if (effect.type === 'colorize') return withColorize(frame, effect, ctx, mediaPath)
+  if (effect.type === 'desaturate') return withDesaturate(frame, effect, ctx, mediaPath)
+  if (effect.type === 'hueShift') return withHueShift(frame, effect, ctx, mediaPath)
+  if (effect.type === 'invert') return withInvert(frame, effect, ctx, mediaPath)
+  if (effect.type === 'brighten') return withBrighten(frame, effect, ctx, mediaPath)
+  if (effect.type === 'darken') return withDarken(frame, effect, ctx, mediaPath)
+  if (effect.type === 'rotate') return withRotate(frame, effect, ctx, mediaPath)
   return frame
 }
 
-function withMediaEffects(frame: Frame, effects: Effects | undefined, ctx: StateContext): Frame {
+function withMediaEffects(
+  frame: Frame,
+  effects: Effects | undefined,
+  ctx: StateContext,
+  mediaPath: string
+): Frame {
   let outFrame = frame
   effects?.forEach((effect) => {
-    outFrame = withMediaEffect(outFrame, effect, ctx)
+    outFrame = withMediaEffect(outFrame, effect, ctx, `${mediaPath}.${effect.key}`)
   })
   return outFrame
 }
 
-function videoFrame(media: VideoMedia, ctx: StateContext): Frame {
+function videoFrame(media: VideoMedia, ctx: StateContext, mediaPath: string): Frame {
   const frame = videoFrameBare(media, ctx)
-  return withMediaEffects(frame, media.effects, ctx)
+  return withMediaEffects(frame, media.effects, ctx, `${mediaPath}.effects`)
 }
 
 function layerBlend(
@@ -224,13 +283,23 @@ function layerBlend(
   return frameA
 }
 
-function layersFrame(media: LayersMedia, ctx: StateContext): Frame {
+function layersFrame(media: LayersMedia, ctx: StateContext, mediaPath: string): Frame {
   const reverseLayers = media.layers.slice(0, -1).reverse()
   const firstLayer = media.layers.at(-1)
   if (!firstLayer) return blackFrame
-  let frame = mediaFrame(firstLayer.media, ctx)
+  let frame = mediaFrame(firstLayer.media, ctx, `${mediaPath}.layer.${firstLayer.key}`)
   reverseLayers.forEach((layer) => {
-    frame = layerBlend(frame, mediaFrame(layer.media, ctx), layer.blendMode, layer.blendAmount)
+    const layerAmount = applyGradientValue(
+      layer.blendAmount,
+      `${mediaPath}.layerBlendAmount.${layer.key}`,
+      ctx
+    )
+    frame = layerBlend(
+      frame,
+      mediaFrame(layer.media, ctx, `${mediaPath}.layer.${layer.key}`),
+      layer.blendMode,
+      layerAmount
+    )
   })
   return frame
 }
@@ -240,91 +309,38 @@ export function getSequenceActiveItem(media: SequenceMedia): SequenceItem | unde
   return sequence.find((media) => media.key === activeKey) || media.sequence[0]
 }
 
-function sequenceFrame(media: SequenceMedia, ctx: StateContext): Frame {
+function sequenceFrame(media: SequenceMedia, ctx: StateContext, mediaPath: string): Frame {
   const activeMedia = getSequenceActiveItem(media)
   if (!activeMedia) return blackFrame
-  return mediaFrame(activeMedia.media, ctx)
+  return mediaFrame(activeMedia.media, ctx, `${mediaPath}.item.${activeMedia.key}`)
 }
 
-function mediaFrame(media: Media, ctx: StateContext): Frame {
-  if (media.type === 'color') return colorFrame(media, ctx)
-  if (media.type === 'video') return videoFrame(media, ctx)
-  if (media.type === 'layers') return layersFrame(media, ctx)
-  if (media.type === 'sequence') return sequenceFrame(media, ctx)
+function mediaFrame(media: Media, ctx: StateContext, mediaPath: string): Frame {
+  if (media.type === 'color') return colorFrame(media, ctx, mediaPath)
+  if (media.type === 'video') return videoFrame(media, ctx, mediaPath)
+  if (media.type === 'layers') return layersFrame(media, ctx, mediaPath)
+  if (media.type === 'sequence') return sequenceFrame(media, ctx, mediaPath)
   if (media.type === 'off') return blackFrame
   return blackFrame
 }
 
-function runTransition(
-  frameA: Frame,
-  frameB: Frame,
-  transition: Transition,
-  transitionState: TransitionState,
-  ctx: StateContext
-): Frame {
-  let transitionProgresss = transitionState.manual
-  if (transitionState.autoStartTime && !transitionProgresss) {
+export function getEGLiveFrame(mainState: MainState, ctx: StateContext, readyFrame: Frame): Frame {
+  const liveFrame = mediaFrame(mainState.liveMedia, ctx, 'liveMedia')
+  let transitionProgresss =
+    mainState.transitionState.manual == null
+      ? null
+      : applyGradientValue(mainState.transitionState.manual, 'transitionState.manual', ctx)
+
+  if (mainState.transitionState.autoStartTime && !transitionProgresss) {
     transitionProgresss = Math.min(
       1,
-      (ctx.nowTime - transitionState.autoStartTime) / transition.duration
+      (ctx.nowTime - mainState.transitionState.autoStartTime) / mainState.transition.duration
     )
   }
-  return frameMix(egInfo, frameA, frameB, transitionProgresss || 0)
-}
-
-export function getEGLiveFrameUPRISING(
-  mainState: MainState,
-  ctx: StateContext,
-  readyFrame: Frame
-): Frame {
-  const liveFrame = mediaFrame(mainState.liveMedia, ctx)
-  const finalFrame = runTransition(
-    liveFrame,
-    readyFrame,
-    mainState.transition,
-    mainState.transitionState,
-    ctx
-  )
+  const finalFrame = frameMix(egInfo, liveFrame, readyFrame, transitionProgresss || 0)
   return finalFrame
 }
 
 export function getEGReadyFrame(mainState: MainState, ctx: StateContext): Frame {
-  return mediaFrame(mainState.readyMedia, ctx)
-}
-
-export function getEGLiveFrame(mainState: MainState, ctx: StateContext, readyFrame: Frame): Frame {
-  if (UPRISING) return getEGLiveFrameUPRISING(mainState, ctx, readyFrame)
-  const { relativeTime } = ctx
-  if (mainState.mode === 'off') return blackFrame
-  if (mainState.mode === 'white') {
-    return applyEGEffects(mainState, ctx, whiteFrame)
-  }
-  if (mainState.mode === 'color') {
-    const frame = createSolidHSLFrame(
-      egInfo,
-      mainState.color.h,
-      mainState.color.s,
-      mainState.color.l
-    )
-    return applyEGEffects(mainState, ctx, frame)
-  }
-  if (mainState.mode === 'rainbow') {
-    const startRatio = ~~(relativeTime % 5000) / 5000
-    const frame = createRainbowFrame(egInfo, startRatio)
-    return applyEGEffects(mainState, ctx, frame)
-  }
-  if (mainState.mode === 'video') {
-    let frame = blackFrame
-    if (mainState.video.track !== 'none') {
-      const player = getVideoPlayback(ctx.video, mainState.video.track)
-      if (player) {
-        const videoFrame = player.readFrame()
-        if (videoFrame) {
-          frame = videoFrame
-        }
-      }
-    }
-    return applyEGEffects(mainState, ctx, frame)
-  }
-  return blackFrame
+  return mediaFrame(mainState.readyMedia, ctx, 'readyMedia')
 }

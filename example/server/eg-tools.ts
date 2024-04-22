@@ -413,7 +413,7 @@ export function frameBrighten(info: EGInfo, frame: Frame, amount: number) {
   const { frameSize } = info
   const outputFrame = new Uint8Array(frameSize)
   for (let i = 0; i < frameSize; i++) {
-    outputFrame[i] = Math.round(Math.min(255, frame[i] + amount * 255))
+    outputFrame[i] = Math.round(Math.min(255, frame[i] * (1 + amount)))
   }
   return outputFrame
 }

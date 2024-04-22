@@ -69,8 +69,8 @@ function scroll(children: any[]): ComponentDataState {
   }
 }
 
-function getVideoControls(mediaPath: string, state: VideoMedia, context: UIContext): DataState[] {
-  const player = context.video.getPlayer(state.id)
+function getVideoControls(mediaPath: string, state: VideoMedia, ctx: UIContext): DataState[] {
+  const player = ctx.video.getPlayer(state.id)
   return [
     {
       $: 'component',
@@ -149,11 +149,11 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
         },
       },
     },
-    ...getGenericMediaUI(mediaPath, state),
+    ...getGenericMediaUI(mediaPath, state, ctx),
   ]
 }
 
-function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
+function getColorControls(mediaPath: string, state: ColorMedia, ctx: UIContext): DataState[] {
   return [
     {
       $: 'component',
@@ -213,7 +213,7 @@ function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
         step: 0.01,
       },
     },
-    ...getGenericMediaUI(mediaPath, state),
+    ...getGenericMediaUI(mediaPath, state, ctx),
   ]
 }
 
@@ -446,17 +446,18 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
   }
   return section(`Effect: ${effect.type}`, [removeEffect])
 }
-function getVideoTitle(state: VideoMedia): string {
+function getVideoTitle(state: VideoMedia, ctx: UIContext): string {
   if (state.track === null) return 'Video - Empty'
-  return `Video - ${state.track}`
+  const title = ctx.video.getTrackTitle(state.track)
+  return title
 }
 
-export function getMediaTitle(state: Media): string {
+export function getMediaTitle(state: Media, ctx: UIContext): string {
   if (state.label) return state.label
   if (state.type === 'color') return 'Color'
   if (state.type === 'sequence') return 'Sequence'
   if (state.type === 'layers') return 'Layers'
-  if (state.type === 'video') return getVideoTitle(state)
+  if (state.type === 'video') return getVideoTitle(state, ctx)
   return 'Media'
 }
 
@@ -468,7 +469,7 @@ const newMediaOptions = [
   { key: 'sequence', label: 'Sequence' },
 ]
 
-export function getMediaControls(state: Media, mediaLinkPath: string): DataState[] {
+export function getMediaControls(state: Media, mediaLinkPath: string, ctx: UIContext): DataState[] {
   if (state.type === 'off') {
     return [
       {
@@ -503,7 +504,7 @@ export function getMediaControls(state: Media, mediaLinkPath: string): DataState
               action: ['navigate', mediaLinkPath],
             },
           },
-          children: `Open ${getMediaTitle(state)}`,
+          children: `Open ${getMediaTitle(state, ctx)}`,
         },
         {
           $: 'component',
@@ -542,7 +543,7 @@ export function getTransitionControls(transition: Transition, state: TransitionS
           $: 'event',
           action: ['updateTransition', 'manual'],
         },
-        max: 1,
+        max: 0.99,
         min: 0,
         step: 0.01,
       },
@@ -578,10 +579,10 @@ export function getTransitionControls(transition: Transition, state: TransitionS
   ]
 }
 
-export function getUIRoot(state: MainState) {
+export function getUIRoot(state: MainState, ctx: UIContext) {
   return scroll([
-    section('Live', getMediaControls(state.liveMedia, 'liveMedia')),
-    section('Ready', getMediaControls(state.readyMedia, 'readyMedia')),
+    section('Live', getMediaControls(state.liveMedia, 'liveMedia', ctx)),
+    section('Ready', getMediaControls(state.readyMedia, 'readyMedia', ctx)),
     section('Library', [
       {
         $: 'component',
@@ -719,7 +720,7 @@ export function getUIRoot(state: MainState) {
 function getLayersControls(
   mediaPath: string,
   state: LayersMedia,
-  context: UIContext,
+  ctx: UIContext,
   { header = [], footer = [] }: { header?: DataState[]; footer?: DataState[] } = {}
 ): DataState {
   return {
@@ -756,13 +757,13 @@ function getLayersControls(
             },
           },
           ...footer,
-          ...getGenericMediaUI(mediaPath, state),
+          ...getGenericMediaUI(mediaPath, state, ctx),
         ],
       },
       items: (state.layers || []).map((layer) => {
         return {
           key: layer.key,
-          label: layer.name || layer.media.type,
+          label: getMediaTitle(layer.media, ctx),
           onPress: {
             $: 'event',
             action: ['navigate', `${mediaPath}:layer:${layer.key}`],
@@ -776,7 +777,7 @@ function getLayersControls(
 function getSequenceControls(
   mediaPath: string,
   state: SequenceMedia,
-  context: UIContext,
+  ctx: UIContext,
   footer: DataState[] = []
 ): DataState {
   const activeMedia = getSequenceActiveItem(state)
@@ -823,14 +824,14 @@ function getSequenceControls(
               unselectedLabel: 'Add to Sequence...',
             },
           },
-          ...getGenericMediaUI(mediaPath, state),
+          ...getGenericMediaUI(mediaPath, state, ctx),
           ...footer,
         ],
       },
       items: (state.sequence || []).map((item) => {
         return {
           key: item.key,
-          label: `${getMediaTitle(item.media)}${item.key === activeMedia?.key ? ' (Active)' : ''}`,
+          label: `${getMediaTitle(item.media, ctx)}${item.key === activeMedia?.key ? ' (Active)' : ''}`,
           onPress: { $: 'event', action: ['navigate', `${mediaPath}:item:${item.key}`] },
         }
       }),
@@ -951,9 +952,9 @@ export function getLibraryKeyUI(key: string): ComponentDataState[] {
   ]
 }
 
-function getGenericMediaUI(mediaPath: string, media: Media): ComponentDataState[] {
+function getGenericMediaUI(mediaPath: string, media: Media, ctx: UIContext): ComponentDataState[] {
   return [
-    { $: 'component', component: 'Screen', props: { title: getMediaTitle(media) } },
+    { $: 'component', component: 'Screen', props: { title: getMediaTitle(media, ctx) } },
     {
       $: 'component',
       component: 'Button',
@@ -1095,20 +1096,20 @@ export function getMediaSequenceUI(
 export function getMediaUI(
   mediaPath: string,
   mediaState: Media,
-  context: UIContext,
+  ctx: UIContext,
   { header = [], footer = [] }: { header?: DataState[]; footer?: DataState[] } = {}
 ): DataState {
   if (mediaState.type === 'color') {
-    return scroll([...header, ...getColorControls(mediaPath, mediaState), ...footer])
+    return scroll([...header, ...getColorControls(mediaPath, mediaState, ctx), ...footer])
   }
   if (mediaState.type === 'video') {
-    return scroll([...header, ...getVideoControls(mediaPath, mediaState, context), ...footer])
+    return scroll([...header, ...getVideoControls(mediaPath, mediaState, ctx), ...footer])
   }
   if (mediaState.type === 'sequence') {
-    return getSequenceControls(mediaPath, mediaState, context)
+    return getSequenceControls(mediaPath, mediaState, ctx)
   }
   if (mediaState.type === 'layers') {
-    return getLayersControls(mediaPath, mediaState, context, { header, footer })
+    return getLayersControls(mediaPath, mediaState, ctx, { header, footer })
   }
   return scroll([
     ...header,

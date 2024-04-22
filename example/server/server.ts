@@ -3,7 +3,6 @@ import { createWSServer } from '@final-ui/ws-server'
 import { randomUUID } from 'crypto'
 import {
   existsSync,
-  mkdir,
   mkdirSync,
   readdirSync,
   readFileSync,
@@ -19,9 +18,8 @@ import { getEGLiveFrame, getEGReadyFrame, getSequenceActiveItem } from './eg-mai
 import { egSacnService } from './eg-sacn'
 import { egVideo } from './eg-video-playback'
 import { createEGViewServer } from './eg-view-server'
-import { defaultMainState, Effect, Layer, MainState, MainStateSchema, Media } from './state-schema'
+import { defaultMainState, Effect, MainState, MainStateSchema, Media } from './state-schema'
 import {
-  getBeatEffects,
   getEffectsUI,
   getEffectUI,
   getLibraryKeyUI,
@@ -30,7 +28,6 @@ import {
   getMediaSequenceUI,
   getMediaTitle,
   getMediaUI,
-  getQuickEffects,
   getUIRoot,
   UIContext,
 } from './ui'
@@ -115,10 +112,12 @@ const video = egVideo(egInfo, mediaFilesPath, {
   },
 })
 
+const recentGradientValues: Record<string, number> = {}
+
 function mainLoop() {
   const nowTime = Date.now()
   const relativeTime = nowTime - startTime
-  const context = { time: startTime, nowTime, relativeTime, video }
+  const context = { time: startTime, nowTime, relativeTime, video, recentGradientValues }
 
   wsServer.update('relativeTime', relativeTime)
 
@@ -209,10 +208,11 @@ function updateMediaUI(mediaKey: string, mediaState: Media, uiContext: UIContext
   }
 }
 
+const uiContext: UIContext = { video }
+
 function updateUI() {
-  const uiContext: UIContext = { video }
   wsServer.update('mainState', mainState)
-  wsServer.updateRoot(getUIRoot(mainState))
+  wsServer.updateRoot(getUIRoot(mainState, uiContext))
   // wsServer.update('quickEffects', getQuickEffects())
   // wsServer.update('beatEffects', getBeatEffects(mainState))
   updateMediaUI('readyMedia', mainState.readyMedia, uiContext)
@@ -758,7 +758,8 @@ function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
   }
   if (action === 'saveMedia') {
     const mediaValue = getMedia(mainState, mediaPath)
-    const key = `${getMediaTitle(mediaValue)} - ${new Date().toLocaleString()}`
+    if (!mediaValue) return true
+    const key = `${getMediaTitle(mediaValue, uiContext)} - ${new Date().toLocaleString()}`
     saveMedia(key, mediaValue)
     return true
   }

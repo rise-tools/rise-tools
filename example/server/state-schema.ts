@@ -8,6 +8,7 @@ export type StateContext = {
   nowTime: number
   relativeTime: number
   video: EGVideo
+  recentGradientValues: Record<string, number>
 }
 
 // export const effectsSchema = {
