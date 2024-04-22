@@ -166,6 +166,12 @@ export const TamaguiComponents: ComponentRegistry = {
   AlertDialogOverlay: {
     component: t.AlertDialog.Overlay,
   },
+  AlertDialogAction: {
+    component: t.AlertDialog.Action,
+  },
+  AlertDialogTrigger: {
+    component: t.AlertDialog.Trigger,
+  },
   AlertDialogCancel: {
     component: t.AlertDialog.Cancel,
   },

@@ -920,37 +920,102 @@ export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UICont
 function getLayerForm(mediaPath: string, layer: Layer): ComponentDataState {
   return {
     $: 'component',
-    component: 'RiseForm',
-    props: {
-      onSubmit: {
-        $: 'event',
-        action: ['updateMedia', mediaPath, 'metadata'],
-      },
-    },
+    component: 'AlertDialog',
     children: [
       {
         $: 'component',
-        component: 'RiseTextField',
+        component: 'AlertDialogTrigger',
         props: {
-          name: 'name',
-          label: {
-            $: 'component',
-            component: 'Label',
-            children: 'Layer title',
-            props: {
-              htmlFor: 'title',
-            },
-          },
-          value: layer.name,
-          placeholder: 'Enter title...',
-          autoCapitalize: 'none',
-          autoCorrect: false,
+          asChild: true,
+        },
+        children: {
+          $: 'component',
+          component: 'Button',
+          children: 'Edit title',
         },
       },
       {
         $: 'component',
-        component: 'RiseSubmitButton',
-        children: 'Submit',
+        component: 'AlertDialogPortal',
+        children: [
+          {
+            $: 'component',
+            component: 'AlertDialogOverlay',
+          },
+          {
+            $: 'component',
+            component: 'AlertDialogContent',
+            children: {
+              $: 'component',
+              component: 'RiseForm',
+              props: {
+                onSubmit: {
+                  $: 'event',
+                  action: ['updateMedia', mediaPath, 'metadata'],
+                },
+              },
+              children: [
+                {
+                  $: 'component',
+                  component: 'RiseTextField',
+                  props: {
+                    name: 'name',
+                    label: {
+                      $: 'component',
+                      component: 'Label',
+                      children: 'Layer title',
+                      props: {
+                        htmlFor: 'title',
+                      },
+                    },
+                    value: layer.name,
+                    placeholder: 'Enter title...',
+                    autoCapitalize: 'none',
+                    autoCorrect: false,
+                    marginBottom: '$2',
+                  },
+                },
+                {
+                  $: 'component',
+                  component: 'XStack',
+                  props: {
+                    justifyContent: 'flex-end',
+                    space: '$2',
+                  },
+                  children: [
+                    {
+                      $: 'component',
+                      component: 'AlertDialogCancel',
+                      props: {
+                        asChild: true,
+                      },
+                      children: {
+                        $: 'component',
+                        component: 'Button',
+                        children: 'Cancel',
+                      },
+                    },
+                    {
+                      $: 'component',
+                      component: 'AlertDialogAction',
+                      props: {
+                        asChild: true,
+                      },
+                      children: {
+                        $: 'component',
+                        component: 'RiseSubmitButton',
+                        props: {
+                          theme: 'active',
+                        },
+                        children: 'Submit',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
       },
     ],
   }
