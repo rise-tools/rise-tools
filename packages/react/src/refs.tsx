@@ -43,7 +43,7 @@ function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']
   if (isComponentDataState(lookupValue)) {
     return {
       ...lookupValue,
-      ref: refKey,
+      ref,
     }
   }
 
