@@ -45,9 +45,7 @@ export function handler(func: EventHandler): AsyncHandlerEventDataState | Handle
         $: 'event',
         key,
         async: true,
-        handler(args) {
-          return func(args)
-        },
+        handler: func,
       }
     }
     case 'Function': {
@@ -55,9 +53,7 @@ export function handler(func: EventHandler): AsyncHandlerEventDataState | Handle
         $: 'event',
         key,
         async: false,
-        handler(args) {
-          return func(args)
-        },
+        handler: func,
       }
     }
     default: {
