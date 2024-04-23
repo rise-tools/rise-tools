@@ -1,4 +1,4 @@
-import { ComponentDataState, DataState } from '@final-ui/react'
+import { ComponentDataState, ServerDataState } from '@final-ui/react'
 
 import { hslToHex } from './color'
 import { EGVideo } from './eg-video-playback'
@@ -30,7 +30,7 @@ function icon(name: string): ComponentDataState {
   }
 }
 
-function section(title: string, children: DataState[], key?: string): DataState {
+function section(title: string, children: ServerDataState[], key?: string): ServerDataState {
   return {
     $: 'component',
     component: 'YStack',
@@ -146,7 +146,7 @@ function getModeControls(state: MainState) {
   return [] as const
 }
 
-function scroll(children: any[]): DataState {
+function scroll(children: any[]): ServerDataState {
   return {
     $: 'component',
     component: 'ScrollView',
@@ -158,7 +158,11 @@ function scroll(children: any[]): DataState {
   }
 }
 
-function getVideoControls(mediaPath: string, state: VideoMedia, context: UIContext): DataState[] {
+function getVideoControls(
+  mediaPath: string,
+  state: VideoMedia,
+  context: UIContext
+): ServerDataState[] {
   const player = context.video.getPlayer(state.id)
   return [
     {
@@ -235,7 +239,7 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
   ]
 }
 
-function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
+function getColorControls(mediaPath: string, state: ColorMedia): ServerDataState[] {
   return [
     {
       $: 'component',
@@ -298,7 +302,10 @@ function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
   ]
 }
 
-export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | undefined): DataState {
+export function getEffectsUI(
+  mediaLinkPath: string,
+  effectsState: Effects | undefined
+): ServerDataState {
   return {
     $: 'component',
     component: 'RiseSortableList',
@@ -545,7 +552,7 @@ const newMediaOptions = [
   { key: 'sequence', label: 'Sequence' },
 ]
 
-export function getMediaControls(state: Media, mediaLinkPath: string): DataState[] {
+export function getMediaControls(state: Media, mediaLinkPath: string): ServerDataState[] {
   if (state.type === 'off') {
     return [
       {
@@ -606,7 +613,10 @@ export function getMediaControls(state: Media, mediaLinkPath: string): DataState
   ]
 }
 
-export function getTransitionControls(transition: Transition, state: TransitionState): DataState[] {
+export function getTransitionControls(
+  transition: Transition,
+  state: TransitionState
+): ServerDataState[] {
   return [
     {
       $: 'component',
@@ -795,7 +805,7 @@ function getSequenceControls(
   state: SequenceMedia,
   // eslint-disable-next-line
   context: UIContext
-): DataState[] {
+): ServerDataState[] {
   return []
 }
 
@@ -803,8 +813,8 @@ function getLayersList(
   mediaLinkPath: string,
   state: LayersMedia,
   context: UIContext,
-  { header = [], footer = [] }: { header?: DataState[]; footer?: DataState[] } = {}
-): DataState {
+  { header = [], footer = [] }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {}
+): ServerDataState {
   return {
     $: 'component',
     component: 'RiseSortableList',
@@ -855,7 +865,11 @@ function getLayersList(
   }
 }
 
-export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UIContext): DataState {
+export function getMediaLayerUI(
+  mediaPath: string,
+  layer: Layer,
+  context: UIContext
+): ServerDataState {
   return getMediaUI(mediaPath, layer.media, context, {
     header: [getLayerForm(mediaPath, layer)],
     footer: [
@@ -960,8 +974,8 @@ export function getMediaUI(
   mediaPath: string,
   mediaState: Media,
   context: UIContext,
-  { header = [], footer = [] }: { header?: DataState[]; footer?: DataState[] } = {}
-): DataState {
+  { header = [], footer = [] }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {}
+): ServerDataState {
   if (mediaState.type === 'color') {
     return scroll([...header, ...getColorControls(mediaPath, mediaState), ...footer])
   }
@@ -985,7 +999,7 @@ export function getMediaUI(
   ])
 }
 
-export function getQuickEffects() {
+export function getQuickEffects(): ServerDataState {
   return {
     $: 'component',
     component: 'YStack',
@@ -1001,7 +1015,7 @@ export function getQuickEffects() {
   }
 }
 
-export function getBeatEffects(mainState: MainState) {
+export function getBeatEffects(mainState: MainState): ServerDataState {
   return {
     $: 'component',
     component: 'YStack',

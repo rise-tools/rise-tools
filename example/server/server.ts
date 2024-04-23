@@ -1,4 +1,4 @@
-import { BasicTemplateEvent, TemplateEvent } from '@final-ui/react'
+import { ActionEvent, TemplateEvent } from '@final-ui/react'
 import { createWSServer } from '@final-ui/ws-server'
 import { randomUUID } from 'crypto'
 import { existsSync, readFileSync, writeFile } from 'fs'
@@ -189,11 +189,7 @@ function mainStateEffect(state: MainState, prevState: MainState) {
   }, 80)
 }
 
-function sliderUpdate(
-  event: BasicTemplateEvent,
-  pathToCheck: string,
-  statePath: string[]
-): boolean {
+function sliderUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
   if (
     event.target.key === pathToCheck &&
     event.target.propKey === 'onValueChange' &&
@@ -205,11 +201,7 @@ function sliderUpdate(
   return false
 }
 
-function switchUpdate(
-  event: BasicTemplateEvent,
-  pathToCheck: string,
-  statePath: string[]
-): boolean {
+function switchUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
   if (
     event.target.key === pathToCheck &&
     event.target.propKey === 'onCheckedChange' &&
@@ -308,10 +300,7 @@ wsServer.onActionEvent((event) => {
   console.log('Unknown event', event)
 })
 
-// tbd: convert this to EffectEvent type and type all possible occurences
-type ServerAction = string | string[]
-
-function handleEffectEvent(event: BasicTemplateEvent<ServerAction>): boolean {
+function handleEffectEvent(event: ActionEvent): boolean {
   const actionName = event.dataState.action?.[0]
   if (actionName !== 'updateEffect') {
     return false
@@ -360,7 +349,7 @@ function handleEffectEvent(event: BasicTemplateEvent<ServerAction>): boolean {
   return true
 }
 
-function handleTransitionEvent(event: BasicTemplateEvent<ServerAction>): boolean {
+function handleTransitionEvent(event: ActionEvent): boolean {
   if (event.dataState.action?.[0] !== 'updateTransition') {
     return false
   }
@@ -479,7 +468,7 @@ function rootLayerUpdate(mediaPath: string[], updater: (layer: Layer) => Layer) 
 }
 
 // function handleMediaEvent(mediaPath: string[], eventName: string, value: any[]): boolean {
-function handleMediaEvent(event: BasicTemplateEvent<ServerAction>): boolean {
+function handleMediaEvent(event: ActionEvent): boolean {
   if (event.dataState.action?.[0] !== 'updateMedia') {
     return false
   }
