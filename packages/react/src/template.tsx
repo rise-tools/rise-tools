@@ -23,7 +23,6 @@ export type ReferencedDataState = {
   ref: string | [string, ...(string | number)[]]
 }
 type EventDataState = ActionEventDataState | AsyncHandlerEventDataState | HandlerEventDataState
-export type EventHandler = (args: any) => any | Promise<any>
 export type ActionEventDataState<T = any> = {
   $: 'event'
   action?: T
@@ -33,14 +32,14 @@ export type AsyncHandlerEventDataState = {
   key: string
   async: true
   // server-only
-  handler?: EventHandler
+  handler?: (args: any) => Promise<any>
 }
 export type HandlerEventDataState = {
   $: 'event'
   key: string
   async: false
   // server-only
-  handler?: EventHandler
+  handler?: (args: any) => any
 }
 export function isHandlerEvent(
   event: TemplateEvent

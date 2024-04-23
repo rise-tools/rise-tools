@@ -3,7 +3,6 @@ import crypto from 'node:crypto'
 
 import {
   AsyncHandlerEventDataState,
-  EventHandler,
   HandlerEventDataState,
   isComponentDataState,
   isHandlerEventDataState,
@@ -11,7 +10,7 @@ import {
 } from './template'
 
 export function getAllEventHandlers(dataState: JSONValue) {
-  const acc: Record<string, EventHandler> = {}
+  const acc: Record<string, (args: any) => any> = {}
   function traverse(dataState: JSONValue) {
     if (!dataState) {
       return
@@ -37,7 +36,7 @@ export function getAllEventHandlers(dataState: JSONValue) {
   return acc
 }
 
-export function handler(func: EventHandler): HandlerEventDataState {
+export function handler(func: (args: any) => any): HandlerEventDataState {
   const key = crypto.randomUUID()
   return {
     $: 'event',
@@ -47,7 +46,7 @@ export function handler(func: EventHandler): HandlerEventDataState {
   }
 }
 
-export function asyncHandler(func: EventHandler): AsyncHandlerEventDataState {
+export function asyncHandler(func: (args: any) => Promise<any>): AsyncHandlerEventDataState {
   const key = crypto.randomUUID()
   return {
     $: 'event',
