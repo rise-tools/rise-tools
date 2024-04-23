@@ -1,12 +1,20 @@
-// tbd: move to server package
 import crypto from 'node:crypto'
 
 import {
+  HandlerEventDataState,
   isComponentDataState,
-  isServerEventDataState,
-  ServerDataState,
-  ServerHandlerEventDataState,
+  isEventDataState,
+  JSONValue,
 } from './template'
+
+/** Server data state*/
+export type ServerDataState = JSONValue | ServerHandlerEventDataState
+export type ServerHandlerEventDataState = HandlerEventDataState & {
+  handler: (args: any) => void
+}
+export function isServerEventDataState(obj: ServerDataState): obj is ServerHandlerEventDataState {
+  return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
+}
 
 export function getAllEventHandlers(dataState: ServerDataState) {
   const acc: Record<string, (args: any) => any> = {}

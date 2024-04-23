@@ -9,15 +9,6 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
   validator?: (input?: T) => T
 }
 
-/** Server data state -- tbd: move to server package */
-export type ServerDataState = JSONValue | ServerHandlerEventDataState
-export type ServerHandlerEventDataState = HandlerEventDataState & {
-  handler: (args: any) => void
-}
-export function isServerEventDataState(obj: ServerDataState): obj is ServerHandlerEventDataState {
-  return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
-}
-
 /** Data state */
 export type DataState = ComponentDataState | ReferencedDataState | EventDataState
 export type ComponentDataState = {
