@@ -1,4 +1,4 @@
-import { ActionEvent, type DataState, handleEvent, isHandlerEvent } from '@final-ui/react'
+import { ActionEvent, type DataState, getAllEventHandlers, isHandlerEvent } from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
   EventWebsocketMessage,
@@ -29,8 +29,14 @@ export function createWSServer(port: number) {
 
   const clientSenders = new Map<string, (value: ServerWebsocketMessage) => void>()
 
+  const eventHandlers = new Map<string, Record<string, (args: any) => any>>()
+
   function update(key: string, value: any) {
     values.set(key, value)
+
+    const allEventHandlers = getAllEventHandlers(value)
+    eventHandlers.set(key, allEventHandlers)
+
     const handlers = clientSubscribers.get(key)
     if (!handlers) return
     handlers.forEach((handler) => handler())
@@ -74,23 +80,33 @@ export function createWSServer(port: number) {
       return
     }
 
-    const { async, key } = message.event.dataState
+    const {
+      dataState,
+      target: { storeKey },
+    } = message.event
 
     try {
+      const handleEvent = eventHandlers.get(storeKey)?.[dataState.key]
+      if (!handleEvent) {
+        console.warn(
+          `Missing event handler on the server for event: ${JSON.stringify(message.event)}`
+        )
+        return
+      }
       const res = await handleEvent(message.event)
-      if (async) {
+      if (dataState.async) {
         clientSenders.get(clientId)?.({
           $: 'evt-res',
-          key,
+          key: dataState.key,
           ok: true,
           val: res,
         })
       }
     } catch (error: any) {
-      if (async) {
+      if (dataState.async) {
         clientSenders.get(clientId)?.({
           $: 'evt-res',
-          key,
+          key: dataState.key,
           ok: false,
           val: error,
         })

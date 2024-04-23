@@ -163,22 +163,29 @@ function resolveRef(dataValues: DataValues, lookup: ReferencedDataState['ref']):
 export function Template({
   components,
   dataSource,
-  path = '',
+  storeKey = '',
   onEvent,
 }: {
-  path?: ReferencedDataState['ref']
+  storeKey?: string
   dataSource: DataSource
   components: ComponentRegistry
   onEvent: ComponentProps<typeof BaseTemplate>['onEvent']
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
-    createRefStateManager(setDataValues, dataSource, extractRefKey(path))
+    createRefStateManager(setDataValues, dataSource, extractRefKey(storeKey))
   )
   useEffect(() => {
     const release = refStateManager.current.activate()
     return () => release()
   }, [])
-  const rootDataState = resolveRef(dataValues, path)
-  return <BaseTemplate components={components} dataState={rootDataState} onEvent={onEvent} />
+  const rootDataState = resolveRef(dataValues, storeKey)
+  return (
+    <BaseTemplate
+      components={components}
+      storeKey={storeKey}
+      dataState={rootDataState}
+      onEvent={onEvent}
+    />
+  )
 }

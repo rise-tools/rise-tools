@@ -11,7 +11,6 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
 
 /** Data state */
 export type DataState = ComponentDataState | ReferencedDataState | EventDataState
-
 export type ComponentDataState = {
   $: 'component'
   key?: string
@@ -24,6 +23,7 @@ export type ReferencedDataState = {
   ref: string | [string, ...(string | number)[]]
 }
 type EventDataState = ActionEventDataState | AsyncHandlerEventDataState | HandlerEventDataState
+export type EventHandler = (args: any) => any | Promise<any>
 export type ActionEventDataState<T = any> = {
   $: 'event'
   action?: T
@@ -32,16 +32,20 @@ export type AsyncHandlerEventDataState = {
   $: 'event'
   key: string
   async: true
+  // server-only
+  handler?: EventHandler
 }
 export type HandlerEventDataState = {
   $: 'event'
   key: string
   async: false
+  // server-only
+  handler?: EventHandler
 }
 export function isHandlerEvent(
   event: TemplateEvent
 ): event is TemplateEvent<HandlerEventDataState | AsyncHandlerEventDataState> {
-  return isEventDataState(event.dataState) && 'key' in event.dataState
+  return isHandlerEventDataState(event.dataState)
 }
 export function isActionEvent(event: TemplateEvent): event is TemplateEvent<ActionEventDataState> {
   return isEventDataState(event.dataState) && 'action' in event.dataState
@@ -64,9 +68,9 @@ export type JSONValue =
 export type TemplateEvent<T = EventDataState, K = any> = {
   target: {
     key?: string
-    path: string
     component: string
     propKey: string
+    storeKey: string
   }
   dataState: T
   payload: K
@@ -81,16 +85,25 @@ export function isCompositeDataState(obj: any): obj is ComponentDataState | Refe
     (obj.$ === 'component' || obj.$ === 'ref')
   )
 }
-
-function isEventDataState(obj: JSONValue): obj is EventDataState {
+export function isComponentDataState(obj: JSONValue): obj is ComponentDataState {
+  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'component'
+}
+export function isEventDataState(obj: JSONValue): obj is EventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
+}
+export function isHandlerEventDataState(
+  obj: JSONValue
+): obj is HandlerEventDataState | AsyncHandlerEventDataState {
+  return isEventDataState(obj) && 'key' in obj
 }
 
 export function BaseTemplate({
+  storeKey = '',
   components,
   dataState,
   onEvent,
 }: {
+  storeKey?: string
   components: ComponentRegistry
   dataState: JSONValue
   onEvent?: (event: TemplateEvent) => Promise<any>
@@ -162,7 +175,7 @@ export function BaseTemplate({
           payload = '[native code]'
         }
         return onEvent?.({
-          target: { key: parentNode.key, path, component: parentNode.component, propKey },
+          target: { key: parentNode.key, component: parentNode.component, propKey, storeKey },
           dataState: stateNode,
           payload,
         })
