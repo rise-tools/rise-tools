@@ -96,7 +96,9 @@ export function createWSServer(port: number) {
         })
         return
       }
-      console.warn(`Unhandled exception in event handler: ${message.event}`)
+      console.warn(
+        `Unhandled exception in event handler: ${message.event}. Error: ${JSON.stringify(error)}`
+      )
     }
   }
 
