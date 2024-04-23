@@ -1,17 +1,16 @@
-// This file in the future will be part of JSX support
+// tbd: move to server package
 import crypto from 'node:crypto'
 
 import {
-  AsyncHandlerEventDataState,
-  HandlerEventDataState,
   isComponentDataState,
-  isHandlerEventDataState,
-  JSONValue,
+  isServerEventDataState,
+  ServerDataState,
+  ServerHandlerEventDataState,
 } from './template'
 
-export function getAllEventHandlers(dataState: JSONValue) {
+export function getAllEventHandlers(dataState: ServerDataState) {
   const acc: Record<string, (args: any) => any> = {}
-  function traverse(dataState: JSONValue) {
+  function traverse(dataState: ServerDataState) {
     if (!dataState) {
       return
     }
@@ -23,7 +22,7 @@ export function getAllEventHandlers(dataState: JSONValue) {
       Object.values(dataState.props || {}).forEach(traverse)
       return
     }
-    if (isHandlerEventDataState(dataState)) {
+    if (isServerEventDataState(dataState)) {
       if (!dataState.handler) {
         throw new Error(
           `You must define "handler" function on the EventDataState. ${JSON.stringify(dataState)}`
@@ -36,7 +35,7 @@ export function getAllEventHandlers(dataState: JSONValue) {
   return acc
 }
 
-export function handler(func: (args: any) => any): HandlerEventDataState {
+export function handler(func: (args: any) => any): ServerHandlerEventDataState {
   const key = crypto.randomUUID()
   return {
     $: 'event',
@@ -46,7 +45,7 @@ export function handler(func: (args: any) => any): HandlerEventDataState {
   }
 }
 
-export function asyncHandler(func: (args: any) => Promise<any>): AsyncHandlerEventDataState {
+export function asyncHandler(func: (args: any) => Promise<any>): ServerHandlerEventDataState {
   const key = crypto.randomUUID()
   return {
     $: 'event',

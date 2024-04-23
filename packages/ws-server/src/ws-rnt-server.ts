@@ -1,4 +1,4 @@
-import { ActionEvent, type DataState, getAllEventHandlers, isHandlerEvent } from '@final-ui/react'
+import { ActionEvent, getAllEventHandlers, isHandlerEvent, ServerDataState } from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
   EventWebsocketMessage,
@@ -8,7 +8,7 @@ import type {
 } from '@final-ui/ws-client'
 import WebSocket from 'ws'
 
-type EventHandler = (
+type ActionEventHandler = (
   event: ActionEvent,
   eventOpts: {
     time: number
@@ -19,11 +19,11 @@ type EventHandler = (
 export function createWSServer(port: number) {
   const wss = new WebSocket.Server({ port })
 
-  const values = new Map<string, DataState>()
+  const values = new Map<string, ServerDataState>()
 
   const clientSubscribers = new Map<string, Map<string, () => void>>()
-  const eventSubscribers = new Set<EventHandler>()
-  const subscribers = new Map<string, Set<(value: DataState) => void>>()
+  const eventSubscribers = new Set<ActionEventHandler>()
+  const subscribers = new Map<string, Set<(value: ServerDataState) => void>>()
 
   let clientIdIndex = 0
 
@@ -31,7 +31,7 @@ export function createWSServer(port: number) {
 
   const eventHandlers = new Map<string, Record<string, (args: any) => any>>()
 
-  function update(key: string, value: any) {
+  function update(key: string, value: ServerDataState) {
     values.set(key, value)
 
     const allEventHandlers = getAllEventHandlers(value)
@@ -154,7 +154,7 @@ export function createWSServer(port: number) {
     update('', value)
   }
 
-  function onActionEvent(handler: EventHandler) {
+  function onActionEvent(handler: ActionEventHandler) {
     eventSubscribers.add(handler)
     return () => eventSubscribers.delete(handler)
   }
@@ -163,11 +163,11 @@ export function createWSServer(port: number) {
     return values.get(key)
   }
 
-  function subscribe(key: string, handler: (value?: DataState) => void) {
+  function subscribe(key: string, handler: (value?: ServerDataState) => void) {
     const handlers =
       subscribers.get(key) ||
       (() => {
-        const handlers = new Set<(value: DataState) => void>()
+        const handlers = new Set<(value: ServerDataState) => void>()
         subscribers.set(key, handlers)
         return handlers
       })()

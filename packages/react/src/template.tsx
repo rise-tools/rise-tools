@@ -9,6 +9,15 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
   validator?: (input?: T) => T
 }
 
+/** Server data state -- tbd: move to server package */
+export type ServerDataState = JSONValue | ServerHandlerEventDataState
+export type ServerHandlerEventDataState = HandlerEventDataState & {
+  handler: (args: any) => void
+}
+export function isServerEventDataState(obj: ServerDataState): obj is ServerHandlerEventDataState {
+  return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
+}
+
 /** Data state */
 export type DataState = ComponentDataState | ReferencedDataState | EventDataState
 export type ComponentDataState = {
@@ -22,29 +31,20 @@ export type ReferencedDataState = {
   $: 'ref'
   ref: string | [string, ...(string | number)[]]
 }
-type EventDataState = ActionEventDataState | AsyncHandlerEventDataState | HandlerEventDataState
+type EventDataState = ActionEventDataState | HandlerEventDataState
 export type ActionEventDataState<T = any> = {
   $: 'event'
   action?: T
 }
-export type AsyncHandlerEventDataState = {
-  $: 'event'
-  key: string
-  async: true
-  // server-only
-  handler?: (args: any) => Promise<any>
-}
 export type HandlerEventDataState = {
   $: 'event'
   key: string
-  async: false
-  // server-only
-  handler?: (args: any) => any
+  async: boolean
 }
 export function isHandlerEvent(
   event: TemplateEvent
-): event is TemplateEvent<HandlerEventDataState | AsyncHandlerEventDataState> {
-  return isHandlerEventDataState(event.dataState)
+): event is TemplateEvent<HandlerEventDataState> {
+  return isEventDataState(event.dataState) && 'key' in event.dataState
 }
 export function isActionEvent(event: TemplateEvent): event is TemplateEvent<ActionEventDataState> {
   return isEventDataState(event.dataState) && 'action' in event.dataState
@@ -89,11 +89,6 @@ export function isComponentDataState(obj: JSONValue): obj is ComponentDataState 
 }
 export function isEventDataState(obj: JSONValue): obj is EventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
-}
-export function isHandlerEventDataState(
-  obj: JSONValue
-): obj is HandlerEventDataState | AsyncHandlerEventDataState {
-  return isEventDataState(obj) && 'key' in obj
 }
 
 export function BaseTemplate({
