@@ -3,6 +3,8 @@ import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, use
 import {
   BaseTemplate,
   ComponentRegistry,
+  extractRefKey,
+  isComponentDataState,
   isCompositeDataState,
   JSONValue,
   ReferencedDataState,
@@ -38,14 +40,14 @@ function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']
     lookupValue = lookupValue[key]
   }
 
-  return lookupValue
-}
-
-function extractRefKey(ref: ReferencedDataState['ref']) {
-  if (typeof ref === 'string') {
-    return ref
+  if (isComponentDataState(lookupValue)) {
+    return {
+      ...lookupValue,
+      ref: refKey,
+    }
   }
-  return ref[0]
+
+  return lookupValue
 }
 
 function findAllRefs(stateNode: JSONValue, dataValues: DataValues): Set<string> {

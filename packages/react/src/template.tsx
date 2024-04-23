@@ -10,7 +10,7 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
 }
 
 /** Data state */
-export type DataState = ComponentDataState | ReferencedDataState | EventDataState
+export type DataState = JSONValue | ReferencedComponentDataState
 export type ComponentDataState = {
   $: 'component'
   key?: string
@@ -18,10 +18,20 @@ export type ComponentDataState = {
   children?: JSONValue
   props?: Record<string, JSONValue>
 }
+type ReferencedComponentDataState = ComponentDataState & {
+  ref: ReferencedDataState['ref']
+}
 export type ReferencedDataState = {
   $: 'ref'
   ref: string | [string, ...(string | number)[]]
 }
+export function extractRefKey(ref: ReferencedDataState['ref']) {
+  if (typeof ref === 'string') {
+    return ref
+  }
+  return ref[0]
+}
+
 type EventDataState = ActionEventDataState | HandlerEventDataState
 export type ActionEventDataState<T = any> = {
   $: 'event'
@@ -46,7 +56,9 @@ type SafeObject = {
   $?: never
 }
 export type JSONValue =
-  | DataState
+  | ComponentDataState
+  | ReferencedDataState
+  | EventDataState
   | SafeObject
   | string
   | number
@@ -148,7 +160,7 @@ export function BaseTemplate({
   function renderProp(
     propKey: string,
     stateNode: JSONValue,
-    parentNode: ComponentDataState,
+    parentNode: ComponentDataState | ReferencedComponentDataState,
     path: string
   ): any {
     if (isEventDataState(stateNode)) {
@@ -160,7 +172,12 @@ export function BaseTemplate({
           payload = '[native code]'
         }
         return onEvent?.({
-          target: { key: parentNode.key, component: parentNode.component, propKey, storeKey },
+          target: {
+            key: parentNode.key,
+            component: parentNode.component,
+            propKey,
+            storeKey: 'ref' in parentNode ? extractRefKey(parentNode.ref) : storeKey,
+          },
           dataState: stateNode,
           payload,
         })
