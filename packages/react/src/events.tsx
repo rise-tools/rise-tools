@@ -37,27 +37,22 @@ export function getAllEventHandlers(dataState: JSONValue) {
   return acc
 }
 
-export function handler(func: EventHandler): AsyncHandlerEventDataState | HandlerEventDataState {
+export function handler(func: EventHandler): HandlerEventDataState {
   const key = crypto.randomUUID()
-  switch (func.constructor.name) {
-    case 'AsyncFunction': {
-      return {
-        $: 'event',
-        key,
-        async: true,
-        handler: func,
-      }
-    }
-    case 'Function': {
-      return {
-        $: 'event',
-        key,
-        async: false,
-        handler: func,
-      }
-    }
-    default: {
-      throw new Error(`Unhandled function type: ${func.constructor.name}`)
-    }
+  return {
+    $: 'event',
+    key,
+    async: false,
+    handler: func,
+  }
+}
+
+export function asyncHandler(func: EventHandler): AsyncHandlerEventDataState {
+  const key = crypto.randomUUID()
+  return {
+    $: 'event',
+    key,
+    async: true,
+    handler: func,
   }
 }
