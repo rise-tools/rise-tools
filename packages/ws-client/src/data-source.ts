@@ -31,6 +31,7 @@ export type UpdateWebsocketMessage = {
 export type EventResponseWebsocketMessage = {
   $: 'evt-res'
   key: string
+  ok: boolean
   val: JSONValue
 }
 
@@ -42,7 +43,7 @@ export type ClientWebsocketMessage =
 export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponseWebsocketMessage
 
 type Handler = () => void
-type PromiseHandler = (resolvedValue: any) => void
+type PromiseHandler = (value: any) => void
 
 export function createWSDataSource(wsUrl: string): DataSource {
   const rws = new ReconnectingWebSocket(wsUrl)
@@ -78,10 +79,14 @@ export function createWSDataSource(wsUrl: string): DataSource {
         break
       }
       case 'evt-res': {
-        const resolve = promises.get(event.key)
-        if (resolve) {
-          resolve(event.val)
-          promises.delete(event.key)
+        const promise = promises.get(event.key)
+        if (promise) {
+          const [resolve, reject] = promise
+          if (event.ok) {
+            resolve(event.val)
+          } else {
+            reject(event.val)
+          }
         } else {
           console.warn(`No callback registered for the event: ${JSON.stringify(event)}`)
         }
@@ -129,7 +134,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
     }
   }
 
-  const promises = new Map<string, PromiseHandler>()
+  const promises = new Map<string, [PromiseHandler, PromiseHandler]>()
 
   const dataSource: DataSource = {
     get: (key: string) => {
@@ -144,9 +149,9 @@ export function createWSDataSource(wsUrl: string): DataSource {
     sendEvent: async (event) => {
       send({ $: 'evt', event })
       if (isHandlerEvent(event)) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
           // tbd: do we want to register a timeout here?
-          promises.set(event.dataState.key, resolve)
+          promises.set(event.dataState.key, [resolve, reject])
         })
       }
     },

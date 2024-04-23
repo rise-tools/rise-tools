@@ -74,14 +74,29 @@ export function createWSServer(port: number) {
       return
     }
 
-    const res = await handleEvent(message.event)
+    const { async, key } = message.event.dataState
 
-    if (message.event.dataState.async) {
-      clientSenders.get(clientId)?.({
-        $: 'evt-res',
-        key: message.event.dataState.key,
-        val: res,
-      })
+    try {
+      const res = await handleEvent(message.event)
+      if (async) {
+        clientSenders.get(clientId)?.({
+          $: 'evt-res',
+          key,
+          ok: true,
+          val: res,
+        })
+      }
+    } catch (error: any) {
+      if (async) {
+        clientSenders.get(clientId)?.({
+          $: 'evt-res',
+          key,
+          ok: false,
+          val: error,
+        })
+        return
+      }
+      console.warn(`Unhandled exception in event handler: ${message.event}`)
     }
   }
 
