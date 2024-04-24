@@ -29,12 +29,12 @@ it('should render a component', () => {
   )
 
   expect(component.asFragment()).toMatchInlineSnapshot(`
-<DocumentFragment>
-  <div
-    height="50"
-  />
-</DocumentFragment>
-`)
+    <DocumentFragment>
+      <div
+        height="50"
+      />
+    </DocumentFragment>
+  `)
 })
 
 it('should render component at a path', () => {
