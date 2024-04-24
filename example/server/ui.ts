@@ -1,4 +1,4 @@
-import { ComponentDataState, DataState } from '@final-ui/react'
+import { asyncHandler, ComponentDataState, ServerDataState } from '@final-ui/react'
 
 import { hslToHex } from './color'
 import { getSequenceActiveItem } from './eg-main'
@@ -31,7 +31,7 @@ function icon(name: string): ComponentDataState {
   }
 }
 
-function section(title: string, children: DataState[], key?: string): DataState {
+function section(title: string, children: ServerDataState[], key?: string): ServerDataState {
   return {
     $: 'component',
     component: 'YStack',
@@ -199,6 +199,103 @@ function getVideoControls(mediaPath: string, state: VideoMedia, ctx: UIContext):
 }
 
 function getColorControls(mediaPath: string, state: ColorMedia, ctx: UIContext): DataState[] {
+  return [] as const
+}
+
+function scroll(children: any[]): ServerDataState {
+  return {
+    $: 'component',
+    component: 'ScrollView',
+    props: {
+      padding: '$4',
+      gap: '$4',
+    },
+    children,
+  }
+}
+
+function getVideoControls(
+  mediaPath: string,
+  state: VideoMedia,
+  context: UIContext
+): ServerDataState[] {
+  const player = context.video.getPlayer(state.id)
+  return [
+    {
+      $: 'component',
+      key: 'selectVideo',
+      component: 'RiseSelectField',
+      props: {
+        unselectedLabel: 'Select Video...',
+        value: state.track,
+        onValueChange: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'track'],
+        },
+        options: { $: 'ref', ref: ['videoList'] },
+      },
+    },
+    {
+      $: 'component',
+      key: 'restart',
+      component: 'Button',
+      children: 'Restart Video',
+      props: {
+        onPress: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'restart'],
+        },
+      },
+    },
+    {
+      $: 'component',
+      key: 'loopBounce',
+      component: 'RiseSwitchField',
+      props: {
+        value: state?.params?.loopBounce || false,
+        label: 'Loop Bounce',
+        onCheckedChange: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'loopBounce'],
+        },
+      },
+    },
+    {
+      $: 'component',
+      key: 'reverse',
+      component: 'RiseSwitchField',
+      props: {
+        value: state?.params?.reverse || false,
+        label: 'Reverse Playback',
+        onCheckedChange: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'reverse'],
+        },
+      },
+    },
+    {
+      $: 'component',
+      key: 'info',
+      component: 'Label',
+      children: `Frame Count: ${player.getFrameCount()}`,
+    },
+    {
+      $: 'component',
+      key: 'effect',
+      component: 'Button',
+      children: 'Effects',
+      props: {
+        icon: icon('Sparkles'),
+        onPress: {
+          $: 'event',
+          action: ['navigate', `${mediaPath}:effects`],
+        },
+      },
+    },
+  ]
+}
+
+function getColorControls(mediaPath: string, state: ColorMedia): ServerDataState[] {
   return [
     {
       $: 'component',
@@ -262,7 +359,7 @@ function getColorControls(mediaPath: string, state: ColorMedia, ctx: UIContext):
   ]
 }
 
-export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | undefined): DataState {
+export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | undefined): ServerDataState {
   return section('Effects', [
     sortableList({
       props: {
@@ -514,7 +611,7 @@ const newMediaOptions = [
   { key: 'sequence', label: 'Sequence' },
 ]
 
-export function getMediaControls(state: Media, mediaLinkPath: string, ctx: UIContext): DataState[] {
+export function getMediaControls(state: Media, mediaLinkPath: string, ctx: UIContext): ServerDataState[] {
   if (state.type === 'off') {
     return [
       {
@@ -557,7 +654,10 @@ export function getMediaControls(state: Media, mediaLinkPath: string, ctx: UICon
   ]
 }
 
-export function getTransitionControls(transition: Transition, state: TransitionState): DataState[] {
+export function getTransitionControls(
+  transition: Transition,
+  state: TransitionState
+): ServerDataState[] {
   return [
     {
       $: 'component',
@@ -704,7 +804,6 @@ export function getUIRoot(state: MainState, ctx: UIContext) {
 //       //     // icon: { $: 'component', key: 'lol', component: 'RiseIcon', props: { icon: 'Check' } },
 //       //   },
 //       // },
-
 //       {
 //         $: 'component',
 //         key: 'quickEffects',
@@ -747,11 +846,23 @@ export function getUIRoot(state: MainState, ctx: UIContext) {
 //   }
 // }
 
+// tbd: implement this
+function getSequenceControls(
+  // eslint-disable-next-line
+  mediaLinkPath: string,
+  // eslint-disable-next-line
+  state: SequenceMedia,
+  // eslint-disable-next-line
+  context: UIContext
+): ServerDataState[] {
+  return []
+}
+
 function getLayersControls(
   mediaPath: string,
   state: LayersMedia,
   ctx: UIContext,
-  { header = [], footer = [] }: { header?: DataState[]; footer?: DataState[] } = {}
+  { ServerDataState = [], footer = [] }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {}
 ): DataState {
   return {
     $: 'component',
@@ -869,7 +980,7 @@ function getSequenceControls(
   }
 }
 
-export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UIContext): DataState {
+export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UIContext): ServerDataState {
   return getMediaUI(mediaPath, layer.media, context, {
     footer: [],
     header: [
@@ -1075,6 +1186,19 @@ function getGenericMediaUI(mediaPath: string, media: Media, ctx: UIContext): Com
                     $: 'event',
                     action: ['updateMedia', mediaPath, 'metadata'],
                   },
+                  // Comment this out to test async event handling
+                  // onSubmit: asyncHandler(async (args: any) => {
+                  //   console.log('form submitted', JSON.stringify(args))
+                  //   // Simulate a pending state
+                  //   return new Promise((resolve) => {
+                  //     setTimeout(resolve, 5000)
+                  //   })
+                  //   // form submitted
+                  //   // {"target":{"component":"RiseForm","propKey":"onSubmit",
+                  //   // "path":"liveMedia:layer:e71e8271-9dc9-40c0-987b-1000d04f0df3"},
+                  //   // "dataState":{"$":"event","key":"26f727b2-7c28-4736-a3d7-a1102e859fcb","async":true},
+                  //   // "payload":{"name":"dd"}}
+                  // }),
                 },
                 children: [
                   {
@@ -1205,7 +1329,7 @@ export function getMediaUI(
   mediaPath: string,
   mediaState: Media,
   ctx: UIContext,
-  { header = [], footer = [] }: { header?: DataState[]; footer?: DataState[] } = {}
+  { header = [], footer = [] }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {}
 ): DataState {
   if (mediaState.type === 'color') {
     return scroll([...header, ...getColorControls(mediaPath, mediaState, ctx), ...footer])
@@ -1230,7 +1354,7 @@ export function getMediaUI(
   ])
 }
 
-// export function getQuickEffects() {
+// export function getQuickEffects(): ServerDataState {
 //   return {
 //     $: 'component',
 //     component: 'YStack',
@@ -1246,7 +1370,7 @@ export function getMediaUI(
 //   }
 // }
 
-// export function getBeatEffects(mainState: MainState) {
+// export function getBeatEffects(mainState: MainState): ServerDataState {
 //   return {
 //     $: 'component',
 //     component: 'YStack',
@@ -1359,7 +1483,6 @@ export function getMediaUI(
 //         { $: 'ref', ref: ['stagelinqConnection'] },
 //         // simpleLabel('Coming Soon')
 //       ]),
-
 //       // { $: 'component', key: 'waveIn', component: 'Button', children: 'WaveIn' },
 //       // { $: 'component', key: 'waveOut', component: 'Button', children: 'WaveOut' },
 //     ],

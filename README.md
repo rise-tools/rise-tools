@@ -228,8 +228,8 @@ Then, in the `onEvent` handler, you may want to do as follows:
   components={components}
   dataSource={dataSource} 
   onEvent={(event) => {
-    // assumes event.action is an array
-    if (event.action?.includes('navigation')) {
+    // assumes event.dataState.action is an array
+    if (event.dataState.action?.includes('navigation')) {
       return handleNavigationEvent(event)
     }
     handleGenericEvent(event)

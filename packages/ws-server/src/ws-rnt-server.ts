@@ -1,4 +1,10 @@
-import type { DataState, TemplateEvent } from '@final-ui/react'
+import {
+  ActionEvent,
+  extractRefKey,
+  getAllEventHandlers,
+  isHandlerEvent,
+  ServerDataState,
+} from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
   EventWebsocketMessage,
@@ -8,8 +14,8 @@ import type {
 } from '@final-ui/ws-client'
 import WebSocket from 'ws'
 
-type EventHandler = (
-  event: TemplateEvent,
+type ActionEventHandler = (
+  event: ActionEvent,
   eventOpts: {
     time: number
     clientId: string
@@ -19,18 +25,24 @@ type EventHandler = (
 export function createWSServer(port: number) {
   const wss = new WebSocket.Server({ port })
 
-  const values = new Map<string, DataState>()
+  const values = new Map<string, ServerDataState>()
 
   const clientSubscribers = new Map<string, Map<string, () => void>>()
-  const eventSubscribers = new Set<EventHandler>()
-  const subscribers = new Map<string, Set<(value: DataState) => void>>()
+  const eventSubscribers = new Set<ActionEventHandler>()
+  const subscribers = new Map<string, Set<(value: ServerDataState) => void>>()
 
   let clientIdIndex = 0
 
   const clientSenders = new Map<string, (value: ServerWebsocketMessage) => void>()
 
-  function update(key: string, value: any) {
+  const eventHandlers = new Map<string, Record<string, (args: any) => any>>()
+
+  function update(key: string, value: ServerDataState) {
     values.set(key, value)
+
+    const allEventHandlers = getAllEventHandlers(value)
+    eventHandlers.set(key, allEventHandlers)
+
     const handlers = clientSubscribers.get(key)
     if (!handlers) return
     handlers.forEach((handler) => handler())
@@ -68,8 +80,48 @@ export function createWSServer(port: number) {
     message.keys.forEach((key: string) => clientUnsubscribe(clientId, key))
   }
 
-  function handleEvent(clientId: string, message: EventWebsocketMessage) {
-    eventSubscribers.forEach((handler) => handler(message.event, { time: Date.now(), clientId }))
+  async function handleMessage(clientId: string, message: EventWebsocketMessage) {
+    if (!isHandlerEvent(message.event)) {
+      eventSubscribers.forEach((handler) => handler(message.event, { time: Date.now(), clientId }))
+      return
+    }
+
+    const {
+      dataState,
+      target: { path },
+    } = message.event
+
+    try {
+      const handleEvent = eventHandlers.get(extractRefKey(path))?.[dataState.key]
+      if (!handleEvent) {
+        console.warn(
+          `Missing event handler on the server for event: ${JSON.stringify(message.event)}`
+        )
+        return
+      }
+      const res = await handleEvent(message.event)
+      if (dataState.async) {
+        clientSenders.get(clientId)?.({
+          $: 'evt-res',
+          key: dataState.key,
+          ok: true,
+          val: res,
+        })
+      }
+    } catch (error: any) {
+      if (dataState.async) {
+        clientSenders.get(clientId)?.({
+          $: 'evt-res',
+          key: dataState.key,
+          ok: false,
+          val: error,
+        })
+        return
+      }
+      console.warn(
+        `Unhandled exception in event handler: ${message.event}. Error: ${JSON.stringify(error)}`
+      )
+    }
   }
 
   wss.on('connection', function connection(ws) {
@@ -96,7 +148,7 @@ export function createWSServer(port: number) {
         case 'unsub':
           return clientUnsubscribes(clientId, message)
         case 'evt':
-          return handleEvent(clientId, message)
+          return handleMessage(clientId, message)
         default:
           console.log('Unrecognized message:', messageString)
           return
@@ -108,7 +160,7 @@ export function createWSServer(port: number) {
     update('', value)
   }
 
-  function subscribeEvent(handler: EventHandler) {
+  function onActionEvent(handler: ActionEventHandler) {
     eventSubscribers.add(handler)
     return () => eventSubscribers.delete(handler)
   }
@@ -117,11 +169,11 @@ export function createWSServer(port: number) {
     return values.get(key)
   }
 
-  function subscribe(key: string, handler: (value?: DataState) => void) {
+  function subscribe(key: string, handler: (value?: ServerDataState) => void) {
     const handlers =
       subscribers.get(key) ||
       (() => {
-        const handlers = new Set<(value: DataState) => void>()
+        const handlers = new Set<(value: ServerDataState) => void>()
         subscribers.set(key, handlers)
         return handlers
       })()
@@ -134,5 +186,5 @@ export function createWSServer(port: number) {
     console.log(`WebSocket server started on port ${port}`)
   })
 
-  return { update, subscribeEvent, subscribe, get, updateRoot }
+  return { update, onActionEvent, subscribe, get, updateRoot }
 }

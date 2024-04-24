@@ -36,7 +36,6 @@ export function SortableList(props: z.infer<typeof SortableListProps>) {
           return (
             <ScaleDecorator>
               <TouchableOpacity
-                // @ts-ignore tbd: update `TemplateComponentProps` to avoid type error
                 onPress={() => item.onPress?.()}
                 onLongPress={drag}
                 disabled={isActive}
