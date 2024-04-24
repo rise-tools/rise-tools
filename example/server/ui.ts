@@ -934,50 +934,115 @@ export function getMediaLayerUI(
 function getLayerForm(mediaPath: string, layer: Layer): ComponentDataState {
   return {
     $: 'component',
-    component: 'RiseForm',
-    props: {
-      onSubmit: {
-        $: 'event',
-        action: ['updateMedia', mediaPath, 'metadata'],
-      },
-      // Comment this out to test async event handling
-      // onSubmit: asyncHandler(async (args: any) => {
-      //   console.log('form submitted', JSON.stringify(args))
-      //   // Simulate a pending state
-      //   return new Promise((resolve) => {
-      //     setTimeout(resolve, 5000)
-      //   })
-      //   // form submitted
-      //   // {"target":{"component":"RiseForm","propKey":"onSubmit",
-      //   // "path":"liveMedia:layer:e71e8271-9dc9-40c0-987b-1000d04f0df3"},
-      //   // "dataState":{"$":"event","key":"26f727b2-7c28-4736-a3d7-a1102e859fcb","async":true},
-      //   // "payload":{"name":"dd"}}
-      // }),
-    },
+    component: 'AlertDialog',
     children: [
       {
         $: 'component',
-        component: 'RiseTextField',
+        component: 'AlertDialogTrigger',
         props: {
-          name: 'name',
-          label: {
-            $: 'component',
-            component: 'Label',
-            children: 'Layer title',
-            props: {
-              htmlFor: 'title',
-            },
-          },
-          value: layer.name,
-          placeholder: 'Enter title...',
-          autoCapitalize: 'none',
-          autoCorrect: false,
+          asChild: true,
+        },
+        children: {
+          $: 'component',
+          component: 'Button',
+          children: 'Edit title',
         },
       },
       {
         $: 'component',
-        component: 'RiseSubmitButton',
-        children: 'Submit',
+        component: 'AlertDialogPortal',
+        children: [
+          {
+            $: 'component',
+            component: 'AlertDialogOverlay',
+          },
+          {
+            $: 'component',
+            component: 'AlertDialogContent',
+            children: {
+              $: 'component',
+              component: 'RiseForm',
+              props: {
+                onSubmit: {
+                $: 'event',
+                action: ['updateMedia', mediaPath, 'metadata'],
+              },
+              // Comment this out to test async event handling
+              // onSubmit: asyncHandler(async (args: any) => {
+              //   console.log('form submitted', JSON.stringify(args))
+              //   // Simulate a pending state
+              //   return new Promise((resolve) => {
+              //     setTimeout(resolve, 5000)
+              //   })
+              //   // form submitted
+              //   // {"target":{"component":"RiseForm","propKey":"onSubmit",
+              //   // "path":"liveMedia:layer:e71e8271-9dc9-40c0-987b-1000d04f0df3"},
+              //   // "dataState":{"$":"event","key":"26f727b2-7c28-4736-a3d7-a1102e859fcb","async":true},
+              //   // "payload":{"name":"dd"}}
+              // }),
+              },
+              children: [
+                {
+                  $: 'component',
+                  component: 'RiseTextField',
+                  props: {
+                    name: 'name',
+                    label: {
+                      $: 'component',
+                      component: 'Label',
+                      children: 'Layer title',
+                      props: {
+                        htmlFor: 'name',
+                      },
+                    },
+                    value: layer.name,
+                    placeholder: 'Enter title...',
+                    autoCapitalize: 'none',
+                    autoCorrect: false,
+                    marginBottom: '$2',
+                  },
+                },
+                {
+                  $: 'component',
+                  component: 'XStack',
+                  props: {
+                    justifyContent: 'flex-end',
+                    space: '$2',
+                  },
+                  children: [
+                    {
+                      $: 'component',
+                      component: 'AlertDialogCancel',
+                      props: {
+                        asChild: true,
+                      },
+                      children: {
+                        $: 'component',
+                        component: 'Button',
+                        children: 'Cancel',
+                      },
+                    },
+                    {
+                      $: 'component',
+                      component: 'AlertDialogAction',
+                      props: {
+                        asChild: true,
+                      },
+                      children: {
+                        $: 'component',
+                        component: 'RiseSubmitButton',
+                        props: {
+                          theme: 'active',
+                        },
+                        children: 'Submit',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
       },
     ],
   }
