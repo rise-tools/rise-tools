@@ -28,12 +28,13 @@ it('should render a component', () => {
     />
   )
 
-  expect(component.getByTestId('root')).toMatchInlineSnapshot(`
-    <div
-      data-testid="root"
-      height="50"
-    />
-  `)
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+<DocumentFragment>
+  <div
+    height="50"
+  />
+</DocumentFragment>
+`)
 })
 
 it('should render component at a path', () => {
@@ -65,12 +66,12 @@ it('should render component at a path', () => {
   )
 
   expect(getStore).toHaveBeenCalledWith('mainStore')
-  expect(component.getByTestId('root')).toMatchInlineSnapshot(`
-    <div
-      data-testid="root"
-    >
-      Hello World!
-    </div>
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div>
+        Hello World!
+      </div>
+    </DocumentFragment>
   `)
 })
 
@@ -84,6 +85,7 @@ it('should resolve a ref', () => {
         children: [
           {
             $: 'component',
+            key: 'ViewComponent',
             component: 'View',
             children: 'Hello World!',
           },
@@ -109,21 +111,17 @@ it('should resolve a ref', () => {
   )
 
   expect(getStore).toHaveBeenLastCalledWith('mainStore')
-  expect(component.getByTestId('root')).toMatchInlineSnapshot(`
-    <div
-      data-testid="root"
-    >
-      <div
-        data-testid="root.children[0]"
-      >
-        Hello World!
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div>
+        <div>
+          Hello World!
+        </div>
+        <div>
+          Hello World!
+        </div>
       </div>
-      <div
-        data-testid="root.children[1]"
-      >
-        Hello World!
-      </div>
-    </div>
+    </DocumentFragment>
   `)
 })
 
@@ -212,9 +210,7 @@ it('should manage subscription to stores referenced by refs', () => {
 
   expect(element.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
-      <div
-        data-testid="root"
-      >
+      <div>
         John Doe
       </div>
     </DocumentFragment>

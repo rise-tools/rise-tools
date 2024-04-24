@@ -3,10 +3,10 @@ import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, use
 import {
   BaseTemplate,
   ComponentRegistry,
-  extractRefKey,
   isComponentDataState,
   isCompositeDataState,
   JSONValue,
+  Path,
   ReferencedDataState,
   TemplateEvent,
 } from './template'
@@ -43,11 +43,18 @@ function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']
   if (isComponentDataState(lookupValue)) {
     return {
       ...lookupValue,
-      ref,
+      refKey,
     }
   }
 
   return lookupValue
+}
+
+export function extractRefKey(ref: Path) {
+  if (typeof ref === 'string') {
+    return ref
+  }
+  return ref[0]
 }
 
 function findAllRefs(stateNode: JSONValue, dataValues: DataValues): Set<string> {
@@ -165,29 +172,24 @@ function resolveRef(dataValues: DataValues, lookup: ReferencedDataState['ref']):
 export function Template({
   components,
   dataSource,
-  storeKey = '',
+  path = '',
   onEvent,
 }: {
-  storeKey?: string
+  path?: Path
   dataSource: DataSource
   components: ComponentRegistry
   onEvent: ComponentProps<typeof BaseTemplate>['onEvent']
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
-    createRefStateManager(setDataValues, dataSource, extractRefKey(storeKey))
+    createRefStateManager(setDataValues, dataSource, extractRefKey(path))
   )
   useEffect(() => {
     const release = refStateManager.current.activate()
     return () => release()
   }, [])
-  const rootDataState = resolveRef(dataValues, storeKey)
+  const rootDataState = resolveRef(dataValues, path)
   return (
-    <BaseTemplate
-      components={components}
-      storeKey={storeKey}
-      dataState={rootDataState}
-      onEvent={onEvent}
-    />
+    <BaseTemplate components={components} path={path} dataState={rootDataState} onEvent={onEvent} />
   )
 }

@@ -82,11 +82,11 @@ export function createWSServer(port: number) {
 
     const {
       dataState,
-      target: { storeKey },
+      target: { path },
     } = message.event
 
     try {
-      const handleEvent = eventHandlers.get(storeKey)?.[dataState.key]
+      const handleEvent = eventHandlers.get(path)?.[dataState.key]
       if (!handleEvent) {
         console.warn(
           `Missing event handler on the server for event: ${JSON.stringify(message.event)}`

@@ -19,19 +19,13 @@ export type ComponentDataState = {
   props?: Record<string, JSONValue>
 }
 type ReferencedComponentDataState = ComponentDataState & {
-  ref: ReferencedDataState['ref']
+  refKey: string
 }
+export type Path = string | [string, ...(string | number)[]]
 export type ReferencedDataState = {
   $: 'ref'
-  ref: string | [string, ...(string | number)[]]
+  ref: Path
 }
-export function extractRefKey(ref: ReferencedDataState['ref']) {
-  if (typeof ref === 'string') {
-    return ref
-  }
-  return ref[0]
-}
-
 type EventDataState = ActionEventDataState | HandlerEventDataState
 export type ActionEventDataState<T = any> = {
   $: 'event'
@@ -72,7 +66,7 @@ export type TemplateEvent<T = EventDataState, K = any> = {
     key?: string
     component: string
     propKey: string
-    storeKey: string
+    path: Path
   }
   dataState: T
   payload: K
@@ -90,22 +84,27 @@ export function isCompositeDataState(obj: any): obj is ComponentDataState | Refe
 export function isComponentDataState(obj: JSONValue): obj is ComponentDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'component'
 }
+export function isReferencedComponentDataState(
+  obj: JSONValue
+): obj is ReferencedComponentDataState {
+  return isComponentDataState(obj) && 'refKey' in obj
+}
 export function isEventDataState(obj: JSONValue): obj is EventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
 }
 
 export function BaseTemplate({
-  storeKey = '',
+  path = '',
   components,
   dataState,
   onEvent,
 }: {
-  storeKey?: string
+  path?: Path
   components: ComponentRegistry
   dataState: JSONValue
   onEvent?: (event: TemplateEvent) => Promise<any>
 }) {
-  function renderComponent(stateNode: ComponentDataState, path: string) {
+  function renderComponent(stateNode: ComponentDataState, path: Path) {
     const componentDefinition = components[stateNode.component]
     if (!componentDefinition) {
       throw new RenderError(`Unknown component: ${stateNode.component}`)
@@ -133,24 +132,26 @@ export function BaseTemplate({
       }
     }
 
-    const children = stateNode.children ? render(stateNode.children, `${path}.children`) : null
+    const children = stateNode.children ? render(stateNode.children, path) : null
 
-    return <Component key={path} data-testid={path} {...componentProps} children={children} />
+    return <Component key={stateNode.key} {...componentProps} children={children} />
   }
 
-  function render(stateNode: JSONValue, path: string, index?: number): React.ReactNode {
+  function render(stateNode: JSONValue, path: Path): React.ReactNode {
     if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
     if (Array.isArray(stateNode)) {
-      return stateNode.map((item, index) => render(item, path, index))
+      return stateNode.map((item) => render(item, path))
     }
     if (!isCompositeDataState(stateNode)) {
       throw new Error('Objects are not valid as a React child.')
     }
     if (stateNode.$ === 'component') {
-      const key = stateNode.key || index?.toString()
-      return renderComponent(stateNode, key ? `${path}[${key}]` : path)
+      return renderComponent(
+        stateNode,
+        isReferencedComponentDataState(stateNode) ? stateNode.refKey : path
+      )
     }
     if (stateNode.$ === 'ref') {
       throw new Error('Your data includes refs. You must use a <Template /> component instead.')
@@ -159,11 +160,11 @@ export function BaseTemplate({
 
   function renderProp(
     propKey: string,
-    stateNode: JSONValue,
+    propValue: JSONValue,
     parentNode: ComponentDataState | ReferencedComponentDataState,
-    path: string
+    path: Path
   ): any {
-    if (isEventDataState(stateNode)) {
+    if (isEventDataState(propValue)) {
       return async (payload: any) => {
         // React events (e.g. from onPress) contain cyclic structures that can't be serialized
         // with JSON.stringify and also provide little to no value for the server.
@@ -176,35 +177,30 @@ export function BaseTemplate({
             key: parentNode.key,
             component: parentNode.component,
             propKey,
-            storeKey: 'ref' in parentNode ? extractRefKey(parentNode.ref) : storeKey,
+            path,
           },
-          dataState: stateNode,
+          dataState: propValue,
           payload,
         })
       }
     }
-    if (Array.isArray(stateNode)) {
-      return stateNode.map((item, index) =>
-        renderProp(propKey, item, parentNode, `${path}.props[${propKey}][${index}]`)
-      )
+    if (Array.isArray(propValue)) {
+      return propValue.map((item) => renderProp(propKey, item, parentNode, path))
     }
-    if (isCompositeDataState(stateNode)) {
-      return render(stateNode, `${path}.props[${propKey}]`)
+    if (isCompositeDataState(propValue)) {
+      return render(propValue, path)
     }
-    if (stateNode && typeof stateNode === 'object') {
+    if (propValue && typeof propValue === 'object') {
       return Object.fromEntries(
-        Object.entries(stateNode).map(([key, value]) => {
-          return [
-            key,
-            renderProp(`${propKey}.${key}`, value, parentNode, `${path}.props[${propKey}][${key}]`),
-          ]
+        Object.entries(propValue).map(([key, value]) => {
+          return [key, renderProp(key, value, parentNode, path)]
         })
       )
     }
-    return stateNode
+    return propValue
   }
 
-  return <ErrorBoundary>{render(dataState, 'root')}</ErrorBoundary>
+  return <ErrorBoundary>{render(dataState, path)}</ErrorBoundary>
 }
 
 /** Error boundary */
