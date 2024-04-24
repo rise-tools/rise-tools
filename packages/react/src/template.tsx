@@ -87,7 +87,7 @@ export function isComponentDataState(obj: JSONValue): obj is ComponentDataState 
 export function isReferencedComponentDataState(
   obj: JSONValue
 ): obj is ReferencedComponentDataState {
-  return isComponentDataState(obj) && 'refKey' in obj
+  return isComponentDataState(obj) && 'path' in obj
 }
 export function isEventDataState(obj: JSONValue): obj is EventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
