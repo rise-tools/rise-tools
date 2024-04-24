@@ -24,7 +24,7 @@ export type DataSource = {
 /** Refs */
 type DataValues = Record<string, JSONValue>
 
-function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
+function lookupRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
   if (typeof ref === 'string') {
     return dataValues[ref]
   }
@@ -40,14 +40,20 @@ function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']
     lookupValue = lookupValue[key]
   }
 
-  if (isComponentDataState(lookupValue)) {
+  return lookupValue
+}
+
+function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
+  const value = lookupRefValue(dataValues, ref)
+
+  if (isComponentDataState(value)) {
     return {
-      ...lookupValue,
+      ...value,
       path: ref,
     }
   }
 
-  return lookupValue
+  return value
 }
 
 export function extractRefKey(ref: Path) {

@@ -1,7 +1,7 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { DataSource, Template } from '..'
+import { DataSource, Template, TemplateEvent } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
@@ -76,29 +76,43 @@ it('should render component at a path', () => {
 })
 
 it('should resolve a ref', () => {
-  const getStore = jest.fn().mockReturnValue({
-    subscribe: () => jest.fn(),
-    get() {
+  const dataSource: DataSource = {
+    get: (store: string) => {
+      if (store === 'secondStore') {
+        return {
+          subscribe: () => jest.fn(),
+          get() {
+            return {
+              $: 'component',
+              key: 'SecondViewComponent',
+              component: 'View',
+              children: 'Referenced',
+            }
+          },
+        }
+      }
       return {
-        $: 'component',
-        component: 'View',
-        children: [
-          {
+        subscribe: () => jest.fn(),
+        get() {
+          return {
             $: 'component',
-            key: 'ViewComponent',
             component: 'View',
-            children: 'Hello World!',
-          },
-          {
-            $: 'ref',
-            ref: ['mainStore', 'children', 0],
-          },
-        ],
+            children: [
+              {
+                $: 'component',
+                key: 'ViewComponent',
+                component: 'View',
+                children: 'Hello World!',
+              },
+              {
+                $: 'ref',
+                ref: 'secondStore',
+              },
+            ],
+          }
+        },
       }
     },
-  })
-  const dataSource: DataSource = {
-    get: getStore,
     sendEvent: jest.fn(),
   }
   const component = render(
@@ -110,7 +124,6 @@ it('should resolve a ref', () => {
     />
   )
 
-  expect(getStore).toHaveBeenLastCalledWith('mainStore')
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       <div>
@@ -118,11 +131,78 @@ it('should resolve a ref', () => {
           Hello World!
         </div>
         <div>
-          Hello World!
+          Referenced
         </div>
       </div>
     </DocumentFragment>
   `)
+})
+
+it('should send an event with ref as a path when trigerred by referenced component', () => {
+  const dataSource: DataSource = {
+    get: (store: string) => {
+      if (store === 'secondStore') {
+        return {
+          subscribe: () => jest.fn(),
+          get() {
+            return {
+              $: 'component',
+              key: 'ReferencedViewComponent',
+              component: 'View',
+              props: {
+                ['data-testid']: 'button-referenced',
+                onClick: {
+                  $: 'event',
+                },
+              },
+            }
+          },
+        }
+      }
+      return {
+        subscribe: () => jest.fn(),
+        get() {
+          return {
+            $: 'component',
+            component: 'View',
+            children: [
+              {
+                $: 'component',
+                key: 'ViewComponent',
+                component: 'View',
+                props: {
+                  ['data-testid']: 'button-local',
+                  onClick: {
+                    $: 'event',
+                  },
+                },
+              },
+              {
+                $: 'ref',
+                ref: 'secondStore',
+              },
+            ],
+          }
+        },
+      }
+    },
+    sendEvent: jest.fn(),
+  }
+
+  const onEvent = jest.fn()
+  const component = render(
+    <Template
+      components={BUILT_IN_COMPONENTS}
+      path="mainStore"
+      dataSource={dataSource}
+      onEvent={onEvent}
+    />
+  )
+  fireEvent.click(component.getByTestId('button-local'))
+  expect((onEvent.mock.lastCall[0] as TemplateEvent).target.path).toEqual('mainStore')
+
+  fireEvent.click(component.getByTestId('button-referenced'))
+  expect((onEvent.mock.lastCall[0] as TemplateEvent).target.path).toEqual('secondStore')
 })
 
 it('should subscribe to the root store', () => {

@@ -311,3 +311,29 @@ it('should accept event handler as a prop', () => {
 it.skip('should validate props with a validator', () => {})
 
 it.skip('should accept event handlers as nested values in props', () => {})
+
+it('should send an event with path', () => {
+  const onEvent = jest.fn()
+  const component = render(
+    <BaseTemplate
+      components={BUILT_IN_COMPONENTS}
+      path="mainState"
+      dataState={{
+        $: 'component',
+        key: 'button',
+        component: 'View',
+        props: {
+          ['data-testid']: 'button',
+          onClick: {
+            $: 'event',
+          },
+        },
+      }}
+      onEvent={onEvent}
+    />
+  )
+  fireEvent.click(component.getByTestId('button'))
+
+  const firedEvent = onEvent.mock.lastCall[0] as TemplateEvent
+  expect(firedEvent.target.path).toBe('mainState')
+})

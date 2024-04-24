@@ -15,8 +15,8 @@ export type ComponentDataState = {
   $: 'component'
   key?: string
   component: ComponentIdentifier
-  children?: JSONValue
-  props?: Record<string, JSONValue>
+  children?: DataState
+  props?: Record<string, DataState>
 }
 type ReferencedComponentDataState = ComponentDataState & {
   path: Path
@@ -101,7 +101,7 @@ export function BaseTemplate({
 }: {
   path?: Path
   components: ComponentRegistry
-  dataState: JSONValue
+  dataState: DataState
   onEvent?: (event: TemplateEvent) => Promise<any>
 }) {
   function renderComponent(stateNode: ComponentDataState, path: Path) {
