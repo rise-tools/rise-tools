@@ -99,13 +99,32 @@ export function frameInvert(info: EGInfo, frame: Frame) {
 export function frameDesaturate(info: EGInfo, frame: Frame, amount: number) {
   const { frameSize } = info
   const outputFrame = new Uint8Array(frameSize)
+
   for (let i = 0; i < frameSize; i += 3) {
+    // Calculate the average of the RGB values to get the gray scale (desaturated) color
     const desaturatedColor = (frame[i] + frame[i + 1] + frame[i + 2]) / 3
-    outputFrame[i] = Math.round(frame[i] * (1 - amount) + desaturatedColor * amount)
-    outputFrame[i + 1] = Math.round(frame[i + 1] * (1 - amount) + desaturatedColor * amount)
-    outputFrame[i + 2] = Math.round(frame[i + 2] * (1 - amount) + desaturatedColor * amount)
+
+    // Calculate new color values based on amount
+    outputFrame[i] = clampColor(adjustChannel(frame[i], desaturatedColor, amount))
+    outputFrame[i + 1] = clampColor(adjustChannel(frame[i + 1], desaturatedColor, amount))
+    outputFrame[i + 2] = clampColor(adjustChannel(frame[i + 2], desaturatedColor, amount))
   }
   return outputFrame
+}
+
+function adjustChannel(original, gray, amount) {
+  if (amount > 0) {
+    // Reduce saturation by blending the channel towards gray
+    return original + (gray - original) * amount
+  } else {
+    // Increase saturation by amplifying the difference from gray
+    return original + (original - gray) * -amount
+  }
+}
+
+function clampColor(value) {
+  // Clamp the color value to ensure it stays within the 0-255 range
+  return Math.max(0, Math.min(255, Math.round(value)))
 }
 
 function hue2rgb(p: number, q: number, t: number) {
