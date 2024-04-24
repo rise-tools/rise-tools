@@ -529,7 +529,6 @@ function updateState(state: any, path: string[], value: any): any {
 wsServer.onActionEvent((event) => {
   const {
     target: { key, propKey },
-    dataState: { action },
   } = event
   if (key === 'offButton' && propKey === 'onPress') {
     mainStateUpdate((state) => ({ ...state, mode: 'off' }))
@@ -718,12 +717,12 @@ function rootMediaUpdate(mediaPath: string[], updater: (media: Media) => Media) 
   })
 }
 
-function handleLibraryEvent(event: TemplateEvent<ServerAction>): boolean {
-  if (event.action?.[0] !== 'libraryAction') {
+function handleLibraryEvent(event: ActionEvent): boolean {
+  if (event.dataState.action?.[0] !== 'libraryAction') {
     return false
   }
-  const libraryKey = event.action?.[1]
-  const action = event.action?.[2]
+  const libraryKey = event.dataState.action?.[1]
+  const action = event.dataState.action?.[2]
   if (action === 'goReady' && libraryKey) {
     console.log('goReady', libraryKey)
     const media = readLibraryKey(libraryKey)
@@ -939,7 +938,7 @@ function handleMediaEvent(event: ActionEvent): boolean {
   }
   if (action === 'removeLayer') {
     const targetPath = mediaPath.slice(0, -2)
-    const layerKey = event.action.at(-1)
+    const layerKey = event.dataState.action.at(-1)
     rootMediaUpdate(targetPath, (media) => {
       if (media.type !== 'layers') return media
       return {
@@ -951,7 +950,7 @@ function handleMediaEvent(event: ActionEvent): boolean {
   }
   if (action === 'removeItem') {
     const targetPath = mediaPath.slice(0, -2)
-    const itemKey = event.action.at(-1)
+    const itemKey = event.dataState.action.at(-1)
     rootMediaUpdate(targetPath, (media) => {
       if (media.type !== 'sequence') return media
       return {

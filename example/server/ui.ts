@@ -1,4 +1,4 @@
-import { asyncHandler, ComponentDataState, ServerDataState } from '@final-ui/react'
+import { ComponentDataState, ServerDataState } from '@final-ui/react'
 
 import { hslToHex } from './color'
 import { getSequenceActiveItem } from './eg-main'
@@ -64,8 +64,8 @@ function sortableList({
 }: {
   key?: string
   label?: string
-  props?: {}
-}): DataState {
+  props?: ComponentDataState['props']
+}): ServerDataState {
   return {
     $: 'component',
     component: 'SortableList',
@@ -91,19 +91,7 @@ function sortableList({
   }
 }
 
-function scroll(children: any[]): ComponentDataState {
-  return {
-    $: 'component',
-    component: 'ScrollView',
-    props: {
-      padding: '$4',
-      gap: '$4',
-    },
-    children,
-  }
-}
-
-function getVideoControls(mediaPath: string, state: VideoMedia, ctx: UIContext): DataState[] {
+function getVideoControls(mediaPath: string, state: VideoMedia, ctx: UIContext): ServerDataState[] {
   const player = ctx.video.getPlayer(state.id)
   return [
     section('Video Controls', [
@@ -196,10 +184,6 @@ function getVideoControls(mediaPath: string, state: VideoMedia, ctx: UIContext):
       ...getGenericMediaUI(mediaPath, state, ctx),
     ]),
   ]
-}
-
-function getColorControls(mediaPath: string, state: ColorMedia, ctx: UIContext): DataState[] {
-  return [] as const
 }
 
 function scroll(children: any[]): ServerDataState {
@@ -295,7 +279,11 @@ function getVideoControls(
   ]
 }
 
-function getColorControls(mediaPath: string, state: ColorMedia): ServerDataState[] {
+function getColorControls(
+  mediaPath: string,
+  state: ColorMedia,
+  context: UIContext
+): ServerDataState[] {
   return [
     {
       $: 'component',
@@ -355,11 +343,14 @@ function getColorControls(mediaPath: string, state: ColorMedia): ServerDataState
         step: 0.01,
       },
     },
-    ...getGenericMediaUI(mediaPath, state, ctx),
+    ...getGenericMediaUI(mediaPath, state, context),
   ]
 }
 
-export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | undefined): ServerDataState {
+export function getEffectsUI(
+  mediaLinkPath: string,
+  effectsState: Effects | undefined
+): ServerDataState {
   return section('Effects', [
     sortableList({
       props: {
@@ -611,7 +602,11 @@ const newMediaOptions = [
   { key: 'sequence', label: 'Sequence' },
 ]
 
-export function getMediaControls(state: Media, mediaLinkPath: string, ctx: UIContext): ServerDataState[] {
+export function getMediaControls(
+  state: Media,
+  mediaLinkPath: string,
+  ctx: UIContext
+): ServerDataState[] {
   if (state.type === 'off') {
     return [
       {
@@ -846,24 +841,12 @@ export function getUIRoot(state: MainState, ctx: UIContext) {
 //   }
 // }
 
-// tbd: implement this
-function getSequenceControls(
-  // eslint-disable-next-line
-  mediaLinkPath: string,
-  // eslint-disable-next-line
-  state: SequenceMedia,
-  // eslint-disable-next-line
-  context: UIContext
-): ServerDataState[] {
-  return []
-}
-
 function getLayersControls(
   mediaPath: string,
   state: LayersMedia,
   ctx: UIContext,
-  { ServerDataState = [], footer = [] }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {}
-): DataState {
+  { header = [], footer = [] }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {}
+): ServerDataState {
   return {
     $: 'component',
     component: 'RiseSortableList',
@@ -919,8 +902,8 @@ function getSequenceControls(
   mediaPath: string,
   state: SequenceMedia,
   ctx: UIContext,
-  footer: DataState[] = []
-): DataState {
+  footer: ServerDataState[] = []
+): ServerDataState {
   const activeMedia = getSequenceActiveItem(state)
   return {
     $: 'component',
@@ -980,7 +963,11 @@ function getSequenceControls(
   }
 }
 
-export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UIContext): ServerDataState {
+export function getMediaLayerUI(
+  mediaPath: string,
+  layer: Layer,
+  context: UIContext
+): ServerDataState {
   return getMediaUI(mediaPath, layer.media, context, {
     footer: [],
     header: [
@@ -1052,7 +1039,7 @@ export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UICont
   })
 }
 
-export function getLibraryUI(keys: string[]): ComponentDataState[] {
+export function getLibraryUI(keys: string[]): ServerDataState[] {
   return [
     { $: 'component', component: 'Screen', props: { title: 'Media Library' } },
     scroll(
@@ -1238,8 +1225,8 @@ function getGenericMediaUI(mediaPath: string, media: Media, ctx: UIContext): Com
   ]
 }
 
-function getSequenceItemMaxDuration(mediaPath: string, item: SequenceItem): DataState[] {
-  const checkField: DataState = {
+function getSequenceItemMaxDuration(mediaPath: string, item: SequenceItem): ServerDataState[] {
+  const checkField: ServerDataState = {
     $: 'component',
     key: 'maxDurationSwitch',
     component: 'RiseSwitchField',
@@ -1278,8 +1265,8 @@ export function getMediaSequenceUI(
   mediaPath: string,
   item: SequenceItem,
   context: UIContext
-): DataState {
-  let videoEnd: DataState[] = []
+): ServerDataState {
+  let videoEnd: ServerDataState[] = []
   if (item.media.type === 'video') {
     videoEnd = [
       {
@@ -1330,7 +1317,7 @@ export function getMediaUI(
   mediaState: Media,
   ctx: UIContext,
   { header = [], footer = [] }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {}
-): DataState {
+): ServerDataState {
   if (mediaState.type === 'color') {
     return scroll([...header, ...getColorControls(mediaPath, mediaState, ctx), ...footer])
   }
