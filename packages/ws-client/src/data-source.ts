@@ -87,6 +87,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
           } else {
             reject(event.val)
           }
+          promises.delete(event.key)
         } else {
           console.warn(`No callback registered for the event: ${JSON.stringify(event)}`)
         }
