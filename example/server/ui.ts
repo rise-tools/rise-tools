@@ -1,4 +1,4 @@
-import { ComponentDataState, ServerDataState } from '@final-ui/react'
+import { asyncHandler, ComponentDataState, ServerDataState } from '@final-ui/react'
 
 import { hslToHex } from './color'
 import { EGVideo } from './eg-video-playback'
@@ -936,10 +936,18 @@ function getLayerForm(mediaPath: string, layer: Layer): ComponentDataState {
     $: 'component',
     component: 'RiseForm',
     props: {
-      onSubmit: {
-        $: 'event',
-        action: ['updateMedia', mediaPath, 'metadata'],
-      },
+      onSubmit: asyncHandler(async (args: any) => {
+        console.log('form submitted', JSON.stringify(args))
+        // Simulate a pending state
+        return new Promise((resolve) => {
+          setTimeout(resolve, 5000)
+        })
+        // form submitted
+        // {"target":{"component":"RiseForm","propKey":"onSubmit",
+        // "path":"liveMedia:layer:e71e8271-9dc9-40c0-987b-1000d04f0df3"},
+        // "dataState":{"$":"event","key":"26f727b2-7c28-4736-a3d7-a1102e859fcb","async":true},
+        // "payload":{"name":"dd"}}
+      }),
     },
     children: [
       {
