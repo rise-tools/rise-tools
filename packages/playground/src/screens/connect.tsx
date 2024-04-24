@@ -1,10 +1,11 @@
-import { Connection, useConnections } from '@final-ui/playground/src/provider/storage'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
 import { useEffect } from 'react'
 import React from 'react'
 import { useRouter } from 'solito/router'
 import { Button, SizableText, YStack } from 'tamagui'
+
+import { Connection, useConnections } from '../provider/storage'
 
 export function ConnectScreen({ connectInfo }: { connectInfo?: string }) {
   const { replace } = useRouter()

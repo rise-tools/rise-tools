@@ -19,7 +19,7 @@ export function isServerEventDataState(obj: ServerDataState): obj is ServerHandl
 export function getAllEventHandlers(dataState: ServerDataState) {
   const acc: Record<string, (args: any) => any> = {}
   function traverse(dataState: ServerDataState) {
-    if (!dataState) {
+    if (!dataState || typeof dataState !== 'object') {
       return
     }
     if (Array.isArray(dataState)) {
@@ -28,14 +28,10 @@ export function getAllEventHandlers(dataState: ServerDataState) {
     }
     if (isComponentDataState(dataState)) {
       Object.values(dataState.props || {}).forEach(traverse)
+      traverse(dataState.children)
       return
     }
     if (isServerEventDataState(dataState)) {
-      if (!dataState.handler) {
-        throw new Error(
-          `You must define "handler" function on the EventDataState. ${JSON.stringify(dataState)}`
-        )
-      }
       acc[dataState.key] = dataState.handler
     }
   }

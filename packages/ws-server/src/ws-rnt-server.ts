@@ -1,4 +1,10 @@
-import { ActionEvent, getAllEventHandlers, isHandlerEvent, ServerDataState } from '@final-ui/react'
+import {
+  ActionEvent,
+  extractRefKey,
+  getAllEventHandlers,
+  isHandlerEvent,
+  ServerDataState,
+} from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
   EventWebsocketMessage,
@@ -82,11 +88,11 @@ export function createWSServer(port: number) {
 
     const {
       dataState,
-      target: { storeKey },
+      target: { path },
     } = message.event
 
     try {
-      const handleEvent = eventHandlers.get(storeKey)?.[dataState.key]
+      const handleEvent = eventHandlers.get(extractRefKey(path))?.[dataState.key]
       if (!handleEvent) {
         console.warn(
           `Missing event handler on the server for event: ${JSON.stringify(message.event)}`
