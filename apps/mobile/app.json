@@ -5,10 +5,10 @@
     "scheme": "rise",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/RiseIcon2.png",
+    "icon": "./assets/RiseIcon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/RiseSplash2.png",
+      "image": "./assets/RiseSplash.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
@@ -42,8 +42,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "d8f030d6-44d4-44cd-bec1-21d303f650b3"
+        "projectId": "e375003a-c8cd-4eec-bec8-202333e67dc6"
       }
-    }
+    },
+    "owner": "finalui"
   }
 }

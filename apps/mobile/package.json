@@ -51,6 +51,7 @@
     "@expo/metro-config": "~0.17.1",
     "@tamagui/babel-plugin": "^1.94.4",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
+    "eas-cli": "^7.8.4",
     "metro-minify-terser": "^0.74.1",
     "typescript": "^5.1.3"
   },
