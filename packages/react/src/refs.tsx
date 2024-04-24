@@ -3,8 +3,10 @@ import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, use
 import {
   BaseTemplate,
   ComponentRegistry,
+  isComponentDataState,
   isCompositeDataState,
   JSONValue,
+  Path,
   ReferencedDataState,
   TemplateEvent,
 } from './template'
@@ -16,13 +18,13 @@ export type Store<V = JSONValue> = {
 
 export type DataSource = {
   get: (key: string) => Store
-  sendEvent: (event: TemplateEvent) => void
+  sendEvent: (event: TemplateEvent) => Promise<any>
 }
 
 /** Refs */
 type DataValues = Record<string, JSONValue>
 
-function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
+function lookupRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
   if (typeof ref === 'string') {
     return dataValues[ref]
   }
@@ -41,7 +43,20 @@ function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']
   return lookupValue
 }
 
-function extractRefKey(ref: ReferencedDataState['ref']) {
+function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
+  const value = lookupRefValue(dataValues, ref)
+
+  if (isComponentDataState(value)) {
+    return {
+      ...value,
+      path: ref,
+    }
+  }
+
+  return value
+}
+
+export function extractRefKey(ref: Path) {
   if (typeof ref === 'string') {
     return ref
   }
@@ -166,7 +181,7 @@ export function Template({
   path = '',
   onEvent,
 }: {
-  path?: ReferencedDataState['ref']
+  path?: Path
   dataSource: DataSource
   components: ComponentRegistry
   onEvent: ComponentProps<typeof BaseTemplate>['onEvent']
@@ -180,5 +195,7 @@ export function Template({
     return () => release()
   }, [])
   const rootDataState = resolveRef(dataValues, path)
-  return <BaseTemplate components={components} dataState={rootDataState} onEvent={onEvent} />
+  return (
+    <BaseTemplate components={components} path={path} dataState={rootDataState} onEvent={onEvent} />
+  )
 }
