@@ -28,7 +28,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "link.verse.rise"
+      "package": "link.verse.rise",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png"
