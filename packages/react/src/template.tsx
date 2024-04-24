@@ -19,7 +19,7 @@ export type ComponentDataState = {
   props?: Record<string, JSONValue>
 }
 type ReferencedComponentDataState = ComponentDataState & {
-  refKey: string
+  path: Path
 }
 export type Path = string | [string, ...(string | number)[]]
 export type ReferencedDataState = {
@@ -150,7 +150,7 @@ export function BaseTemplate({
     if (stateNode.$ === 'component') {
       return renderComponent(
         stateNode,
-        isReferencedComponentDataState(stateNode) ? stateNode.refKey : path
+        isReferencedComponentDataState(stateNode) ? stateNode.path : path
       )
     }
     if (stateNode.$ === 'ref') {
