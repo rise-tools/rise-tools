@@ -223,6 +223,15 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
           },
           {
             $: 'component',
+            component: 'Paragraph',
+            key: 'description',
+            children: {
+              $: 'ref',
+              ref: [`inventory:${item.key}`, 'description'],
+            },
+          },
+          {
+            $: 'component',
             component: 'XStack',
             key: 'adjustments',
             props: {
@@ -266,6 +275,7 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
                 component: 'Button',
                 key: 'decrement',
                 props: {
+                  theme: 'red',
                   onPress: handler(() => {
                     ctx.update(`inventory:${item.key}`, (data: Item) => ({
                       ...data,
@@ -280,6 +290,7 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
                 component: 'Button',
                 key: 'increment',
                 props: {
+                  theme: 'blue',
                   onPress: handler(() => {
                     ctx.update(`inventory:${item.key}`, (data: Item) => ({
                       ...data,
