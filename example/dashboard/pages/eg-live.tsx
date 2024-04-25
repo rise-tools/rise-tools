@@ -1,6 +1,5 @@
 import { AutoSizeEGPreview } from 'src/EGPreview'
 import { FullscreenablePage } from 'src/FullscreenablePage'
-import { QRCode } from 'src/QRCode'
 
 export default function EGLivePage() {
   return (
