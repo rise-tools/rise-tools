@@ -5,7 +5,7 @@ import { ImageURISource, ScrollView } from 'react-native'
 import { useLink } from 'solito/link'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
-import { Connection, useConnections } from '../provider/storage'
+import { BUILTIN_CONNECTIONS, Connection, useConnections } from '../provider/storage'
 
 export function HomeScreen() {
   const [state] = useConnections()
@@ -13,21 +13,22 @@ export function HomeScreen() {
     <ScrollView>
       <YStack padding="$4" gap="$4">
         <HeroImage />
-        <YGroup separator={<Separator />}>
-          {state.connections.map((connection) => (
-            <ConnectionItem key={connection.id} connection={connection} />
-          ))}
-        </YGroup>
-        <NewConnectionButton />
-        {/* <Button
-          color="$green10"
-          chromeless
-          onPress={() => {
-            addConnection({ host: 'ws://10.255.1.59:3990', path: '', label: 'Test Connection' })
-          }}
-        >
-          TEST - New Connection
-        </Button> */}
+        <YStack gap="$2">
+          <YGroup separator={<Separator />}>
+            {state.connections.map((connection) => (
+              <ConnectionItem key={connection.id} connection={connection} />
+            ))}
+          </YGroup>
+          <NewConnectionButton />
+        </YStack>
+        <YStack gap="$2">
+          <Text textAlign="center">or try some of the examples below:</Text>
+          <YGroup separator={<Separator />}>
+            {Object.values(BUILTIN_CONNECTIONS).map((connection) => (
+              <ConnectionItem key={connection.id} connection={connection} readonly />
+            ))}
+          </YGroup>
+        </YStack>
       </YStack>
     </ScrollView>
   )
@@ -46,7 +47,13 @@ function HeroImage() {
   )
 }
 
-function ConnectionItem({ connection }: { connection: Connection }) {
+function ConnectionItem({
+  connection,
+  readonly = false,
+}: {
+  connection: Connection
+  readonly?: boolean
+}) {
   const editLink = useLink({
     href: `/edit-connection/${connection.id}`,
   })
@@ -69,7 +76,11 @@ function ConnectionItem({ connection }: { connection: Connection }) {
               {connection.label}
             </Text>
           </View>
-          <Button backgroundColor={'transparent'} icon={Settings} {...editLink} />
+          {readonly ? (
+            <Button disabled backgroundColor="transparent" />
+          ) : (
+            <Button backgroundColor="transparent" icon={Settings} {...editLink} />
+          )}
         </XStack>
       </Button>
     </YGroup.Item>
@@ -82,7 +93,7 @@ function NewConnectionButton() {
   })
   return (
     <Button {...link} icon={PlusCircle} chromeless>
-      New Connection
+      Add new connection
     </Button>
   )
 }

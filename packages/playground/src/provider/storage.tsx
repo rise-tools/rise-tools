@@ -52,22 +52,51 @@ export function useConnections() {
   return [state, { update, addConnection }] as const
 }
 
-export function useConnection(id: string | undefined) {
-  const [connections, { update: updateConnections }] = useConnections()
-  const state = id ? connections.connections.find((connection) => connection.id === id) : undefined
+export function useConnection(id?: string) {
+  const [state, { update: updateConnections }] = useConnections()
+
+  if (!id) {
+    return [undefined]
+  }
+
+  if (BUILTIN_CONNECTIONS[id]) {
+    return [
+      BUILTIN_CONNECTIONS[id],
+      {
+        update: () => {
+          throw new Error('Cannot update built-in connection')
+        },
+        remove: () => {
+          throw new Error('Cannot remove built-in connection')
+        },
+      },
+    ] as const
+  }
+
   function update(updater: (state: Connection) => Connection) {
-    updateConnections((connections) => ({
-      ...connections,
-      connections: connections.connections.map((connection) =>
+    updateConnections((state) => ({
+      ...state,
+      connections: state.connections.map((connection) =>
         connection.id === id ? updater(connection) : connection
       ),
     }))
   }
   function remove() {
-    updateConnections((connections) => ({
-      ...connections,
-      connections: connections.connections.filter((connection) => connection.id !== id),
+    updateConnections((state) => ({
+      ...state,
+      connections: state.connections.filter((connection) => connection.id !== id),
     }))
   }
-  return [state, { update, remove }] as const
+
+  return [state.connections.find((connection) => connection.id === id), { update, remove }] as const
+}
+
+// tbd: move to separate file and use envs for host/path
+export const BUILTIN_CONNECTIONS: Record<string, Connection> = {
+  inventory: {
+    id: 'inventory',
+    label: '🏭 Car Parts Inventory',
+    host: 'ws://localhost:3005',
+    path: 'inventory',
+  },
 }

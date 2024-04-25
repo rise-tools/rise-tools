@@ -1,12 +1,12 @@
 {
-  "name": "@final-ui/example-inventory",
+  "name": "@final-ui/demo-server",
   "private": true,
   "version": "0.1.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/final-ui/final.git",
-    "directory": "example/inventory"
+    "directory": "example/demo"
   },
   "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "bugs": {
