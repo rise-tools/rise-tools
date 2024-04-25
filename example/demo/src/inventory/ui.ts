@@ -15,6 +15,9 @@ export function getHomeScreen(): ServerDataState {
   return {
     $: 'component',
     component: 'YStack',
+    props: {
+      backgroundColor: 'white',
+    },
     children: [
       {
         $: 'component',
@@ -22,29 +25,34 @@ export function getHomeScreen(): ServerDataState {
         component: 'ScrollView',
         props: {
           contentContainerStyle: {
-            gap: 20,
+            paddingBottom: 20,
           },
         },
-        children: [
-          {
+        children: inventory.map(
+          (item, idx): ServerDataState => ({
             $: 'component',
-            key: 'header',
-            component: 'Text',
-            children: 'Welcome to the inventory app',
-          },
-          ...inventory.map(
-            (item): ServerDataState => ({
+            key: item.key,
+            component: 'Button',
+            props: {
+              unstyled: true,
+              onPress: {
+                $: 'event',
+                action: ['navigate', `inventory:item:${item.key}`],
+              },
+              pressStyle: {
+                opacity: 0.8,
+              },
+            },
+            children: {
               $: 'component',
-              key: item.key,
               component: 'XStack',
               props: {
                 gap: 10,
                 paddingHorizontal: 20,
+                paddingVertical: 10,
                 alignItems: 'center',
-                onPress: {
-                  $: 'event',
-                  action: ['navigate', `inventory:item:${item.key}`],
-                },
+                borderBottomWidth: idx === inventory.length - 1 ? 0 : 1,
+                borderBottomColor: '#cdcdcd',
               },
               children: [
                 {
@@ -101,9 +109,9 @@ export function getHomeScreen(): ServerDataState {
                   ],
                 },
               ],
-            })
-          ),
-        ],
+            },
+          })
+        ),
       },
     ],
   }

@@ -58,7 +58,7 @@ function ConnectionItem({
     href: `/edit-connection/${connection.id}`,
   })
   const link = useLink({
-    href: `/connection/${connection.id}`,
+    href: `/connection/${connection.id}?path=${connection.path}`,
   })
   return (
     <YGroup.Item>
