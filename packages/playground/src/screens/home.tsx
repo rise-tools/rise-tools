@@ -64,14 +64,12 @@ function ConnectionItem({
     <YGroup.Item>
       <Button
         paddingHorizontal={0}
-        backgroundColor={'$color1'}
+        backgroundColor="$color1"
         {...link}
-        onLongPress={() => {
-          editLink.onPress()
-        }}
+        onLongPress={() => editLink.onPress()}
       >
         <XStack>
-          <View flex={1} alignItems="center" justifyContent="center" paddingLeft={'$4'}>
+          <View flex={1} alignItems="center" justifyContent="center" paddingLeft="$4">
             <Text ellipsizeMode="clip" numberOfLines={1}>
               {connection.label}
             </Text>
