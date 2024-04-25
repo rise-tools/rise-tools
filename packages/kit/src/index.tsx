@@ -1,3 +1,4 @@
+import { DropdownButton } from './DropdownButton'
 import { RiseForm, RiseSubmitButton, RiseTextField } from './Form'
 import { Icon } from './Icon'
 import { QRCode } from './QRCode'
@@ -18,6 +19,10 @@ export const RiseComponents = {
   RiseSelectField: {
     component: SelectField,
     validator: SelectField.validate,
+  },
+  RiseDropdownButton: {
+    component: DropdownButton,
+    validator: DropdownButton.validate,
   },
   RiseSlider: {
     component: Slider,

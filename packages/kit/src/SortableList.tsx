@@ -39,7 +39,7 @@ export function SortableList(props: z.infer<typeof SortableListProps>) {
                 onPress={() => item.onPress?.()}
                 onLongPress={drag}
                 disabled={isActive}
-                style={[{ padding: 10, backgroundColor: 'white', margin: 10 }]}
+                style={[{ padding: 10, backgroundColor: 'white', margin: 10, borderRadius: 10 }]}
               >
                 <Label>{item.label}</Label>
               </TouchableOpacity>

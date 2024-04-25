@@ -27,6 +27,7 @@ export function EditConnectionScreen() {
           update((conn) => ({ ...conn, ...values }))
           goHomeLink.onPress()
         }}
+        // @ts-ignore
         defaultValues={connection}
         submitButton={({ submit }) => <Button onPress={() => submit()}>Save Connection</Button>}
       />

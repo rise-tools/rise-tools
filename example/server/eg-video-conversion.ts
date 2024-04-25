@@ -47,7 +47,7 @@ async function importFile(
     prevDbFile &&
     prevDbFile.fileSha256 === fileSha256 &&
     prevDbFile.importerVersion === importerVersion &&
-    existsSync(audioFilePath) &&
+    // existsSync(audioFilePath) &&
     existsSync(join(outputDir, prevDbFile.egFramesFile))
   ) {
     console.log('File already imported, output exists, checksum matches. skipping...')
@@ -397,9 +397,10 @@ async function main(scanPath: string, outputDir: string) {
     const isVideo = ext === '.mp4' || ext === '.mov'
     if (!isVideo) return false
 
-    const fileInfo = statSync(filePath)
-    // allow files of up to 500MB
-    return fileInfo.size < 500_000_000
+    // const fileInfo = statSync(filePath)
+    // // allow files of up to 500MB
+    // return fileInfo.size < 500_000_000
+    return true
   })
   const dbState = await readDb(outputDir)
   console.log({ scan, extensions, videoFilePaths })
@@ -410,7 +411,10 @@ async function main(scanPath: string, outputDir: string) {
     const dbFile = await importFile(videoFilePath, outputDir, prevFile)
     console.log('Done with export', { dbFile })
     await updateDb(outputDir, (state) => {
-      return { ...state, files: [...state.files, dbFile] }
+      return {
+        ...state,
+        files: [...state.files.filter((f) => f.fileSha256 !== dbFile.fileSha256), dbFile],
+      }
     })
   }
 }

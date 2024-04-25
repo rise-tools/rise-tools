@@ -8,6 +8,7 @@ export type StateContext = {
   nowTime: number
   relativeTime: number
   video: EGVideo
+  recentGradientValues: Record<string, number>
 }
 
 // export const effectsSchema = {
@@ -96,6 +97,7 @@ export type VideoParams = z.infer<typeof videoParamsSchema>
 
 const videoMediaSchema = z.object({
   id: z.string(),
+  label: z.string().optional(),
   type: z.literal('video'),
   track: z.string().nullable(),
   effects: effectsSchema.optional(),
@@ -105,6 +107,7 @@ export type VideoMedia = z.infer<typeof videoMediaSchema>
 
 const colorMediaSchema = z.object({
   type: z.literal('color'),
+  label: z.string().optional(),
   h: z.number(),
   s: z.number(),
   l: z.number(),
@@ -113,19 +116,20 @@ export type ColorMedia = z.infer<typeof colorMediaSchema>
 
 const offMediaSchema = z.object({
   type: z.literal('off'),
+  label: z.string().optional(),
 })
 export type OffMedia = z.infer<typeof offMediaSchema>
 
 export type Layer = {
   key: string
   media: Media
-  name?: string
   blendMode: 'add' | 'mix' | 'mask'
   blendAmount: number
 }
 
 const layerSchema: z.ZodType<Layer> = z.object({
   key: z.string(),
+  label: z.string().optional(),
   media: z.lazy(() => mediaSchema),
   blendMode: z.enum(['add', 'mix', 'mask']),
   blendAmount: z.number(),
@@ -133,28 +137,41 @@ const layerSchema: z.ZodType<Layer> = z.object({
 
 export type LayersMedia = {
   type: 'layers'
+  label?: string
   layers: Layer[]
 }
 const layersMediaSchema: z.ZodType<LayersMedia> = z.object({
   type: z.literal('layers'),
+  label: z.string().optional(),
   layers: z.array(layerSchema),
 })
 
+const sequenceItemSchema = z.object({
+  key: z.string(),
+  maxDuration: z.number().nullable().optional(),
+  goOnVideoEnd: z.boolean().optional(),
+  media: z.lazy(() => mediaSchema),
+})
+export type SequenceItem = {
+  key: string
+  maxDuration?: null | number
+  goOnVideoEnd: undefined | boolean
+  media: Media
+}
+
 export type SequenceMedia = {
   type: 'sequence'
-  sequence: {
-    key: string
-    media: Media
-  }[]
+  label?: string
+  activeKey?: string | undefined
+  lastTransitionTime?: number | undefined
+  sequence: SequenceItem[]
 }
 const sequenceMediaSchema: z.ZodType<SequenceMedia> = z.object({
   type: z.literal('sequence'),
-  sequence: z.array(
-    z.object({
-      key: z.string(),
-      media: z.lazy(() => mediaSchema),
-    })
-  ),
+  label: z.string().optional(),
+  activeKey: z.string().optional(),
+  lastTransitionTime: z.number().optional(),
+  sequence: z.array(sequenceItemSchema),
 })
 
 export type Media = OffMedia | ColorMedia | VideoMedia | LayersMedia | SequenceMedia
@@ -191,36 +208,6 @@ const transitionStateSchema = z.object({
 export type TransitionState = z.infer<typeof transitionStateSchema>
 
 export const MainStateSchema = z.object({
-  // OLD SHIT
-  mode: z.enum(['off', 'white', 'rainbow', 'color', 'layers', 'video']),
-  color: colorSchema,
-  effects: z.object({}),
-  beatEffect: z.object({
-    effect: z.enum(['flash', 'waveIn', 'waveOut']),
-    color: colorSchema,
-    intensity: z.number(),
-    waveLength: z.number(),
-    dropoff: z.number(),
-  }),
-  layers: z.array(
-    z.discriminatedUnion('key', [
-      z.object({
-        key: z.literal('color'),
-        id: z.string(),
-      }),
-    ])
-  ),
-  video: z.object({
-    track: z.string(),
-  }),
-  manualBeat: z.object({
-    enabled: z.boolean(),
-    lastBeatTime: z.number(),
-    bpm: z.number(),
-  }),
-
-  // NEW SCHEMA
-
   liveMedia: mediaSchema,
   readyMedia: mediaSchema,
   transition: transitionSchema,
@@ -230,39 +217,6 @@ export const MainStateSchema = z.object({
 export type MainState = z.infer<typeof MainStateSchema>
 
 export const defaultMainState: MainState = {
-  mode: 'off',
-  color: {
-    h: 0,
-    s: 1,
-    l: 1,
-  },
-  effects: {
-    flash: null,
-    waveIn: null,
-    waveOut: null,
-  },
-  beatEffect: {
-    effect: 'waveOut',
-    color: {
-      h: 0.5,
-      s: 1,
-      l: 0.5,
-    },
-    intensity: 50,
-    waveLength: 0.5,
-    dropoff: 0.1,
-  },
-  video: {
-    track: 'none',
-  },
-  layers: [],
-  manualBeat: {
-    enabled: true,
-    lastBeatTime: 0,
-    bpm: 0,
-  },
-
-  // NEW STUFF
   liveMedia: {
     type: 'off',
   },
