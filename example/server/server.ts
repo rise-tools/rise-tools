@@ -155,11 +155,12 @@ function performMainLoopStep(inMs: number) {
     const afterFrameTime = performance.now()
     const frameDuration = afterFrameTime - preFrameTime
     if (frameDuration > desiredMsPerFrame) {
-      console.log('frame took too long', frameDuration)
+      // production is running slow and this is very noisy
+      // console.log('frame took too long', frameDuration)
     }
     const frameIdealStartTime = initTime + frameCount * desiredMsPerFrame
     if (afterFrameTime > frameIdealStartTime) {
-      console.log('frame behind', afterFrameTime - frameIdealStartTime)
+      // console.log('frame behind', afterFrameTime - frameIdealStartTime)
       // missed this frame. just go to the next one
       frameCount += 1
       performMainLoopStep(0)
