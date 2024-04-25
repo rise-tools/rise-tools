@@ -1,0 +1,27 @@
+{
+  "name": "@final-ui/example-inventory",
+  "private": true,
+  "version": "0.1.2",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/final-ui/final.git",
+    "directory": "example/inventory"
+  },
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "bugs": {
+    "url": "https://github.com/final-ui/final/issues"
+  },
+  "homepage": "https://github.com/final-ui/final#readme",
+  "scripts": {
+    "start": "tsx src/server.ts"
+  },
+  "dependencies": {
+    "@final-ui/react": "0.1.2",
+    "@final-ui/ws-server": "0.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.6.4",
+    "tsx": "^4.7.2"
+  }
+}
