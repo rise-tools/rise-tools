@@ -1,12 +1,16 @@
-import { ServerDataState } from '@final-ui/react'
+import { handler, ServerDataState } from '@final-ui/react'
 
+import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
 
-export function getInventoryExample(): Record<string, ServerDataState> {
+export function getInventoryExample(ctx: UIContext): Record<string, ServerDataState> {
   return {
     inventory: getHomeScreen(),
     ...Object.fromEntries(
-      inventory.map((item) => [`inventory:item:${item.key}`, getItemScreen(item)])
+      inventory.flatMap((item) => [
+        [`inventory:${item.key}:details`, getItemScreen(item, ctx)],
+        [`inventory:${item.key}`, item],
+      ])
     ),
   }
 }
@@ -35,10 +39,10 @@ export function getHomeScreen(): ServerDataState {
             component: 'Button',
             props: {
               unstyled: true,
-              // onPress: {
-              //   $: 'event',
-              //   action: ['navigate', `inventory:item:${item.key}`],
-              // },
+              onPress: {
+                $: 'event',
+                action: ['navigate', `inventory:${item.key}:details`],
+              },
               pressStyle: {
                 opacity: 0.8,
               },
@@ -120,14 +124,106 @@ export function getHomeScreen(): ServerDataState {
   }
 }
 
-export function getItemScreen(item: Item): ServerDataState {
+export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
   return {
     $: 'component',
     component: 'YStack',
-    children: {
-      $: 'component',
-      component: 'Text',
-      children: item.title,
+    props: {
+      flex: 1,
+      backgroundColor: '$background',
+      gap: '$3',
     },
+    children: [
+      {
+        $: 'component',
+        component: 'Image',
+        key: 'photo',
+        props: {
+          source: {
+            uri: {
+              $: 'ref',
+              ref: [`inventory:${item.key}`, 'photo'],
+            },
+          },
+          style: {
+            width: '100%',
+            height: 200,
+            backgroundColor: 'white',
+          },
+          resizeMode: 'contain',
+        },
+      },
+      {
+        $: 'component',
+        component: 'YStack',
+        key: 'info',
+        props: {
+          paddingHorizontal: '$4',
+          gap: '$3',
+        },
+        children: [
+          {
+            $: 'component',
+            component: 'H2',
+            key: 'title',
+            children: {
+              $: 'ref',
+              ref: [`inventory:${item.key}`, 'title'],
+            },
+          },
+          {
+            $: 'component',
+            component: 'XStack',
+            key: 'adjustments',
+            props: {
+              gap: '$3',
+              alignItems: 'center',
+            },
+            children: [
+              {
+                $: 'component',
+                component: 'SizableText',
+                key: 'quantity',
+                props: {
+                  size: '$5',
+                },
+                children: {
+                  $: 'ref',
+                  ref: [`inventory:${item.key}`, 'quantity'],
+                },
+              },
+              {
+                $: 'component',
+                component: 'Button',
+                key: 'decrement',
+                props: {
+                  onPress: handler(() => {
+                    ctx.update(`inventory:${item.key}`, (data: Item) => ({
+                      ...data,
+                      quantity: data.quantity > 0 ? data.quantity - 1 : 0,
+                    }))
+                  }),
+                },
+                children: '-',
+              },
+              {
+                $: 'component',
+                component: 'Button',
+                key: 'increment',
+                props: {
+                  onPress: handler(() => {
+                    ctx.update(`inventory:${item.key}`, (data: Item) => ({
+                      ...data,
+                      quantity: data.quantity + 1,
+                    }))
+                  }),
+                },
+                children: '+',
+              },
+            ],
+          },
+        ],
+      },
+    ],
   }
 }
