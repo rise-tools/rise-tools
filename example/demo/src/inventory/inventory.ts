@@ -79,14 +79,14 @@ export default [
   },
   {
     key: '013',
-    photo: 'https://www.realoem.com/bmw/images/thumb_8s1d.jpg',
+    photo: 'https://www.realoem.com/bmw/images/diag_8s1d.jpg',
     title: 'Tail Lights',
     quantity: 25,
     price: 170,
   },
   {
     key: '015',
-    photo: 'https://www.realoem.com/bmw/images/thumb_2rx.jpg',
+    photo: 'https://www.realoem.com/bmw/images/diag_2rx.jpg',
     title: 'Shock Absorbers',
     quantity: 15,
     price: 350,

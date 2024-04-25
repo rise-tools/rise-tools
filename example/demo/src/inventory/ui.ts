@@ -67,6 +67,7 @@ export function getHomeScreen(): ServerDataState {
                       width: 75,
                       height: 75,
                     },
+                    resizeMode: 'contain',
                   },
                 },
                 {
