@@ -24,6 +24,7 @@ This repo contains the following packages:
 As well as the following applications:
 - `apps/mobile` - Mobile application to display UI from any remote data source or QR code
 - `apps/rise-marketing` - Landing page for the Rise App
+- `example/demo` - Demo server with example experiences available in the Rise Mobile
 - `example/server` and `example/dashboard` - Art project server and preview web application  
 
 ## Overview
