@@ -26,9 +26,8 @@ export function RiseForm({ children, onSubmit, ...props }: ComponentProps<typeof
 
   const submit = async () => {
     setSubmitting(true)
-    // @ts-ignore
-    // tbd: in the future, parse response from the server and perform update locally
-    onSubmit?.(values)
+    // @ts-ignore replace ComponentProps with our own, so that we allow functions to receive args
+    await onSubmit?.(values)
     setSubmitting(false)
   }
 
@@ -77,9 +76,11 @@ export const RiseTextField = ({
 }
 
 export const RiseSubmitButton = (props: ComponentProps<typeof Button>) => {
+  const formContext = useContext(FormContext)
+
   return (
     <Form.Trigger asChild>
-      <Button {...props} />
+      <Button disabled={formContext.isSubmitting} {...props} />
     </Form.Trigger>
   )
 }

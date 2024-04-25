@@ -1,4 +1,4 @@
-import { ComponentDataState, DataState } from '@final-ui/react'
+import { asyncHandler, ComponentDataState, ServerDataState } from '@final-ui/react'
 
 import { hslToHex } from './color'
 import { EGVideo } from './eg-video-playback'
@@ -30,7 +30,7 @@ function icon(name: string): ComponentDataState {
   }
 }
 
-function section(title: string, children: DataState[], key?: string): DataState {
+function section(title: string, children: ServerDataState[], key?: string): ServerDataState {
   return {
     $: 'component',
     component: 'YStack',
@@ -146,7 +146,7 @@ function getModeControls(state: MainState) {
   return [] as const
 }
 
-function scroll(children: any[]): DataState {
+function scroll(children: any[]): ServerDataState {
   return {
     $: 'component',
     component: 'ScrollView',
@@ -158,7 +158,11 @@ function scroll(children: any[]): DataState {
   }
 }
 
-function getVideoControls(mediaPath: string, state: VideoMedia, context: UIContext): DataState[] {
+function getVideoControls(
+  mediaPath: string,
+  state: VideoMedia,
+  context: UIContext
+): ServerDataState[] {
   const player = context.video.getPlayer(state.id)
   return [
     {
@@ -235,7 +239,7 @@ function getVideoControls(mediaPath: string, state: VideoMedia, context: UIConte
   ]
 }
 
-function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
+function getColorControls(mediaPath: string, state: ColorMedia): ServerDataState[] {
   return [
     {
       $: 'component',
@@ -298,7 +302,10 @@ function getColorControls(mediaPath: string, state: ColorMedia): DataState[] {
   ]
 }
 
-export function getEffectsUI(mediaLinkPath: string, effectsState: Effects | undefined): DataState {
+export function getEffectsUI(
+  mediaLinkPath: string,
+  effectsState: Effects | undefined
+): ServerDataState {
   return {
     $: 'component',
     component: 'RiseSortableList',
@@ -545,7 +552,7 @@ const newMediaOptions = [
   { key: 'sequence', label: 'Sequence' },
 ]
 
-export function getMediaControls(state: Media, mediaLinkPath: string): DataState[] {
+export function getMediaControls(state: Media, mediaLinkPath: string): ServerDataState[] {
   if (state.type === 'off') {
     return [
       {
@@ -606,7 +613,10 @@ export function getMediaControls(state: Media, mediaLinkPath: string): DataState
   ]
 }
 
-export function getTransitionControls(transition: Transition, state: TransitionState): DataState[] {
+export function getTransitionControls(
+  transition: Transition,
+  state: TransitionState
+): ServerDataState[] {
   return [
     {
       $: 'component',
@@ -795,7 +805,7 @@ function getSequenceControls(
   state: SequenceMedia,
   // eslint-disable-next-line
   context: UIContext
-): DataState[] {
+): ServerDataState[] {
   return []
 }
 
@@ -803,8 +813,8 @@ function getLayersList(
   mediaLinkPath: string,
   state: LayersMedia,
   context: UIContext,
-  { header = [], footer = [] }: { header?: DataState[]; footer?: DataState[] } = {}
-): DataState {
+  { header = [], footer = [] }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {}
+): ServerDataState {
   return {
     $: 'component',
     component: 'RiseSortableList',
@@ -855,7 +865,11 @@ function getLayersList(
   }
 }
 
-export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UIContext): DataState {
+export function getMediaLayerUI(
+  mediaPath: string,
+  layer: Layer,
+  context: UIContext
+): ServerDataState {
   return getMediaUI(mediaPath, layer.media, context, {
     header: [getLayerForm(mediaPath, layer)],
     footer: [
@@ -920,37 +934,115 @@ export function getMediaLayerUI(mediaPath: string, layer: Layer, context: UICont
 function getLayerForm(mediaPath: string, layer: Layer): ComponentDataState {
   return {
     $: 'component',
-    component: 'RiseForm',
-    props: {
-      onSubmit: {
-        $: 'event',
-        action: ['updateMedia', mediaPath, 'metadata'],
-      },
-    },
+    component: 'AlertDialog',
     children: [
       {
         $: 'component',
-        component: 'RiseTextField',
+        component: 'AlertDialogTrigger',
         props: {
-          name: 'name',
-          label: {
-            $: 'component',
-            component: 'Label',
-            children: 'Layer title',
-            props: {
-              htmlFor: 'title',
-            },
-          },
-          value: layer.name,
-          placeholder: 'Enter title...',
-          autoCapitalize: 'none',
-          autoCorrect: false,
+          asChild: true,
+        },
+        children: {
+          $: 'component',
+          component: 'Button',
+          children: 'Edit title',
         },
       },
       {
         $: 'component',
-        component: 'RiseSubmitButton',
-        children: 'Submit',
+        component: 'AlertDialogPortal',
+        children: [
+          {
+            $: 'component',
+            component: 'AlertDialogOverlay',
+          },
+          {
+            $: 'component',
+            component: 'AlertDialogContent',
+            children: {
+              $: 'component',
+              component: 'RiseForm',
+              props: {
+                onSubmit: {
+                $: 'event',
+                action: ['updateMedia', mediaPath, 'metadata'],
+              },
+              // Comment this out to test async event handling
+              // onSubmit: asyncHandler(async (args: any) => {
+              //   console.log('form submitted', JSON.stringify(args))
+              //   // Simulate a pending state
+              //   return new Promise((resolve) => {
+              //     setTimeout(resolve, 5000)
+              //   })
+              //   // form submitted
+              //   // {"target":{"component":"RiseForm","propKey":"onSubmit",
+              //   // "path":"liveMedia:layer:e71e8271-9dc9-40c0-987b-1000d04f0df3"},
+              //   // "dataState":{"$":"event","key":"26f727b2-7c28-4736-a3d7-a1102e859fcb","async":true},
+              //   // "payload":{"name":"dd"}}
+              // }),
+              },
+              children: [
+                {
+                  $: 'component',
+                  component: 'RiseTextField',
+                  props: {
+                    name: 'name',
+                    label: {
+                      $: 'component',
+                      component: 'Label',
+                      children: 'Layer title',
+                      props: {
+                        htmlFor: 'name',
+                      },
+                    },
+                    value: layer.name,
+                    placeholder: 'Enter title...',
+                    autoCapitalize: 'none',
+                    autoCorrect: false,
+                    marginBottom: '$2',
+                  },
+                },
+                {
+                  $: 'component',
+                  component: 'XStack',
+                  props: {
+                    justifyContent: 'flex-end',
+                    space: '$2',
+                  },
+                  children: [
+                    {
+                      $: 'component',
+                      component: 'AlertDialogCancel',
+                      props: {
+                        asChild: true,
+                      },
+                      children: {
+                        $: 'component',
+                        component: 'Button',
+                        children: 'Cancel',
+                      },
+                    },
+                    {
+                      $: 'component',
+                      component: 'AlertDialogAction',
+                      props: {
+                        asChild: true,
+                      },
+                      children: {
+                        $: 'component',
+                        component: 'RiseSubmitButton',
+                        props: {
+                          theme: 'active',
+                        },
+                        children: 'Submit',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
       },
     ],
   }
@@ -960,8 +1052,8 @@ export function getMediaUI(
   mediaPath: string,
   mediaState: Media,
   context: UIContext,
-  { header = [], footer = [] }: { header?: DataState[]; footer?: DataState[] } = {}
-): DataState {
+  { header = [], footer = [] }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {}
+): ServerDataState {
   if (mediaState.type === 'color') {
     return scroll([...header, ...getColorControls(mediaPath, mediaState), ...footer])
   }
@@ -985,7 +1077,7 @@ export function getMediaUI(
   ])
 }
 
-export function getQuickEffects() {
+export function getQuickEffects(): ServerDataState {
   return {
     $: 'component',
     component: 'YStack',
@@ -1001,7 +1093,7 @@ export function getQuickEffects() {
   }
 }
 
-export function getBeatEffects(mainState: MainState) {
+export function getBeatEffects(mainState: MainState): ServerDataState {
   return {
     $: 'component',
     component: 'YStack',

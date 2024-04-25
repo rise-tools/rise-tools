@@ -24,11 +24,12 @@ it('should render a component', () => {
     />
   )
 
-  expect(component.getByTestId('root')).toMatchInlineSnapshot(`
-    <div
-      data-testid="root"
-      height="50"
-    />
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        height="50"
+      />
+    </DocumentFragment>
   `)
 })
 
@@ -39,11 +40,13 @@ it('should render an array of components', () => {
       dataState={[
         {
           $: 'component',
+          key: 'HeadingComponent',
           component: 'View',
           children: 'Heading',
         },
         {
           $: 'component',
+          key: 'HelloWorldComponent',
           component: 'View',
           children: 'Hello, world!',
         },
@@ -54,14 +57,10 @@ it('should render an array of components', () => {
 
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
-      <div
-        data-testid="root[0]"
-      >
+      <div>
         Heading
       </div>
-      <div
-        data-testid="root[1]"
-      >
+      <div>
         Hello, world!
       </div>
     </DocumentFragment>
@@ -82,13 +81,14 @@ it('should use component key when provided', () => {
           children: [
             {
               $: 'component',
+              key: 'HelloComponent',
               component: 'View',
               children: 'Hello',
             },
             {
               $: 'component',
               component: 'View',
-              key: 'customChildKey',
+              key: 'WorldComponent',
               children: 'World!',
             },
           ],
@@ -100,20 +100,12 @@ it('should use component key when provided', () => {
 
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
-      <div
-        data-testid="root"
-      >
-        <div
-          data-testid="root.children[customKey]"
-        >
-          <div
-            data-testid="root.children[customKey].children[0]"
-          >
+      <div>
+        <div>
+          <div>
             Hello
           </div>
-          <div
-            data-testid="root.children[customKey].children[customChildKey]"
-          >
+          <div>
             World!
           </div>
         </div>
@@ -141,12 +133,8 @@ it('should render a component with single children', () => {
 
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
-      <div
-        data-testid="root"
-      >
-        <div
-          data-testid="root.children"
-        >
+      <div>
+        <div>
           Hello, world!
         </div>
       </div>
@@ -165,6 +153,7 @@ it('should render a component with children of different types', () => {
           'Hello',
           {
             $: 'component',
+            key: 'MyComponent',
             component: 'View',
             children: 'world!',
           },
@@ -176,13 +165,9 @@ it('should render a component with children of different types', () => {
 
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
-      <div
-        data-testid="root"
-      >
+      <div>
         Hello
-        <div
-          data-testid="root.children[1]"
-        >
+        <div>
           world!
         </div>
       </div>
@@ -230,16 +215,12 @@ it('should accept component as a prop', () => {
     <DocumentFragment>
       <section>
         <header>
-          <div
-            data-testid="root.props[header]"
-          >
+          <div>
             Header text
           </div>
         </header>
         <footer>
-          <div
-            data-testid="root.props[paragraph]"
-          >
+          <div>
             Footer text
           </div>
         </footer>
@@ -277,9 +258,7 @@ it('should accept object as a prop', () => {
 
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
-      <section
-        data-testid="root"
-      >
+      <section>
         <header>
           Mike
         </header>
@@ -298,6 +277,7 @@ it('should accept event handler as a prop', () => {
         key: 'button',
         component: 'View',
         props: {
+          ['data-testid']: 'button',
           onClick: {
             $: 'event',
             action: 'navigate',
@@ -308,54 +288,52 @@ it('should accept event handler as a prop', () => {
     />
   )
 
-  fireEvent.click(component.getByTestId('root[button]'))
+  fireEvent.click(component.getByTestId('button'))
 
   expect(onEvent).toHaveBeenCalledTimes(1)
 
   const firedEvent = onEvent.mock.lastCall[0] as TemplateEvent
   expect(firedEvent).toMatchObject({
-    action: 'navigate',
-    name: 'onClick',
+    dataState: {
+      $: 'event',
+      action: 'navigate',
+    },
     target: {
       key: 'button',
-      path: 'root[button]',
+      component: 'View',
+      propKey: 'onClick',
+      path: '',
     },
+    payload: '[native code]',
   })
-  expect(firedEvent.payload).toBe('[native code]')
-})
-
-it('should accept multiple event handlers as a prop', () => {
-  const onEvent = jest.fn()
-  const component = render(
-    <BaseTemplate
-      components={BUILT_IN_COMPONENTS}
-      dataState={{
-        $: 'component',
-        key: 'button',
-        component: 'View',
-        props: {
-          onClick: [
-            {
-              $: 'event',
-              action: 'navigate',
-            },
-            {
-              $: 'event',
-              action: 'onButtonPressed',
-            },
-          ],
-        },
-      }}
-      onEvent={onEvent}
-    />
-  )
-
-  fireEvent.click(component.getByTestId('root[button]'))
-
-  expect(onEvent).toHaveBeenCalledTimes(2)
-  expect(onEvent.mock.calls.map((c) => c[0].action)).toMatchObject(['navigate', 'onButtonPressed'])
 })
 
 it.skip('should validate props with a validator', () => {})
 
 it.skip('should accept event handlers as nested values in props', () => {})
+
+it('should send an event with path', () => {
+  const onEvent = jest.fn()
+  const component = render(
+    <BaseTemplate
+      components={BUILT_IN_COMPONENTS}
+      path="mainState"
+      dataState={{
+        $: 'component',
+        key: 'button',
+        component: 'View',
+        props: {
+          ['data-testid']: 'button',
+          onClick: {
+            $: 'event',
+          },
+        },
+      }}
+      onEvent={onEvent}
+    />
+  )
+  fireEvent.click(component.getByTestId('button'))
+
+  const firedEvent = onEvent.mock.lastCall[0] as TemplateEvent
+  expect(firedEvent.target.path).toBe('mainState')
+})

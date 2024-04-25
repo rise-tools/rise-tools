@@ -1,4 +1,4 @@
-import { TemplateEvent } from '@final-ui/react'
+import { ActionEvent, TemplateEvent } from '@final-ui/react'
 import { createWSServer } from '@final-ui/ws-server'
 import { randomUUID } from 'crypto'
 import { existsSync, readFileSync, writeFile } from 'fs'
@@ -192,7 +192,7 @@ function mainStateEffect(state: MainState, prevState: MainState) {
 function sliderUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
   if (
     event.target.key === pathToCheck &&
-    event.name === 'onValueChange' &&
+    event.target.propKey === 'onValueChange' &&
     event.target.component === 'RiseSliderField'
   ) {
     mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload[0]))
@@ -204,7 +204,7 @@ function sliderUpdate(event: TemplateEvent, pathToCheck: string, statePath: stri
 function switchUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
   if (
     event.target.key === pathToCheck &&
-    event.name === 'onCheckedChange' &&
+    event.target.propKey === 'onCheckedChange' &&
     event.target.component === 'RiseSwitch'
   ) {
     mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload))
@@ -252,17 +252,16 @@ function handleManualTapBeat() {
   }, 2000)
 }
 
-wsServer.subscribeEvent((event) => {
+wsServer.onActionEvent((event) => {
   const {
-    target: { key },
-    name,
-    action,
+    target: { key, propKey },
+    dataState: { action },
   } = event
-  if (key === 'offButton' && name === 'onPress') {
+  if (key === 'offButton' && propKey === 'onPress') {
     mainStateUpdate((state) => ({ ...state, mode: 'off' }))
     return
   }
-  if (key === 'mode' && name === 'onValueChange') {
+  if (key === 'mode' && propKey === 'onValueChange') {
     mainStateUpdate((state) => ({ ...state, mode: event.payload }))
     return
   }
@@ -277,7 +276,7 @@ wsServer.subscribeEvent((event) => {
     handleManualTapBeat()
     return
   }
-  if (key === 'effectSelect' && name === 'onValueChange') {
+  if (key === 'effectSelect' && propKey === 'onValueChange') {
     mainStateUpdate((state) => ({
       ...state,
       beatEffect: {
@@ -301,18 +300,15 @@ wsServer.subscribeEvent((event) => {
   console.log('Unknown event', event)
 })
 
-// tbd: convert this to EffectEvent type and type all possible occurences
-type ServerAction = string | string[]
-
-function handleEffectEvent(event: TemplateEvent<ServerAction>): boolean {
-  const actionName = event.action?.[0]
+function handleEffectEvent(event: ActionEvent): boolean {
+  const actionName = event.dataState.action?.[0]
   if (actionName !== 'updateEffect') {
     return false
   }
 
-  const mediaPath = event.action?.[1]?.[0]?.split(':')
-  const effectKey = event.action?.[1]?.[1]
-  const effectField = event.action?.[2]
+  const mediaPath = event.dataState.action?.[1]?.[0]?.split(':')
+  const effectKey = event.dataState.action?.[1]?.[1]
+  const effectField = event.dataState.action?.[2]
 
   if (!mediaPath || !effectKey || !effectField) {
     console.warn('Invalid effect event', event)
@@ -353,11 +349,11 @@ function handleEffectEvent(event: TemplateEvent<ServerAction>): boolean {
   return true
 }
 
-function handleTransitionEvent(event: TemplateEvent<ServerAction>): boolean {
-  if (event.action?.[0] !== 'updateTransition') {
+function handleTransitionEvent(event: ActionEvent): boolean {
+  if (event.dataState.action?.[0] !== 'updateTransition') {
     return false
   }
-  if (event.action?.[1] === 'manual') {
+  if (event.dataState.action?.[1] === 'manual') {
     mainStateUpdate((state) => ({
       ...state,
       transitionState: {
@@ -367,7 +363,7 @@ function handleTransitionEvent(event: TemplateEvent<ServerAction>): boolean {
     }))
     return true
   }
-  if (event.action?.[1] === 'duration') {
+  if (event.dataState.action?.[1] === 'duration') {
     mainStateUpdate((state) => ({
       ...state,
       transition: {
@@ -377,7 +373,7 @@ function handleTransitionEvent(event: TemplateEvent<ServerAction>): boolean {
     }))
     return true
   }
-  if (event.action?.[1] === 'startAuto') {
+  if (event.dataState.action?.[1] === 'startAuto') {
     mainStateUpdate((state) => ({
       ...state,
       transitionState: {
@@ -472,13 +468,13 @@ function rootLayerUpdate(mediaPath: string[], updater: (layer: Layer) => Layer) 
 }
 
 // function handleMediaEvent(mediaPath: string[], eventName: string, value: any[]): boolean {
-function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
-  if (event.action?.[0] !== 'updateMedia') {
+function handleMediaEvent(event: ActionEvent): boolean {
+  if (event.dataState.action?.[0] !== 'updateMedia') {
     return false
   }
 
-  const mediaPath = event.action?.[1]?.split(':')
-  const action = event.action?.[2]
+  const mediaPath = event.dataState.action?.[1]?.split(':')
+  const action = event.dataState.action?.[2]
   if (!mediaPath || !action) {
     console.warn('Invalid media event', event)
     return false
@@ -497,7 +493,7 @@ function handleMediaEvent(event: TemplateEvent<ServerAction>): boolean {
     return true
   }
   if (action === 'color') {
-    const colorField = event.action?.[3]
+    const colorField = event.dataState.action?.[3]
     const number = event.payload[0]
     if (colorField === 'h' || colorField === 's' || colorField === 'l') {
       rootMediaUpdate(mediaPath, (media) => ({ ...media, [colorField]: number }))
