@@ -35,10 +35,10 @@ export function getHomeScreen(): ServerDataState {
             component: 'Button',
             props: {
               unstyled: true,
-              onPress: {
-                $: 'event',
-                action: ['navigate', `inventory:item:${item.key}`],
-              },
+              // onPress: {
+              //   $: 'event',
+              //   action: ['navigate', `inventory:item:${item.key}`],
+              // },
               pressStyle: {
                 opacity: 0.8,
               },
