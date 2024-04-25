@@ -72,6 +72,7 @@ export function getHomeScreen(): ServerDataState {
                 },
                 {
                   $: 'component',
+                  key: 'info',
                   component: 'YStack',
                   children: [
                     {
@@ -82,6 +83,7 @@ export function getHomeScreen(): ServerDataState {
                     },
                     {
                       $: 'component',
+                      key: 'details',
                       component: 'XStack',
                       props: {
                         gap: 10,

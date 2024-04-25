@@ -96,7 +96,7 @@ export const BUILTIN_CONNECTIONS: Record<string, Connection> = {
   inventory: {
     id: 'inventory',
     label: '🏭 Car Parts Inventory',
-    host: 'ws://localhost:3005',
+    host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
     path: 'inventory',
   },
 }
