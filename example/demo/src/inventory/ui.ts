@@ -65,7 +65,10 @@ export function getHomeScreen(): ServerDataState {
                   component: 'Image',
                   props: {
                     source: {
-                      uri: item.photo,
+                      uri: {
+                        $: 'ref',
+                        ref: [`inventory:${item.key}`, 'photo'],
+                      },
                     },
                     style: {
                       width: 75,
@@ -83,7 +86,10 @@ export function getHomeScreen(): ServerDataState {
                       $: 'component',
                       key: 'title',
                       component: 'H4',
-                      children: item.title,
+                      children: {
+                        $: 'ref',
+                        ref: [`inventory:${item.key}`, 'title'],
+                      },
                     },
                     {
                       $: 'component',
@@ -96,20 +102,64 @@ export function getHomeScreen(): ServerDataState {
                         {
                           $: 'component',
                           key: 'quantity',
-                          component: 'SizableText',
+                          component: 'XStack',
                           props: {
-                            size: '$4',
+                            gap: '$2',
                           },
-                          children: `Quantity: ${item.quantity}`,
+                          children: [
+                            {
+                              $: 'component',
+                              key: 'label',
+                              component: 'SizableText',
+                              props: {
+                                size: '$4',
+                              },
+                              children: `Quantity:`,
+                            },
+                            {
+                              $: 'component',
+                              key: 'value',
+                              component: 'SizableText',
+                              props: {
+                                size: '$4',
+                              },
+                              children: {
+                                $: 'ref',
+                                ref: [`inventory:${item.key}`, 'quantity'],
+                              },
+                            },
+                          ],
                         },
                         {
                           $: 'component',
                           key: 'price',
-                          component: 'SizableText',
+                          component: 'XStack',
                           props: {
-                            size: '$4',
+                            gap: '$2',
                           },
-                          children: `Price: $${item.price}`,
+                          children: [
+                            {
+                              $: 'component',
+                              key: 'label',
+                              component: 'SizableText',
+                              props: {
+                                size: '$4',
+                              },
+                              children: `Price:`,
+                            },
+                            {
+                              $: 'component',
+                              key: 'value',
+                              component: 'SizableText',
+                              props: {
+                                size: '$4',
+                              },
+                              children: {
+                                $: 'ref',
+                                ref: [`inventory:${item.key}`, 'price'],
+                              },
+                            },
+                          ],
                         },
                       ],
                     },
@@ -182,15 +232,34 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
             children: [
               {
                 $: 'component',
-                component: 'SizableText',
                 key: 'quantity',
+                component: 'XStack',
                 props: {
-                  size: '$5',
+                  gap: '$2',
                 },
-                children: {
-                  $: 'ref',
-                  ref: [`inventory:${item.key}`, 'quantity'],
-                },
+                children: [
+                  {
+                    $: 'component',
+                    key: 'label',
+                    component: 'SizableText',
+                    props: {
+                      size: '$5',
+                    },
+                    children: `Quantity:`,
+                  },
+                  {
+                    $: 'component',
+                    key: 'value',
+                    component: 'SizableText',
+                    props: {
+                      size: '$5',
+                    },
+                    children: {
+                      $: 'ref',
+                      ref: [`inventory:${item.key}`, 'quantity'],
+                    },
+                  },
+                ],
               },
               {
                 $: 'component',
