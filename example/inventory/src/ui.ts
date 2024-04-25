@@ -1,4 +1,4 @@
-import { ServerDataState } from '@final-ui/react'
+import { handler, ServerDataState } from '@final-ui/react'
 
 import inventory, { Item } from './inventory'
 
@@ -15,11 +15,30 @@ export function getHomeScreen(): ServerDataState {
   return {
     $: 'component',
     component: 'YStack',
-    children: {
-      $: 'component',
-      component: 'Text',
-      children: 'Welcome to the inventory app',
-    },
+    children: [
+      {
+        $: 'component',
+        key: 'header',
+        component: 'Text',
+        children: 'Welcome to the inventory app',
+      },
+      {
+        $: 'component',
+        key: 'items',
+        component: 'YStack',
+        children: inventory.map((item) => ({
+          $: 'component',
+          component: 'Text',
+          children: item.title,
+          props: {
+            onPress: {
+              $: 'event',
+              action: ['navigate', `item:${item.key}`],
+            },
+          },
+        })),
+      },
+    ],
   }
 }
 
