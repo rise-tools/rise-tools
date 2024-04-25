@@ -104,7 +104,7 @@ export function getHomeScreen(): ServerDataState {
                           key: 'quantity',
                           component: 'XStack',
                           props: {
-                            gap: '$2',
+                            gap: '$1',
                           },
                           children: [
                             {
@@ -135,7 +135,7 @@ export function getHomeScreen(): ServerDataState {
                           key: 'price',
                           component: 'XStack',
                           props: {
-                            gap: '$2',
+                            gap: '$1',
                           },
                           children: [
                             {
