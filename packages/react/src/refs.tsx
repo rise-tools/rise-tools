@@ -19,6 +19,7 @@ export type Store<V = JSONValue> = {
 export type DataSource = {
   get: (key: string) => Store
   sendEvent: (event: TemplateEvent) => Promise<any>
+  Container: React.ComponentType<{ children: React.ReactNode }>
 }
 
 /** Refs */
@@ -196,6 +197,13 @@ export function Template({
   }, [])
   const rootDataState = resolveRef(dataValues, path)
   return (
-    <BaseTemplate components={components} path={path} dataState={rootDataState} onEvent={onEvent} />
+    <dataSource.Container>
+      <BaseTemplate
+        components={components}
+        path={path}
+        dataState={rootDataState}
+        onEvent={onEvent}
+      />
+    </dataSource.Container>
   )
 }

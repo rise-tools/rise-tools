@@ -5,7 +5,9 @@ import {
   type Store,
   type TemplateEvent,
 } from '@final-ui/react'
+import React, { useEffect, useState } from 'react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
+import { Button, Circle, SizableText, Text, XStack, YStack } from 'tamagui'
 
 export type SubscribeWebsocketMessage = {
   $: 'sub'
@@ -155,6 +157,45 @@ export function createWSDataSource(wsUrl: string): DataSource {
           promises.set(event.dataState.key, [resolve, reject])
         })
       }
+    },
+    Container: ({ children }) => {
+      const [connected, setConnected] = useState(rws.readyState === rws.OPEN)
+      useEffect(() => {
+        function handleConnectionChange() {
+          setConnected(rws.readyState === rws.OPEN)
+        }
+        rws.addEventListener('open', handleConnectionChange)
+        rws.addEventListener('close', handleConnectionChange)
+        return () => {
+          rws.removeEventListener('open', handleConnectionChange)
+          rws.removeEventListener('close', handleConnectionChange)
+        }
+      }, [])
+
+      // tbd: render Error component with message when "disconnected" or "error"
+      // and no UI to display
+      return (
+        <YStack>
+          {children}
+          <XStack position="absolute" top={0} right={0} padding="$2">
+            <XStack backgroundColor="transparent" alignItems="center" gap="$2">
+              <SizableText size="$1" color="grey">
+                Status:
+              </SizableText>
+              <Circle size={5} backgroundColor={connected ? 'green' : 'red'} />
+            </XStack>
+            {!connected && (
+              <Button
+                onPress={() => {
+                  rws.reconnect()
+                }}
+              >
+                Reconnect
+              </Button>
+            )}
+          </XStack>
+        </YStack>
+      )
     },
   }
 
