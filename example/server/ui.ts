@@ -1026,15 +1026,16 @@ function getGenericMediaUI(mediaPath: string, media: Media, ctx: UIContext): Com
     },
     {
       $: 'component',
-      component: 'Button',
+      component: 'RiseDropdownButton',
       children: 'Reset...',
       props: {
         icon: icon('Delete'),
         iconAfter: icon('ChevronDown'),
-        // onPress: {
-        //   $: 'event',
-        //   action: ['updateMedia', mediaPath, 'saveMedia'],
-        // },
+        options: newMediaOptions,
+        onSelect: {
+          $: 'event',
+          action: ['updateMedia', mediaPath, 'mode'],
+        },
       },
     },
     {

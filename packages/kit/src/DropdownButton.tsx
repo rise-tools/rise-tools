@@ -25,8 +25,9 @@ export function DropdownButton(props: z.infer<typeof DropdownButtonProps>) {
   return (
     <Select
       id={props.id}
-      // @ts-ignore
-      onSelect={props.onSelect}
+      onValueChange={(value) => {
+        props.onSelect?.(value)
+      }}
       disablePreventBodyScroll
       // native
     >
@@ -102,9 +103,6 @@ export function DropdownButton(props: z.infer<typeof DropdownButtonProps>) {
                 return (
                   <Select.Item index={i} key={item.key} value={item.key}>
                     <Select.ItemText>{item.label}</Select.ItemText>
-                    <Select.ItemIndicator marginLeft="auto">
-                      <Check size={16} />
-                    </Select.ItemIndicator>
                   </Select.Item>
                 )
               }),
