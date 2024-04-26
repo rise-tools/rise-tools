@@ -1,8 +1,8 @@
-import { ComponentDataState, ServerDataState } from '@final-ui/react'
+import { ComponentDataState, ServerDataState } from "@final-ui/react";
 
-import { hslToHex } from './color'
-import { getSequenceActiveItem } from './eg-main'
-import { EGVideo } from './eg-video-playback'
+import { hslToHex } from "./color";
+import { getSequenceActiveItem } from "./eg-main";
+import { EGVideo } from "./eg-video-playback";
 import {
   ColorMedia,
   Effect,
@@ -16,45 +16,50 @@ import {
   Transition,
   TransitionState,
   VideoMedia,
-} from './state-schema'
+} from "./state-schema";
 
 export type UIContext = {
-  video: EGVideo
-}
+  video: EGVideo;
+};
 
 function icon(name: string): ComponentDataState {
   return {
-    $: 'component',
-    key: 'icon',
-    component: 'RiseIcon',
+    $: "component",
+    key: "icon",
+    component: "RiseIcon",
     props: { icon: name },
-  }
+  };
 }
 
-function section(title: string, children: ServerDataState[], key?: string): ServerDataState {
+function section(
+  title: string,
+  children: ServerDataState[],
+  key?: string,
+): ServerDataState {
   return {
-    $: 'component',
-    component: 'YStack',
+    $: "component",
+    component: "YStack",
     key: key || title,
     props: {
-      padding: '$4',
-      gap: '$2',
+      padding: "$3",
+      gap: "$2",
     },
     children: [
       {
-        $: 'component',
-        key: 'title',
-        component: 'Label',
+        $: "component",
+        key: "title",
+        component: "Label",
         children: title,
         props: {
-          fontSize: '$2',
-          fontWeight: 'bold',
-          color: '$color10',
+          fontSize: "$2",
+          fontWeight: "bold",
+          color: "$color10",
         },
       },
       ...children,
+      { $: "component", component: "Separator", props: {} },
     ],
-  }
+  };
 }
 
 function sortableList({
@@ -62,168 +67,172 @@ function sortableList({
   label,
   props,
 }: {
-  key?: string
-  label?: string
-  props?: ComponentDataState['props']
+  key?: string;
+  label?: string;
+  props?: ComponentDataState["props"];
 }): ServerDataState {
   return {
-    $: 'component',
-    component: 'SortableList',
+    $: "component",
+    component: "SortableList",
     key,
     props: {
-      padding: '$4',
-      gap: '$2',
+      padding: "$4",
+      gap: "$2",
       ...props,
     },
     children: [
       {
-        $: 'component',
-        key: 'title',
-        component: 'Label',
+        $: "component",
+        key: "title",
+        component: "Label",
         children: label,
         props: {
-          fontSize: '$2',
-          fontWeight: 'bold',
-          color: '$color10',
+          fontSize: "$2",
+          fontWeight: "bold",
+          color: "$color10",
         },
       },
     ],
-  }
+  };
 }
 
-function getVideoControls(mediaPath: string, state: VideoMedia, ctx: UIContext): ServerDataState[] {
-  const player = ctx.video.getPlayer(state.id)
+function getVideoControls(
+  mediaPath: string,
+  state: VideoMedia,
+  ctx: UIContext,
+): ServerDataState[] {
+  const player = ctx.video.getPlayer(state.id);
   return [
-    section('Video Controls', [
+    section("Video Controls", [
       {
-        $: 'component',
-        key: 'selectVideo',
-        component: 'RiseSelectField',
+        $: "component",
+        key: "selectVideo",
+        component: "RiseSelectField",
         props: {
-          unselectedLabel: 'Select Video...',
+          unselectedLabel: "Select Video...",
           value: state.track,
           onValueChange: {
-            $: 'event',
-            action: ['updateMedia', mediaPath, 'track'],
+            $: "event",
+            action: ["updateMedia", mediaPath, "track"],
           },
-          options: { $: 'ref', ref: ['videoList'] },
+          options: { $: "ref", ref: ["videoList"] },
         },
       },
       {
-        $: 'component',
-        component: 'XStack',
+        $: "component",
+        component: "XStack",
         children: [
           {
-            $: 'component',
-            key: 'restart',
-            component: 'Button',
-            children: 'Restart Video',
+            $: "component",
+            key: "restart",
+            component: "Button",
+            children: "Restart Video",
             props: {
-              icon: icon('RefreshCcw'),
-              size: '$2',
-              theme: 'blue',
+              icon: icon("RefreshCcw"),
+              size: "$2",
+              theme: "blue",
               onPress: {
-                $: 'event',
-                action: ['updateMedia', mediaPath, 'restart'],
+                $: "event",
+                action: ["updateMedia", mediaPath, "restart"],
               },
             },
           },
         ],
       },
       {
-        $: 'component',
-        key: 'loopBounce',
-        component: 'RiseSwitchField',
+        $: "component",
+        key: "loopBounce",
+        component: "RiseSwitchField",
         props: {
           value: state?.params?.loopBounce || false,
-          label: 'Loop Bounce',
+          label: "Loop Bounce",
           onCheckedChange: {
-            $: 'event',
-            action: ['updateMedia', mediaPath, 'loopBounce'],
+            $: "event",
+            action: ["updateMedia", mediaPath, "loopBounce"],
           },
         },
       },
       {
-        $: 'component',
-        key: 'reverse',
-        component: 'RiseSwitchField',
+        $: "component",
+        key: "reverse",
+        component: "RiseSwitchField",
         props: {
           value: state?.params?.reverse || false,
-          label: 'Reverse Playback',
+          label: "Reverse Playback",
           onCheckedChange: {
-            $: 'event',
-            action: ['updateMedia', mediaPath, 'reverse'],
+            $: "event",
+            action: ["updateMedia", mediaPath, "reverse"],
           },
         },
       },
       {
-        $: 'component',
-        key: 'infoFrameCount',
-        component: 'Label',
+        $: "component",
+        key: "infoFrameCount",
+        component: "Label",
         children: `Frame Count: ${player.getFrameCount()}`,
       },
       {
-        $: 'component',
-        key: 'infoDuration',
-        component: 'Label',
+        $: "component",
+        key: "infoDuration",
+        component: "Label",
         children: `Duration: ${(player.getFrameCount() || 0) / 30} sec`,
       },
       {
-        $: 'component',
-        key: 'effect',
-        component: 'Button',
-        children: 'Effects',
+        $: "component",
+        key: "effect",
+        component: "Button",
+        children: "Effects",
         props: {
-          icon: icon('Sparkles'),
+          icon: icon("Sparkles"),
           onPress: {
-            $: 'event',
-            action: ['navigate', `${mediaPath}:effects`],
+            $: "event",
+            action: ["navigate", `${mediaPath}:effects`],
           },
         },
       },
       ...getGenericMediaUI(mediaPath, state, ctx),
     ]),
-  ]
+  ];
 }
 
 function scroll(children: any[]): ServerDataState {
   return {
-    $: 'component',
-    component: 'ScrollView',
+    $: "component",
+    component: "ScrollView",
     props: {
-      padding: '$4',
-      gap: '$4',
+      padding: "$4",
+      gap: "$4",
     },
     children,
-  }
+  };
 }
 
 function getColorControls(
   mediaPath: string,
   state: ColorMedia,
-  context: UIContext
+  context: UIContext,
 ): ServerDataState[] {
   return [
     {
-      $: 'component',
-      key: 'ColorPreview',
-      component: 'View',
+      $: "component",
+      key: "ColorPreview",
+      component: "View",
       props: {
         height: 50,
         backgroundColor: hslToHex(state.h, state.s, state.l),
-        borderRadius: '$3',
+        borderRadius: "$3",
       },
     },
     {
-      $: 'component',
-      key: 'ColorHueSlider',
-      component: 'RiseSliderField',
+      $: "component",
+      key: "ColorHueSlider",
+      component: "RiseSliderField",
       props: {
-        label: 'Hue',
+        label: "Hue",
         value: state.h,
         onValueChange: {
-          $: 'event',
-          action: ['updateMedia', mediaPath, 'color', 'h'],
+          $: "event",
+          action: ["updateMedia", mediaPath, "color", "h"],
         },
         max: 360,
         min: 0,
@@ -231,15 +240,15 @@ function getColorControls(
       },
     },
     {
-      $: 'component',
-      key: 'ColorSaturationSlider',
-      component: 'RiseSliderField',
+      $: "component",
+      key: "ColorSaturationSlider",
+      component: "RiseSliderField",
       props: {
-        label: 'Saturation',
+        label: "Saturation",
         value: state.s,
         onValueChange: {
-          $: 'event',
-          action: ['updateMedia', mediaPath, 'color', 's'],
+          $: "event",
+          action: ["updateMedia", mediaPath, "color", "s"],
         },
         max: 1,
         min: 0,
@@ -247,15 +256,15 @@ function getColorControls(
       },
     },
     {
-      $: 'component',
-      key: 'ColorLightnessSlider',
-      component: 'RiseSliderField',
+      $: "component",
+      key: "ColorLightnessSlider",
+      component: "RiseSliderField",
       props: {
-        label: 'Lightness',
+        label: "Lightness",
         value: state.l,
         onValueChange: {
-          $: 'event',
-          action: ['updateMedia', mediaPath, 'color', 'l'],
+          $: "event",
+          action: ["updateMedia", mediaPath, "color", "l"],
         },
         max: 1,
         min: 0,
@@ -263,39 +272,39 @@ function getColorControls(
       },
     },
     ...getGenericMediaUI(mediaPath, state, context),
-  ]
+  ];
 }
 
 export function getEffectsUI(
   mediaLinkPath: string,
-  effectsState: Effects | undefined
+  effectsState: Effects | undefined,
 ): ServerDataState {
-  return section('Effects', [
+  return section("Effects", [
     sortableList({
       props: {
         onReorder: {
-          $: 'event',
-          action: ['updateMedia', mediaLinkPath, 'effectOrder'],
+          $: "event",
+          action: ["updateMedia", mediaLinkPath, "effectOrder"],
         },
         footer: {
-          $: 'component',
-          key: 'addEffect',
-          component: 'RiseSelectField',
+          $: "component",
+          key: "addEffect",
+          component: "RiseSelectField",
           props: {
-            unselectedLabel: 'Add Effect...',
+            unselectedLabel: "Add Effect...",
             value: null,
             options: [
-              { key: 'colorize', label: 'Colorize' },
-              { key: 'desaturate', label: 'Desaturate' },
-              { key: 'invert', label: 'Invert' },
-              { key: 'hueShift', label: 'Hue Shift' },
-              { key: 'brighten', label: 'Brighten' },
-              { key: 'darken', label: 'Darken' },
-              { key: 'rotate', label: 'Rotate' },
+              { key: "colorize", label: "Colorize" },
+              { key: "desaturate", label: "Desaturate" },
+              { key: "invert", label: "Invert" },
+              { key: "hueShift", label: "Hue Shift" },
+              { key: "brighten", label: "Brighten" },
+              { key: "darken", label: "Darken" },
+              { key: "rotate", label: "Rotate" },
             ],
             onValueChange: {
-              $: 'event',
-              action: ['updateMedia', mediaLinkPath, 'addEffect'],
+              $: "event",
+              action: ["updateMedia", mediaLinkPath, "addEffect"],
             },
           },
         },
@@ -304,47 +313,47 @@ export function getEffectsUI(
             key: effect.key,
             label: effect.type,
             onPress: {
-              $: 'event',
-              action: ['navigate', `${mediaLinkPath}:effects:${effect.key}`],
+              $: "event",
+              action: ["navigate", `${mediaLinkPath}:effects:${effect.key}`],
             },
-          }
+          };
         }),
       },
     }),
-  ])
+  ]);
 }
 
 export function getEffectUI(effectPath: string[], effect: Effect) {
   const removeEffect: ComponentDataState = {
-    $: 'component',
-    key: 'removeEffect',
-    component: 'Button',
-    children: 'Remove Effect',
+    $: "component",
+    key: "removeEffect",
+    component: "Button",
+    children: "Remove Effect",
     props: {
       onPress: [
         {
-          $: 'event',
-          action: 'navigate-back',
+          $: "event",
+          action: "navigate-back",
         },
         {
-          $: 'event',
-          action: ['updateEffect', effectPath, 'remove'],
+          $: "event",
+          action: ["updateEffect", effectPath, "remove"],
         },
       ],
     },
-  }
-  if (effect.type === 'desaturate') {
-    return section('Desaturate', [
+  };
+  if (effect.type === "desaturate") {
+    return section("Desaturate", [
       {
-        $: 'component',
-        key: 'value',
-        component: 'RiseSliderField',
+        $: "component",
+        key: "value",
+        component: "RiseSliderField",
         props: {
           onValueChange: {
-            $: 'event',
-            action: ['updateEffect', effectPath, 'value'],
+            $: "event",
+            action: ["updateEffect", effectPath, "value"],
           },
-          label: 'Value',
+          label: "Value",
           value: effect.value,
           max: 1,
           min: -1,
@@ -352,19 +361,19 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         },
       },
       removeEffect,
-    ])
-  } else if (effect.type === 'hueShift') {
-    return section('Hue Shift', [
+    ]);
+  } else if (effect.type === "hueShift") {
+    return section("Hue Shift", [
       {
-        $: 'component',
-        key: 'value',
-        component: 'RiseSliderField',
+        $: "component",
+        key: "value",
+        component: "RiseSliderField",
         props: {
           onValueChange: {
-            $: 'event',
-            action: ['updateEffect', effectPath, 'value'],
+            $: "event",
+            action: ["updateEffect", effectPath, "value"],
           },
-          label: 'Value',
+          label: "Value",
           value: effect.value,
           max: 180,
           min: -180,
@@ -372,19 +381,19 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         },
       },
       removeEffect,
-    ])
-  } else if (effect.type === 'colorize') {
-    return section('Colorize', [
+    ]);
+  } else if (effect.type === "colorize") {
+    return section("Colorize", [
       {
-        $: 'component',
-        key: 'amount',
-        component: 'RiseSliderField',
+        $: "component",
+        key: "amount",
+        component: "RiseSliderField",
         props: {
           onValueChange: {
-            $: 'event',
-            action: ['updateEffect', effectPath, 'amount'],
+            $: "event",
+            action: ["updateEffect", effectPath, "amount"],
           },
-          label: 'Amount',
+          label: "Amount",
           value: effect.amount,
           max: 1,
           min: 0,
@@ -392,25 +401,25 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         },
       },
       {
-        $: 'component',
-        key: 'ColorPreview',
-        component: 'View',
+        $: "component",
+        key: "ColorPreview",
+        component: "View",
         props: {
           height: 50,
           backgroundColor: hslToHex(effect.hue, effect.saturation, 0.5),
-          borderRadius: '$3',
+          borderRadius: "$3",
         },
       },
       {
-        $: 'component',
-        key: 'saturation',
-        component: 'RiseSliderField',
+        $: "component",
+        key: "saturation",
+        component: "RiseSliderField",
         props: {
           onValueChange: {
-            $: 'event',
-            action: ['updateEffect', effectPath, 'saturation'],
+            $: "event",
+            action: ["updateEffect", effectPath, "saturation"],
           },
-          label: 'Saturation',
+          label: "Saturation",
           value: effect.saturation,
           max: 1,
           min: 0,
@@ -418,15 +427,15 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         },
       },
       {
-        $: 'component',
-        key: 'hue',
-        component: 'RiseSliderField',
+        $: "component",
+        key: "hue",
+        component: "RiseSliderField",
         props: {
           onValueChange: {
-            $: 'event',
-            action: ['updateEffect', effectPath, 'hue'],
+            $: "event",
+            action: ["updateEffect", effectPath, "hue"],
           },
-          label: 'Hue',
+          label: "Hue",
           value: effect.hue,
           max: 360,
           min: 0,
@@ -434,19 +443,19 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         },
       },
       removeEffect,
-    ])
-  } else if (effect.type === 'rotate') {
-    return section('Rotate', [
+    ]);
+  } else if (effect.type === "rotate") {
+    return section("Rotate", [
       {
-        $: 'component',
-        key: 'value',
-        component: 'RiseSliderField',
+        $: "component",
+        key: "value",
+        component: "RiseSliderField",
         props: {
           onValueChange: {
-            $: 'event',
-            action: ['updateEffect', effectPath, 'value'],
+            $: "event",
+            action: ["updateEffect", effectPath, "value"],
           },
-          label: 'Value',
+          label: "Value",
           value: effect.value,
           max: 1,
           min: 0,
@@ -454,19 +463,19 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         },
       },
       removeEffect,
-    ])
-  } else if (effect.type === 'darken') {
-    return section('Darken', [
+    ]);
+  } else if (effect.type === "darken") {
+    return section("Darken", [
       {
-        $: 'component',
-        key: 'value',
-        component: 'RiseSliderField',
+        $: "component",
+        key: "value",
+        component: "RiseSliderField",
         props: {
           onValueChange: {
-            $: 'event',
-            action: ['updateEffect', effectPath, 'value'],
+            $: "event",
+            action: ["updateEffect", effectPath, "value"],
           },
-          label: 'Value',
+          label: "Value",
           value: effect.value,
           max: 1,
           min: 0,
@@ -474,19 +483,19 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         },
       },
       removeEffect,
-    ])
-  } else if (effect.type === 'brighten') {
-    return section('Brighten', [
+    ]);
+  } else if (effect.type === "brighten") {
+    return section("Brighten", [
       {
-        $: 'component',
-        key: 'value',
-        component: 'RiseSliderField',
+        $: "component",
+        key: "value",
+        component: "RiseSliderField",
         props: {
           onValueChange: {
-            $: 'event',
-            action: ['updateEffect', effectPath, 'value'],
+            $: "event",
+            action: ["updateEffect", effectPath, "value"],
           },
-          label: 'Value',
+          label: "Value",
           value: effect.value,
           max: 1,
           min: 0,
@@ -494,95 +503,95 @@ export function getEffectUI(effectPath: string[], effect: Effect) {
         },
       },
       removeEffect,
-    ])
+    ]);
   }
-  return section(`Effect: ${effect.type}`, [removeEffect])
+  return section(`Effect: ${effect.type}`, [removeEffect]);
 }
 function getVideoTitle(state: VideoMedia, ctx: UIContext): string {
-  if (state.track === null) return 'Video - Empty'
-  const title = ctx.video.getTrackTitle(state.track)
-  return title
+  if (state.track === null) return "Video - Empty";
+  const title = ctx.video.getTrackTitle(state.track);
+  return title;
 }
 
 export function getMediaTitle(state: Media, ctx: UIContext): string {
-  if (state.label) return state.label
-  if (state.type === 'color') return 'Color'
-  if (state.type === 'sequence') return 'Sequence'
-  if (state.type === 'layers') return 'Layers'
-  if (state.type === 'video') return getVideoTitle(state, ctx)
-  return 'Media'
+  if (state.label) return state.label;
+  if (state.type === "color") return "Color";
+  if (state.type === "sequence") return "Sequence";
+  if (state.type === "layers") return "Layers";
+  if (state.type === "video") return getVideoTitle(state, ctx);
+  return "Media";
 }
 
 const newMediaOptions = [
-  { key: 'off', label: 'Off' },
-  { key: 'color', label: 'Color' },
-  { key: 'video', label: 'Video' },
-  { key: 'layers', label: 'Layers' },
-  { key: 'sequence', label: 'Sequence' },
-]
+  { key: "off", label: "Off" },
+  { key: "color", label: "Color" },
+  { key: "video", label: "Video" },
+  { key: "layers", label: "Layers" },
+  { key: "sequence", label: "Sequence" },
+];
 
 export function getMediaControls(
   state: Media,
   mediaLinkPath: string,
-  ctx: UIContext
+  ctx: UIContext,
 ): ServerDataState[] {
-  if (state.type === 'off') {
+  if (state.type === "off") {
     return [
       {
-        $: 'component',
-        key: 'MediaMode',
-        component: 'RiseSelectField',
+        $: "component",
+        key: "MediaMode",
+        component: "RiseSelectField",
         props: {
           value: state.type,
           onValueChange: {
-            $: 'event',
-            action: ['updateMedia', mediaLinkPath, 'mode'],
+            $: "event",
+            action: ["updateMedia", mediaLinkPath, "mode"],
           },
           options: newMediaOptions,
         },
       },
-    ]
+    ];
   }
   return [
     {
-      $: 'component',
-      key: 'MediaMode',
-      component: 'XStack',
+      $: "component",
+      key: "MediaMode",
+      component: "XStack",
       children: [
         {
-          $: 'component',
-          key: 'link',
-          component: 'Button',
+          $: "component",
+          key: "link",
+          component: "Button",
           props: {
             f: 1,
-            bg: '$color1',
+            bg: "$color1",
             onPress: {
-              $: 'event',
-              action: ['navigate', mediaLinkPath],
+              $: "event",
+              action: ["navigate", mediaLinkPath],
             },
           },
           children: `${getMediaTitle(state, ctx)}`,
         },
       ],
     },
-  ]
+  ];
 }
 
 export function getTransitionControls(
   transition: Transition,
-  state: TransitionState
+  state: TransitionState,
 ): ServerDataState[] {
   return [
     {
-      $: 'component',
-      key: 'manual',
-      component: 'RiseSliderField',
+      $: "component",
+      key: "manual",
+      component: "RiseSliderField",
       props: {
-        label: 'Manual',
+        label: "Manual",
         value: state.manual || 0,
         onValueChange: {
-          $: 'event',
-          action: ['updateTransition', 'manual'],
+          $: "event",
+          action: ["updateTransition", "manual"],
         },
         max: 0.99,
         min: 0,
@@ -590,56 +599,59 @@ export function getTransitionControls(
       },
     },
     {
-      $: 'component',
-      key: 'transition',
-      component: 'Button',
-      children: 'Go Transition',
+      $: "component",
+      key: "transition",
+      component: "Button",
+      children: "Go Transition",
       props: {
-        theme: 'green',
-        icon: icon('Play'),
+        theme: "green",
+        icon: icon("Play"),
         onPress: {
-          $: 'event',
-          action: ['updateTransition', 'startAuto'],
+          $: "event",
+          action: ["updateTransition", "startAuto"],
         },
       },
     },
     {
-      $: 'component',
-      key: 'duration',
-      component: 'RiseSliderField',
+      $: "component",
+      key: "duration",
+      component: "RiseSliderField",
       props: {
         label: `Transition Duration: ${Math.round(transition.duration / 100) / 10}sec`,
         value: transition.duration || 0,
         onValueChange: {
-          $: 'event',
-          action: ['updateTransition', 'duration'],
+          $: "event",
+          action: ["updateTransition", "duration"],
         },
         max: 10000,
         min: 0,
         step: 1,
       },
     },
-  ]
+  ];
 }
 
 export function getUIRoot(state: MainState, ctx: UIContext) {
   return scroll([
-    section('Live', getMediaControls(state.liveMedia, 'liveMedia', ctx)),
-    section('Transition', getTransitionControls(state.transition, state.transitionState)),
-    section('Ready', getMediaControls(state.readyMedia, 'readyMedia', ctx)),
-    section('Library', [
+    section("Live", getMediaControls(state.liveMedia, "liveMedia", ctx)),
+    section(
+      "Transition",
+      getTransitionControls(state.transition, state.transitionState),
+    ),
+    section("Ready", getMediaControls(state.readyMedia, "readyMedia", ctx)),
+    section("Library", [
       {
-        $: 'component',
-        component: 'Button',
-        children: 'Library',
+        $: "component",
+        component: "Button",
+        children: "Library",
         props: {
-          bg: '$color1',
-          onPress: { $: 'event', action: ['navigate', 'library'] },
-          icon: icon('LibraryBig'),
+          bg: "$color1",
+          onPress: { $: "event", action: ["navigate", "library"] },
+          icon: icon("LibraryBig"),
         },
       },
     ]),
-  ])
+  ]);
 }
 
 //  function getUIRootLegacy(state: MainState) {
@@ -764,39 +776,45 @@ function getLayersControls(
   mediaPath: string,
   state: LayersMedia,
   ctx: UIContext,
-  { header = [], footer = [] }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {}
+  {
+    header = [],
+    footer = [],
+  }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {},
 ): ServerDataState {
   return {
-    $: 'component',
-    component: 'RiseSortableList',
+    $: "component",
+    component: "RiseSortableList",
     props: {
       onReorder: {
-        $: 'event',
-        action: ['updateMedia', mediaPath, 'layerOrder'],
+        $: "event",
+        action: ["updateMedia", mediaPath, "layerOrder"],
       },
       header: {
-        $: 'component',
-        component: 'YStack',
+        $: "component",
+        component: "YStack",
         children: header,
       },
       footer: {
-        $: 'component',
-        key: 'addLayer',
-        component: 'YStack',
+        $: "component",
+        key: "addLayer",
+        component: "YStack",
         children: [
           ...header,
           {
-            key: 'addLayer',
-            $: 'component',
-            component: 'RiseDropdownButton',
-            children: 'Add Layer',
+            key: "addLayer",
+            $: "component",
+            component: "RiseDropdownButton",
+            children: "Add Layer",
             props: {
-              onSelect: {
-                $: 'event',
-                action: ['updateMedia', mediaPath, 'addLayer'],
-              },
-              icon: icon('Plus'),
               options: newMediaOptions,
+              onSelect: {
+                $: "event",
+                action: ["updateMedia", mediaPath, "addLayer"],
+              },
+              buttonProps: {
+                icon: icon("Plus"),
+                children: "Add Layer",
+              },
             },
           },
           ...footer,
@@ -808,63 +826,65 @@ function getLayersControls(
           key: layer.key,
           label: getMediaTitle(layer.media, ctx),
           onPress: {
-            $: 'event',
-            action: ['navigate', `${mediaPath}:layer:${layer.key}`],
+            $: "event",
+            action: ["navigate", `${mediaPath}:layer:${layer.key}`],
           },
-        }
+        };
       }),
     },
-  }
+  };
 }
 
 function getSequenceControls(
   mediaPath: string,
   state: SequenceMedia,
   ctx: UIContext,
-  footer: ServerDataState[] = []
+  footer: ServerDataState[] = [],
 ): ServerDataState {
-  const activeMedia = getSequenceActiveItem(state)
+  const activeMedia = getSequenceActiveItem(state);
   return {
-    $: 'component',
-    component: 'RiseSortableList',
+    $: "component",
+    component: "RiseSortableList",
     props: {
-      onReorder: { $: 'event', action: ['updateMedia', mediaPath, 'layerOrder'] },
-      header: {
-        $: 'component',
-        key: 'header',
-        component: 'YStack',
-        children: [
-          {
-            key: 'goNext',
-            $: 'component',
-            component: 'Button',
-            children: 'Go Next',
-            props: {
-              onPress: {
-                $: 'event',
-                action: ['updateMedia', mediaPath, 'goNext'],
-              },
+      onReorder: {
+        $: "event",
+        action: ["updateMedia", mediaPath, "layerOrder"],
+      },
+      header: section("Sequence Controls", [
+        {
+          key: "goNext",
+          $: "component",
+          component: "Button",
+          children: "Go Next",
+          props: {
+            theme: "green",
+            icon: icon("Play"),
+            onPress: {
+              $: "event",
+              action: ["updateMedia", mediaPath, "goNext"],
             },
           },
-        ],
-      },
+        },
+      ]),
       footer: {
-        $: 'component',
-        key: 'footer',
-        component: 'YStack',
+        $: "component",
+        key: "footer",
+        component: "YStack",
         children: [
           {
-            key: 'addToSequence',
-            $: 'component',
-            component: 'RiseSelectField',
+            key: "add2Sequence",
+            $: "component",
+            component: "RiseDropdownButton",
             props: {
-              value: null,
-              onValueChange: {
-                $: 'event',
-                action: ['updateMedia', mediaPath, 'addToSequence'],
-              },
               options: newMediaOptions,
-              unselectedLabel: 'Add to Sequence...',
+              onSelect: {
+                $: "event",
+                action: ["updateMedia", mediaPath, "addToSequence"],
+              },
+              buttonProps: {
+                icon: icon("Plus"),
+                children: "Add to Sequence..",
+              },
             },
           },
           ...getGenericMediaUI(mediaPath, state, ctx),
@@ -874,51 +894,54 @@ function getSequenceControls(
       items: (state.sequence || []).map((item) => {
         return {
           key: item.key,
-          label: `${getMediaTitle(item.media, ctx)}${item.key === activeMedia?.key ? ' (Active)' : ''}`,
-          onPress: { $: 'event', action: ['navigate', `${mediaPath}:item:${item.key}`] },
-        }
+          label: `${getMediaTitle(item.media, ctx)}${item.key === activeMedia?.key ? " (Active)" : ""}`,
+          onPress: {
+            $: "event",
+            action: ["navigate", `${mediaPath}:item:${item.key}`],
+          },
+        };
       }),
     },
-  }
+  };
 }
 
 export function getMediaLayerUI(
   mediaPath: string,
   layer: Layer,
-  context: UIContext
+  context: UIContext,
 ): ServerDataState {
   return getMediaUI(mediaPath, layer.media, context, {
     footer: [],
     header: [
-      section('Layer Controls', [
+      section("Layer Controls", [
         {
-          $: 'component',
-          key: 'blendMode',
-          component: 'RiseSelectField',
+          $: "component",
+          key: "blendMode",
+          component: "RiseSelectField",
           props: {
             value: layer.blendMode,
-            label: 'Blend Mode',
+            label: "Blend Mode",
             onValueChange: {
-              $: 'event',
-              action: ['updateMedia', mediaPath, 'blendMode'],
+              $: "event",
+              action: ["updateMedia", mediaPath, "blendMode"],
             },
             options: [
-              { key: 'mix', label: 'Blend' },
-              { key: 'add', label: 'Add' },
-              { key: 'mask', label: 'Mask' },
+              { key: "mix", label: "Blend" },
+              { key: "add", label: "Add" },
+              { key: "mask", label: "Mask" },
             ],
           },
         },
         {
-          $: 'component',
-          key: 'blendAmount',
-          component: 'RiseSliderField',
+          $: "component",
+          key: "blendAmount",
+          component: "RiseSliderField",
           props: {
             onValueChange: {
-              $: 'event',
-              action: ['updateMedia', mediaPath, 'blendAmount'],
+              $: "event",
+              action: ["updateMedia", mediaPath, "blendAmount"],
             },
-            label: 'Blend Amount',
+            label: "Blend Amount",
             value: layer.blendAmount,
             max: 1,
             min: 0,
@@ -926,27 +949,32 @@ export function getMediaLayerUI(
           },
         },
         {
-          $: 'component',
-          component: 'XStack',
-          props: { jc: 'flex-end', marginVertical: '$4' },
+          $: "component",
+          component: "XStack",
+          props: { jc: "flex-end", marginVertical: "$4" },
           children: [
             {
-              $: 'component',
-              key: 'removeLayer',
-              component: 'Button',
-              children: 'Remove Layer',
+              $: "component",
+              key: "removeLayer",
+              component: "Button",
+              children: "Remove Layer",
               props: {
-                size: '$2',
-                theme: 'red',
-                icon: icon('Trash'),
+                size: "$2",
+                theme: "red",
+                icon: icon("Trash"),
                 onPress: [
                   {
-                    $: 'event',
-                    action: ['updateMedia', mediaPath, 'removeLayer', layer.key],
+                    $: "event",
+                    action: [
+                      "updateMedia",
+                      mediaPath,
+                      "removeLayer",
+                      layer.key,
+                    ],
                   },
                   {
-                    $: 'event',
-                    action: 'navigate-back',
+                    $: "event",
+                    action: "navigate-back",
                   },
                 ],
               },
@@ -955,96 +983,105 @@ export function getMediaLayerUI(
         },
       ]),
     ],
-  })
+  });
 }
 
 export function getLibraryUI(keys: string[]): ServerDataState[] {
   return [
-    { $: 'component', component: 'Screen', props: { title: 'Media Library' } },
+    { $: "component", component: "Screen", props: { title: "Media Library" } },
     scroll(
       keys.map((key) => ({
-        $: 'component',
-        component: 'Button',
+        $: "component",
+        component: "Button",
         children: key,
         props: {
           onPress: [
-            { $: 'event', action: 'navigate-back' },
-            { $: 'event', action: ['libraryAction', key, 'goReady'] },
+            { $: "event", action: "navigate-back" },
+            { $: "event", action: ["libraryAction", key, "goReady"] },
           ],
-          onLongPress: { $: 'event', action: ['navigate', `library/${key}`] },
+          onLongPress: { $: "event", action: ["navigate", `library/${key}`] },
         },
-      }))
+      })),
     ),
-  ]
+  ];
 }
 
 export function getLibraryKeyUI(key: string): ComponentDataState[] {
   return [
-    { $: 'component', component: 'Screen', props: { title: key } },
+    { $: "component", component: "Screen", props: { title: key } },
     {
-      $: 'component',
-      component: 'Button',
-      children: 'Go Ready',
+      $: "component",
+      component: "Button",
+      children: "Go Ready",
       props: {
-        icon: icon('Upload'),
+        icon: icon("Upload"),
         onPress: {
-          $: 'event',
-          action: ['libraryAction', key, 'goReady'],
+          $: "event",
+          action: ["libraryAction", key, "goReady"],
         },
       },
     },
     {
-      $: 'component',
-      component: 'Button',
-      children: 'Delete',
+      $: "component",
+      component: "Button",
+      children: "Delete",
       props: {
-        theme: 'red',
-        icon: icon('Trash'),
+        theme: "red",
+        icon: icon("Trash"),
         onPress: [
-          { $: 'event', action: 'navigate-back' },
-          { $: 'event', action: ['libraryAction', key, 'delete'] },
+          { $: "event", action: "navigate-back" },
+          { $: "event", action: ["libraryAction", key, "delete"] },
         ],
       },
     },
-  ]
+  ];
 }
 
-function getGenericMediaUI(mediaPath: string, media: Media, ctx: UIContext): ComponentDataState[] {
+function getGenericMediaUI(
+  mediaPath: string,
+  media: Media,
+  ctx: UIContext,
+): ComponentDataState[] {
   return [
-    { $: 'component', component: 'Screen', props: { title: getMediaTitle(media, ctx) } },
     {
-      $: 'component',
-      component: 'Button',
-      children: 'Save Media to Library',
+      $: "component",
+      component: "Screen",
+      props: { title: getMediaTitle(media, ctx) },
+    },
+    {
+      $: "component",
+      component: "Button",
+      children: "Save Media to Library",
       props: {
-        icon: icon('LibraryBig'),
+        icon: icon("LibraryBig"),
         onPress: {
-          $: 'event',
-          action: ['updateMedia', mediaPath, 'saveMedia'],
+          $: "event",
+          action: ["updateMedia", mediaPath, "saveMedia"],
         },
       },
     },
     {
-      $: 'component',
-      component: 'RiseDropdownButton',
-      children: 'Reset...',
+      $: "component",
+      component: "RiseDropdownButton",
       props: {
-        icon: icon('Delete'),
-        iconAfter: icon('ChevronDown'),
+        buttonProps: {
+          icon: icon("Delete"),
+          children: "Reset...",
+        },
         options: newMediaOptions,
         onSelect: {
-          $: 'event',
-          action: ['updateMedia', mediaPath, 'mode'],
+          $: "event",
+          action: ["updateMedia", mediaPath, "mode"],
         },
       },
     },
     {
-      $: 'component',
-      component: 'Button',
-      children: 'Convert...',
+      $: "component",
+      component: "Button",
+      children: "Convert...",
       props: {
-        icon: icon('Sparkle'),
-        iconAfter: icon('ChevronDown'),
+        icon: icon("Sparkle"),
+        iconAfter: icon("ChevronDown"),
         // onPress: {
         //   $: 'event',
         //   action: ['updateMedia', mediaPath, 'saveMedia'],
@@ -1052,213 +1089,258 @@ function getGenericMediaUI(mediaPath: string, media: Media, ctx: UIContext): Com
       },
     },
     {
-      $: 'component',
-      component: 'AlertDialog',
+      $: "component",
+      component: "Dialog",
       children: [
         {
-          $: 'component',
-          component: 'AlertDialogTrigger',
+          $: "component",
+          component: "DialogTrigger",
           props: {
             asChild: true,
           },
           children: {
-            $: 'component',
-            component: 'Button',
-            children: 'Edit Title',
+            $: "component",
+            component: "Button",
+            children: "Edit Title",
             props: {
-              icon: icon('Pencil'),
+              icon: icon("Pencil"),
             },
           },
         },
         {
-          $: 'component',
-          component: 'AlertDialogPortal',
+          $: "component",
+          component: "DialogPortal",
           children: [
             {
-              $: 'component',
-              component: 'AlertDialogOverlay',
+              $: "component",
+              component: "DialogOverlay",
             },
             {
-              $: 'component',
-              component: 'AlertDialogContent',
+              $: "component",
+              component: "DialogContent",
               props: {
                 minWidth: 300,
               },
-              children: {
-                $: 'component',
-                component: 'RiseForm',
-                props: {
-                  gap: '$4',
-                  onSubmit: {
-                    $: 'event',
-                    action: ['updateMedia', mediaPath, 'metadata'],
+              children: [
+                {
+                  $: "component",
+                  component: "RiseForm",
+                  props: {
+                    gap: "$4",
+                    onSubmit: {
+                      $: "event",
+                      action: ["updateMedia", mediaPath, "metadata"],
+                    },
+                    // Comment this out to test async event handling
+                    // onSubmit: asyncHandler(async (args: any) => {
+                    //   console.log('form submitted', JSON.stringify(args))
+                    //   // Simulate a pending state
+                    //   return new Promise((resolve) => {
+                    //     setTimeout(resolve, 5000)
+                    //   })
+                    //   // form submitted
+                    //   // {"target":{"component":"RiseForm","propKey":"onSubmit",
+                    //   // "path":"liveMedia:layer:e71e8271-9dc9-40c0-987b-1000d04f0df3"},
+                    //   // "dataState":{"$":"event","key":"26f727b2-7c28-4736-a3d7-a1102e859fcb","async":true},
+                    //   // "payload":{"name":"dd"}}
+                    // }),
                   },
-                  // Comment this out to test async event handling
-                  // onSubmit: asyncHandler(async (args: any) => {
-                  //   console.log('form submitted', JSON.stringify(args))
-                  //   // Simulate a pending state
-                  //   return new Promise((resolve) => {
-                  //     setTimeout(resolve, 5000)
-                  //   })
-                  //   // form submitted
-                  //   // {"target":{"component":"RiseForm","propKey":"onSubmit",
-                  //   // "path":"liveMedia:layer:e71e8271-9dc9-40c0-987b-1000d04f0df3"},
-                  //   // "dataState":{"$":"event","key":"26f727b2-7c28-4736-a3d7-a1102e859fcb","async":true},
-                  //   // "payload":{"name":"dd"}}
-                  // }),
-                },
-                children: [
-                  {
-                    $: 'component',
-                    component: 'RiseTextField',
-                    props: {
-                      name: 'label',
-                      label: {
-                        $: 'component',
-                        component: 'Label',
-                        children: 'Media Label',
+                  children: [
+                    {
+                      $: "component",
+                      component: "RiseTextField",
+                      props: {
+                        name: "label",
+                        label: {
+                          $: "component",
+                          component: "Label",
+                          children: "Media Label",
+                          props: {
+                            htmlFor: "label",
+                          },
+                        },
+                        value: media.label,
+                        placeholder: "Enter label...",
+                        autoCapitalize: "none",
+                        autoCorrect: false,
+                      },
+                    },
+                    {
+                      $: "component",
+                      component: "DialogClose",
+                      props: { asChild: true },
+                      children: {
+                        $: "component",
+                        component: "RiseSubmitButton",
+                        children: "Save",
                         props: {
-                          htmlFor: 'label',
+                          icon: icon("Check"),
                         },
                       },
-                      value: media.label,
-                      placeholder: 'Enter label...',
-                      autoCapitalize: 'none',
-                      autoCorrect: false,
+                    },
+                  ],
+                },
+                {
+                  $: "component",
+                  component: "Unspaced",
+                  children: {
+                    $: "component",
+                    component: "DialogClose",
+                    props: { asChild: true },
+                    children: {
+                      $: "component",
+                      component: "Button",
+                      props: {
+                        icon: icon("X"),
+                        circular: true,
+                        size: "$2",
+                        top: "$3",
+                        right: "$3",
+                        position: "absolute",
+                      },
                     },
                   },
-                  {
-                    $: 'component',
-                    component: 'RiseSubmitButton',
-                    children: 'Save',
-                    props: {
-                      icon: icon('Check'),
-                    },
-                  },
-                ],
-              },
+                },
+              ],
             },
           ],
         },
       ],
     },
-  ]
+  ];
 }
 
-function getSequenceItemMaxDuration(mediaPath: string, item: SequenceItem): ServerDataState[] {
+function getSequenceItemMaxDuration(
+  mediaPath: string,
+  item: SequenceItem,
+): ServerDataState[] {
   const checkField: ServerDataState = {
-    $: 'component',
-    key: 'maxDurationSwitch',
-    component: 'RiseSwitchField',
+    $: "component",
+    key: "maxDurationSwitch",
+    component: "RiseSwitchField",
     props: {
-      label: 'Max Duration',
+      label: "Max Duration",
       value: !!item.maxDuration,
       onCheckedChange: {
-        $: 'event',
-        action: ['updateMedia', mediaPath, 'maxDuration'],
+        $: "event",
+        action: ["updateMedia", mediaPath, "maxDuration"],
       },
     },
-  }
-  if (item.maxDuration == null || item.maxDuration == false) return [checkField]
+  };
+  if (item.maxDuration == null || item.maxDuration == false)
+    return [checkField];
   return [
     checkField,
     {
-      $: 'component',
-      key: 'maxDurationSlider',
-      component: 'RiseSliderField',
+      $: "component",
+      key: "maxDurationSlider",
+      component: "RiseSliderField",
       props: {
         label: `Max Duration - ${item.maxDuration}sec`,
         value: item.maxDuration,
         onValueChange: {
-          $: 'event',
-          action: ['updateMedia', mediaPath, 'maxDuration'],
+          $: "event",
+          action: ["updateMedia", mediaPath, "maxDuration"],
         },
         max: 60,
         min: 0.1,
         step: 0.1,
       },
     },
-  ]
+  ];
 }
 
 export function getMediaSequenceUI(
   mediaPath: string,
   item: SequenceItem,
-  context: UIContext
+  context: UIContext,
 ): ServerDataState {
-  let videoEnd: ServerDataState[] = []
-  if (item.media.type === 'video') {
+  let videoEnd: ServerDataState[] = [];
+  if (item.media.type === "video") {
     videoEnd = [
       {
-        $: 'component',
-        key: 'videoEnd',
-        component: 'RiseSwitchField',
+        $: "component",
+        key: "videoEnd",
+        component: "RiseSwitchField",
         props: {
           value: item.goOnVideoEnd || false,
-          label: 'Go Next on Video End',
+          label: "Go Next on Video End",
           onCheckedChange: {
-            $: 'event',
-            action: ['updateMedia', mediaPath, 'goOnVideoEnd'],
+            $: "event",
+            action: ["updateMedia", mediaPath, "goOnVideoEnd"],
           },
         },
       },
-    ]
+    ];
   }
   return getMediaUI(mediaPath, item.media, context, {
     header: [
-      section('Sequence Item Controls', [
+      section("Sequence Item Controls", [
         ...getSequenceItemMaxDuration(mediaPath, item),
         ...videoEnd,
         {
-          $: 'component',
-          key: 'removeItem',
-          component: 'Button',
-          children: 'Remove Item',
+          $: "component",
+          key: "removeItem",
+          component: "Button",
+          children: "Remove from Sequence",
           props: {
+            theme: "red",
+            icon: icon("Trash"),
             onPress: [
               {
-                $: 'event',
-                action: ['updateMedia', mediaPath, 'removeItem', item.key],
+                $: "event",
+                action: ["updateMedia", mediaPath, "removeItem", item.key],
               },
               {
-                $: 'event',
-                action: 'navigate-back',
+                $: "event",
+                action: "navigate-back",
               },
             ],
           },
         },
       ]),
     ],
-  })
+  });
 }
 
 export function getMediaUI(
   mediaPath: string,
   mediaState: Media,
   ctx: UIContext,
-  { header = [], footer = [] }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {}
+  {
+    header = [],
+    footer = [],
+  }: { header?: ServerDataState[]; footer?: ServerDataState[] } = {},
 ): ServerDataState {
-  if (mediaState.type === 'color') {
-    return scroll([...header, ...getColorControls(mediaPath, mediaState, ctx), ...footer])
+  if (mediaState.type === "color") {
+    return scroll([
+      ...header,
+      ...getColorControls(mediaPath, mediaState, ctx),
+      ...footer,
+    ]);
   }
-  if (mediaState.type === 'video') {
-    return scroll([...header, ...getVideoControls(mediaPath, mediaState, ctx), ...footer])
+  if (mediaState.type === "video") {
+    return scroll([
+      ...header,
+      ...getVideoControls(mediaPath, mediaState, ctx),
+      ...footer,
+    ]);
   }
-  if (mediaState.type === 'sequence') {
-    return getSequenceControls(mediaPath, mediaState, ctx)
+  if (mediaState.type === "sequence") {
+    return getSequenceControls(mediaPath, mediaState, ctx);
   }
-  if (mediaState.type === 'layers') {
-    return getLayersControls(mediaPath, mediaState, ctx, { header, footer })
+  if (mediaState.type === "layers") {
+    return getLayersControls(mediaPath, mediaState, ctx, { header, footer });
   }
   return scroll([
     ...header,
     {
-      $: 'component',
-      component: 'Text',
+      $: "component",
+      component: "Text",
       children: mediaState.type,
     },
     ...footer,
-  ])
+  ]);
 }
 
 // export function getQuickEffects(): ServerDataState {
