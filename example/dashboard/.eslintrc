@@ -1,0 +1,6 @@
+{
+  "extends": "next",
+  "rules": {
+    "prettier/prettier": "off",
+  },
+}
