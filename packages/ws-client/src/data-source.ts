@@ -1,8 +1,9 @@
 import {
+  createWritableStream,
   type DataSource,
   isHandlerEvent,
   type JSONValue,
-  type Store,
+  Store,
   type TemplateEvent,
 } from '@final-ui/react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
@@ -42,7 +43,7 @@ export type ClientWebsocketMessage =
 
 export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponseWebsocketMessage
 
-type Handler = () => void
+type Handler = (value: JSONValue) => void
 type PromiseHandler = (value: any) => void
 
 export function createWSDataSource(wsUrl: string): DataSource {
@@ -74,7 +75,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
         cache.set(event.key, event.val)
         const handlers = subscriptions.get(event.key)
         if (handlers) {
-          handlers.forEach((handle) => handle())
+          handlers.forEach((handle) => handle(event.val))
         }
         break
       }
@@ -101,7 +102,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
 
   const stores = new Map<string, Store>()
 
-  function createStore(key: string) {
+  function createStore(key: string): Store {
     const handlers =
       subscriptions.get(key) ||
       (() => {
@@ -112,7 +113,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
 
     return {
       get: () => cache.get(key),
-      subscribe: (handler: () => void) => {
+      subscribe: (handler) => {
         const shouldSubscribeRemotely = handlers.size === 0
         handlers.add(handler)
         if (shouldSubscribeRemotely) {
@@ -147,6 +148,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
       stores.set(key, newStore)
       return newStore
     },
+    info: createInfoStream(rws),
     sendEvent: async (event) => {
       send({ $: 'evt', event })
       if (isHandlerEvent(event)) {
@@ -159,4 +161,30 @@ export function createWSDataSource(wsUrl: string): DataSource {
   }
 
   return dataSource
+}
+
+const createInfoStream = (rws: ReconnectingWebSocket) => {
+  const [writeInfo, info] = createWritableStream({ status: readyStateToStatus(rws.readyState) })
+
+  const updateStatus = () => writeInfo({ status: readyStateToStatus(rws.readyState) })
+  rws.addEventListener('open', updateStatus)
+  rws.addEventListener('close', updateStatus)
+  rws.addEventListener('error', updateStatus)
+
+  return info
+}
+
+const readyStateToStatus = (readyState: number) => {
+  switch (readyState) {
+    case WebSocket.CONNECTING:
+      return 'connecting' as const
+    case WebSocket.OPEN:
+      return 'connected' as const
+    case WebSocket.CLOSING:
+      return 'closing' as const
+    case WebSocket.CLOSED:
+      return 'closed' as const
+    default:
+      return 'undetermined' as const
+  }
 }

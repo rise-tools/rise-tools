@@ -6,6 +6,7 @@ import React, { useCallback } from 'react'
 import { createParam } from 'solito'
 import { useRouter } from 'solito/router'
 
+import { DataBoundary } from '../data-boundary'
 import { useDataSource } from '../data-sources'
 import { Connection, useConnection } from '../provider/storage'
 import { NotFoundScreen } from './not-found'
@@ -63,5 +64,9 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
     [dataSource]
   )
 
-  return <Template components={components} dataSource={dataSource} path={path} onEvent={onEvent} />
+  return (
+    <DataBoundary info={dataSource.info}>
+      <Template components={components} dataSource={dataSource} path={path} onEvent={onEvent} />
+    </DataBoundary>
+  )
 }
