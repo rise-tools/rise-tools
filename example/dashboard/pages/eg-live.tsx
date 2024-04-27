@@ -1,5 +1,6 @@
-import { AutoSizeEGPreview } from 'src/EGPreview'
-import { FullscreenablePage } from 'src/FullscreenablePage'
+import { AutoSizeEGPreview } from "src/EGPreview";
+import { FullscreenablePage } from "src/FullscreenablePage";
+import { LiveURL } from "src/urls";
 
 export default function EGLivePage() {
   return (
@@ -9,7 +10,7 @@ export default function EGLivePage() {
         // <QRCode value="https://github.com/ericvicenti/react-native-templates" />
       }
     >
-      <AutoSizeEGPreview url={'ws://localhost:3889'} />
+      <AutoSizeEGPreview url={LiveURL} />
     </FullscreenablePage>
-  )
+  );
 }
