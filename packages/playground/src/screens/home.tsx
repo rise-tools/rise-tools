@@ -21,14 +21,16 @@ export function HomeScreen() {
           </YGroup>
           <NewConnectionButton />
         </YStack>
-        <YStack gap="$2">
-          <Text textAlign="center">or try some of the examples below:</Text>
-          <YGroup separator={<Separator />}>
-            {Object.values(BUILTIN_CONNECTIONS).map((connection) => (
-              <ConnectionItem key={connection.id} connection={connection} readonly />
-            ))}
-          </YGroup>
-        </YStack>
+        {state.connections.length === 0 && (
+          <YStack gap="$2">
+            <Text textAlign="center">or try some of the examples below:</Text>
+            <YGroup separator={<Separator />}>
+              {Object.values(BUILTIN_CONNECTIONS).map((connection) => (
+                <ConnectionItem key={connection.id} connection={connection} readonly />
+              ))}
+            </YGroup>
+          </YStack>
+        )}
       </YStack>
     </ScrollView>
   )
