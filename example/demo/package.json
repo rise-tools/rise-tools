@@ -1,7 +1,18 @@
 {
-  "name": "demo-inventory",
-  "version": "0.0.0",
+  "name": "@final-ui/demo-server",
   "private": true,
+  "version": "0.1.2",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/final-ui/final.git",
+    "directory": "example/demo"
+  },
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "bugs": {
+    "url": "https://github.com/final-ui/final/issues"
+  },
+  "homepage": "https://github.com/final-ui/final#readme",
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
