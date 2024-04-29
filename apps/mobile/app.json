@@ -20,16 +20,16 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "link.verse.rise",
-      "buildNumber": "2"
+      "bundleIdentifier": "com.xplatlabs.rise",
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "link.verse.rise",
-      "versionCode": 2
+      "package": "com.xplatlabs.rise",
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/favicon.png"
