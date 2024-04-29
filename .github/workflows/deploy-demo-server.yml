@@ -8,13 +8,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy
+    environment: Production
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           cache: 'npm'
-          
+
       - run: npm install
 
       - name: Deploy
