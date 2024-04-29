@@ -15,8 +15,8 @@
   "homepage": "https://github.com/final-ui/final#readme",
   "scripts": {
     "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
-    "start": "wrangler dev",
+    "dev": "wrangler dev --port 3005",
+    "start": "wrangler dev --port 3005",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
