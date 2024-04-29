@@ -1,6 +1,6 @@
-import { ActionEvent, TemplateEvent } from '@final-ui/react'
-import { createWSServer } from '@final-ui/ws-server'
-import { randomUUID } from 'crypto'
+import { ActionEvent, TemplateEvent } from "@final-ui/react";
+import { createWSServer } from "@final-ui/ws-server";
+import { randomUUID } from "crypto";
 import {
   existsSync,
   mkdirSync,
@@ -9,17 +9,26 @@ import {
   unlinkSync,
   writeFile,
   writeFileSync,
-} from 'fs'
-import { join } from 'path'
-import { WebMidi as Midi } from "webmidi"
+} from "fs";
+import { join } from "path";
 
-import { AudioPlayer, playAudio } from './audio-playback'
-import { eg as egInfo } from './eg'
-import { getEGLiveFrame, getEGReadyFrame, getSequenceActiveItem } from './eg-main'
-import { egSacnService } from './eg-sacn'
-import { egVideo } from './eg-video-playback'
-import { createEGViewServer } from './eg-view-server'
-import { defaultMainState, Effect, MainState, MainStateSchema, Media } from './state-schema'
+import { AudioPlayer, playAudio } from "./audio-playback";
+import { eg as egInfo } from "./eg";
+import {
+  getEGLiveFrame,
+  getEGReadyFrame,
+  getSequenceActiveItem,
+} from "./eg-main";
+import { egSacnService } from "./eg-sacn";
+import { egVideo } from "./eg-video-playback";
+import { createEGViewServer } from "./eg-view-server";
+import {
+  defaultMainState,
+  Effect,
+  MainState,
+  MainStateSchema,
+  Media,
+} from "./state-schema";
 import {
   getEffectsUI,
   getEffectUI,
@@ -31,289 +40,247 @@ import {
   getMediaUI,
   getUIRoot,
   UIContext,
-} from './ui'
+} from "./ui";
 
-function formatValue(v: number | boolean | undefined): string {
-  if (v === undefined) return "undefined"
-  if (typeof v === 'boolean') return v ? "true" : "false"
-  return v.toFixed(2)
-}
+let mainState: MainState = defaultMainState;
 
-Midi
-  .enable({ sysex: true })
-  .then(onEnabled)
-  .catch(err => console.error(err))
-
-function onEnabled() {
-  const worlde = Midi.getInputByName("WORLDE MIDI 1");
-
-  if (!worlde) {
-    console.error("No WORDLE MIDI input found.")
-    return;
-  }
-
-  console.log("MIDI i:", worlde.manufacturer, "Name:", worlde.name, "ID:", worlde.id)
-
-  worlde.addListener("midimessage", e => {
-    switch (e.message.type) {
-      case "programchange":
-      case "controlchange":
-      case "sysex":
-        return
-      }
-    // Other messages that we haven't seen yet?
-    console.log(e)
-  })
-
-  worlde.addListener("sysex", e => {
-    // console.log("sysex:", e)
-    const bank = e.message.dataBytes[7];
-
-    if (bank === undefined) return;
-
-    console.log("Bank:", bank + 1)
-  })
-
-  // Heavy Knob
-  worlde.addListener("programchange", e => {
-    console.log("programchange:", e.value)
-  })
-
-  worlde.addListener("controlchange", e => {
-    console.log("Midi:", e.controller.number, formatValue(e.value))
-    // We know e.target is Input type...
-    const target = e.target as MidiInput
-
-    // Controller Number Map
-    //                   1️⃣ 2️⃣  3️⃣ 4️⃣  5️⃣ 6️⃣  7️⃣ 8️⃣  🔽
-    // 67   program  64  14  15  16  17  18  19  20  21  22 <- Knobs
-    // 🅰️   change  🅱️   3   4   5   6   7   8   9  10  11 <- Sliders
-    //      - 60 +       23  24  25  26  27  28  29  30  31 <- Buttons
-    // Bank ????    1  2           49 47 48  46 45 44       <- Extra Buttons
-    //                 WORLDE     🔁 ⏪ ⏩ ⏹️ ▶️ ⏺️ Easycontrol.9
-  })
-
-  // Outputs
-  Midi.outputs.forEach(output => {
-    console.log("MIDI o:", output.manufacturer, "Name:", output.name)
-  })
-
-  // Midi.getOutputByName("WORLDE MIDI 1").sendChannelAftertouch(false);
-}
-
-let mainState: MainState = defaultMainState
-
-const statePath = process.env.EG_STATE_PATH || './eg-state'
-const mainStatePath = join(statePath, 'main.json')
-const libraryPath = join(statePath, 'library')
+const statePath = process.env.EG_STATE_PATH || "./eg-state";
+const mainStatePath = join(statePath, "main.json");
+const libraryPath = join(statePath, "library");
 
 if (!existsSync(statePath)) {
-  mkdirSync(statePath)
+  mkdirSync(statePath);
 }
 
 // Load previous state if there's one present
 if (existsSync(mainStatePath)) {
   try {
-    const mainStateJson = readFileSync(mainStatePath, { encoding: 'utf-8' })
-    const state = MainStateSchema.safeParse(JSON.parse(mainStateJson))
+    const mainStateJson = readFileSync(mainStatePath, { encoding: "utf-8" });
+    const state = MainStateSchema.safeParse(JSON.parse(mainStateJson));
     if (!state.success) {
-      throw new Error('Invalid saved state: ' + state.error.issues.map((i) => i.message).join(', '))
+      throw new Error(
+        "Invalid saved state: " +
+          state.error.issues.map((i) => i.message).join(", "),
+      );
     }
     if (!state.data) {
-      throw new Error('Invalid saved state')
+      throw new Error("Invalid saved state");
     }
-    mainState = state.data
+    mainState = state.data;
   } catch (e) {
-    console.warn('Could not load main state. Creating new one.')
+    console.warn("Could not load main state. Creating new one.");
   }
 }
 
-let libraryKeys: string[] = []
+let libraryKeys: string[] = [];
 if (existsSync(libraryPath)) {
-  libraryKeys = readdirSync(libraryPath).map((file) => file.replace('.json', ''))
+  libraryKeys = readdirSync(libraryPath).map((file) =>
+    file.replace(".json", ""),
+  );
 } else {
-  mkdirSync(libraryPath)
+  mkdirSync(libraryPath);
 }
 
 function updateLibraryKeys(updater: (keys: string[]) => string[]) {
-  libraryKeys = updater(libraryKeys)
-  updateLibraryUI()
+  libraryKeys = updater(libraryKeys);
+  updateLibraryUI();
 }
 
 function saveMedia(key: string, mediaValue: Media) {
-  const realKey = key.replaceAll('/', '.')
-  const newMediaLocation = join(libraryPath, `${realKey}.json`)
-  writeFileSync(newMediaLocation, JSON.stringify(mediaValue, null, 2), {})
-  updateLibraryKeys((keys) => [...keys, realKey])
+  const realKey = key.replaceAll("/", ".");
+  const newMediaLocation = join(libraryPath, `${realKey}.json`);
+  writeFileSync(newMediaLocation, JSON.stringify(mediaValue, null, 2), {});
+  updateLibraryKeys((keys) => [...keys, realKey]);
 }
 
 function readLibraryKey(key: string): Media {
-  const newMediaLocation = join(libraryPath, `${key}.json`)
-  const mediaJson = readFileSync(newMediaLocation, { encoding: 'utf-8' })
-  return JSON.parse(mediaJson)
+  const newMediaLocation = join(libraryPath, `${key}.json`);
+  const mediaJson = readFileSync(newMediaLocation, { encoding: "utf-8" });
+  return JSON.parse(mediaJson);
 }
 
 function deleteLibraryKey(key: string) {
-  const newMediaLocation = join(libraryPath, `${key}.json`)
+  const newMediaLocation = join(libraryPath, `${key}.json`);
   if (existsSync(newMediaLocation)) {
-    updateLibraryKeys((keys) => keys.filter((k) => k !== key))
-    unlinkSync(newMediaLocation)
-    return
+    updateLibraryKeys((keys) => keys.filter((k) => k !== key));
+    unlinkSync(newMediaLocation);
+    return;
   }
 }
 
-const eg = egSacnService(egInfo)
-const liveViewServer = createEGViewServer(3889)
-const readyViewServer = createEGViewServer(3888)
+const eg = egSacnService(egInfo);
+const liveViewServer = createEGViewServer(3889);
+const readyViewServer = createEGViewServer(3888);
 
-const mediaFilesPath = process.env.EG_MEDIA_PATH || 'eg-media'
+const mediaFilesPath = process.env.EG_MEDIA_PATH || "eg-media";
 
 const video = egVideo(egInfo, mediaFilesPath, {
   // const video = egVideo(egInfo, process.env.EG_MEDIA_PATH || 'eg-media-2', {
   onPlayerUpdate: () => {
-    updateUI()
+    updateUI();
   },
   onMediaUpdate: (media) => {
-    wsServer.update('videoList', [
-      { key: 'none', label: 'None' },
+    wsServer.update("videoList", [
+      { key: "none", label: "None" },
       ...media.files.map((m) => ({ key: m.fileSha256, label: m.title })),
-    ])
+    ]);
   },
-})
+});
 
-const recentGradientValues: Record<string, number> = {}
+const recentGradientValues: Record<string, number> = {};
 
 function mainLoop() {
-  const nowTime = Date.now()
-  const relativeTime = nowTime - startTime
-  const context = { time: startTime, nowTime, relativeTime, video, recentGradientValues }
+  const nowTime = Date.now();
+  const relativeTime = nowTime - startTime;
+  const context = {
+    time: startTime,
+    nowTime,
+    relativeTime,
+    video,
+    recentGradientValues,
+  };
 
-  wsServer.update('relativeTime', relativeTime)
+  wsServer.update("relativeTime", relativeTime);
 
-  const egReadyFrame = getEGReadyFrame(mainState, context)
-  const egLiveFrame = getEGLiveFrame(mainState, context, egReadyFrame)
-  eg.sendFrame(egLiveFrame)
-  liveViewServer.sendFrame(egLiveFrame)
-  readyViewServer.sendFrame(egReadyFrame)
+  const egReadyFrame = getEGReadyFrame(mainState, context);
+  const egLiveFrame = getEGLiveFrame(mainState, context, egReadyFrame);
+  eg.sendFrame(egLiveFrame);
+  liveViewServer.sendFrame(egLiveFrame);
+  readyViewServer.sendFrame(egReadyFrame);
 }
 
-const mainAnimationFPS = 30
+const mainAnimationFPS = 30;
 
-const wsServer = createWSServer(3990)
+const wsServer = createWSServer(3990);
 
-const startTime = Date.now()
-const startTimeExact = performance.now()
+const startTime = Date.now();
+const startTimeExact = performance.now();
 
-const desiredMsPerFrame = 1000 / mainAnimationFPS
+const desiredMsPerFrame = 1000 / mainAnimationFPS;
 
-performMainLoopStep(desiredMsPerFrame)
+performMainLoopStep(desiredMsPerFrame);
 
-const initTime = performance.now()
-const lastFrameTime: number = initTime
+const initTime = performance.now();
+const lastFrameTime: number = initTime;
 
-mainLoop()
+mainLoop();
 
-let frameCount = 0
+let frameCount = 0;
 
 function performMainLoopStep(inMs: number) {
-  const frameScheduleTime = performance.now()
+  const frameScheduleTime = performance.now();
   setTimeout(() => {
-    const preFrameTime = performance.now()
-    mainLoop()
-    frameCount += 1
-    const afterFrameTime = performance.now()
-    const frameDuration = afterFrameTime - preFrameTime
+    const preFrameTime = performance.now();
+    mainLoop();
+    frameCount += 1;
+    const afterFrameTime = performance.now();
+    const frameDuration = afterFrameTime - preFrameTime;
     if (frameDuration > desiredMsPerFrame) {
       // production is running slow and this is very noisy
       // console.log('frame took too long', frameDuration)
     }
-    const frameIdealStartTime = initTime + frameCount * desiredMsPerFrame
+    const frameIdealStartTime = initTime + frameCount * desiredMsPerFrame;
     if (afterFrameTime > frameIdealStartTime) {
       // console.log('frame behind', afterFrameTime - frameIdealStartTime)
       // missed this frame. just go to the next one
-      frameCount += 1
-      performMainLoopStep(0)
-      return
+      frameCount += 1;
+      performMainLoopStep(0);
+      return;
     }
-    performMainLoopStep(Math.max(1, frameIdealStartTime - afterFrameTime))
-  }, inMs)
+    performMainLoopStep(Math.max(1, frameIdealStartTime - afterFrameTime));
+  }, inMs);
 }
 
-wsServer.update('startTime', startTime)
+wsServer.update("startTime", startTime);
 
-function updateMediaChildrenUI(mediaKey: string, mediaState: Media, uiContext: UIContext) {
-  if (mediaState.type === 'video') {
-    wsServer.update(`${mediaKey}:effects`, getEffectsUI(mediaKey, mediaState.effects))
+function updateMediaChildrenUI(
+  mediaKey: string,
+  mediaState: Media,
+  uiContext: UIContext,
+) {
+  if (mediaState.type === "video") {
+    wsServer.update(
+      `${mediaKey}:effects`,
+      getEffectsUI(mediaKey, mediaState.effects),
+    );
     mediaState.effects?.forEach((effect) => {
       wsServer.update(
         `${mediaKey}:effects:${effect.key}`,
-        getEffectUI([mediaKey, effect.key], effect)
-      )
-    })
-    return
+        getEffectUI([mediaKey, effect.key], effect),
+      );
+    });
+    return;
   }
 }
 
-function updateMediaUI(mediaKey: string, mediaState: Media, uiContext: UIContext) {
-  wsServer.update(mediaKey, getMediaUI(mediaKey, mediaState, uiContext))
-  if (mediaState.type === 'video') {
-    updateMediaChildrenUI(mediaKey, mediaState, uiContext)
-    return
+function updateMediaUI(
+  mediaKey: string,
+  mediaState: Media,
+  uiContext: UIContext,
+) {
+  wsServer.update(mediaKey, getMediaUI(mediaKey, mediaState, uiContext));
+  if (mediaState.type === "video") {
+    updateMediaChildrenUI(mediaKey, mediaState, uiContext);
+    return;
   }
-  if (mediaState.type === 'layers') {
+  if (mediaState.type === "layers") {
     mediaState.layers?.forEach((layer) => {
-      const layerKey = `${mediaKey}:layer:${layer.key}`
-      wsServer.update(layerKey, getMediaLayerUI(layerKey, layer, uiContext))
-      updateMediaChildrenUI(layerKey, layer.media, uiContext)
-    })
-    return
+      const layerKey = `${mediaKey}:layer:${layer.key}`;
+      wsServer.update(layerKey, getMediaLayerUI(layerKey, layer, uiContext));
+      updateMediaChildrenUI(layerKey, layer.media, uiContext);
+    });
+    return;
   }
-  if (mediaState.type === 'sequence') {
+  if (mediaState.type === "sequence") {
     mediaState.sequence?.forEach((sequenceItem) => {
-      const sequenceItemKey = `${mediaKey}:item:${sequenceItem.key}`
-      wsServer.update(sequenceItemKey, getMediaSequenceUI(sequenceItemKey, sequenceItem, uiContext))
-      updateMediaChildrenUI(sequenceItemKey, sequenceItem.media, uiContext)
-    })
-    return
+      const sequenceItemKey = `${mediaKey}:item:${sequenceItem.key}`;
+      wsServer.update(
+        sequenceItemKey,
+        getMediaSequenceUI(sequenceItemKey, sequenceItem, uiContext),
+      );
+      updateMediaChildrenUI(sequenceItemKey, sequenceItem.media, uiContext);
+    });
+    return;
   }
 }
 
-const uiContext: UIContext = { video }
+const uiContext: UIContext = { video };
 
 function updateUI() {
-  wsServer.update('mainState', mainState)
-  wsServer.updateRoot(getUIRoot(mainState, uiContext))
+  wsServer.update("mainState", mainState);
+  wsServer.updateRoot(getUIRoot(mainState, uiContext));
   // wsServer.update('quickEffects', getQuickEffects())
   // wsServer.update('beatEffects', getBeatEffects(mainState))
-  updateMediaUI('readyMedia', mainState.readyMedia, uiContext)
-  updateMediaUI('liveMedia', mainState.liveMedia, uiContext)
+  updateMediaUI("readyMedia", mainState.readyMedia, uiContext);
+  updateMediaUI("liveMedia", mainState.liveMedia, uiContext);
 }
 
 function updateLibraryUI() {
-  wsServer.update('library', getLibraryUI(libraryKeys))
+  wsServer.update("library", getLibraryUI(libraryKeys));
   libraryKeys.forEach((key) => {
-    wsServer.update(`library/${key}`, getLibraryKeyUI(key))
-  })
+    wsServer.update(`library/${key}`, getLibraryKeyUI(key));
+  });
 }
 
-updateLibraryUI()
-updateUI()
+updateLibraryUI();
+updateUI();
 
-let mainStateToDiskTimeout: undefined | NodeJS.Timeout = undefined
+let mainStateToDiskTimeout: undefined | NodeJS.Timeout = undefined;
 
 function mainStateUpdate(updater: (state: MainState) => MainState) {
-  clearTimeout(mainStateToDiskTimeout)
-  const prevState = mainState
-  mainState = updater(mainState)
-  updateUI()
+  clearTimeout(mainStateToDiskTimeout);
+  const prevState = mainState;
+  mainState = updater(mainState);
+  updateUI();
   mainStateToDiskTimeout = setTimeout(() => {
-    writeFile(mainStatePath, JSON.stringify(mainState), () => {})
-  }, 500)
-  mainStateEffect(mainState, prevState)
+    writeFile(mainStatePath, JSON.stringify(mainState), () => {});
+  }, 500);
+  mainStateEffect(mainState, prevState);
 }
 
-const sequenceAutoTransitions: Record<string, undefined | NodeJS.Timeout> = {}
-const sequenceVideoEndTransitions: Record<string, undefined | NodeJS.Timeout> = {}
+const sequenceAutoTransitions: Record<string, undefined | NodeJS.Timeout> = {};
+const sequenceVideoEndTransitions: Record<string, undefined | NodeJS.Timeout> =
+  {};
 
 function mainStateEffect(state: MainState, prevState: MainState) {
   setTimeout(() => {
@@ -323,247 +290,274 @@ function mainStateEffect(state: MainState, prevState: MainState) {
         readyMedia: state.liveMedia,
         liveMedia: state.readyMedia,
         transitionState: { manual: null, autoStartTime: null },
-      }))
+      }));
     } else if (state.transitionState.autoStartTime) {
       const progress = Math.min(
         1,
-        (Date.now() - state.transitionState.autoStartTime) / state.transition.duration
-      )
-      console.log('progress', progress)
+        (Date.now() - state.transitionState.autoStartTime) /
+          state.transition.duration,
+      );
+      console.log("progress", progress);
       mainStateUpdate((state) => ({
         ...state,
         transitionState: { ...state.transitionState, manual: progress },
-      }))
+      }));
     }
-  }, 80)
+  }, 80);
 
   // handle auto transitioning with maxDuration
   matchAllMedia(state, (media, mediaPath) => {
-    if (media.type === 'sequence') {
-      const activeItem = getSequenceActiveItem(media)
+    if (media.type === "sequence") {
+      const activeItem = getSequenceActiveItem(media);
       if (!activeItem || !activeItem.maxDuration) {
-        return false
+        return false;
       }
-      const mediaPathString = mediaPath.join(':')
-      clearTimeout(sequenceAutoTransitions[mediaPathString])
-      const maxDurationMs = 1_000 * activeItem.maxDuration
+      const mediaPathString = mediaPath.join(":");
+      clearTimeout(sequenceAutoTransitions[mediaPathString]);
+      const maxDurationMs = 1_000 * activeItem.maxDuration;
       const timeUntilMaxDuration = media.lastTransitionTime
         ? media.lastTransitionTime + maxDurationMs - Date.now()
-        : maxDurationMs
+        : maxDurationMs;
       sequenceAutoTransitions[mediaPathString] = setTimeout(
         () => {
-          delete sequenceVideoEndTransitions[mediaPathString]
-          delete sequenceAutoTransitions[mediaPathString]
-          goNext(mediaPath)
+          delete sequenceVideoEndTransitions[mediaPathString];
+          delete sequenceAutoTransitions[mediaPathString];
+          goNext(mediaPath);
         },
-        Math.max(1, timeUntilMaxDuration)
-      )
-      return true
+        Math.max(1, timeUntilMaxDuration),
+      );
+      return true;
     }
-    return false
-  })
-  handleVideoEndBehavior()
+    return false;
+  });
+  handleVideoEndBehavior();
 
-  handleAudioPlayback(state, prevState)
+  handleAudioPlayback(state, prevState);
 }
 
-const audioPlayers: Record<string, AudioPlayer> = {}
+const audioPlayers: Record<string, AudioPlayer> = {};
 
 function handleAudioPlayback(state: MainState, prevState: MainState) {
-  const isFirstEffect = prevState === state
+  const isFirstEffect = prevState === state;
   const prevVideoNodes = isFirstEffect
     ? []
-    : matchActiveMedia(prevState, (media) => media.type === 'video')
-  const videoNodes = matchActiveMedia(state, (media) => media.type === 'video')
+    : matchActiveMedia(prevState, (media) => media.type === "video");
+  const videoNodes = matchActiveMedia(state, (media) => media.type === "video");
   const videoNodesToStart = videoNodes.filter(
-    (videoNode) => !prevVideoNodes.some((prevVideoNode) => prevVideoNode[1].id === videoNode[1].id)
-  )
+    (videoNode) =>
+      !prevVideoNodes.some(
+        (prevVideoNode) => prevVideoNode[1].id === videoNode[1].id,
+      ),
+  );
   const videoNodesToStop = prevVideoNodes.filter(
-    (prevVideoNode) => !videoNodes.some((videoNode) => prevVideoNode[1].id === videoNode[1].id)
-  )
+    (prevVideoNode) =>
+      !videoNodes.some((videoNode) => prevVideoNode[1].id === videoNode[1].id),
+  );
   videoNodesToStart.forEach(([mediaPath, media]) => {
-    if (media.type !== 'video') return
-    const player = video.getPlayer(media.id)
-    if (!player) return
+    if (media.type !== "video") return;
+    const player = video.getPlayer(media.id);
+    if (!player) return;
     setTimeout(() => {
-      const info = player.getInfo()
-      if (!info?.audioFile) return
+      const info = player.getInfo();
+      if (!info?.audioFile) return;
       if (!audioPlayers[media.id]) {
-        audioPlayers[media.id] = playAudio(join(mediaFilesPath, info.audioFile))
+        audioPlayers[media.id] = playAudio(
+          join(mediaFilesPath, info.audioFile),
+        );
       }
-    }, 20)
-    console.log('starting audio', player.getInfo())
-  })
+    }, 20);
+    console.log("starting audio", player.getInfo());
+  });
 
   videoNodesToStop.forEach(([mediaPath, media]) => {
-    if (media.type !== 'video') return
-    const audioPlayer = audioPlayers[media.id]
-    if (!audioPlayer) return
-    audioPlayer.stop()
-    delete audioPlayers[media.id]
-  })
+    if (media.type !== "video") return;
+    const audioPlayer = audioPlayers[media.id];
+    if (!audioPlayer) return;
+    audioPlayer.stop();
+    delete audioPlayers[media.id];
+  });
   // console.log('videoNodesToStart', videoNodesToStart)
   // console.log('videoNodesToStop', videoNodesToStop)
 }
 
 function handleVideoEndBehavior() {
   matchAllMedia(mainState, (media, mediaPath) => {
-    if (media.type !== 'sequence') return false
-    const activeItem = getSequenceActiveItem(media)
-    if (!activeItem) return false
-    if (activeItem.media.type !== 'video') return false
-    if (!activeItem.goOnVideoEnd) return false
-    const player = video.getPlayer(activeItem.media.id)
-    if (!player) return false
-    const playingFrame = player.getPlayingFrame()
-    const frameCount = player.getFrameCount()
-    if (playingFrame === null || frameCount === null) return false
-    const framesRemaining = frameCount - playingFrame
-    const approxTimeRemaining = (1000 * framesRemaining) / mainAnimationFPS
-    const mediaPathString = mediaPath.join(':')
-    clearTimeout(sequenceVideoEndTransitions[mediaPathString])
+    if (media.type !== "sequence") return false;
+    const activeItem = getSequenceActiveItem(media);
+    if (!activeItem) return false;
+    if (activeItem.media.type !== "video") return false;
+    if (!activeItem.goOnVideoEnd) return false;
+    const player = video.getPlayer(activeItem.media.id);
+    if (!player) return false;
+    const playingFrame = player.getPlayingFrame();
+    const frameCount = player.getFrameCount();
+    if (playingFrame === null || frameCount === null) return false;
+    const framesRemaining = frameCount - playingFrame;
+    const approxTimeRemaining = (1000 * framesRemaining) / mainAnimationFPS;
+    const mediaPathString = mediaPath.join(":");
+    clearTimeout(sequenceVideoEndTransitions[mediaPathString]);
     sequenceVideoEndTransitions[mediaPathString] = setTimeout(
       () => {
-        console.log('video ended. going next.')
-        delete sequenceVideoEndTransitions[mediaPathString]
-        delete sequenceAutoTransitions[mediaPathString]
-        goNext(mediaPath)
+        console.log("video ended. going next.");
+        delete sequenceVideoEndTransitions[mediaPathString];
+        delete sequenceAutoTransitions[mediaPathString];
+        goNext(mediaPath);
       },
-      Math.max(1, approxTimeRemaining)
-    )
+      Math.max(1, approxTimeRemaining),
+    );
     // console.log('player', approxTimeRemaining)
-  })
+  });
 }
 
 setInterval(() => {
-  handleVideoEndBehavior()
-}, 250)
+  handleVideoEndBehavior();
+}, 250);
 
-mainStateEffect(mainState, mainState)
+mainStateEffect(mainState, mainState);
 
 function fetchMedia(media: Media, path: string[]): [string[], Media][] {
-  if (media.type === 'layers') {
+  if (media.type === "layers") {
     return [
       [path, media],
-      ...media.layers.flatMap((layer) => fetchMedia(layer.media, [...path, 'layer', layer.key])),
-    ]
+      ...media.layers.flatMap((layer) =>
+        fetchMedia(layer.media, [...path, "layer", layer.key]),
+      ),
+    ];
   }
-  if (media.type === 'sequence') {
+  if (media.type === "sequence") {
     return [
       [path, media],
-      ...media.sequence.flatMap((item) => fetchMedia(item.media, [...path, 'item', item.key])),
-    ]
+      ...media.sequence.flatMap((item) =>
+        fetchMedia(item.media, [...path, "item", item.key]),
+      ),
+    ];
   }
-  return [[path, media]]
+  return [[path, media]];
 }
 
 function fetchAllMedia(state: MainState): [string[], Media][] {
   return [
-    ...fetchMedia(state.liveMedia, ['liveMedia']),
-    ...fetchMedia(state.readyMedia, ['readyMedia']),
-  ]
+    ...fetchMedia(state.liveMedia, ["liveMedia"]),
+    ...fetchMedia(state.readyMedia, ["readyMedia"]),
+  ];
 }
 
 function fetchActiveMedia(media: Media, path: string[]): [string[], Media][] {
-  if (media.type === 'layers') {
+  if (media.type === "layers") {
     return [
       [path, media],
       ...media.layers.flatMap((layer) =>
-        fetchActiveMedia(layer.media, [...path, 'layer', layer.key])
+        fetchActiveMedia(layer.media, [...path, "layer", layer.key]),
       ),
-    ]
+    ];
   }
-  if (media.type === 'sequence') {
-    const active = getSequenceActiveItem(media)
+  if (media.type === "sequence") {
+    const active = getSequenceActiveItem(media);
     if (active) {
-      return [[path, media], ...fetchActiveMedia(active.media, [...path, 'item', active.key])]
+      return [
+        [path, media],
+        ...fetchActiveMedia(active.media, [...path, "item", active.key]),
+      ];
     }
   }
-  return [[path, media]]
+  return [[path, media]];
 }
 
 function fetchAllActiveMedia(state: MainState): [string[], Media][] {
   return [
-    ...fetchActiveMedia(state.liveMedia, ['liveMedia']),
-    ...fetchActiveMedia(state.readyMedia, ['readyMedia']),
-  ]
+    ...fetchActiveMedia(state.liveMedia, ["liveMedia"]),
+    ...fetchActiveMedia(state.readyMedia, ["readyMedia"]),
+  ];
 }
 
 function getMediaCrawl(media: Media, path: string[]): Media | undefined {
-  if (path.length === 0) return media
-  const [firstKey, ...restPath] = path
-  if (firstKey === 'layer' && media.type === 'layers') {
-    const layerKey = restPath[0]
-    const layer = media.layers?.find((layer) => layer.key === layerKey)
-    if (!layer) return undefined
-    return getMediaCrawl(layer.media, restPath.slice(1))
+  if (path.length === 0) return media;
+  const [firstKey, ...restPath] = path;
+  if (firstKey === "layer" && media.type === "layers") {
+    const layerKey = restPath[0];
+    const layer = media.layers?.find((layer) => layer.key === layerKey);
+    if (!layer) return undefined;
+    return getMediaCrawl(layer.media, restPath.slice(1));
   }
-  if (firstKey === 'item' && media.type === 'sequence') {
-    const itemKey = restPath[0]
-    const item = media.sequence?.find((item) => item.key === itemKey)
-    if (!item) return undefined
-    return getMediaCrawl(item.media, restPath.slice(1))
+  if (firstKey === "item" && media.type === "sequence") {
+    const itemKey = restPath[0];
+    const item = media.sequence?.find((item) => item.key === itemKey);
+    if (!item) return undefined;
+    return getMediaCrawl(item.media, restPath.slice(1));
   }
 }
 function getMedia(state: MainState, path: string[]): Media | undefined {
-  const [firstKey, ...restPath] = path
-  if (firstKey === 'liveMedia') return getMediaCrawl(state.liveMedia, restPath)
-  if (firstKey === 'readyMedia') return getMediaCrawl(state.readyMedia, restPath)
-  return undefined
+  const [firstKey, ...restPath] = path;
+  if (firstKey === "liveMedia") return getMediaCrawl(state.liveMedia, restPath);
+  if (firstKey === "readyMedia")
+    return getMediaCrawl(state.readyMedia, restPath);
+  return undefined;
 }
 
 function matchAllMedia(
   state: MainState,
-  filter: (media: Media, mediaPath: string[]) => boolean
+  filter: (media: Media, mediaPath: string[]) => boolean,
 ): [string[], Media][] {
-  const allMedia = fetchAllMedia(state)
-  return allMedia.filter(([mediaPath, media]) => filter(media, mediaPath))
+  const allMedia = fetchAllMedia(state);
+  return allMedia.filter(([mediaPath, media]) => filter(media, mediaPath));
 }
 
 function matchActiveMedia(
   state: MainState,
-  filter: (media: Media, mediaPath: string[]) => boolean
+  filter: (media: Media, mediaPath: string[]) => boolean,
 ): [string[], Media][] {
-  const allMedia = fetchAllActiveMedia(state)
+  const allMedia = fetchAllActiveMedia(state);
   return allMedia.filter(([mediaPath, media]) => {
-    if (mediaPath[0] === 'liveMedia') {
-      return filter(media, mediaPath)
+    if (mediaPath[0] === "liveMedia") {
+      return filter(media, mediaPath);
     }
-    return false
-  })
+    return false;
+  });
 }
 
-function sliderUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
+function sliderUpdate(
+  event: TemplateEvent,
+  pathToCheck: string,
+  statePath: string[],
+): boolean {
   if (
     event.target.key === pathToCheck &&
-    event.target.propKey === 'onValueChange' &&
-    event.target.component === 'RiseSliderField'
+    event.target.propKey === "onValueChange" &&
+    event.target.component === "RiseSliderField"
   ) {
-    mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload[0]))
-    return true
+    mainStateUpdate((state: MainState) =>
+      updateState(state, statePath, event.payload[0]),
+    );
+    return true;
   }
-  return false
+  return false;
 }
 
-function switchUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
+function switchUpdate(
+  event: TemplateEvent,
+  pathToCheck: string,
+  statePath: string[],
+): boolean {
   if (
     event.target.key === pathToCheck &&
-    event.target.propKey === 'onCheckedChange' &&
-    event.target.component === 'RiseSwitch'
+    event.target.propKey === "onCheckedChange" &&
+    event.target.component === "RiseSwitch"
   ) {
-    mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload))
-    return true
+    mainStateUpdate((state: MainState) =>
+      updateState(state, statePath, event.payload),
+    );
+    return true;
   }
-  return false
+  return false;
 }
 
 function updateState(state: any, path: string[], value: any): any {
-  if (path.length === 0) return value
-  const [first, ...rest] = path
+  if (path.length === 0) return value;
+  const [first, ...rest] = path;
   return {
     ...state,
     [first]: updateState(state[first] ?? {}, rest, value),
-  }
+  };
 }
 
 // let manualTapBeatCount = 0
@@ -599,22 +593,25 @@ function updateState(state: any, path: string[], value: any): any {
 wsServer.onActionEvent((event) => {
   const {
     target: { key, propKey },
-  } = event
-  if (key === 'offButton' && propKey === 'onPress') {
-    mainStateUpdate((state) => ({ ...state, mode: 'off' }))
-    return
+  } = event;
+  if (key === "offButton" && propKey === "onPress") {
+    mainStateUpdate((state) => ({ ...state, mode: "off" }));
+    return;
   }
-  if (key === 'mode' && propKey === 'onValueChange') {
-    mainStateUpdate((state) => ({ ...state, mode: event.payload }))
-    return
+  if (key === "mode" && propKey === "onValueChange") {
+    mainStateUpdate((state) => ({ ...state, mode: event.payload }));
+    return;
   }
-  if (sliderUpdate(event, 'hueSlider', ['color', 'h'])) return
-  if (sliderUpdate(event, 'saturationSlider', ['color', 's'])) return
-  if (sliderUpdate(event, 'lightnessSlider', ['color', 'l'])) return
-  if (sliderUpdate(event, 'intensitySlider', ['beatEffect', 'intensity'])) return
-  if (sliderUpdate(event, 'waveLengthSlider', ['beatEffect', 'waveLength'])) return
-  if (sliderUpdate(event, 'dropoffSlider', ['beatEffect', 'dropoff'])) return
-  if (switchUpdate(event, 'manualBeatEnabledSwitch', ['manualBeat', 'enabled'])) return
+  if (sliderUpdate(event, "hueSlider", ["color", "h"])) return;
+  if (sliderUpdate(event, "saturationSlider", ["color", "s"])) return;
+  if (sliderUpdate(event, "lightnessSlider", ["color", "l"])) return;
+  if (sliderUpdate(event, "intensitySlider", ["beatEffect", "intensity"]))
+    return;
+  if (sliderUpdate(event, "waveLengthSlider", ["beatEffect", "waveLength"]))
+    return;
+  if (sliderUpdate(event, "dropoffSlider", ["beatEffect", "dropoff"])) return;
+  if (switchUpdate(event, "manualBeatEnabledSwitch", ["manualBeat", "enabled"]))
+    return;
   // if (action === 'manualTapBeat') {
   //   handleManualTapBeat()
   //   return
@@ -636,109 +633,111 @@ wsServer.onActionEvent((event) => {
   //   }))
   //   return
   // }
-  if (handleMediaEvent(event)) return
-  if (handleTransitionEvent(event)) return
-  if (handleEffectEvent(event)) return
-  if (handleLibraryEvent(event)) return
+  if (handleMediaEvent(event)) return;
+  if (handleTransitionEvent(event)) return;
+  if (handleEffectEvent(event)) return;
+  if (handleLibraryEvent(event)) return;
 
-  console.log('Unknown event', event)
-})
+  console.log("Unknown event", event);
+});
 
 function handleEffectEvent(event: ActionEvent): boolean {
-  const actionName = event.dataState.action?.[0]
-  if (actionName !== 'updateEffect') {
-    return false
+  const actionName = event.dataState.action?.[0];
+  if (actionName !== "updateEffect") {
+    return false;
   }
 
-  const mediaPath = event.dataState.action?.[1]?.[0]?.split(':')
-  const effectKey = event.dataState.action?.[1]?.[1]
-  const effectField = event.dataState.action?.[2]
+  const mediaPath = event.dataState.action?.[1]?.[0]?.split(":");
+  const effectKey = event.dataState.action?.[1]?.[1];
+  const effectField = event.dataState.action?.[2];
 
   if (!mediaPath || !effectKey || !effectField) {
-    console.warn('Invalid effect event', event)
-    return false
+    console.warn("Invalid effect event", event);
+    return false;
   }
 
   rootMediaUpdate(mediaPath, (media): Media => {
-    if (media.type !== 'video' || !media.effects) {
-      return media
+    if (media.type !== "video" || !media.effects) {
+      return media;
     }
-    const effectIndex = media.effects.findIndex((effect) => effect.key === effectKey)
+    const effectIndex = media.effects.findIndex(
+      (effect) => effect.key === effectKey,
+    );
     if (effectIndex === -1) {
-      return media
+      return media;
     }
-    if (effectField === 'remove') {
+    if (effectField === "remove") {
       return {
         ...media,
         effects: media.effects.filter((effect) => {
-          return effect.key !== effectKey
+          return effect.key !== effectKey;
         }),
-      }
+      };
     }
     if (effectIndex != null && effectIndex !== -1) {
-      const effect = media.effects[effectIndex]
-      const newEffect = { ...effect, [effectField]: event.payload[0] }
+      const effect = media.effects[effectIndex];
+      const newEffect = { ...effect, [effectField]: event.payload[0] };
       return {
         ...media,
         effects: media.effects.map((effect) => {
           if (effect.key === effectKey) {
-            return newEffect
+            return newEffect;
           }
-          return effect
+          return effect;
         }),
-      }
+      };
     }
-    return media
-  })
-  return true
+    return media;
+  });
+  return true;
 }
 
 function handleTransitionEvent(event: ActionEvent): boolean {
-  if (event.dataState.action?.[0] !== 'updateTransition') {
-    return false
+  if (event.dataState.action?.[0] !== "updateTransition") {
+    return false;
   }
-  if (event.dataState.action?.[1] === 'manual') {
+  if (event.dataState.action?.[1] === "manual") {
     mainStateUpdate((state) => ({
       ...state,
       transitionState: {
         ...state.transitionState,
         manual: event.payload[0],
       },
-    }))
-    return true
+    }));
+    return true;
   }
-  if (event.dataState.action?.[1] === 'duration') {
+  if (event.dataState.action?.[1] === "duration") {
     mainStateUpdate((state) => ({
       ...state,
       transition: {
         ...state.transition,
         duration: event.payload[0],
       },
-    }))
-    return true
+    }));
+    return true;
   }
-  if (event.dataState.action?.[1] === 'startAuto') {
+  if (event.dataState.action?.[1] === "startAuto") {
     mainStateUpdate((state) => ({
       ...state,
       transitionState: {
         ...state.transitionState,
         autoStartTime: Date.now(),
       },
-    }))
-    return true
+    }));
+    return true;
   }
-  return false
+  return false;
 }
 
 function mediaUpdate(
   mediaPath: string[],
   prevMedia: Media,
-  updater: (media: Media) => Media
+  updater: (media: Media) => Media,
 ): Media {
-  if (mediaPath.length === 0) return updater(prevMedia)
-  const [subMediaKey, ...restMediaPath] = mediaPath
-  if (subMediaKey === 'layer' && prevMedia.type === 'layers') {
-    const [layerKey, ...subMediaPath] = restMediaPath
+  if (mediaPath.length === 0) return updater(prevMedia);
+  const [subMediaKey, ...restMediaPath] = mediaPath;
+  if (subMediaKey === "layer" && prevMedia.type === "layers") {
+    const [layerKey, ...subMediaPath] = restMediaPath;
     return {
       ...prevMedia,
       layers: prevMedia.layers?.map((layer) => {
@@ -746,14 +745,14 @@ function mediaUpdate(
           return {
             ...layer,
             media: mediaUpdate(subMediaPath, layer.media, updater),
-          }
+          };
         }
-        return layer
+        return layer;
       }),
-    }
+    };
   }
-  if (subMediaKey === 'item' && prevMedia.type === 'sequence') {
-    const [layerKey, ...subMediaPath] = restMediaPath
+  if (subMediaKey === "item" && prevMedia.type === "sequence") {
+    const [layerKey, ...subMediaPath] = restMediaPath;
     return {
       ...prevMedia,
       sequence: prevMedia.sequence?.map((item) => {
@@ -761,105 +760,114 @@ function mediaUpdate(
           return {
             ...item,
             media: mediaUpdate(subMediaPath, item.media, updater),
-          }
+          };
         }
-        return item
+        return item;
       }),
-    }
+    };
   }
 
   throw new Error(
-    `Unhandled deep mediaUpdate: ${JSON.stringify({ subMediaKey, restMediaPath, prevMedia })}`
-  )
+    `Unhandled deep mediaUpdate: ${JSON.stringify({ subMediaKey, restMediaPath, prevMedia })}`,
+  );
 }
 
-function rootMediaUpdate(mediaPath: string[], updater: (media: Media) => Media) {
-  const [rootMediaKey, ...restMediaPath] = mediaPath
-  if (rootMediaKey !== 'liveMedia' && rootMediaKey !== 'readyMedia') {
-    throw new Error('Invalid root media key')
+function rootMediaUpdate(
+  mediaPath: string[],
+  updater: (media: Media) => Media,
+) {
+  const [rootMediaKey, ...restMediaPath] = mediaPath;
+  if (rootMediaKey !== "liveMedia" && rootMediaKey !== "readyMedia") {
+    throw new Error("Invalid root media key");
   }
   mainStateUpdate((state) => {
-    const prevMedia = state[rootMediaKey]
+    const prevMedia = state[rootMediaKey];
     return {
       ...state,
       [rootMediaKey]: mediaUpdate(restMediaPath, prevMedia, updater),
-    }
-  })
+    };
+  });
 }
 
 function handleLibraryEvent(event: ActionEvent): boolean {
-  if (event.dataState.action?.[0] !== 'libraryAction') {
-    return false
+  if (event.dataState.action?.[0] !== "libraryAction") {
+    return false;
   }
-  const libraryKey = event.dataState.action?.[1]
-  const action = event.dataState.action?.[2]
-  if (action === 'goReady' && libraryKey) {
-    console.log('goReady', libraryKey)
-    const media = readLibraryKey(libraryKey)
+  const libraryKey = event.dataState.action?.[1];
+  const action = event.dataState.action?.[2];
+  if (action === "goReady" && libraryKey) {
+    console.log("goReady", libraryKey);
+    const media = readLibraryKey(libraryKey);
     mainStateUpdate((mainState) => ({
       ...mainState,
       readyMedia: media,
-    }))
-    return true
+    }));
+    return true;
   }
-  if (action === 'delete' && libraryKey) {
-    deleteLibraryKey(libraryKey)
+  if (action === "delete" && libraryKey) {
+    deleteLibraryKey(libraryKey);
     // console.log('delete', libraryKey)
-    return true
+    return true;
   }
-  return false
+  return false;
 }
 
 function handleMediaEvent(event: ActionEvent): boolean {
-  if (event.dataState.action?.[0] !== 'updateMedia') {
-    return false
+  if (event.dataState.action?.[0] !== "updateMedia") {
+    return false;
   }
 
-  const mediaPath = event.dataState.action?.[1]?.split(':')
-  const action = event.dataState.action?.[2]
+  const mediaPath = event.dataState.action?.[1]?.split(":");
+  const action = event.dataState.action?.[2];
   if (!mediaPath || !action) {
-    console.warn('Invalid media event', event)
-    return false
+    console.warn("Invalid media event", event);
+    return false;
   }
-  if (action === 'saveMedia') {
-    const mediaValue = getMedia(mainState, mediaPath)
-    if (!mediaValue) return true
-    const key = `${getMediaTitle(mediaValue, uiContext)} - ${new Date().toLocaleString()}`
-    saveMedia(key, mediaValue)
-    return true
+  if (action === "saveMedia") {
+    const mediaValue = getMedia(mainState, mediaPath);
+    if (!mediaValue) return true;
+    const key = `${getMediaTitle(mediaValue, uiContext)} - ${new Date().toLocaleString()}`;
+    saveMedia(key, mediaValue);
+    return true;
   }
-  if (action === 'metadata') {
-    rootMediaUpdate(mediaPath, (media) => ({ ...media, label: event.payload.label }))
-    return true
+  if (action === "metadata") {
+    rootMediaUpdate(mediaPath, (media) => ({
+      ...media,
+      label: event.payload.label,
+    }));
+    return true;
   }
-  if (action === 'clear') {
-    rootMediaUpdate(mediaPath, () => createBlankMedia('off'))
-    return true
+  if (action === "clear") {
+    rootMediaUpdate(mediaPath, () => createBlankMedia("off"));
+    return true;
   }
-  if (action === 'mode') {
-    const mode = event.payload
-    rootMediaUpdate(mediaPath, () => createBlankMedia(mode))
-    return true
+  if (action === "mode") {
+    const mode = event.payload;
+    rootMediaUpdate(mediaPath, () => createBlankMedia(mode));
+    return true;
   }
-  if (action === 'color') {
-    const colorField = event.dataState.action?.[3]
-    const number = event.payload[0]
-    if (colorField === 'h' || colorField === 's' || colorField === 'l') {
-      rootMediaUpdate(mediaPath, (media) => ({ ...media, [colorField]: number }))
-      return true
+  if (action === "color") {
+    const colorField = event.dataState.action?.[3];
+    const number = event.payload[0];
+    if (colorField === "h" || colorField === "s" || colorField === "l") {
+      rootMediaUpdate(mediaPath, (media) => ({
+        ...media,
+        [colorField]: number,
+      }));
+      return true;
     }
   }
-  if (action === 'track') {
-    const track = event.payload
-    rootMediaUpdate(mediaPath, (media) => ({ ...media, track }))
-    return true
+  if (action === "track") {
+    const track = event.payload;
+    rootMediaUpdate(mediaPath, (media) => ({ ...media, track }));
+    return true;
   }
-  if (action === 'loopBounce') {
-    const loopBounce = event.payload
+  if (action === "loopBounce") {
+    const loopBounce = event.payload;
     rootMediaUpdate(mediaPath, (media) => {
-      if (media.type !== 'video') {
-        console.warn('loopBounce on non-video media', media)
-        return media
+      if (media.type !== "video") {
+        console.warn("loopBounce on non-video media", media);
+        return media;
       }
       return {
         ...media,
@@ -867,16 +875,16 @@ function handleMediaEvent(event: ActionEvent): boolean {
           ...(media.params || {}),
           loopBounce,
         },
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
-  if (action === 'reverse') {
-    const reverse = event.payload
+  if (action === "reverse") {
+    const reverse = event.payload;
     rootMediaUpdate(mediaPath, (media) => {
-      if (media.type !== 'video') {
-        console.warn('reverse on non-video media', media)
-        return media
+      if (media.type !== "video") {
+        console.warn("reverse on non-video media", media);
+        return media;
       }
       return {
         ...media,
@@ -884,31 +892,48 @@ function handleMediaEvent(event: ActionEvent): boolean {
           ...(media.params || {}),
           reverse,
         },
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
-  if (action === 'addEffect') {
-    const effectType = event.payload
-    const newEffect: Effect = createBlankEffect(effectType)
+  if (action === "addEffect") {
+    const effectType = event.payload;
+    const newEffect: Effect = createBlankEffect(effectType);
     rootMediaUpdate(mediaPath, (media) => {
-      if (media.type !== 'video') {
-        console.warn('addEffect on non-video media', media)
-        return media
+      if (media.type !== "video") {
+        console.warn("addEffect on non-video media", media);
+        return media;
       }
       return {
         ...media,
         effects: [...(media.effects || []), newEffect],
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
-  if (action === 'addLayer') {
-    const mediaType = event.payload
+  if (action === "effectOrder") {
     rootMediaUpdate(mediaPath, (media) => {
-      if (media.type !== 'layers') {
-        console.warn('addLayer on non-layer media', media)
-        return media
+      if (media.type !== "video") {
+        console.warn("effectOrder on non-video media", media);
+        return media;
+      }
+      return {
+        ...media,
+        effects: event.payload.map((key: string) => {
+          const effect = media.effects?.find((effect) => effect.key === key);
+          if (!effect) throw new Error("Invalid effect order");
+          return effect;
+        }),
+      };
+    });
+    return true;
+  }
+  if (action === "addLayer") {
+    const mediaType = event.payload;
+    rootMediaUpdate(mediaPath, (media) => {
+      if (media.type !== "layers") {
+        console.warn("addLayer on non-layer media", media);
+        return media;
       }
       return {
         ...media,
@@ -917,20 +942,20 @@ function handleMediaEvent(event: ActionEvent): boolean {
           {
             key: randomUUID(),
             media: createBlankMedia(mediaType),
-            blendMode: 'mix',
+            blendMode: "mix",
             blendAmount: 0,
           },
         ],
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
-  if (action === 'addToSequence') {
-    const mediaType = event.payload
+  if (action === "addToSequence") {
+    const mediaType = event.payload;
     rootMediaUpdate(mediaPath, (media) => {
-      if (media.type !== 'sequence') {
-        console.warn('addToSequence on non-sequence media', media)
-        return media
+      if (media.type !== "sequence") {
+        console.warn("addToSequence on non-sequence media", media);
+        return media;
       }
       return {
         ...media,
@@ -941,231 +966,234 @@ function handleMediaEvent(event: ActionEvent): boolean {
             media: createBlankMedia(mediaType),
           },
         ],
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
-  if (action === 'goNext') {
-    goNext(mediaPath)
-    return true
+  if (action === "goNext") {
+    goNext(mediaPath);
+    return true;
   }
-  if (action === 'blendMode') {
-    const layerKey = mediaPath.at(-1)
-    const blendMode = event.payload
-    const targetPath = mediaPath.slice(0, -2)
+  if (action === "blendMode") {
+    const layerKey = mediaPath.at(-1);
+    const blendMode = event.payload;
+    const targetPath = mediaPath.slice(0, -2);
     rootMediaUpdate(targetPath, (media) => {
-      if (media.type !== 'layers') {
-        console.warn('blendMode on non-layer media', media)
-        return media
+      if (media.type !== "layers") {
+        console.warn("blendMode on non-layer media", media);
+        return media;
       }
       return {
         ...media,
         layers: (media.layers || []).map((layer) => {
           if (layer.key === layerKey) {
-            return { ...layer, blendMode }
+            return { ...layer, blendMode };
           }
-          return layer
+          return layer;
         }),
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
-  if (action === 'blendAmount') {
-    const layerKey = mediaPath.at(-1)
-    const blendAmount = event.payload[0]
-    const targetPath = mediaPath.slice(0, -2)
+  if (action === "blendAmount") {
+    const layerKey = mediaPath.at(-1);
+    const blendAmount = event.payload[0];
+    const targetPath = mediaPath.slice(0, -2);
     rootMediaUpdate(targetPath, (media) => {
-      if (media.type !== 'layers') {
-        console.warn('blendMode on non-layer media', media)
-        return media
+      if (media.type !== "layers") {
+        console.warn("blendMode on non-layer media", media);
+        return media;
       }
       return {
         ...media,
         layers: (media.layers || []).map((layer) => {
           if (layer.key === layerKey) {
-            return { ...layer, blendAmount }
+            return { ...layer, blendAmount };
           }
-          return layer
+          return layer;
         }),
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
-  if (action === 'layerOrder') {
-    const order = event.payload
+  if (action === "layerOrder") {
+    const order = event.payload;
+    console.log("payload", event.order);
     rootMediaUpdate(mediaPath, (media) => {
-      if (media.type !== 'layers') return media
+      if (media.type !== "layers") return media;
       return {
         ...media,
         layers: order.map((key: string) => {
-          const layer = media.layers?.find((layer) => layer.key === key)
-          if (!layer) throw new Error('Invalid layer order')
-          return layer
+          const layer = media.layers?.find((layer) => layer.key === key);
+          if (!layer) throw new Error("Invalid layer order");
+          return layer;
         }),
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
-  if (action === 'removeLayer') {
-    const targetPath = mediaPath.slice(0, -2)
-    const layerKey = event.dataState.action.at(-1)
+  if (action === "removeLayer") {
+    const targetPath = mediaPath.slice(0, -2);
+    const layerKey = event.dataState.action.at(-1);
     rootMediaUpdate(targetPath, (media) => {
-      if (media.type !== 'layers') return media
+      if (media.type !== "layers") return media;
       return {
         ...media,
         layers: (media.layers || []).filter((layer) => layer.key !== layerKey),
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
-  if (action === 'removeItem') {
-    const targetPath = mediaPath.slice(0, -2)
-    const itemKey = event.dataState.action.at(-1)
+  if (action === "removeItem") {
+    const targetPath = mediaPath.slice(0, -2);
+    const itemKey = event.dataState.action.at(-1);
     rootMediaUpdate(targetPath, (media) => {
-      if (media.type !== 'sequence') return media
+      if (media.type !== "sequence") return media;
       return {
         ...media,
         sequence: (media.sequence || []).filter((item) => item.key !== itemKey),
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
-  if (action === 'maxDuration') {
-    let duration: null | number = null
-    if (Array.isArray(event.payload)) duration = event.payload[0] // slider gives us an array
-    if (event.payload === true) duration = 10
-    if (event.payload === false) duration = null
-    const targetPath = mediaPath.slice(0, -2)
-    const itemKey = mediaPath.at(-1)
+  if (action === "maxDuration") {
+    let duration: null | number = null;
+    if (Array.isArray(event.payload)) duration = event.payload[0]; // slider gives us an array
+    if (event.payload === true) duration = 10;
+    if (event.payload === false) duration = null;
+    const targetPath = mediaPath.slice(0, -2);
+    const itemKey = mediaPath.at(-1);
     rootMediaUpdate(targetPath, (media) => {
-      if (media.type !== 'sequence') return media
+      if (media.type !== "sequence") return media;
       return {
         ...media,
         sequence: (media.sequence || []).map((item) => {
           if (item.key === itemKey) {
-            return { ...item, maxDuration: duration }
+            return { ...item, maxDuration: duration };
           }
-          return item
+          return item;
         }),
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
-  if (action === 'goOnVideoEnd') {
-    const targetPath = mediaPath.slice(0, -2)
-    const itemKey = mediaPath.at(-1)
+  if (action === "goOnVideoEnd") {
+    const targetPath = mediaPath.slice(0, -2);
+    const itemKey = mediaPath.at(-1);
     rootMediaUpdate(targetPath, (media) => {
-      if (media.type !== 'sequence') return media
+      if (media.type !== "sequence") return media;
       return {
         ...media,
         sequence: (media.sequence || []).map((item) => {
           if (item.key === itemKey) {
-            return { ...item, goOnVideoEnd: event.payload }
+            return { ...item, goOnVideoEnd: event.payload };
           }
-          return item
+          return item;
         }),
-      }
-    })
-    return true
+      };
+    });
+    return true;
   }
 
-  return false
+  return false;
 }
 
 function goNext(mediaPath: string[]) {
   rootMediaUpdate(mediaPath, (media) => {
-    if (media.type !== 'sequence') {
-      console.warn('goNext on non-sequence media', media)
-      return media
+    if (media.type !== "sequence") {
+      console.warn("goNext on non-sequence media", media);
+      return media;
     }
-    if (!media.sequence.length) return media
-    const active = getSequenceActiveItem(media)
+    if (!media.sequence.length) return media;
+    const active = getSequenceActiveItem(media);
     if (!active) {
-      console.warn('goNext: active media not identified')
-      return media
+      console.warn("goNext: active media not identified");
+      return media;
     }
-    const activeIndex = media.sequence.findIndex((item) => item.key === active.key)
+    const activeIndex = media.sequence.findIndex(
+      (item) => item.key === active.key,
+    );
     if (activeIndex === -1) {
-      console.warn('goNext: active media not found in sequence')
-      return media
+      console.warn("goNext: active media not found in sequence");
+      return media;
     }
-    const nextIndex = (activeIndex + 1) % media.sequence.length
-    const nextKey = media.sequence[nextIndex]?.key
+    const nextIndex = (activeIndex + 1) % media.sequence.length;
+    const nextKey = media.sequence[nextIndex]?.key;
     if (!nextKey) {
-      console.warn('goNext: next media not identified')
-      return media
+      console.warn("goNext: next media not identified");
+      return media;
     }
     return {
       ...media,
       activeKey: nextKey,
       lastTransitionTime: Date.now(),
-    }
-  })
+    };
+  });
 }
 
-function createBlankMedia(type: Media['type']): Media {
-  if (type === 'off') {
-    return { type }
+function createBlankMedia(type: Media["type"]): Media {
+  if (type === "off") {
+    return { type };
   }
-  if (type === 'color') {
-    return { type, h: 0, s: 1, l: 1 }
+  if (type === "color") {
+    return { type, h: 0, s: 1, l: 1 };
   }
-  if (type === 'video') {
-    return { type, track: null, id: randomUUID() }
+  if (type === "video") {
+    return { type, track: null, id: randomUUID() };
   }
-  if (type === 'layers') {
-    return { type, layers: [] }
+  if (type === "layers") {
+    return { type, layers: [] };
   }
-  if (type === 'sequence') {
-    return { type, sequence: [] }
+  if (type === "sequence") {
+    return { type, sequence: [] };
   }
 
-  return { type: 'off' }
+  return { type: "off" };
 }
 
-function createBlankEffect(type: Effect['type']): Effect {
-  if (type === 'hueShift')
+function createBlankEffect(type: Effect["type"]): Effect {
+  if (type === "hueShift")
     return {
       key: randomUUID(),
-      type: 'hueShift',
+      type: "hueShift",
       value: 0,
-    }
-  if (type === 'desaturate')
+    };
+  if (type === "desaturate")
     return {
       key: randomUUID(),
-      type: 'desaturate',
+      type: "desaturate",
       value: 0,
-    }
-  if (type === 'colorize')
+    };
+  if (type === "colorize")
     return {
       key: randomUUID(),
-      type: 'colorize',
+      type: "colorize",
       amount: 0,
       saturation: 1,
       hue: 180,
-    }
-  if (type === 'darken')
+    };
+  if (type === "darken")
     return {
       key: randomUUID(),
-      type: 'darken',
+      type: "darken",
       value: 0,
-    }
-  if (type === 'brighten')
+    };
+  if (type === "brighten")
     return {
       key: randomUUID(),
-      type: 'brighten',
+      type: "brighten",
       value: 0,
-    }
-  if (type === 'rotate') {
+    };
+  if (type === "rotate") {
     return {
       key: randomUUID(),
-      type: 'rotate',
+      type: "rotate",
       value: 0,
-    }
+    };
   }
   // if (type === 'invert')
   return {
     key: randomUUID(),
-    type: 'invert',
-  }
+    type: "invert",
+  };
 }

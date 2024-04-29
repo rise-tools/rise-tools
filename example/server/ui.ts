@@ -73,7 +73,7 @@ function sortableList({
 }): ServerDataState {
   return {
     $: "component",
-    component: "SortableList",
+    component: "RiseSortableList",
     key,
     props: {
       padding: "$4",
@@ -279,48 +279,48 @@ export function getEffectsUI(
   mediaLinkPath: string,
   effectsState: Effects | undefined,
 ): ServerDataState {
-  return section("Effects", [
-    sortableList({
-      props: {
-        onReorder: {
-          $: "event",
-          action: ["updateMedia", mediaLinkPath, "effectOrder"],
-        },
-        footer: {
-          $: "component",
-          key: "addEffect",
-          component: "RiseSelectField",
-          props: {
-            unselectedLabel: "Add Effect...",
-            value: null,
-            options: [
-              { key: "colorize", label: "Colorize" },
-              { key: "desaturate", label: "Desaturate" },
-              { key: "invert", label: "Invert" },
-              { key: "hueShift", label: "Hue Shift" },
-              { key: "brighten", label: "Brighten" },
-              { key: "darken", label: "Darken" },
-              { key: "rotate", label: "Rotate" },
-            ],
-            onValueChange: {
-              $: "event",
-              action: ["updateMedia", mediaLinkPath, "addEffect"],
-            },
+  return {
+    $: "component",
+    component: "RiseSortableList",
+    props: {
+      onReorder: {
+        $: "event",
+        action: ["updateMedia", mediaLinkPath, "effectOrder"],
+      },
+      footer: {
+        $: "component",
+        key: "addEffect",
+        component: "RiseSelectField",
+        props: {
+          unselectedLabel: "Add Effect...",
+          value: null,
+          options: [
+            { key: "colorize", label: "Colorize" },
+            { key: "desaturate", label: "Desaturate" },
+            { key: "invert", label: "Invert" },
+            { key: "hueShift", label: "Hue Shift" },
+            { key: "brighten", label: "Brighten" },
+            { key: "darken", label: "Darken" },
+            { key: "rotate", label: "Rotate" },
+          ],
+          onValueChange: {
+            $: "event",
+            action: ["updateMedia", mediaLinkPath, "addEffect"],
           },
         },
-        items: (effectsState || []).map((effect) => {
-          return {
-            key: effect.key,
-            label: effect.type,
-            onPress: {
-              $: "event",
-              action: ["navigate", `${mediaLinkPath}:effects:${effect.key}`],
-            },
-          };
-        }),
       },
-    }),
-  ]);
+      items: (effectsState || []).map((effect) => {
+        return {
+          key: effect.key,
+          label: effect.type,
+          onPress: {
+            $: "event",
+            action: ["navigate", `${mediaLinkPath}:effects:${effect.key}`],
+          },
+        };
+      }),
+    },
+  };
 }
 
 export function getEffectUI(effectPath: string[], effect: Effect) {
