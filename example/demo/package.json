@@ -1,28 +1,21 @@
 {
-  "name": "@final-ui/demo-server",
+  "name": "demo-inventory",
+  "version": "0.0.0",
   "private": true,
-  "version": "0.1.2",
-  "license": "Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/final-ui/final.git",
-    "directory": "example/demo"
-  },
-  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
-  "bugs": {
-    "url": "https://github.com/final-ui/final/issues"
-  },
-  "homepage": "https://github.com/final-ui/final#readme",
   "scripts": {
-    "start": "tsx src/server.ts",
-    "dev": "tsx --watch src/server.ts"
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "test": "vitest",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@final-ui/react": "0.1.2",
     "@final-ui/ws-server": "0.1.2"
   },
   "devDependencies": {
-    "@types/node": "^18.6.4",
-    "tsx": "^4.7.2"
+    "@cloudflare/vitest-pool-workers": "^0.1.0",
+    "typescript": "^5.1.3",
+    "wrangler": "^3.0.0"
   }
 }
