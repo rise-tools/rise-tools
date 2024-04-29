@@ -110,7 +110,9 @@ export function isEventDataState(obj: JSONValue): obj is EventDataState {
   return (
     obj !== null &&
     ((typeof obj === "object" && "$" in obj && obj.$ === "event") ||
-      (Array.isArray(obj) &&
+      (typeof obj === "object" &&
+        Array.isArray(obj) &&
+        !!obj.length &&
         obj.every(
           (obj) =>
             obj !== null &&
