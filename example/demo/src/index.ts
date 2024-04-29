@@ -3,6 +3,19 @@ import { createWSDataSource } from '@final-ui/ws-server'
 import { getInventoryExample } from './inventory/ui'
 import { UIContext } from './types'
 
+function setupDataSource() {
+  const dataSource = createWSDataSource()
+  const ctx: UIContext = {
+    update: (key, updater) => {
+      dataSource.update(key, updater(dataSource.get(key)))
+    },
+  }
+  for (const [key, value] of Object.entries(getInventoryExample(ctx))) {
+    dataSource.update(key, value)
+  }
+  return dataSource
+}
+
 export default {
   async fetch(request: Request): Promise<Response> {
     const upgrade = request.headers.get('Upgrade')
@@ -17,19 +30,7 @@ export default {
     // for the WebSocket on Cloudflare’s global network.
     server.accept()
 
-    const dataSource = createWSDataSource()
-
-    dataSource.handleWSConnection(server)
-
-    const ctx: UIContext = {
-      update: (key, updater) => {
-        dataSource.update(key, updater(dataSource.get(key)))
-      },
-    }
-
-    for (const [key, value] of Object.entries(getInventoryExample(ctx))) {
-      dataSource.update(key, value)
-    }
+    setupDataSource().handleWSConnection(server)
 
     return new Response(null, {
       status: 101,

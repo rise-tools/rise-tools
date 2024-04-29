@@ -55,7 +55,6 @@ export function createWSDataSource(wsUrl: string): DataSource {
   const cache = new Map<string, any>()
 
   rws.addEventListener('open', () => {
-    console.log('d')
     const keys = [...subscriptions.entries()]
       .filter(([, handlers]) => handlers.size > 0)
       .map(([key]) => key)
