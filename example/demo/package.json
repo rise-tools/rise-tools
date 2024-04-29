@@ -17,7 +17,6 @@
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "start": "wrangler dev",
-    "test": "vitest",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
@@ -25,7 +24,7 @@
     "@final-ui/ws-server": "0.1.2"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.1.0",
+    "@cloudflare/workers-types": "^4.20240423.0",
     "typescript": "^5.1.3",
     "wrangler": "^3.0.0"
   }
