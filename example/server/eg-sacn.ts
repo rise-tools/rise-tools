@@ -1,4 +1,4 @@
-import { EGInfo } from './eg'
+import { EGInfo, eg as egConsts } from './eg'
 const { Sender, Receiver } = require('sacn')
 
 export type Frame = Uint8Array
@@ -124,13 +124,18 @@ export function egSacnService(egInfo: EGInfo) {
         Record<string, number>,
         Record<string, number>
       ] = [{}, {}, {}]
+
+      // Change thease magic numberz
+      const stripIndexRotated = alignGate(stripIndex, 24, true);
+
       for (let pixelIndex = 0; pixelIndex < egStageStripLength; pixelIndex++) {
-        const startByte = (stripIndex * egStageStripLength + pixelIndex) * 3
-        const red = frame[startByte]
-        const green = frame[startByte + 1]
-        const blue = frame[startByte + 2]
+        const sourceIndex = insideOut(pixelIndex)
+        const startByte = (stripIndexRotated * egStageStripLength + sourceIndex) * 3
+        const red = frame[startByte]!
+        const green = frame[startByte + 1]!
+        const blue = frame[startByte + 2]!
         const startUniverse = ~~((pixelIndex * 3) / 509)
-        const universePayload = payloadUniverses[startUniverse]
+        const universePayload = payloadUniverses[startUniverse]!
         const startChannel = (pixelIndex % pixelsPerUniverse) * 3 + 1
         universePayload[String(startChannel)] = red
         universePayload[String(startChannel + 1)] = green
@@ -150,9 +155,34 @@ export function egSacnService(egInfo: EGInfo) {
 
   return {
     egInfo,
-    close: () => {},
+    close: () => { },
     sendFrame,
   }
+}
+
+/**
+ * Reverses each pixels' position in the strips.
+ * 
+ * For each radial strip,
+ * - The first pixel becomes the last
+ * - The last pixel becomes the first
+ * - The middle pixels stay in the same place
+ * @param pixelIndex index of pixel in entire structure
+ * @returns new index of pixel in structure
+ */
+function insideOut(pixelIndex: number): number {
+  const radius = pixelIndex % egConsts.egStageStripLength
+  const newRadius = egConsts.egStageStripLength - radius
+  return pixelIndex - radius + newRadius
+}
+
+function alignGate(stripIndex: number, rotation: number, mirror = false): number {
+  if (mirror) {
+    stripIndex = egConsts.egStageRadials - stripIndex
+  }
+  stripIndex += rotation
+  while (stripIndex < 0) stripIndex += egConsts.egStageRadials
+  return stripIndex % egConsts.egStageRadials
 }
 
 // //   basic test of FPS, sending RGB frames 1 second apart

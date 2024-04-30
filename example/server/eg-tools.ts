@@ -1,4 +1,4 @@
-import chroma from 'chroma-js'
+import chroma, { mix } from 'chroma-js'
 
 import { EGInfo } from './eg'
 import { Frame } from './eg-sacn'
@@ -58,6 +58,8 @@ export function waveFrameLayerEffect(info: EGInfo, invertDirection: boolean) {
 }
 
 export function frameMix(info: EGInfo, frameA: Frame, frameB: Frame, mixAmount: number): Frame {
+  if (mixAmount > 1) mixAmount = 1
+  if (mixAmount < 0) mixAmount = 0
   const { frameSize } = info
   const outputFrame = new Uint8Array(frameSize)
   for (let i = 0; i < frameSize; i++) {
