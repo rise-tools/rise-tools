@@ -1,5 +1,6 @@
 import { useStream } from '@final-ui/react'
 import { WebSocketDataSource } from '@final-ui/ws-client'
+import { AlertCircle } from '@tamagui/lucide-icons'
 import React, { PropsWithChildren } from 'react'
 import { H4, SizableText, Text, YStack } from 'tamagui'
 
@@ -30,7 +31,8 @@ export function DataBoundary({
   if (status === 'closed') {
     return (
       <YStack flex={1} alignItems="center" justifyContent="center" padding="$3" gap="$2">
-        <H4>You are disconnected</H4>
+        <AlertCircle size="$5" color="$red9" />
+        <H4 color="$red9">You are disconnected</H4>
         <SizableText textAlign="center" lineHeight="$1">
           Please check your network connection. The app will reconnect automatically.
         </SizableText>
