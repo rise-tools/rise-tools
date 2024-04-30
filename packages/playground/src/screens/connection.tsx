@@ -65,7 +65,7 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   )
 
   return (
-    <DataBoundary info={dataSource.info}>
+    <DataBoundary state={dataSource.state}>
       <Template components={components} dataSource={dataSource} path={path} onEvent={onEvent} />
     </DataBoundary>
   )
