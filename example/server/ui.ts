@@ -121,12 +121,13 @@ function getVideoControls(
       {
         $: "component",
         component: "XStack",
+        props: { gap: "$2" },
         children: [
           {
             $: "component",
             key: "restart",
             component: "Button",
-            children: "Restart Video",
+            children: "Restart",
             props: {
               icon: icon("RefreshCcw"),
               size: "$2",
@@ -134,6 +135,21 @@ function getVideoControls(
               onPress: {
                 $: "event",
                 action: ["updateMedia", mediaPath, "restart"],
+              },
+            },
+          },
+          {
+            $: "component",
+            key: "restart",
+            component: "Button",
+            children: "Pause",
+            props: {
+              icon: icon("Pause"),
+              size: "$2",
+              theme: "blue",
+              onPress: {
+                $: "event",
+                action: ["updateMedia", mediaPath, "pause"],
               },
             },
           },
@@ -165,6 +181,8 @@ function getVideoControls(
           },
         },
       },
+    ]),
+    section("Video Info", [
       {
         $: "component",
         key: "infoFrameCount",
@@ -626,6 +644,23 @@ export function getTransitionControls(
         max: 10000,
         min: 0,
         step: 1,
+      },
+    },
+    {
+      $: "component",
+      key: "mode",
+      component: "RiseSelectField",
+      props: {
+        value: transition.mode,
+        label: "Mode",
+        onValueChange: {
+          $: "event",
+          action: ["updateTransition", "mode"],
+        },
+        options: [
+          { key: "add", label: "Add" },
+          { key: "mix", label: "Mix" },
+        ],
       },
     },
   ];

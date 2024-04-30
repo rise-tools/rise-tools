@@ -41,6 +41,7 @@ import {
   getUIRoot,
   UIContext,
 } from "./ui";
+import { subscribeMidiEvents } from "./eg-midi-server";
 
 let mainState: MainState = defaultMainState;
 
@@ -282,25 +283,42 @@ const sequenceAutoTransitions: Record<string, undefined | NodeJS.Timeout> = {};
 const sequenceVideoEndTransitions: Record<string, undefined | NodeJS.Timeout> =
   {};
 
+let isMidiTouchingManualTransition = false;
+
 function mainStateEffect(state: MainState, prevState: MainState) {
   setTimeout(() => {
     if (state.transitionState.manual === 1) {
-      mainStateUpdate((state) => ({
-        ...state,
-        readyMedia: state.liveMedia,
-        liveMedia: state.readyMedia,
-        transitionState: { manual: null, autoStartTime: null },
-      }));
+      // mainStateUpdate((state) => ({
+      //   ...state,
+      //   readyMedia: state.liveMedia,
+      //   liveMedia: state.readyMedia,
+      //   transitionState: { manual: null, autoStartTime: null },
+      // }));
     } else if (state.transitionState.autoStartTime) {
-      const progress = Math.min(
-        1,
-        (Date.now() - state.transitionState.autoStartTime) /
-          state.transition.duration,
-      );
-      console.log("progress", progress);
+      const manualProgress = state.transitionState.autoManualStartValue ?? 0;
+      const timeSinceStart = Date.now() - state.transitionState.autoStartTime;
+      const duration = state.transition.duration;
+
+      const autoTransitionProgress = timeSinceStart / duration;
+      const destProgress = Math.min(1, autoTransitionProgress + manualProgress);
+      if (destProgress == 1) {
+        isMidiTouchingManualTransition = false;
+        mainStateUpdate((state) => ({
+          ...state,
+          readyMedia: state.liveMedia,
+          liveMedia: state.readyMedia,
+          transitionState: {
+            manual: null,
+            autoStartTime: null,
+            autoManualStartValue: null,
+          },
+        }));
+        return;
+      }
+      isMidiTouchingManualTransition = false;
       mainStateUpdate((state) => ({
         ...state,
-        transitionState: { ...state.transitionState, manual: progress },
+        transitionState: { ...state.transitionState, manual: destProgress },
       }));
     }
   }, 80);
@@ -594,24 +612,24 @@ wsServer.onActionEvent((event) => {
   const {
     target: { key, propKey },
   } = event;
-  if (key === "offButton" && propKey === "onPress") {
-    mainStateUpdate((state) => ({ ...state, mode: "off" }));
-    return;
-  }
-  if (key === "mode" && propKey === "onValueChange") {
-    mainStateUpdate((state) => ({ ...state, mode: event.payload }));
-    return;
-  }
-  if (sliderUpdate(event, "hueSlider", ["color", "h"])) return;
-  if (sliderUpdate(event, "saturationSlider", ["color", "s"])) return;
-  if (sliderUpdate(event, "lightnessSlider", ["color", "l"])) return;
-  if (sliderUpdate(event, "intensitySlider", ["beatEffect", "intensity"]))
-    return;
-  if (sliderUpdate(event, "waveLengthSlider", ["beatEffect", "waveLength"]))
-    return;
-  if (sliderUpdate(event, "dropoffSlider", ["beatEffect", "dropoff"])) return;
-  if (switchUpdate(event, "manualBeatEnabledSwitch", ["manualBeat", "enabled"]))
-    return;
+  // if (key === "offButton" && propKey === "onPress") {
+  //   mainStateUpdate((state) => ({ ...state, mode: "off" }));
+  //   return;
+  // }
+  // if (key === "mode" && propKey === "onValueChange") {
+  //   mainStateUpdate((state) => ({ ...state, mode: event.payload }));
+  //   return;
+  // }
+  // if (sliderUpdate(event, "hueSlider", ["color", "h"])) return;
+  // if (sliderUpdate(event, "saturationSlider", ["color", "s"])) return;
+  // if (sliderUpdate(event, "lightnessSlider", ["color", "l"])) return;
+  // if (sliderUpdate(event, "intensitySlider", ["beatEffect", "intensity"]))
+  //   return;
+  // if (sliderUpdate(event, "waveLengthSlider", ["beatEffect", "waveLength"]))
+  //   return;
+  // if (sliderUpdate(event, "dropoffSlider", ["beatEffect", "dropoff"])) return;
+  // if (switchUpdate(event, "manualBeatEnabledSwitch", ["manualBeat", "enabled"]))
+  //   return;
   // if (action === 'manualTapBeat') {
   //   handleManualTapBeat()
   //   return
@@ -692,18 +710,34 @@ function handleEffectEvent(event: ActionEvent): boolean {
   return true;
 }
 
+function startAutoTransition() {
+  mainStateUpdate((state) => ({
+    ...state,
+    transitionState: {
+      ...state.transitionState,
+      autoStartTime: Date.now(),
+      autoManualStartValue: state.transitionState.manual,
+    },
+  }));
+}
+
+function setManualTransition(value: number) {
+  mainStateUpdate((state) => ({
+    ...state,
+    transitionState: {
+      ...state.transitionState,
+      manual: value,
+    },
+  }));
+}
+
 function handleTransitionEvent(event: ActionEvent): boolean {
   if (event.dataState.action?.[0] !== "updateTransition") {
     return false;
   }
   if (event.dataState.action?.[1] === "manual") {
-    mainStateUpdate((state) => ({
-      ...state,
-      transitionState: {
-        ...state.transitionState,
-        manual: event.payload[0],
-      },
-    }));
+    isMidiTouchingManualTransition = false;
+    setManualTransition(event.payload[0]);
     return true;
   }
   if (event.dataState.action?.[1] === "duration") {
@@ -717,11 +751,15 @@ function handleTransitionEvent(event: ActionEvent): boolean {
     return true;
   }
   if (event.dataState.action?.[1] === "startAuto") {
+    startAutoTransition();
+    return true;
+  }
+  if (event.dataState.action?.[1] === "mode") {
     mainStateUpdate((state) => ({
       ...state,
-      transitionState: {
-        ...state.transitionState,
-        autoStartTime: Date.now(),
+      transition: {
+        ...state.transition,
+        mode: event.payload,
       },
     }));
     return true;
@@ -1130,6 +1168,56 @@ function goNext(mediaPath: string[]) {
     };
   });
 }
+
+const SliderGrabDelta = 0.01;
+
+let midiManualTransitionDebounceTimeout: NodeJS.Timeout | undefined = undefined;
+let midiManualTransitionSlowSet: number | undefined = undefined;
+function midiSetManualTransition(value: number) {
+  clearTimeout(midiManualTransitionDebounceTimeout);
+  if (
+    midiManualTransitionSlowSet &&
+    Date.now() - midiManualTransitionSlowSet < 100
+  ) {
+    setManualTransition(value);
+    midiManualTransitionSlowSet = undefined;
+  }
+  midiManualTransitionSlowSet = Date.now();
+  midiManualTransitionDebounceTimeout = setTimeout(() => {
+    setManualTransition(value);
+  }, 100);
+}
+
+subscribeMidiEvents((event) => {
+  // Chanel Number Map
+  //                   1️⃣ 2️⃣  3️⃣ 4️⃣  5️⃣ 6️⃣  7️⃣ 8️⃣  🔽
+  // 67   program  64  14  15  16  17  18  19  20  21  22 <- Knobs
+  // 🅰️   change  🅱️   3   4   5   6   7   8   9  10  11 <- Sliders
+  //      - 60 +       23  24  25  26  27  28  29  30  31 <- Buttons
+  // Bank ????    1  2           49 47 48  46 45 44       <- Extra Buttons
+  //                 WORLDE     🔁 ⏪ ⏩ ⏹️ ▶️ ⏺️ Easycontrol.9
+  const { key } = event;
+  if (key === "bank") return;
+  if (key === "program") return;
+  const { channel, value } = event;
+  if (channel === 67 && value == 1) {
+    startAutoTransition();
+  }
+  if (channel === 60) {
+    if (isMidiTouchingManualTransition) {
+      midiSetManualTransition(value);
+      return;
+    }
+    const currentManualValue = mainState.transitionState?.manual ?? 0;
+    const offsetFromCurrentState = Math.abs(value - currentManualValue);
+    console.log("xfade", { offsetFromCurrentState, currentManualValue, value });
+    if (offsetFromCurrentState < SliderGrabDelta) {
+      isMidiTouchingManualTransition = true;
+      midiSetManualTransition(value);
+    }
+  }
+  // console.log("midi event", event);
+});
 
 function createBlankMedia(type: Media["type"]): Media {
   if (type === "off") {

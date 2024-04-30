@@ -1,22 +1,32 @@
 import { WebMidi as Midi } from "webmidi";
 
-import ReconnectingWebSocket from "reconnecting-websocket";
-import { TemplateEvent } from "@final-ui/react";
+type MidiEvent =
+  | {
+      key: "bank";
+      value: number;
+    }
+  | {
+      key: "program";
+      value: number;
+    }
+  | {
+      key: "update";
+      channel: number;
+      value: number;
+    };
 
-const wsUrl = "ws://localhost:3990";
+const handlers = new Set<(e: MidiEvent) => void>();
 
-const rws = new ReconnectingWebSocket(wsUrl);
-
-function sendEvent(event: TemplateEvent) {
-  rws.send(
-    JSON.stringify({
-      $: "evt",
-      event,
-    }),
-  );
+export function subscribeMidiEvents(handler: (e: MidiEvent) => void) {
+  handlers.add(handler);
+  return () => {
+    handlers.delete(handler);
+  };
 }
 
-// sendEvent({});
+function sendEvent(event: MidiEvent) {
+  handlers.forEach((handler) => handler(event));
+}
 
 Midi.enable({ sysex: true })
   .then(onEnabled)
@@ -29,22 +39,14 @@ function formatValue(v: number | boolean | undefined): string {
 }
 
 function onEnabled() {
-  const worlde = Midi.getInputByName("WORLDE MIDI 1");
+  //   const worlde = Midi.getInputByName("WORLDE MIDI 1");
+  const worlde = Midi.inputs.find((input) => input.name.match("WORLDE"));
 
   if (!worlde) {
     console.error("No WORDLE MIDI input found.");
     return;
   }
-
-  console.log(
-    "MIDI i:",
-    worlde.manufacturer,
-    "Name:",
-    worlde.name,
-    "ID:",
-    worlde.id,
-  );
-
+  console.log("MIDI Input Connected");
   worlde.addListener("midimessage", (e) => {
     switch (e.message.type) {
       case "programchange":
@@ -52,29 +54,23 @@ function onEnabled() {
       case "sysex":
         return;
     }
-    // Other messages that we haven't seen yet?
-    console.log(e);
+    console.log("UnknownMidiMessage", e);
   });
 
   worlde.addListener("sysex", (e) => {
-    // console.log("sysex:", e)
     const bank = e.message.dataBytes[7];
-
     if (bank === undefined) return;
-
-    console.log("Bank:", bank + 1);
+    sendEvent({ key: "bank", value: bank + 1 });
   });
 
   // Heavy Knob
   worlde.addListener("programchange", (e) => {
-    console.log("programchange:", e.value);
+    sendEvent({ key: "program", value: e.value as number });
   });
 
   worlde.addListener("controlchange", (e) => {
-    console.log("Midi:", e.controller.number, formatValue(e.value));
-    // We know e.target is Input type...
-    const target = e.target as MidiInput;
-    // Controller Number Map
+    sendEvent({ key: "update", channel: e.controller.number, value: e.value });
+    // Chanel Number Map
     //                   1️⃣ 2️⃣  3️⃣ 4️⃣  5️⃣ 6️⃣  7️⃣ 8️⃣  🔽
     // 67   program  64  14  15  16  17  18  19  20  21  22 <- Knobs
     // 🅰️   change  🅱️   3   4   5   6   7   8   9  10  11 <- Sliders
@@ -84,9 +80,7 @@ function onEnabled() {
   });
 
   // Outputs
-  Midi.outputs.forEach((output) => {
-    console.log("MIDI o:", output.manufacturer, "Name:", output.name);
-  });
-
-  // Midi.getOutputByName("WORLDE MIDI 1").sendChannelAftertouch(false);
+  //   Midi.outputs.forEach((output) => {
+  //     console.log("MIDI o:", output.manufacturer, "Name:", output.name);
+  //   });
 }

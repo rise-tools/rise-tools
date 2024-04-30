@@ -1,5 +1,5 @@
-import { eg as egInfo } from './eg'
-import { Frame } from './eg-sacn'
+import { EGInfo, eg as egInfo } from "./eg";
+import { Frame } from "./eg-sacn";
 import {
   createSolidHSLFrame,
   createSolidRGBFrame,
@@ -13,7 +13,7 @@ import {
   frameMask,
   frameMix,
   frameRotate,
-} from './eg-tools'
+} from "./eg-tools";
 import {
   BrightenEffect,
   ColorizeEffect,
@@ -31,8 +31,9 @@ import {
   SequenceItem,
   SequenceMedia,
   StateContext,
+  Transition,
   VideoMedia,
-} from './state-schema'
+} from "./state-schema";
 
 // const readyVideoPlayers: Record<string, undefined | VideoPlayer> = {}
 // const loadingVideoPlayers: Record<string, undefined | Promise<void>> = {}
@@ -132,215 +133,306 @@ import {
 //   return outputFrame
 // }
 
-const blackFrame = createSolidRGBFrame(egInfo, 0, 0, 0)
+const blackFrame = createSolidRGBFrame(egInfo, 0, 0, 0);
 
 function getSmoothingRatio(valuePath: string) {
-  return 0.05
+  return 0.05;
 }
 
-function applyGradientValue(destValue: number, valuePath: string, ctx: StateContext) {
-  let nextValue = destValue
-  const recentValue = ctx.recentGradientValues[valuePath]
+function applyGradientValue(
+  destValue: number,
+  valuePath: string,
+  ctx: StateContext,
+) {
+  let nextValue = destValue;
+  const recentValue = ctx.recentGradientValues[valuePath];
   if (recentValue != null) {
-    const smoothingRatio = getSmoothingRatio(valuePath)
-    nextValue = destValue * smoothingRatio + recentValue * (1 - smoothingRatio)
+    const smoothingRatio = getSmoothingRatio(valuePath);
+    nextValue = destValue * smoothingRatio + recentValue * (1 - smoothingRatio);
   }
-  ctx.recentGradientValues[valuePath] = nextValue
-  return nextValue
+  ctx.recentGradientValues[valuePath] = nextValue;
+  return nextValue;
 }
 
-function colorFrame(media: ColorMedia, ctx: StateContext, mediaPath: string): Frame {
-  const h = applyGradientValue(media.h, `${mediaPath}.h`, ctx)
-  const s = applyGradientValue(media.s, `${mediaPath}.s`, ctx)
-  const l = applyGradientValue(media.l, `${mediaPath}.l`, ctx)
-  return createSolidHSLFrame(egInfo, h, s, l)
+function colorFrame(
+  media: ColorMedia,
+  ctx: StateContext,
+  mediaPath: string,
+): Frame {
+  const h = applyGradientValue(media.h, `${mediaPath}.h`, ctx);
+  const s = applyGradientValue(media.s, `${mediaPath}.s`, ctx);
+  const l = applyGradientValue(media.l, `${mediaPath}.l`, ctx);
+  return createSolidHSLFrame(egInfo, h, s, l);
 }
 
 function videoFrameBare(media: VideoMedia, ctx: StateContext): Frame {
-  const video = ctx.video.getPlayer(media.id)
-  if (media.params) video.setParams(media.params)
+  const video = ctx.video.getPlayer(media.id);
+  if (media.params) video.setParams(media.params);
   if (media.track) {
-    video.selectVideo(media.track)
-    return video.readFrame() || blackFrame
+    video.selectVideo(media.track);
+    return video.readFrame() || blackFrame;
   }
-  return blackFrame
+  return blackFrame;
 }
 
 function withColorize(
   frame: Frame,
   effect: ColorizeEffect,
   ctx: StateContext,
-  mediaPath: string
+  mediaPath: string,
 ): Frame {
-  const amount = applyGradientValue(effect.amount, `${mediaPath}.amount`, ctx)
-  const hue = applyGradientValue(effect.hue, `${mediaPath}.hue`, ctx)
-  const saturation = applyGradientValue(effect.saturation, `${mediaPath}.saturation`, ctx)
-  return frameColorize(egInfo, frame, amount, hue, saturation)
+  const amount = applyGradientValue(effect.amount, `${mediaPath}.amount`, ctx);
+  const hue = applyGradientValue(effect.hue, `${mediaPath}.hue`, ctx);
+  const saturation = applyGradientValue(
+    effect.saturation,
+    `${mediaPath}.saturation`,
+    ctx,
+  );
+  return frameColorize(egInfo, frame, amount, hue, saturation);
 }
 
 function withDesaturate(
   frame: Frame,
   effect: DesaturateEffect,
   ctx: StateContext,
-  mediaPath: string
+  mediaPath: string,
 ): Frame {
-  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx)
-  return frameDesaturate(egInfo, frame, value)
+  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx);
+  return frameDesaturate(egInfo, frame, value);
 }
 
 function withHueShift(
   frame: Frame,
   effect: HueShiftEffect,
   ctx: StateContext,
-  mediaPath: string
+  mediaPath: string,
 ): Frame {
-  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx)
-  return frameHueShift(egInfo, frame, value)
+  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx);
+  return frameHueShift(egInfo, frame, value);
 }
 
 function withRotate(
   frame: Frame,
   effect: RotateEffect,
   ctx: StateContext,
-  mediaPath: string
+  mediaPath: string,
 ): Frame {
-  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx)
-  return frameRotate(egInfo, frame, value)
+  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx);
+  return frameRotate(egInfo, frame, value);
 }
 
 function withInvert(
   frame: Frame,
   effect: InvertEffect,
   ctx: StateContext,
-  mediaPath: string
+  mediaPath: string,
 ): Frame {
-  return frameInvert(egInfo, frame)
+  return frameInvert(egInfo, frame);
 }
 
 function withBrighten(
   frame: Frame,
   effect: BrightenEffect,
   ctx: StateContext,
-  mediaPath: string
+  mediaPath: string,
 ): Frame {
-  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx)
-  return frameBrighten(egInfo, frame, value)
+  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx);
+  return frameBrighten(egInfo, frame, value);
 }
 
 function withDarken(
   frame: Frame,
   effect: DarkenEffect,
   ctx: StateContext,
-  mediaPath: string
+  mediaPath: string,
 ): Frame {
-  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx)
-  return frameDarken(egInfo, frame, value)
+  const value = applyGradientValue(effect.value, `${mediaPath}.value`, ctx);
+  return frameDarken(egInfo, frame, value);
 }
 
 function withMediaEffect(
   frame: Frame,
   effect: Effect,
   ctx: StateContext,
-  mediaPath: string
+  mediaPath: string,
 ): Frame {
-  if (effect.type === 'colorize') return withColorize(frame, effect, ctx, mediaPath)
-  if (effect.type === 'desaturate') return withDesaturate(frame, effect, ctx, mediaPath)
-  if (effect.type === 'hueShift') return withHueShift(frame, effect, ctx, mediaPath)
-  if (effect.type === 'invert') return withInvert(frame, effect, ctx, mediaPath)
-  if (effect.type === 'brighten') return withBrighten(frame, effect, ctx, mediaPath)
-  if (effect.type === 'darken') return withDarken(frame, effect, ctx, mediaPath)
-  if (effect.type === 'rotate') return withRotate(frame, effect, ctx, mediaPath)
-  return frame
+  if (effect.type === "colorize")
+    return withColorize(frame, effect, ctx, mediaPath);
+  if (effect.type === "desaturate")
+    return withDesaturate(frame, effect, ctx, mediaPath);
+  if (effect.type === "hueShift")
+    return withHueShift(frame, effect, ctx, mediaPath);
+  if (effect.type === "invert")
+    return withInvert(frame, effect, ctx, mediaPath);
+  if (effect.type === "brighten")
+    return withBrighten(frame, effect, ctx, mediaPath);
+  if (effect.type === "darken")
+    return withDarken(frame, effect, ctx, mediaPath);
+  if (effect.type === "rotate")
+    return withRotate(frame, effect, ctx, mediaPath);
+  return frame;
 }
 
 function withMediaEffects(
   frame: Frame,
   effects: Effects | undefined,
   ctx: StateContext,
-  mediaPath: string
+  mediaPath: string,
 ): Frame {
-  let outFrame = frame
+  let outFrame = frame;
   effects?.forEach((effect) => {
-    outFrame = withMediaEffect(outFrame, effect, ctx, `${mediaPath}.${effect.key}`)
-  })
-  return outFrame
+    outFrame = withMediaEffect(
+      outFrame,
+      effect,
+      ctx,
+      `${mediaPath}.${effect.key}`,
+    );
+  });
+  return outFrame;
 }
 
-function videoFrame(media: VideoMedia, ctx: StateContext, mediaPath: string): Frame {
-  const frame = videoFrameBare(media, ctx)
-  return withMediaEffects(frame, media.effects, ctx, `${mediaPath}.effects`)
+function videoFrame(
+  media: VideoMedia,
+  ctx: StateContext,
+  mediaPath: string,
+): Frame {
+  const frame = videoFrameBare(media, ctx);
+  return withMediaEffects(frame, media.effects, ctx, `${mediaPath}.effects`);
 }
 
 function layerBlend(
   frameA: Frame,
   frameB: Frame,
-  blendMode: 'mix' | 'add' | 'mask',
-  blendAmount: number
+  blendMode: "mix" | "add" | "mask",
+  blendAmount: number,
 ): Frame {
-  if (blendMode === 'mix') return frameMix(egInfo, frameA, frameB, blendAmount)
-  if (blendMode === 'add') return frameAdd(egInfo, frameA, frameB, blendAmount)
-  if (blendMode === 'mask') return frameMask(egInfo, frameA, frameB, blendAmount)
-  return frameA
+  if (blendMode === "mix") return frameMix(egInfo, frameA, frameB, blendAmount);
+  if (blendMode === "add") return frameAdd(egInfo, frameA, frameB, blendAmount);
+  if (blendMode === "mask")
+    return frameMask(egInfo, frameA, frameB, blendAmount);
+  return frameA;
 }
 
-function layersFrame(media: LayersMedia, ctx: StateContext, mediaPath: string): Frame {
-  const reverseLayers = media.layers.slice(0, -1).reverse()
-  const firstLayer = media.layers.at(-1)
-  if (!firstLayer) return blackFrame
-  let frame = mediaFrame(firstLayer.media, ctx, `${mediaPath}.layer.${firstLayer.key}`)
+function layersFrame(
+  media: LayersMedia,
+  ctx: StateContext,
+  mediaPath: string,
+): Frame {
+  const reverseLayers = media.layers.slice(0, -1).reverse();
+  const firstLayer = media.layers.at(-1);
+  if (!firstLayer) return blackFrame;
+  let frame = mediaFrame(
+    firstLayer.media,
+    ctx,
+    `${mediaPath}.layer.${firstLayer.key}`,
+  );
   reverseLayers.forEach((layer) => {
     const layerAmount = applyGradientValue(
       layer.blendAmount,
       `${mediaPath}.layerBlendAmount.${layer.key}`,
-      ctx
-    )
+      ctx,
+    );
     frame = layerBlend(
       frame,
       mediaFrame(layer.media, ctx, `${mediaPath}.layer.${layer.key}`),
       layer.blendMode,
-      layerAmount
-    )
-  })
-  return frame
+      layerAmount,
+    );
+  });
+  return frame;
 }
 
-export function getSequenceActiveItem(media: SequenceMedia): SequenceItem | undefined {
-  const { sequence, activeKey } = media
-  return sequence.find((media) => media.key === activeKey) || media.sequence[0]
+export function getSequenceActiveItem(
+  media: SequenceMedia,
+): SequenceItem | undefined {
+  const { sequence, activeKey } = media;
+  return sequence.find((media) => media.key === activeKey) || media.sequence[0];
 }
 
-function sequenceFrame(media: SequenceMedia, ctx: StateContext, mediaPath: string): Frame {
-  const activeMedia = getSequenceActiveItem(media)
-  if (!activeMedia) return blackFrame
-  return mediaFrame(activeMedia.media, ctx, `${mediaPath}.item.${activeMedia.key}`)
+function sequenceFrame(
+  media: SequenceMedia,
+  ctx: StateContext,
+  mediaPath: string,
+): Frame {
+  const activeMedia = getSequenceActiveItem(media);
+  if (!activeMedia) return blackFrame;
+  return mediaFrame(
+    activeMedia.media,
+    ctx,
+    `${mediaPath}.item.${activeMedia.key}`,
+  );
 }
 
 function mediaFrame(media: Media, ctx: StateContext, mediaPath: string): Frame {
-  if (media.type === 'color') return colorFrame(media, ctx, mediaPath)
-  if (media.type === 'video') return videoFrame(media, ctx, mediaPath)
-  if (media.type === 'layers') return layersFrame(media, ctx, mediaPath)
-  if (media.type === 'sequence') return sequenceFrame(media, ctx, mediaPath)
-  if (media.type === 'off') return blackFrame
-  return blackFrame
+  if (media.type === "color") return colorFrame(media, ctx, mediaPath);
+  if (media.type === "video") return videoFrame(media, ctx, mediaPath);
+  if (media.type === "layers") return layersFrame(media, ctx, mediaPath);
+  if (media.type === "sequence") return sequenceFrame(media, ctx, mediaPath);
+  if (media.type === "off") return blackFrame;
+  return blackFrame;
 }
 
-export function getEGLiveFrame(mainState: MainState, ctx: StateContext, readyFrame: Frame): Frame {
-  const liveFrame = mediaFrame(mainState.liveMedia, ctx, 'liveMedia')
-  let transitionProgresss =
-    mainState.transitionState.manual == null
+export function getEGLiveFrame(
+  mainState: MainState,
+  ctx: StateContext,
+  readyFrame: Frame,
+): Frame {
+  const liveFrame = mediaFrame(mainState.liveMedia, ctx, "liveMedia");
+  const { manual, autoManualStartValue, autoStartTime } =
+    mainState.transitionState;
+
+  const manualProgress =
+    manual == null || !autoManualStartValue
       ? null
-      : applyGradientValue(mainState.transitionState.manual, 'transitionState.manual', ctx)
+      : applyGradientValue(manual, "transitionState.manual", ctx);
+  let transitionProgress = manualProgress;
 
-  if (mainState.transitionState.autoStartTime && !transitionProgresss) {
-    transitionProgresss = Math.min(
+  if (autoStartTime && transitionProgress == null) {
+    const timeSinceStart = ctx.nowTime - autoStartTime;
+    transitionProgress = Math.min(
       1,
-      (ctx.nowTime - mainState.transitionState.autoStartTime) / mainState.transition.duration
-    )
+      autoManualStartValue ??
+        0 + timeSinceStart / mainState.transition.duration,
+    );
+    transitionProgress &&
+      console.log("transition progress", {
+        transitionProgress,
+        manual,
+        autoManualStartValue,
+        autoStartTime,
+        timeSinceStart,
+        duration: mainState.transition.duration,
+      });
   }
-  const finalFrame = frameMix(egInfo, liveFrame, readyFrame, transitionProgresss || 0)
-  return finalFrame
+  const finalFrame = transition(
+    egInfo,
+    liveFrame,
+    readyFrame,
+    mainState.transition,
+    transitionProgress || 0,
+  );
+  return finalFrame;
 }
 
-export function getEGReadyFrame(mainState: MainState, ctx: StateContext): Frame {
-  return mediaFrame(mainState.readyMedia, ctx, 'readyMedia')
+function transition(
+  egInfo: EGInfo,
+  frameA: Frame,
+  frameB: Frame,
+  transition: Transition,
+  progress: number,
+): Frame {
+  if (transition.mode === "mix")
+    return frameMix(egInfo, frameA, frameB, progress);
+  if (transition.mode === "add") {
+    const a = frameDarken(egInfo, frameA, Math.max(0, progress * 2 - 1));
+    return frameAdd(egInfo, a, frameB, Math.min(1, progress * 2));
+  }
+  return frameA;
+}
+
+export function getEGReadyFrame(
+  mainState: MainState,
+  ctx: StateContext,
+): Frame {
+  return mediaFrame(mainState.readyMedia, ctx, "readyMedia");
 }
