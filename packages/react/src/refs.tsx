@@ -12,15 +12,10 @@ import {
   TemplateEvent,
 } from './template'
 
-type DataSourceInfo = {
-  status: 'connecting' | 'connected' | 'closed' | 'closing' | 'error' | 'undetermined'
-}
-
 export type Store<T = JSONValue> = Stream<T>
 
 export type DataSource = {
   get: (key: string) => Store
-  info: Stream<DataSourceInfo>
   sendEvent: (event: TemplateEvent) => Promise<any>
 }
 

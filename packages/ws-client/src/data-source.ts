@@ -1,6 +1,7 @@
 import {
   createWritableStream,
   type DataSource,
+  DataSourceStateStream,
   isHandlerEvent,
   type JSONValue,
   Store,
@@ -46,7 +47,11 @@ export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponseWebso
 type Handler = (value: JSONValue) => void
 type PromiseHandler = (value: any) => void
 
-export function createWSDataSource(wsUrl: string): DataSource {
+type WebSocketDataSource = DataSource & {
+  state: DataSourceStateStream
+}
+
+export function createWSDataSource(wsUrl: string): WebSocketDataSource {
   const rws = new ReconnectingWebSocket(wsUrl)
   function send(payload: ClientWebsocketMessage) {
     rws.send(JSON.stringify(payload))
@@ -140,7 +145,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
 
   const promises = new Map<string, [PromiseHandler, PromiseHandler]>()
 
-  const dataSource: DataSource = {
+  return {
     get: (key: string) => {
       const store = stores.get(key)
       if (store) {
@@ -150,7 +155,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
       stores.set(key, newStore)
       return newStore
     },
-    info: createInfoStream(rws),
+    state: createStatusStream(rws),
     sendEvent: async (event) => {
       send({ $: 'evt', event })
       if (isHandlerEvent(event)) {
@@ -166,17 +171,15 @@ export function createWSDataSource(wsUrl: string): DataSource {
       }
     },
   }
-
-  return dataSource
 }
 
-const createInfoStream = (rws: ReconnectingWebSocket) => {
-  const [writeInfo, info] = createWritableStream({ status: readyStateToStatus(rws.readyState) })
+const createStatusStream = (ws: ReconnectingWebSocket) => {
+  const [writeInfo, info] = createWritableStream({ status: readyStateToStatus(ws.readyState) })
 
-  const updateStatus = () => writeInfo({ status: readyStateToStatus(rws.readyState) })
-  rws.addEventListener('open', updateStatus)
-  rws.addEventListener('close', updateStatus)
-  rws.addEventListener('error', updateStatus)
+  const updateStatus = () => writeInfo({ status: readyStateToStatus(ws.readyState) })
+  ws.addEventListener('open', updateStatus)
+  ws.addEventListener('close', updateStatus)
+  ws.addEventListener('error', updateStatus)
 
   return info
 }
