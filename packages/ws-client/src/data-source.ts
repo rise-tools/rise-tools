@@ -89,7 +89,9 @@ export function createWSDataSource(wsUrl: string): DataSource {
           }
           promises.delete(event.key)
         } else {
-          console.warn(`No callback registered for the event: ${JSON.stringify(event)}`)
+          console.warn(
+            `No callback registered for the event: ${JSON.stringify(event)}. If your request takes more than 10 seconds, you may need to provide a custom timeout.`
+          )
         }
         break
       }
@@ -151,8 +153,13 @@ export function createWSDataSource(wsUrl: string): DataSource {
       send({ $: 'evt', event })
       if (isHandlerEvent(event)) {
         return new Promise((resolve, reject) => {
-          // tbd: do we want to register a timeout here?
           promises.set(event.dataState.key, [resolve, reject])
+          setTimeout(() => {
+            if (promises.has(event.dataState.key)) {
+              reject(new Error('Request timeout'))
+              promises.delete(event.dataState.key)
+            }
+          }, event.dataState.timeout || 10_000)
         })
       }
     },
