@@ -12,7 +12,6 @@ import type {
   SubscribeWebsocketMessage,
   UnsubscribeWebsocketMessage,
 } from '@final-ui/ws-client'
-import WebSocket from 'ws'
 
 type ActionEventHandler = (
   event: ActionEvent,
@@ -22,9 +21,7 @@ type ActionEventHandler = (
   }
 ) => void
 
-export function createWSServer(port: number) {
-  const wss = new WebSocket.Server({ port })
-
+export function createWSServerDataSource() {
   const values = new Map<string, ServerDataState>()
 
   const clientSubscribers = new Map<string, Map<string, () => void>>()
@@ -124,24 +121,23 @@ export function createWSServer(port: number) {
     }
   }
 
-  wss.on('connection', function connection(ws) {
+  /// <reference lib="dom" />
+  function handleWSConnection(ws: WebSocket) {
     const clientId = `c${clientIdIndex}`
     clientIdIndex += 1
     console.log(`Client ${clientId} connected`)
 
-    function sendClient(value: any) {
+    clientSenders.set(clientId, function sendClient(value: any) {
       ws.send(JSON.stringify(value))
-    }
+    })
 
-    clientSenders.set(clientId, sendClient)
-
-    ws.on('close', function close() {
+    ws.addEventListener('close', function close() {
       clientSenders.delete(clientId)
       console.log(`Client ${clientId} disconnected`)
     })
 
-    ws.on('message', function incoming(messageString: string) {
-      const message = JSON.parse(messageString.toString()) as ClientWebsocketMessage
+    ws.addEventListener('message', function incoming(event: MessageEvent) {
+      const message = JSON.parse(event.data.toString()) as ClientWebsocketMessage
       switch (message['$']) {
         case 'sub':
           return clientSubscribes(clientId, message)
@@ -150,11 +146,11 @@ export function createWSServer(port: number) {
         case 'evt':
           return handleMessage(clientId, message)
         default:
-          console.log('Unrecognized message:', messageString)
+          console.log(`Unrecognized message: ${JSON.stringify(event)}`)
           return
       }
     })
-  })
+  }
 
   function updateRoot(value: any) {
     update('', value)
@@ -182,9 +178,5 @@ export function createWSServer(port: number) {
     return () => handlers.delete(handler)
   }
 
-  wss.on('listening', () => {
-    console.log(`WebSocket server started on port ${port}`)
-  })
-
-  return { update, onActionEvent, subscribe, get, updateRoot }
+  return { update, onActionEvent, subscribe, get, updateRoot, handleWSConnection }
 }

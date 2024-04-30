@@ -4,13 +4,12 @@ import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
 
 export function getInventoryExample(ctx: UIContext): Record<string, ServerDataState> {
+  const inventoryItems = Object.fromEntries(inventory.map((item) => [item.key, item]))
   return {
     inventory: getHomeScreen(),
+    ['inventory-items']: inventoryItems,
     ...Object.fromEntries(
-      inventory.flatMap((item) => [
-        [`inventory:${item.key}:details`, getItemScreen(item, ctx)],
-        [`inventory:${item.key}`, item],
-      ])
+      inventory.map((item) => [`inventory:${item.key}:details`, getItemScreen(item, ctx)])
     ),
   }
 }
@@ -67,7 +66,7 @@ export function getHomeScreen(): ServerDataState {
                     source: {
                       uri: {
                         $: 'ref',
-                        ref: [`inventory:${item.key}`, 'photo'],
+                        ref: [`inventory-items`, item.key, 'photo'],
                       },
                     },
                     style: {
@@ -88,7 +87,7 @@ export function getHomeScreen(): ServerDataState {
                       component: 'H4',
                       children: {
                         $: 'ref',
-                        ref: [`inventory:${item.key}`, 'title'],
+                        ref: [`inventory-items`, item.key, 'title'],
                       },
                     },
                     {
@@ -125,7 +124,7 @@ export function getHomeScreen(): ServerDataState {
                               },
                               children: {
                                 $: 'ref',
-                                ref: [`inventory:${item.key}`, 'quantity'],
+                                ref: [`inventory-items`, item.key, 'quantity'],
                               },
                             },
                           ],
@@ -156,7 +155,7 @@ export function getHomeScreen(): ServerDataState {
                               },
                               children: {
                                 $: 'ref',
-                                ref: [`inventory:${item.key}`, 'price'],
+                                ref: [`inventory-items`, item.key, 'price'],
                               },
                             },
                           ],
@@ -192,7 +191,7 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
           source: {
             uri: {
               $: 'ref',
-              ref: [`inventory:${item.key}`, 'photo'],
+              ref: [`inventory-items`, item.key, 'photo'],
             },
           },
           style: {
@@ -218,7 +217,7 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
             key: 'title',
             children: {
               $: 'ref',
-              ref: [`inventory:${item.key}`, 'title'],
+              ref: [`inventory-items`, item.key, 'title'],
             },
           },
           {
@@ -227,7 +226,7 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
             key: 'description',
             children: {
               $: 'ref',
-              ref: [`inventory:${item.key}`, 'description'],
+              ref: [`inventory-items`, item.key, 'description'],
             },
           },
           {
@@ -265,7 +264,7 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
                     },
                     children: {
                       $: 'ref',
-                      ref: [`inventory:${item.key}`, 'quantity'],
+                      ref: [`inventory-items`, item.key, 'quantity'],
                     },
                   },
                 ],
@@ -277,9 +276,12 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
                 props: {
                   theme: 'red',
                   onPress: handler(() => {
-                    ctx.update(`inventory:${item.key}`, (data: Item) => ({
+                    ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
                       ...data,
-                      quantity: data.quantity > 0 ? data.quantity - 1 : 0,
+                      [item.key]: {
+                        ...data[item.key],
+                        quantity: data[item.key]!.quantity - 1,
+                      },
                     }))
                   }),
                 },
@@ -292,9 +294,12 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
                 props: {
                   theme: 'blue',
                   onPress: handler(() => {
-                    ctx.update(`inventory:${item.key}`, (data: Item) => ({
+                    ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
                       ...data,
-                      quantity: data.quantity + 1,
+                      [item.key]: {
+                        ...data[item.key],
+                        quantity: data[item.key]!.quantity + 1,
+                      },
                     }))
                   }),
                 },
