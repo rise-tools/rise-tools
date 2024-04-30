@@ -47,7 +47,7 @@ export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponseWebso
 type Handler = (value: JSONValue) => void
 type PromiseHandler = (value: any) => void
 
-type WebSocketDataSource = DataSource & {
+export type WebSocketDataSource = DataSource & {
   state: DataSourceStateStream
 }
 
