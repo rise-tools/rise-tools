@@ -9,6 +9,9 @@
       "ios": {
         "simulator": true,
         "image": "latest"
+      },
+      "env": {
+        "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
       }
     },
     "dev-device": {
@@ -19,6 +22,9 @@
       },
       "ios": {
         "image": "latest"
+      },
+      "env": {
+        "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
       }
     },
     "preview": {
@@ -28,6 +34,9 @@
       },
       "ios": {
         "image": "latest"
+      },
+      "env": {
+        "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
       }
     },
     "production": {
@@ -35,15 +44,9 @@
       "android": {
         "buildType": "app-bundle"
       },
-      "autoIncrement": true
-    }
-  },
-  "submit": {
-    "production": {
-      "ios": {
-        "appleId": "eric@vicenti.net",
-        "ascAppId": "6476430405",
-        "appleTeamId": "JJ2F38D5FA"
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
       }
     }
   },
