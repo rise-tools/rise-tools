@@ -308,9 +308,34 @@ it('should accept event handler as a prop', () => {
   })
 })
 
-it.skip('should validate props with a validator', () => {})
+it('should validate props with a validator', () => {
+  const validator = jest.fn().mockImplementation((args) => args)
+  const props = {
+    foo: 'foo',
+    bar: 'bar',
+  }
 
-it.skip('should accept event handlers as nested values in props', () => {})
+  render(
+    <BaseTemplate
+      components={{
+        View: {
+          component: () => <div />,
+          validator,
+        },
+      }}
+      path="mainState"
+      dataState={{
+        $: 'component',
+        key: 'button',
+        component: 'View',
+        props,
+      }}
+      onEvent={jest.fn()}
+    />
+  )
+
+  expect(validator).toHaveBeenCalledWith(props)
+})
 
 it('should send an event with path', () => {
   const onEvent = jest.fn()
