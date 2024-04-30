@@ -1,10 +1,11 @@
-import { createWSDataSource } from '@final-ui/ws-server'
+import { createWSServerDataSource } from '@final-ui/ws-server'
 
 import { getInventoryExample } from './inventory/ui'
 import { UIContext } from './types'
 
 function setupDataSource() {
-  const dataSource = createWSDataSource()
+  const dataSource = createWSServerDataSource()
+
   const ctx: UIContext = {
     update: (key, updater) => {
       dataSource.update(key, updater(dataSource.get(key)))
@@ -13,6 +14,7 @@ function setupDataSource() {
   for (const [key, value] of Object.entries(getInventoryExample(ctx))) {
     dataSource.update(key, value)
   }
+
   return dataSource
 }
 
@@ -26,8 +28,6 @@ export default {
     const webSocketPair = new WebSocketPair()
     const [client, server] = Object.values(webSocketPair) as [WebSocket, WebSocket]
 
-    // Accepts the WebSocket connection and begins terminating requests
-    // for the WebSocket on Cloudflare’s global network.
     server.accept()
 
     setupDataSource().handleWSConnection(server)

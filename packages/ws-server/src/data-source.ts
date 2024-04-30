@@ -12,7 +12,6 @@ import type {
   SubscribeWebsocketMessage,
   UnsubscribeWebsocketMessage,
 } from '@final-ui/ws-client'
-import WS from 'ws'
 
 type ActionEventHandler = (
   event: ActionEvent,
@@ -22,17 +21,7 @@ type ActionEventHandler = (
   }
 ) => void
 
-export function createWSServer(port: number) {
-  const dataSource = createWSDataSource()
-  const wss = new WS.Server({ port })
-  wss.on('listening', () => {
-    console.log(`WebSocket server started on port ${port}`)
-  })
-  wss.on('connection', dataSource.handleWSConnection)
-  return dataSource
-}
-
-export function createWSDataSource() {
+export function createWSServerDataSource() {
   const values = new Map<string, ServerDataState>()
 
   const clientSubscribers = new Map<string, Map<string, () => void>>()
