@@ -83,3 +83,7 @@ android/keystores/debug.keystore
 # Next
 .next
 .vercel
+
+# Wrangler project
+.dev.vars
+.wrangler/

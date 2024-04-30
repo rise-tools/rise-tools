@@ -35,6 +35,7 @@ export type HandlerEventDataState = {
   $: 'event'
   key: string
   async: boolean
+  timeout?: number
 }
 export function isHandlerEvent(
   event: TemplateEvent
