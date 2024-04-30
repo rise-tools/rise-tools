@@ -20,8 +20,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.xplatlabs.rise",
-      "buildNumber": "3"
+      "bundleIdentifier": "com.xplatlabs.riseplayground",
+      "buildNumber": "4"
     },
     "android": {
       "adaptiveIcon": {
