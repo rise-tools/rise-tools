@@ -19,7 +19,7 @@ export function getHomeScreen(): ServerDataState {
     $: 'component',
     component: 'YStack',
     props: {
-      backgroundColor: 'white',
+      backgroundColor: '$background',
     },
     children: [
       {
@@ -55,7 +55,7 @@ export function getHomeScreen(): ServerDataState {
                 paddingVertical: 10,
                 alignItems: 'center',
                 borderBottomWidth: idx === inventory.length - 1 ? 0 : 1,
-                borderBottomColor: '#cdcdcd',
+                borderBottomColor: '$gray4',
               },
               children: [
                 {
