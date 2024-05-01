@@ -3,7 +3,7 @@
     "name": "Rise",
     "slug": "riseremote",
     "scheme": "rise",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/RiseIcon.png",
     "userInterfaceStyle": "automatic",
