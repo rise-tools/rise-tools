@@ -302,6 +302,17 @@ function mainStateEffect(state: MainState, prevState: MainState) {
     }
   }, 150)
 
+  // init all video players
+  matchAllMedia(state, (media) => {
+    if (media.type === 'video') {
+      const player = video.getPlayer(media.id)
+      if (media.params) player.setParams(media.params)
+      if (media.track) player.selectVideo(media.track)
+      return true
+    }
+    return false
+  })
+
   // handle auto transitioning with maxDuration
   matchAllMedia(state, (media, mediaPath) => {
     if (media.type === 'sequence') {
