@@ -3,9 +3,12 @@
     "production": {
       "distribution": "store",
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "app-bundle",
+        "autoIncrement": true
       },
-      "autoIncrement": true,
+      "ios": {
+        "autoIncrement": true
+      },
       "env": {
         "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
       }
