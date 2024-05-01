@@ -3,12 +3,9 @@
     "production": {
       "distribution": "store",
       "android": {
-        "buildType": "app-bundle",
-        "autoIncrement": true
+        "buildType": "app-bundle"
       },
-      "ios": {
-        "autoIncrement": true
-      },
+      "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
       },
@@ -25,6 +22,7 @@
     }
   },
   "cli": {
+    "appVersionSource": "remote",
     "promptToConfigurePushNotifications": false
   }
 }
