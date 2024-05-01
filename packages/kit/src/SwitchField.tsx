@@ -12,7 +12,12 @@ export function SwitchField(props: z.infer<typeof SwitchFieldProps>) {
   let content = <Spinner />
   if (typeof props.value === 'boolean') {
     content = (
-      <Switch marginVertical={'$4'} checked={props.value} onCheckedChange={props.onCheckedChange}>
+      <Switch
+        backgroundColor="#ddd"
+        marginVertical={'$4'}
+        checked={props.value}
+        onCheckedChange={props.onCheckedChange}
+      >
         <Switch.Thumb animation="quick" />
       </Switch>
     )

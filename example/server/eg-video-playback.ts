@@ -115,12 +115,12 @@ export function egVideo(
         const framesToRead = Math.min(batchSize, readbackFrameIndex + 1)
         const buffer = Buffer.alloc(framesToRead * frameSize)
         const offset = readbackFrameIndex * frameSize
+        readbackFrameIndex -= framesToRead
         await read(fileHandle, buffer, 0, frameSize * framesToRead, offset)
         for (let i = 0; i < framesToRead; i++) {
           const frameBuffer = buffer.slice(i * frameSize, (i + 1) * frameSize)
           bufferQueue.unshift(new Uint8Array(frameBuffer))
         }
-        readbackFrameIndex -= framesToRead
         if (readbackFrameIndex <= 0) {
           // end of reverse playback
           if (playbackParams.loopBounce) {
