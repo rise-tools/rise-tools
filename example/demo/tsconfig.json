@@ -5,10 +5,14 @@
 		"lib": ["es2021"],
 		"module": "es2022",
 		"moduleResolution": "Bundler",
-		"types": ["@cloudflare/workers-types"]
+		"types": ["@cloudflare/workers-types"],
+		"jsx": "react-jsx",
+    "jsxImportSource": "@final-ui/react"
 	},
 	"references": [{
     "path": "../../packages/react"
+  }, {
+    "path": "../../packages/kit"
   }, {
     "path": "../../packages/ws-server"
   }]

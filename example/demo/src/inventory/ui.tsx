@@ -1,4 +1,6 @@
 import { handler, ServerDataState } from '@final-ui/react'
+import { createComponentDefinition } from '@final-ui/react/jsx-runtime'
+import type * as t from 'tamagui'
 
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
@@ -173,142 +175,91 @@ export function getHomeScreen(): ServerDataState {
   }
 }
 
+// tbd: we need a better way to design this API, should ideally come from tamagui package.
+const YStack = createComponentDefinition<typeof t.YStack>('YStack')
+const XStack = createComponentDefinition<typeof t.XStack>('XStack')
+const Image = createComponentDefinition<typeof t.Image>('Image')
+const H2 = createComponentDefinition<typeof t.H2>('H2')
+const SizableText = createComponentDefinition<typeof t.H2>('SizableText')
+const Paragraph = createComponentDefinition<typeof t.H2>('Paragraph')
+const Button = createComponentDefinition<typeof t.H2>('Button')
+
 export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
-  return {
-    $: 'component',
-    component: 'YStack',
-    props: {
-      flex: 1,
-      backgroundColor: '$background',
-      gap: '$3',
-    },
-    children: [
-      {
-        $: 'component',
-        component: 'Image',
-        key: 'photo',
-        props: {
-          source: {
-            uri: {
-              $: 'ref',
-              ref: [`inventory-items`, item.key, 'photo'],
-            },
+  // @ts-ignore return type of JSX factory needs to be changed
+  return (
+    <YStack flex={1} backgroundColor={'$background'} gap="$3">
+      <Image
+        key="photo"
+        // @ts-ignore ref needs to be valid prop
+        source={{
+          uri: {
+            $: 'ref',
+            ref: [`inventory-items`, item.key, 'photo'],
           },
-          style: {
-            width: '100%',
-            height: 200,
-            backgroundColor: 'white',
-          },
-          resizeMode: 'contain',
-        },
-      },
-      {
-        $: 'component',
-        component: 'YStack',
-        key: 'info',
-        props: {
-          paddingHorizontal: '$4',
-          gap: '$3',
-        },
-        children: [
-          {
-            $: 'component',
-            component: 'H2',
-            key: 'title',
-            children: {
-              $: 'ref',
-              ref: [`inventory-items`, item.key, 'title'],
-            },
-          },
-          {
-            $: 'component',
-            component: 'Paragraph',
-            key: 'description',
-            children: {
-              $: 'ref',
-              ref: [`inventory-items`, item.key, 'description'],
-            },
-          },
-          {
-            $: 'component',
-            component: 'XStack',
-            key: 'adjustments',
-            props: {
-              gap: '$3',
-              alignItems: 'center',
-            },
-            children: [
-              {
-                $: 'component',
-                key: 'quantity',
-                component: 'XStack',
-                props: {
-                  gap: '$2',
+        }}
+        style={{
+          width: '100%',
+          height: 200,
+          backgroundColor: 'white',
+        }}
+        resizeMode="contain"
+      />
+      <YStack key="info" paddingHorizontal="$4" gap="$3">
+        <H2
+          key="title"
+          children={{
+            $: 'ref',
+            ref: [`inventory-items`, item.key, 'title'],
+          }}
+        />
+        <Paragraph
+          key="description"
+          children={{
+            $: 'ref',
+            ref: [`inventory-items`, item.key, 'description'],
+          }}
+        />
+        <XStack key="adjustments" gap="$3" alignItems="center">
+          <XStack key="quantity" gap="$2">
+            <SizableText size="$5">Quantity:</SizableText>
+            <SizableText
+              size="$5"
+              children={{
+                $: 'ref',
+                ref: [`inventory-items`, item.key, 'quantity'],
+              }}
+            />
+          </XStack>
+          <Button
+            key="inc"
+            theme="red"
+            onPress={() => {
+              ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
+                ...data,
+                [item.key]: {
+                  ...data[item.key],
+                  quantity: data[item.key]!.quantity - 1,
                 },
-                children: [
-                  {
-                    $: 'component',
-                    key: 'label',
-                    component: 'SizableText',
-                    props: {
-                      size: '$5',
-                    },
-                    children: `Quantity:`,
-                  },
-                  {
-                    $: 'component',
-                    key: 'value',
-                    component: 'SizableText',
-                    props: {
-                      size: '$5',
-                    },
-                    children: {
-                      $: 'ref',
-                      ref: [`inventory-items`, item.key, 'quantity'],
-                    },
-                  },
-                ],
-              },
-              {
-                $: 'component',
-                component: 'Button',
-                key: 'decrement',
-                props: {
-                  theme: 'red',
-                  onPress: handler(() => {
-                    ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
-                      ...data,
-                      [item.key]: {
-                        ...data[item.key],
-                        quantity: data[item.key]!.quantity - 1,
-                      },
-                    }))
-                  }),
+              }))
+            }}
+            children="-"
+          />
+          <Button
+            key="dec"
+            theme="red"
+            onPress={() => {
+              ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
+                ...data,
+                [item.key]: {
+                  ...data[item.key],
+                  quantity: data[item.key]!.quantity + 1,
                 },
-                children: '-',
-              },
-              {
-                $: 'component',
-                component: 'Button',
-                key: 'increment',
-                props: {
-                  theme: 'blue',
-                  onPress: handler(() => {
-                    ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
-                      ...data,
-                      [item.key]: {
-                        ...data[item.key],
-                        quantity: data[item.key]!.quantity + 1,
-                      },
-                    }))
-                  }),
-                },
-                children: '+',
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  }
+              }))
+            }}
+            children="+"
+          />
+        </XStack>
+      </YStack>
+    </YStack>
+  )
 }
