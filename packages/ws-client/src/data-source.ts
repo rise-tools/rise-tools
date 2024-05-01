@@ -1,8 +1,10 @@
 import {
+  createWritableStream,
   type DataSource,
   isHandlerEvent,
   type JSONValue,
-  type Store,
+  Store,
+  Stream,
   type TemplateEvent,
 } from '@final-ui/react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
@@ -42,10 +44,18 @@ export type ClientWebsocketMessage =
 
 export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponseWebsocketMessage
 
-type Handler = () => void
+type Handler = (value: JSONValue) => void
 type PromiseHandler = (value: any) => void
 
-export function createWSDataSource(wsUrl: string): DataSource {
+type WebSocketState = {
+  status?: 'connected' | 'disconnected'
+}
+
+export type WebSocketDataSource = DataSource & {
+  state: Stream<WebSocketState>
+}
+
+export function createWSDataSource(wsUrl: string): WebSocketDataSource {
   const rws = new ReconnectingWebSocket(wsUrl)
   function send(payload: ClientWebsocketMessage) {
     rws.send(JSON.stringify(payload))
@@ -74,7 +84,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
         cache.set(event.key, event.val)
         const handlers = subscriptions.get(event.key)
         if (handlers) {
-          handlers.forEach((handle) => handle())
+          handlers.forEach((handle) => handle(event.val))
         }
         break
       }
@@ -103,7 +113,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
 
   const stores = new Map<string, Store>()
 
-  function createStore(key: string) {
+  function createStore(key: string): Store {
     const handlers =
       subscriptions.get(key) ||
       (() => {
@@ -114,7 +124,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
 
     return {
       get: () => cache.get(key),
-      subscribe: (handler: () => void) => {
+      subscribe: (handler) => {
         const shouldSubscribeRemotely = handlers.size === 0
         handlers.add(handler)
         if (shouldSubscribeRemotely) {
@@ -139,7 +149,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
 
   const promises = new Map<string, [PromiseHandler, PromiseHandler]>()
 
-  const dataSource: DataSource = {
+  return {
     get: (key: string) => {
       const store = stores.get(key)
       if (store) {
@@ -149,6 +159,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
       stores.set(key, newStore)
       return newStore
     },
+    state: createStateStream(rws),
     sendEvent: async (event) => {
       send({ $: 'evt', event })
       if (isHandlerEvent(event)) {
@@ -164,6 +175,14 @@ export function createWSDataSource(wsUrl: string): DataSource {
       }
     },
   }
+}
 
-  return dataSource
+const createStateStream = (ws: ReconnectingWebSocket) => {
+  const [setState, state] = createWritableStream<WebSocketState>({ status: undefined })
+
+  ws.addEventListener('open', () => setState({ status: 'connected' }))
+  ws.addEventListener('close', () => setState({ status: 'disconnected' }))
+  ws.addEventListener('error', () => setState({ status: 'disconnected' }))
+
+  return state
 }

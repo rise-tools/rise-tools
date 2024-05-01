@@ -201,30 +201,7 @@ export function BaseTemplate({
     return propValue
   }
 
-  return <ErrorBoundary>{render(dataState, path)}</ErrorBoundary>
+  return <>{render(dataState, path)}</>
 }
 
-/** Error boundary */
-class RenderError extends Error {}
-class ErrorBoundary extends React.Component<
-  React.PropsWithChildren<object>,
-  { error: RenderError | null }
-> {
-  constructor(props: React.PropsWithChildren<object>) {
-    super(props)
-    this.state = { error: null }
-  }
-
-  static getDerivedStateFromError(error: RenderError) {
-    return { error }
-  }
-
-  render() {
-    if (this.state.error) {
-      // tbd: render fallback ui
-      return null
-    }
-
-    return this.props.children
-  }
-}
+export class RenderError extends Error {}

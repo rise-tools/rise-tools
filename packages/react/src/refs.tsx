@@ -1,5 +1,6 @@
 import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
+import { Stream } from './streams'
 import {
   BaseTemplate,
   ComponentRegistry,
@@ -11,10 +12,7 @@ import {
   TemplateEvent,
 } from './template'
 
-export type Store<V = JSONValue> = {
-  get: () => V
-  subscribe: (handler: () => void) => () => void
-}
+export type Store<T = JSONValue> = Stream<T>
 
 export type DataSource = {
   get: (key: string) => Store
@@ -116,8 +114,8 @@ function createRefStateManager(
   function ensureSubscription(key: string) {
     if (!refSubscriptions[key]) {
       const refValueProvider = dataSource.get(key)
-      refSubscriptions[key] = refValueProvider.subscribe(() => {
-        const didUpdate = setRefValue(key, refValueProvider.get())
+      refSubscriptions[key] = refValueProvider.subscribe((value) => {
+        const didUpdate = setRefValue(key, value)
         if (didUpdate) {
           performSubscriptions()
         }
