@@ -295,14 +295,18 @@ function mainStateEffect(state: MainState, prevState: MainState) {
       //   transitionState: { manual: null, autoStartTime: null },
       // }));
     } else if (state.transitionState.autoStartTime) {
-      const manualProgress = state.transitionState.autoManualStartValue ?? 0;
+      const manualStartValue = state.transitionState.autoManualStartValue ?? 0;
       const timeSinceStart = Date.now() - state.transitionState.autoStartTime;
       const duration = state.transition.duration;
 
       const autoTransitionProgress = timeSinceStart / duration;
-      const destProgress = Math.min(1, autoTransitionProgress + manualProgress);
+      const destProgress = Math.min(
+        1,
+        autoTransitionProgress + manualStartValue,
+      );
       if (destProgress == 1) {
         isMidiTouchingManualTransition = false;
+        delete recentGradientValues["transitionState.manual"];
         mainStateUpdate((state) => ({
           ...state,
           readyMedia: state.liveMedia,
@@ -316,12 +320,13 @@ function mainStateEffect(state: MainState, prevState: MainState) {
         return;
       }
       isMidiTouchingManualTransition = false;
+      delete recentGradientValues["transitionState.manual"];
       mainStateUpdate((state) => ({
         ...state,
         transitionState: { ...state.transitionState, manual: destProgress },
       }));
     }
-  }, 80);
+  }, 150);
 
   // handle auto transitioning with maxDuration
   matchAllMedia(state, (media, mediaPath) => {
@@ -716,7 +721,7 @@ function startAutoTransition() {
     transitionState: {
       ...state.transitionState,
       autoStartTime: Date.now(),
-      autoManualStartValue: state.transitionState.manual,
+      autoManualStartValue: state.transitionState.manual ?? 0,
     },
   }));
 }
@@ -1210,7 +1215,6 @@ subscribeMidiEvents((event) => {
     }
     const currentManualValue = mainState.transitionState?.manual ?? 0;
     const offsetFromCurrentState = Math.abs(value - currentManualValue);
-    console.log("xfade", { offsetFromCurrentState, currentManualValue, value });
     if (offsetFromCurrentState < SliderGrabDelta) {
       isMidiTouchingManualTransition = true;
       midiSetManualTransition(value);

@@ -380,30 +380,25 @@ export function getEGLiveFrame(
   const liveFrame = mediaFrame(mainState.liveMedia, ctx, "liveMedia");
   const { manual, autoManualStartValue, autoStartTime } =
     mainState.transitionState;
-
+  const manualGradient =
+    typeof manual === "number"
+      ? applyGradientValue(manual, "transitionState.manual", ctx)
+      : null;
   const manualProgress =
-    manual == null || !autoManualStartValue
+    manualGradient == null || autoManualStartValue != null
       ? null
-      : applyGradientValue(manual, "transitionState.manual", ctx);
+      : manualGradient;
   let transitionProgress = manualProgress;
 
   if (autoStartTime && transitionProgress == null) {
     const timeSinceStart = ctx.nowTime - autoStartTime;
     transitionProgress = Math.min(
       1,
-      autoManualStartValue ??
-        0 + timeSinceStart / mainState.transition.duration,
+      (autoManualStartValue ?? 0) +
+        timeSinceStart / mainState.transition.duration,
     );
-    transitionProgress &&
-      console.log("transition progress", {
-        transitionProgress,
-        manual,
-        autoManualStartValue,
-        autoStartTime,
-        timeSinceStart,
-        duration: mainState.transition.duration,
-      });
   }
+
   const finalFrame = transition(
     egInfo,
     liveFrame,
