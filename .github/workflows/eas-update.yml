@@ -37,5 +37,5 @@ jobs:
         run: npm install
 
       - name: Publish update
-        run: eas update --auto
+        run: eas update --auto --non-interactive
         working-directory: ./apps/mobile

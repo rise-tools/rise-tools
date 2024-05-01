@@ -6,7 +6,7 @@ on:
 
 jobs:
   update:
-    name: OTA
+    name: Build
     runs-on: ubuntu-latest
     environment: Production
 
@@ -37,5 +37,5 @@ jobs:
         run: npm install
 
       - name: Build and submit new version
-        run: eas build --auto-submit
+        run: eas build --auto-submit --platform=all --non-interactive
         working-directory: ./apps/mobile
