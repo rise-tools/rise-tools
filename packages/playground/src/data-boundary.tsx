@@ -15,7 +15,7 @@ export function DataBoundary({
 
   if (data !== undefined) {
     return (
-      <YStack>
+      <YStack flex={1}>
         {status === 'disconnected' && (
           <YStack padding="$3" backgroundColor="$red5">
             <Text textAlign="center" color="$red9">
