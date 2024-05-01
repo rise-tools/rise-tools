@@ -13,7 +13,8 @@
       "backgroundColor": "#000000"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/e375003a-c8cd-4eec-bec8-202333e67dc6"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -46,6 +47,9 @@
         "projectId": "e375003a-c8cd-4eec-bec8-202333e67dc6"
       }
     },
-    "owner": "finalui"
+    "owner": "finalui",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }
