@@ -1,44 +1,5 @@
 {
   "build": {
-    "dev": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "simulator": true,
-        "image": "latest"
-      },
-      "env": {
-        "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
-      }
-    },
-    "dev-device": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "image": "latest"
-      },
-      "env": {
-        "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
-      }
-    },
-    "preview": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "image": "latest"
-      },
-      "env": {
-        "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
-      }
-    },
     "production": {
       "distribution": "store",
       "android": {
@@ -47,6 +8,15 @@
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "mike@reactnative.cloud",
+        "ascAppId": "6499588861",
+        "appleTeamId": "4VF4XH2X2T"
       }
     }
   },
