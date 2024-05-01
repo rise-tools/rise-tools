@@ -10,6 +10,7 @@ import { DBFile, DBState, readDb } from './eg-video'
 
 export type VideoPlaybackInstance = {
   readFrame: () => Frame | null
+  consumeFrame: () => Frame | null
   restart: () => void
   setParams: (params: PlaybackParams) => void
   frameCount: number
@@ -19,6 +20,7 @@ export type VideoPlaybackInstance = {
 
 export type VideoPlayer = {
   readFrame: () => Frame | null
+  consumeFrame: () => Frame | null
   restart: () => void
   selectVideo: (videoId: string) => void
   id: string
@@ -42,9 +44,11 @@ export function egVideo(
   {
     onMediaUpdate,
     onPlayerUpdate,
+    onFrameInfo,
   }: {
     onMediaUpdate: (mediaDb: DBState) => void
     onPlayerUpdate: (player: VideoPlayer) => void
+    onFrameInfo?: (playerId: string, player: VideoPlaybackInstance) => void
   }
 ) {
   const { frameSize } = eg
@@ -63,6 +67,7 @@ export function egVideo(
   }, 5000)
 
   async function loadVideo(
+    playerId: string,
     fileSha256: string,
     params: PlaybackParams = {}
   ): Promise<VideoPlaybackInstance> {
@@ -95,26 +100,28 @@ export function egVideo(
     let resume = () => {}
     let pause = () => {}
 
+    let isForwardPlaying = true
+
     async function startReadbackReverse() {
-      playback.playingFrame = 0
+      isForwardPlaying = false
+      handleFrameIndexUpdate(frameCount)
       const readbackInstance = playCount++
       console.log('startReadbackReverse', readbackInstance)
       const fileHandle = await openFile(framesFilePath, 'r')
 
-      const totalFrames = fileInfo.size / frameSize
-      let currentFrameIndex = totalFrames - batchSize
+      let readbackFrameIndex = frameCount - batchSize
       async function readFrames() {
         streamPaused = false
-        const framesToRead = Math.min(batchSize, currentFrameIndex + 1)
+        const framesToRead = Math.min(batchSize, readbackFrameIndex + 1)
         const buffer = Buffer.alloc(framesToRead * frameSize)
-        const offset = currentFrameIndex * frameSize
+        const offset = readbackFrameIndex * frameSize
         await read(fileHandle, buffer, 0, frameSize * framesToRead, offset)
         for (let i = 0; i < framesToRead; i++) {
           const frameBuffer = buffer.slice(i * frameSize, (i + 1) * frameSize)
           bufferQueue.unshift(new Uint8Array(frameBuffer))
         }
-        currentFrameIndex -= framesToRead
-        if (currentFrameIndex <= 0) {
+        readbackFrameIndex -= framesToRead
+        if (readbackFrameIndex <= 0) {
           // end of reverse playback
           if (playbackParams.loopBounce) {
             startReadbackForward()
@@ -134,14 +141,17 @@ export function egVideo(
     }
 
     function startReadbackForward() {
-      playback.playingFrame = 0
+      isForwardPlaying = true
+      handleFrameIndexUpdate(0)
       let totalBufferRead = 0
       const readbackInstance = playCount++
       console.log('startReadbackForward', readbackInstance)
 
       streamPaused = false
 
-      const fileReadStream = createReadStream(framesFilePath, {})
+      const fileReadStream = createReadStream(framesFilePath, {
+        start: 0,
+      })
 
       resume = () => {
         fileReadStream.resume()
@@ -198,8 +208,15 @@ export function egVideo(
     }
     function readFrame(): Frame | null {
       if (bufferQueue.length > 0) {
+        return bufferQueue[0] || null
+      }
+      return null
+    }
+    function consumeFrame() {
+      if (bufferQueue.length > 0) {
         if (playback.playingFrame != null) {
-          playback.playingFrame = playback.playingFrame + 1
+          const deltaFrame = isForwardPlaying ? 1 : -1
+          handleFrameIndexUpdate(playback.playingFrame + deltaFrame)
         }
         const frame = bufferQueue.shift()
         if (streamPaused && bufferQueue.length < MAX_QUEUE_SIZE) {
@@ -211,9 +228,20 @@ export function egVideo(
     }
     function setParams(params: PlaybackParams) {
       playbackParams = params
+      if (isForwardPlaying && params.reverse) {
+        startReadbackReverse() // todo, reverse at the correct frame!!
+      } else if (!isForwardPlaying && !params.reverse) {
+        startReadbackForward()
+      }
+    }
+    function handleFrameIndexUpdate(frameIndex: number) {
+      // playerId
+      playback.playingFrame = frameIndex
+      onFrameInfo?.(playerId, playback)
     }
     const playback: VideoPlaybackInstance = {
       readFrame,
+      consumeFrame,
       restart,
       setParams,
       frameCount,
@@ -239,10 +267,17 @@ export function egVideo(
       }
       return null
     }
+    function consumeFrame(): Frame | null {
+      if (videoInstance) {
+        const frame = videoInstance.consumeFrame()
+        return frame
+      }
+      return null
+    }
     async function selectVideo(videoId: string) {
       if (activeVideo !== videoId) {
         activeVideo = videoId
-        await loadVideo(videoId, playbackParams).then((instance) => {
+        await loadVideo(id, videoId, playbackParams).then((instance) => {
           videoInstance = instance
           onPlayerUpdate(player)
         })
@@ -280,6 +315,7 @@ export function egVideo(
     }
     const player: VideoPlayer = {
       readFrame,
+      consumeFrame,
       selectVideo,
       setParams,
       restart,
