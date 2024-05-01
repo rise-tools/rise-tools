@@ -5,10 +5,6 @@ export type Stream<V> = {
   subscribe: (handler: (value: V) => void) => () => void
 }
 
-export type DataSourceStateStream = Stream<{
-  status: 'connecting' | 'connected' | 'closed' | 'closing' | 'error' | 'undetermined'
-}>
-
 type Updater<S> = (prevState: S) => S
 
 export function createWritableStream<S extends object>(

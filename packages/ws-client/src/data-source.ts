@@ -1,10 +1,10 @@
 import {
   createWritableStream,
   type DataSource,
-  DataSourceStateStream,
   isHandlerEvent,
   type JSONValue,
   Store,
+  Stream,
   type TemplateEvent,
 } from '@final-ui/react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
@@ -47,8 +47,12 @@ export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponseWebso
 type Handler = (value: JSONValue) => void
 type PromiseHandler = (value: any) => void
 
+type WebSocketState = {
+  status?: 'connected' | 'disconnected'
+}
+
 export type WebSocketDataSource = DataSource & {
-  state: DataSourceStateStream
+  state: Stream<WebSocketState>
 }
 
 export function createWSDataSource(wsUrl: string): WebSocketDataSource {
@@ -155,7 +159,7 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
       stores.set(key, newStore)
       return newStore
     },
-    state: createStatusStream(rws),
+    state: createStateStream(rws),
     sendEvent: async (event) => {
       send({ $: 'evt', event })
       if (isHandlerEvent(event)) {
@@ -173,28 +177,12 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
   }
 }
 
-const createStatusStream = (ws: ReconnectingWebSocket) => {
-  const [writeInfo, info] = createWritableStream({ status: readyStateToStatus(ws.readyState) })
+const createStateStream = (ws: ReconnectingWebSocket) => {
+  const [setState, state] = createWritableStream<WebSocketState>({ status: undefined })
 
-  const updateStatus = () => writeInfo({ status: readyStateToStatus(ws.readyState) })
-  ws.addEventListener('open', updateStatus)
-  ws.addEventListener('close', updateStatus)
-  ws.addEventListener('error', updateStatus)
+  ws.addEventListener('open', () => setState({ status: 'connected' }))
+  ws.addEventListener('close', () => setState({ status: 'disconnected' }))
+  ws.addEventListener('error', () => setState({ status: 'disconnected' }))
 
-  return info
-}
-
-const readyStateToStatus = (readyState: number) => {
-  switch (readyState) {
-    case WebSocket.CONNECTING:
-      return 'connecting' as const
-    case WebSocket.OPEN:
-      return 'connected' as const
-    case WebSocket.CLOSING:
-      return 'closing' as const
-    case WebSocket.CLOSED:
-      return 'closed' as const
-    default:
-      return 'undetermined' as const
-  }
+  return state
 }
