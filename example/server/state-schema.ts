@@ -227,7 +227,10 @@ export const dashboardItemSchema = z.object({
   max: z.number().optional(),
   step: z.number().optional(),
 })
+export type DashboardItem = z.infer<typeof dashboardItemSchema>
+
 export const dashboardSchema = z.array(dashboardItemSchema)
+export type Dashboard = z.infer<typeof dashboardSchema>
 
 export const MainStateSchema = z.object({
   liveMedia: mediaSchema,

@@ -15,6 +15,7 @@ import { join } from 'path'
 import { AudioPlayer, playAudio } from './audio-playback'
 import { eg as egInfo } from './eg'
 import { getEGLiveFrame, getEGReadyFrame, getSequenceActiveItem } from './eg-main'
+import { getMidiFields } from './eg-midi-fields'
 import { subscribeMidiEvents } from './eg-midi-server'
 import { egSacnService } from './eg-sacn'
 import { egVideo } from './eg-video-playback'
@@ -262,6 +263,8 @@ updateUI()
 
 let mainStateToDiskTimeout: undefined | NodeJS.Timeout = undefined
 
+let midiDashboard = getMidiFields(mainState)
+
 function mainStateUpdate(updater: (state: MainState) => MainState) {
   clearTimeout(mainStateToDiskTimeout)
   const prevState = mainState
@@ -271,6 +274,7 @@ function mainStateUpdate(updater: (state: MainState) => MainState) {
     writeFile(mainStatePath, JSON.stringify(mainState), () => {})
   }, 500)
   mainStateEffect(mainState, prevState)
+  midiDashboard = getMidiFields(mainState)
 }
 
 const sequenceAutoTransitions: Record<string, undefined | NodeJS.Timeout> = {}
@@ -408,7 +412,6 @@ function handleVideoEndBehavior() {
     const player = video.getPlayer(activeItem.media.id)
     if (!player) return false
     const playingFrame = player.getPlayingFrame()
-    console.log('playingFrame', playingFrame)
     const frameCount = player.getFrameCount()
     if (playingFrame === null || frameCount === null) return false
     const framesRemaining = frameCount - playingFrame
@@ -604,9 +607,31 @@ wsServer.onActionEvent((event) => {
   if (handleEffectEvent(event)) return
   if (updateValuesIndex(event)) return
   if (handleLibraryEvent(event)) return
+  if (handleDashboardEvent(event)) return
 
   console.log('Unknown event', event)
 })
+
+function handleDashboardEvent(event: ActionEvent): boolean {
+  if (event.dataState.action?.[0] !== 'dashboardItem') {
+    return false
+  }
+  const rootMediaKey = event.dataState.action?.[1]
+  const action = event.dataState.action?.[2]
+  if (action === 'remove') {
+    const item = event.dataState.action?.[3]
+    console.log('removing', rootMediaKey, item)
+    mainStateUpdate((state) => {
+      const dashboardKey = rootMediaKey === 'liveMedia' ? 'liveDashboard' : 'readyDashboard'
+      return {
+        ...state,
+        [dashboardKey]: state[dashboardKey].filter((i) => i.key !== item),
+      }
+    })
+    return true
+  }
+  return true
+}
 
 function updateSliderField(
   mainStateKey: 'liveMedia' | 'readyMedia',
@@ -667,13 +692,11 @@ function updateValuesIndex(event: ActionEvent): boolean {
   }
 
   if (field === 'addDashBounce') {
-    const mediaPath = key.split('.')
-    addToDashboard(mediaPath, 'bounce-button')
+    addToDashboard(key, 'bounce-button')
     return true
   }
   if (field === 'addDashSlider') {
-    const mediaPath = key.split('.')
-    addToDashboard(mediaPath, 'slider', action?.[3])
+    addToDashboard(key, 'slider', action?.[3])
     return true
   }
   return false
@@ -725,7 +748,6 @@ function mediaSliderUpdate(sliderPath: string[], media: Media, value: number): M
 }
 
 function updateSliderValue(fieldPath: string, value: number) {
-  console.log('updateSliderValue', fieldPath, value)
   const [rootMediaKey, ...restFieldPath] = fieldPath.split('.')
   if (rootMediaKey !== 'liveMedia' && rootMediaKey !== 'readyMedia') return
   mainStateUpdate((state) => {
@@ -735,11 +757,10 @@ function updateSliderValue(fieldPath: string, value: number) {
       [rootMediaKey]: mediaSliderUpdate(restFieldPath, media, value),
     }
   })
-  console.log('done')
 }
 
 function addToDashboard(
-  mediaPath: string[],
+  mediaKey: string,
   type: 'slider' | 'bounce-button',
   opts?: {
     min?: number
@@ -747,8 +768,9 @@ function addToDashboard(
     step?: number
   }
 ) {
+  const mediaPath = mediaKey.split('.')
   const [rootMediaKey, ...restMediaPath] = mediaPath
-  if (rootMediaKey === 'liveMedia' || rootMediaKey !== 'readyMedia') {
+  if (rootMediaKey === 'liveMedia' || rootMediaKey === 'readyMedia') {
     mainStateUpdate((state) => {
       const dashboardKey = rootMediaKey === 'liveMedia' ? 'liveDashboard' : 'readyDashboard'
       const prevDashboard = state[dashboardKey]
@@ -771,9 +793,7 @@ function addToDashboard(
 }
 
 function bounceField(key: string) {
-  console.log('do bounce ' + key)
   bounceTimes[key] = Date.now()
-  console.log('bounceTimes', bounceTimes)
 }
 
 function handleEffectEvent(event: ActionEvent): boolean {
@@ -955,7 +975,6 @@ function handleLibraryEvent(event: ActionEvent): boolean {
   const libraryKey = event.dataState.action?.[1]
   const action = event.dataState.action?.[2]
   if (action === 'goReady' && libraryKey) {
-    console.log('goReady', libraryKey)
     const media = readLibraryKey(libraryKey)
     mainStateUpdate((mainState) => ({
       ...mainState,
@@ -965,7 +984,6 @@ function handleLibraryEvent(event: ActionEvent): boolean {
   }
   if (action === 'delete' && libraryKey) {
     deleteLibraryKey(libraryKey)
-    // console.log('delete', libraryKey)
     return true
   }
   return false
@@ -1212,9 +1230,23 @@ function handleMediaEvent(event: ActionEvent): boolean {
     })
     return true
   }
+  if (action === 'sequenceOrder') {
+    const order = event.payload
+    rootMediaUpdate(mediaPath, (media) => {
+      if (media.type !== 'sequence') return media
+      return {
+        ...media,
+        sequence: order.map((key: string) => {
+          const layer = media.sequence?.find((item) => item.key === key)
+          if (!layer) throw new Error('Invalid sequence order')
+          return layer
+        }),
+      }
+    })
+    return true
+  }
   if (action === 'layerOrder') {
     const order = event.payload
-    console.log('payload', event.order)
     rootMediaUpdate(mediaPath, (media) => {
       if (media.type !== 'layers') return media
       return {
@@ -1341,6 +1373,11 @@ function midiSetManualTransition(value: number) {
   }, 100)
 }
 
+const midiLiveButtons = [23, 24, 25, 26]
+const midiReadyButtons = [27, 28, 29, 30]
+const midiLiveSliders = [3, 4, 5, 6, 14, 15, 16, 17]
+const midiReadySliders = [7, 8, 9, 10, 18, 19, 20, 21]
+
 subscribeMidiEvents((event) => {
   // Chanel Number Map
   //                   1️⃣ 2️⃣  3️⃣ 4️⃣  5️⃣ 6️⃣  7️⃣ 8️⃣  🔽
@@ -1349,6 +1386,7 @@ subscribeMidiEvents((event) => {
   //      - 60 +       23  24  25  26  27  28  29  30  31 <- Buttons
   // Bank         1  2           49 47 48  46 45 44       <- Extra Buttons
   //                             🔁 ⏪ ⏩  ⏹️  ▶️  ⏺️
+  console.log('yo midi', event)
   const { key } = event
   if (key === 'bank') return
   if (key === 'program') return
@@ -1368,7 +1406,43 @@ subscribeMidiEvents((event) => {
       midiSetManualTransition(value)
     }
   }
-  // console.log("midi event", event);
+  const liveButton = midiLiveButtons.indexOf(channel)
+  if (liveButton !== -1) {
+    const midiConfig = midiDashboard.live.buttons[liveButton]
+    if (!midiConfig) return
+    if (midiConfig.behavior === 'bounce-button') bounceField(midiConfig.field)
+    return
+  }
+  const readyButton = midiReadyButtons.indexOf(channel)
+  if (readyButton !== -1) {
+    const midiConfig = midiDashboard.ready.buttons[readyButton]
+    console.log('ready button', readyButton, midiConfig)
+    if (!midiConfig) return
+    if (midiConfig.behavior === 'bounce-button') bounceField(midiConfig.field)
+    return
+  }
+  const liveSlider = midiLiveSliders.indexOf(channel)
+  if (liveSlider !== -1) {
+    const midiConfig = midiDashboard.live.sliders[liveSlider]
+    if (!midiConfig) return
+    // apply midiConfig.min and .max to value. value goes from 0-1
+    const min = midiConfig.min || 0
+    const max = midiConfig.max || 1
+    const outputValue = (max - min) * value + min
+    updateSliderValue(midiConfig.field, outputValue)
+    return
+  }
+  const readySlider = midiReadySliders.indexOf(channel)
+  if (readySlider !== -1) {
+    const midiConfig = midiDashboard.ready.sliders[readySlider]
+    if (!midiConfig) return
+    const min = midiConfig.min || 0
+    const max = midiConfig.max || 1
+    const outputValue = (max - min) * value + min
+    updateSliderValue(midiConfig.field, outputValue)
+    return
+  }
+  console.log('midi event', event)
 })
 
 function createBlankMedia(type: Media['type']): Media {

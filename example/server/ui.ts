@@ -1,8 +1,10 @@
 import { ComponentDataState, ServerDataState } from '@final-ui/react'
+import React from 'react'
 
 import { hslToHex } from './color'
 import { DefaultBounceAmount, DefaultBounceDuration, DefaultSmoothing } from './constants'
 import { getSequenceActiveItem } from './eg-main'
+import { DashMidi, getDashboardMidiFields } from './eg-midi-fields'
 import { EGVideo } from './eg-video-playback'
 import {
   ColorMedia,
@@ -355,6 +357,76 @@ function extractMediaFieldValue(mediaState: Media, fieldPath: string[]): number 
   return 0
 }
 
+function dashboardItem(
+  rootMediaKey: 'liveMedia' | 'readyMedia',
+  itemKey: string,
+  midi: DashMidi,
+  component: ComponentDataState
+) {
+  let midiText = ''
+  const buttonIndex = midi.buttons.findIndex((b) => b.key === itemKey)
+  const sliderIndex = midi.sliders.findIndex((b) => b.key === itemKey)
+  if (buttonIndex >= 0 && buttonIndex <= 3) {
+    midiText = `Button ${buttonIndex + 1}`
+  }
+  if (sliderIndex >= 0 && sliderIndex <= 3) {
+    midiText = `Slider ${sliderIndex + 1}`
+  }
+  return {
+    $: 'component',
+    component: 'YStack',
+    children: [
+      component,
+      {
+        $: 'component',
+        component: 'XStack',
+        props: { gap: '$2', justifyContent: 'space-between' },
+        children: [
+          {
+            $: 'component',
+            component: 'SizableText',
+            props: { color: '$color9' },
+            children: midiText,
+          },
+          {
+            $: 'component',
+            component: 'Button',
+            children: 'Remove',
+            props: {
+              size: '$1',
+              icon: icon('Trash'),
+              onPress: {
+                $: 'event',
+                action: ['dashboardItem', rootMediaKey, 'remove', itemKey],
+              },
+            },
+          },
+        ],
+      },
+    ],
+  }
+}
+
+function getMediaFieldLabel(media: Media, path: string[]): string {
+  if (path[0] === 'effects') {
+    const [effects, effectId, fieldKey] = path
+    if (media.type !== 'video') return 'Unknown'
+    const effect = media.effects?.find((e) => e.key === effectId)
+    if (!effect) return 'Unknown'
+    return `${effect.type} ${fieldKey}`
+  }
+  return path.at(-1)
+}
+
+function getFieldLabel(
+  path: string[],
+  rootMediaKey: 'liveMedia' | 'readyMedia',
+  context: UIContext
+): string {
+  const media = context.mainState[rootMediaKey]
+  return getMediaFieldLabel(media, path)
+}
+
 export function getDashboardUI(
   state: MainState,
   context: UIContext,
@@ -362,41 +434,48 @@ export function getDashboardUI(
 ) {
   const dash = state[rootMediaKey === 'liveMedia' ? 'liveDashboard' : 'readyDashboard']
   const mediaState = state[rootMediaKey === 'liveMedia' ? 'liveMedia' : 'readyMedia']
-  return scroll(
-    dash.map((item) => {
-      if (item.behavior === 'bounce-button') {
-        return {
-          $: 'component',
-          component: 'Button',
-          children: item.field,
-          props: {
-            onPress: {
-              $: 'event',
-              action: ['updateValuesIndex', `${rootMediaKey}.${item.field}`, 'bounce'],
+  const midi = getDashboardMidiFields(dash, rootMediaKey)
+  return scroll([
+    title(rootMediaKey === 'liveMedia' ? 'Live Dashboard' : 'Ready Dashboard'),
+    {
+      $: 'component',
+      component: 'YStack',
+      props: { gap: '$4' },
+      children: dash.map((item) => {
+        if (item.behavior === 'bounce-button') {
+          return dashboardItem(rootMediaKey, item.key, midi, {
+            $: 'component',
+            component: 'Button',
+            children: `Bounce ${getFieldLabel(item.field.split('.'), rootMediaKey, context)}`,
+            props: {
+              onPress: {
+                $: 'event',
+                action: ['updateValuesIndex', `${rootMediaKey}.${item.field}`, 'bounce'],
+              },
             },
-          },
+          })
         }
-      }
-      if (item.behavior === 'slider') {
-        const value = extractMediaFieldValue(mediaState, item.field.split('.'))
-        return {
-          $: 'component',
-          component: 'RiseSliderField',
-          props: {
-            label: item.field,
-            value,
-            onValueChange: {
-              $: 'event',
-              action: ['updateValuesIndex', `${rootMediaKey}.${item.field}`, 'value'],
+        if (item.behavior === 'slider') {
+          const value = extractMediaFieldValue(mediaState, item.field.split('.'))
+          return dashboardItem(rootMediaKey, item.key, midi, {
+            $: 'component',
+            component: 'RiseSliderField',
+            props: {
+              label: getFieldLabel(item.field.split('.'), rootMediaKey, context),
+              value,
+              onValueChange: {
+                $: 'event',
+                action: ['updateValuesIndex', `${rootMediaKey}.${item.field}`, 'value'],
+              },
+              min: item.min,
+              max: item.max,
+              step: item.step,
             },
-            min: item.min,
-            max: item.max,
-            step: item.step,
-          },
+          })
         }
-      }
-    })
-  )
+      }),
+    },
+  ])
 }
 
 export function getEffectsUI(
@@ -796,7 +875,7 @@ export function getMediaControls(
       component: 'RiseSelectField',
       props: {
         value: state.type,
-        hidden: state.type === 'off',
+        hidden: state.type !== 'off',
         onValueChange: {
           $: 'event',
           action: ['updateMedia', mediaLinkPath, 'mode'],
@@ -1130,7 +1209,7 @@ function getSequenceControls(
     props: {
       onReorder: {
         $: 'event',
-        action: ['updateMedia', mediaPath, 'layerOrder'],
+        action: ['updateMedia', mediaPath, 'sequenceOrder'],
       },
       header: section('Sequence Controls', [
         {
@@ -1313,7 +1392,7 @@ export function getLibraryKeyUI(key: string): ComponentDataState[] {
     },
   ]
 }
-function getResetDropdown(mediaPath: string, hidden?: boolean = false): ComponentDataState {
+function getResetDropdown(mediaPath: string, hidden: boolean = false): ComponentDataState {
   const buttonProps = hidden
     ? null
     : {
