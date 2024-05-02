@@ -347,10 +347,12 @@ function extractMediaFieldValue(mediaState: Media, fieldPath: string[]): number 
     return extractMediaFieldValue(childMedia, restFieldPath)
   }
   if (fieldPath[0] === 'layer') {
-    const [layerId, ...restFieldPath] = fieldPath
+    const [_layer, layerId, ...restFieldPath] = fieldPath
     if (mediaState.type !== 'layers') return 0
-    const item = mediaState.layers?.find((e) => e.key === layerId)
-    const childMedia = item?.media
+    const layer = mediaState.layers?.find((e) => e.key === layerId)
+    if (!layer) return 0
+    if (restFieldPath.length === 1 && restFieldPath[0] === 'blendAmount') return layer.blendAmount
+    const childMedia = layer?.media
     if (!childMedia || !restFieldPath.length) return 0
     return extractMediaFieldValue(childMedia, restFieldPath)
   }
@@ -1244,10 +1246,26 @@ function getSequenceControls(
               },
               buttonProps: {
                 icon: icon('Plus'),
-                children: 'Add to Sequence..',
+                children: 'Add new..',
               },
             },
           },
+          // {
+          //   key: 'add2SequenceLibrary',
+          //   $: 'component',
+          //   component: 'RiseDropdownButton',
+          //   props: {
+          //     options: { $: 'ref', ref: ['libraryItems'] },
+          //     onSelect: {
+          //       $: 'event',
+          //       action: ['updateMedia', mediaPath, 'addToSequenceFromLibrary'],
+          //     },
+          //     buttonProps: {
+          //       icon: icon('Plus'),
+          //       children: 'Add from library...',
+          //     },
+          //   },
+          // },
           ...getGenericMediaUI(mediaPath, state, ctx),
           ...footer,
         ],
@@ -1293,22 +1311,34 @@ export function getMediaLayerUI(
             ],
           },
         },
-        {
-          $: 'component',
-          key: 'blendAmount',
-          component: 'RiseSliderField',
-          props: {
-            onValueChange: {
-              $: 'event',
-              action: ['updateMedia', mediaPath, 'blendAmount'],
-            },
-            label: 'Blend Amount',
-            value: layer.blendAmount,
+        gradientValueField(
+          context,
+          `${mediaPath}.blendAmount`,
+          'Value',
+          layer.blendAmount,
+          ['updateMedia', mediaPath, 'blendAmount'],
+          {
             max: 1,
             min: 0,
             step: 0.01,
-          },
-        },
+          }
+        ),
+        // {
+        //   $: 'component',
+        //   key: 'blendAmount',
+        //   component: 'RiseSliderField',
+        //   props: {
+        //     onValueChange: {
+        //       $: 'event',
+        //       action: ['updateMedia', mediaPath, 'blendAmount'],
+        //     },
+        //     label: 'Blend Amount',
+        //     value: layer.blendAmount,
+        //     max: 1,
+        //     min: 0,
+        //     step: 0.01,
+        //   },
+        // },
         {
           $: 'component',
           component: 'XStack',
@@ -1676,6 +1706,7 @@ export function getMediaUI(
   }
   return scroll([
     ...header,
+    title(mediaState.type),
     {
       $: 'component',
       component: 'Text',

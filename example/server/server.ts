@@ -21,6 +21,7 @@ import { egSacnService } from './eg-sacn'
 import { egVideo } from './eg-video-playback'
 import { createEGViewServer } from './eg-view-server'
 import {
+  DashboardItem,
   defaultMainState,
   Effect,
   MainState,
@@ -76,19 +77,29 @@ if (existsSync(libraryPath)) {
   mkdirSync(libraryPath)
 }
 
+setInterval(() => {
+  libraryKeys = readdirSync(libraryPath).map((file) => file.replace('.json', ''))
+  updateLibraryUI()
+}, 1000)
+
 function updateLibraryKeys(updater: (keys: string[]) => string[]) {
   libraryKeys = updater(libraryKeys)
   updateLibraryUI()
 }
+type LibraryItem = {
+  media: Media
+  sliders: Record<string, SliderField>
+  dashboard: DashboardItem[]
+}
 
-function saveMedia(key: string, mediaValue: Media) {
+function saveMedia(key: string, item: LibraryItem) {
   const realKey = key.replaceAll('/', '.')
   const newMediaLocation = join(libraryPath, `${realKey}.json`)
-  writeFileSync(newMediaLocation, JSON.stringify(mediaValue, null, 2), {})
+  writeFileSync(newMediaLocation, JSON.stringify(item, null, 2), {})
   updateLibraryKeys((keys) => [...keys, realKey])
 }
 
-function readLibraryKey(key: string): Media {
+function readLibraryKey(key: string): LibraryItem | null {
   const newMediaLocation = join(libraryPath, `${key}.json`)
   const mediaJson = readFileSync(newMediaLocation, { encoding: 'utf-8' })
   return JSON.parse(mediaJson)
@@ -252,6 +263,13 @@ function updateUI() {
 }
 
 function updateLibraryUI() {
+  wsServer.update(
+    'libraryItems',
+    libraryKeys.map((key) => ({
+      key,
+      label: key,
+    }))
+  )
   wsServer.update('library', getLibraryUI(libraryKeys))
   libraryKeys.forEach((key) => {
     wsServer.update(`library/${key}`, getLibraryKeyUI(key))
@@ -305,6 +323,10 @@ function mainStateEffect(state: MainState, prevState: MainState) {
           ...state,
           readyMedia: state.liveMedia,
           liveMedia: state.readyMedia,
+          liveDashboard: state.readyDashboard,
+          readyDashboard: state.liveDashboard,
+          liveSliderFields: state.readySliderFields,
+          readySliderFields: state.liveSliderFields,
           transitionState: {
             manual: null,
             autoStartTime: null,
@@ -719,6 +741,21 @@ function mediaSliderUpdate(sliderPath: string[], media: Media, value: number): M
   if (subMediaKey === 'layer') {
     if (media.type !== 'layers') return media
     const [layerKey, ...restPath] = restSliderPath
+    // console.log('trying to update layer', layerKey, restPath, value)
+    const [layerField] = restPath
+    if (layerField === 'blendAmount') {
+      console.log('updating blendAmount', layerKey, media, value)
+      return {
+        ...media,
+        layers: media.layers?.map((layer) => {
+          if (layer.key !== layerKey) return layer
+          return {
+            ...layer,
+            blendAmount: value,
+          }
+        }),
+      }
+    }
     return {
       ...media,
       layers: media.layers?.map((layer) => {
@@ -748,6 +785,7 @@ function mediaSliderUpdate(sliderPath: string[], media: Media, value: number): M
 }
 
 function updateSliderValue(fieldPath: string, value: number) {
+  console.log('update slider', fieldPath, value)
   const [rootMediaKey, ...restFieldPath] = fieldPath.split('.')
   if (rootMediaKey !== 'liveMedia' && rootMediaKey !== 'readyMedia') return
   mainStateUpdate((state) => {
@@ -768,6 +806,7 @@ function addToDashboard(
     step?: number
   }
 ) {
+  console.log('add to dash', mediaKey, type, opts)
   const mediaPath = mediaKey.split('.')
   const [rootMediaKey, ...restMediaPath] = mediaPath
   if (rootMediaKey === 'liveMedia' || rootMediaKey === 'readyMedia') {
@@ -975,10 +1014,16 @@ function handleLibraryEvent(event: ActionEvent): boolean {
   const libraryKey = event.dataState.action?.[1]
   const action = event.dataState.action?.[2]
   if (action === 'goReady' && libraryKey) {
-    const media = readLibraryKey(libraryKey)
+    const libraryItem = readLibraryKey(libraryKey)
+    if (!libraryItem) {
+      console.warn('item not found ' + libraryKey)
+      return true
+    }
     mainStateUpdate((mainState) => ({
       ...mainState,
-      readyMedia: media,
+      readyMedia: libraryItem.media,
+      readyDashboard: libraryItem.dashboard,
+      readySliderFields: libraryItem.sliders,
     }))
     return true
   }
@@ -987,6 +1032,29 @@ function handleLibraryEvent(event: ActionEvent): boolean {
     return true
   }
   return false
+}
+
+function getMediaSliders(
+  state: MainState,
+  mediaPath: string[]
+): Record<string, SliderField> | null {
+  if (mediaPath.length === 1 && mediaPath[0] === 'liveMedia') {
+    return state.liveSliderFields
+  }
+  if (mediaPath.length === 1 && mediaPath[0] === 'readyMedia') {
+    return state.readySliderFields
+  }
+  return null
+}
+
+function getMediaDashboard(state: MainState, mediaPath: string[]): DashboardItem[] | null {
+  if (mediaPath.length === 1 && mediaPath[0] === 'liveMedia') {
+    return state.liveDashboard
+  }
+  if (mediaPath.length === 1 && mediaPath[0] === 'readyMedia') {
+    return state.readyDashboard
+  }
+  return null
 }
 
 function handleMediaEvent(event: ActionEvent): boolean {
@@ -1004,7 +1072,11 @@ function handleMediaEvent(event: ActionEvent): boolean {
     const mediaValue = getMedia(mainState, mediaPath)
     if (!mediaValue) return true
     const key = `${getMediaTitle(mediaValue, uiContext)} - ${new Date().toLocaleString()}`
-    saveMedia(key, mediaValue)
+    saveMedia(key, {
+      media: mediaValue,
+      sliders: getMediaSliders(mainState, mediaPath),
+      dashboard: getMediaDashboard(mainState, mediaPath),
+    })
     return true
   }
   if (action === 'metadata') {
@@ -1152,13 +1224,13 @@ function handleMediaEvent(event: ActionEvent): boolean {
       return {
         ...media,
         layers: [
-          ...(media.layers || []),
           {
             key: randomUUID(),
             media: createBlankMedia(mediaType),
             blendMode: 'mix',
             blendAmount: 0,
           },
+          ...(media.layers || []),
         ],
       }
     })
@@ -1386,7 +1458,6 @@ subscribeMidiEvents((event) => {
   //      - 60 +       23  24  25  26  27  28  29  30  31 <- Buttons
   // Bank         1  2           49 47 48  46 45 44       <- Extra Buttons
   //                             🔁 ⏪ ⏩  ⏹️  ▶️  ⏺️
-  console.log('yo midi', event)
   const { key } = event
   if (key === 'bank') return
   if (key === 'program') return
@@ -1416,7 +1487,6 @@ subscribeMidiEvents((event) => {
   const readyButton = midiReadyButtons.indexOf(channel)
   if (readyButton !== -1) {
     const midiConfig = midiDashboard.ready.buttons[readyButton]
-    console.log('ready button', readyButton, midiConfig)
     if (!midiConfig) return
     if (midiConfig.behavior === 'bounce-button') bounceField(midiConfig.field)
     return
@@ -1429,7 +1499,7 @@ subscribeMidiEvents((event) => {
     const min = midiConfig.min || 0
     const max = midiConfig.max || 1
     const outputValue = (max - min) * value + min
-    updateSliderValue(midiConfig.field, outputValue)
+    slowUpdateSliderValue(midiConfig.field, outputValue)
     return
   }
   const readySlider = midiReadySliders.indexOf(channel)
@@ -1439,11 +1509,19 @@ subscribeMidiEvents((event) => {
     const min = midiConfig.min || 0
     const max = midiConfig.max || 1
     const outputValue = (max - min) * value + min
-    updateSliderValue(midiConfig.field, outputValue)
+    slowUpdateSliderValue(midiConfig.field, outputValue)
     return
   }
   console.log('midi event', event)
 })
+
+let sliderUpdateTimeout: NodeJS.Timeout | undefined = undefined
+function slowUpdateSliderValue(field: string, value: number) {
+  clearTimeout(sliderUpdateTimeout)
+  sliderUpdateTimeout = setTimeout(() => {
+    updateSliderValue(field, value)
+  }, 150)
+}
 
 function createBlankMedia(type: Media['type']): Media {
   if (type === 'off') {

@@ -374,7 +374,7 @@ function layersFrame(media: LayersMedia, ctx: StateContext, mediaPath: string): 
   reverseLayers.forEach((layer) => {
     const layerAmount = applyGradientValue(
       layer.blendAmount,
-      `${mediaPath}.layerBlendAmount.${layer.key}`,
+      `${mediaPath}.layer.${layer.key}.blendAmount`,
       ctx
     )
     frame = layerBlend(
