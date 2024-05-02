@@ -9,6 +9,8 @@ export type StateContext = {
   relativeTime: number
   video: EGVideo
   recentGradientValues: Record<string, number>
+  bounceTimes: Record<string, number>
+  mainState: MainState
 }
 
 // export const effectsSchema = {
@@ -209,11 +211,33 @@ const transitionStateSchema = z.object({
 })
 export type TransitionState = z.infer<typeof transitionStateSchema>
 
+export const sliderFieldSchema = z.object({
+  smoothing: z.number().optional(),
+  bounceAmount: z.number().optional(),
+  bounceDuration: z.number().optional(),
+})
+export type SliderField = z.infer<typeof sliderFieldSchema>
+
+export const dashboardItemSchema = z.object({
+  key: z.string(),
+  // label: z.string().optional(),
+  field: z.string(),
+  behavior: z.enum(['slider', 'bounce-button']),
+  min: z.number().optional(),
+  max: z.number().optional(),
+  step: z.number().optional(),
+})
+export const dashboardSchema = z.array(dashboardItemSchema)
+
 export const MainStateSchema = z.object({
   liveMedia: mediaSchema,
   readyMedia: mediaSchema,
   transition: transitionSchema,
   transitionState: transitionStateSchema,
+  liveDashboard: dashboardSchema,
+  readyDashboard: dashboardSchema,
+  liveSliderFields: z.record(sliderFieldSchema),
+  readySliderFields: z.record(sliderFieldSchema),
 })
 
 export type MainState = z.infer<typeof MainStateSchema>
@@ -225,6 +249,8 @@ export const defaultMainState: MainState = {
   readyMedia: {
     type: 'off',
   },
+  liveDashboard: [],
+  readyDashboard: [],
   transition: {
     type: 'fade',
     mode: 'mix',
@@ -235,4 +261,6 @@ export const defaultMainState: MainState = {
     autoStartTime: null,
     autoManualStartValue: null,
   },
+  liveSliderFields: {},
+  readySliderFields: {},
 }

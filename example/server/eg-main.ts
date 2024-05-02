@@ -1,3 +1,4 @@
+import { DefaultBounceAmount, DefaultBounceDuration, DefaultSmoothing } from './constants'
 import { eg as egInfo, EGInfo } from './eg'
 import { Frame } from './eg-sacn'
 import {
@@ -135,18 +136,96 @@ import {
 
 const blackFrame = createSolidRGBFrame(egInfo, 0, 0, 0)
 
-function getSmoothingRatio(valuePath: string) {
-  return 0.05
+const defaultInflectionPoint = 0.25
+
+/**
+ * Straight lines. Linear up and down.
+ * @param completedProgress 0-1
+ */
+function getAsymmetricLinearBounce(
+  completedProgress: number,
+  inflectionPoint = defaultInflectionPoint
+): number {
+  // Validate input ranges
+  if (completedProgress < 0) return 0
+  if (completedProgress > 1) return 1
+  if (inflectionPoint < 0) inflectionPoint = 0
+  if (inflectionPoint > 1) inflectionPoint = 1
+
+  if (completedProgress < inflectionPoint) {
+    // map input 0-inflectionPoint to 0-1
+    return completedProgress / inflectionPoint
+  }
+
+  // Handle down slope
+  return (1 - completedProgress) / (1 - inflectionPoint)
+}
+
+/**
+ * Maps an input value from 0-1 to a half period of a cosine function, starting at 0 and ending at 1.
+ * "Smooths" linear functions
+ * @param input 0-1
+ * @return 0-1
+ */
+function normalizedSinusoid(input: number): number {
+  return Math.cos(2 * Math.PI * (1 - input)) / 2 + 0.5
+}
+
+function getAsymmetricSmoothBounce(
+  completedProgress: number,
+  inflectionPoint = defaultInflectionPoint
+): number {
+  return normalizedSigmoid(getAsymmetricLinearBounce(completedProgress, inflectionPoint))
+  // return normalizedSinusoid(getAsymmetricLinearBounce(completedProgress, inflectionPoint))
+}
+
+/**
+ * Middle is steeper than normalizedSinusoid
+ * @param input 0-1
+ * @see https://en.wikipedia.org/wiki/Logistic_function
+ * @return 0-1
+ */
+function normalizedSigmoid(input: number): number {
+  if (input > 1) return 1
+  if (input < 0) return 0
+
+  // "Normal" sigmoid starts climbing at about -6 and gets to 99.7% by +6
+  const k = 12
+  const x0 = 0.5
+
+  // Shift so that the function is centered at an input of 0.5
+  input -= x0
+  // Scale to 0-1 domain
+  input *= k
+
+  return 1 / (1 + Math.exp(-input))
 }
 
 function applyGradientValue(destValue: number, valuePath: string, ctx: StateContext) {
   let nextValue = destValue
   const recentValue = ctx.recentGradientValues[valuePath]
+  const [mainStateKey, ...restValuePath] = valuePath.split('.')
+  const sliderFields =
+    ctx.mainState[mainStateKey === 'liveMedia' ? 'liveSliderFields' : 'readySliderFields']
+  const slider = sliderFields[restValuePath.join('.')]
   if (recentValue != null) {
-    const smoothingRatio = getSmoothingRatio(valuePath)
-    nextValue = destValue * smoothingRatio + recentValue * (1 - smoothingRatio)
+    const smoothing = slider?.smoothing || DefaultSmoothing
+    const moveAggression = smoothing <= 0 ? 1 : (1 - smoothing) / 5 + 0.02 // 0.05 is default
+    nextValue = destValue * moveAggression + recentValue * (1 - moveAggression)
   }
   ctx.recentGradientValues[valuePath] = nextValue
+  const lastBounceTime = ctx.bounceTimes[valuePath]
+  const bounceAmount = slider?.bounceAmount || DefaultBounceAmount
+  const bounceDuration = (slider?.bounceDuration || DefaultBounceDuration) * 1000
+  const now = Date.now()
+  const bounceProgress = lastBounceTime ? (now - lastBounceTime) / bounceDuration : 0
+  // if (lastBounceTime) console.log('lastBounceTime', { valuePath, lastBounceTime, bounceProgress })
+  if (bounceProgress > 0 && bounceProgress < 1) {
+    const bounceRatio = getAsymmetricSmoothBounce(bounceProgress)
+    const bounceDeltaValue = bounceAmount * bounceRatio
+    // console.log('bounceProgress', { bounceProgress, bounceAmount, bounceRatio, bounceDeltaValue })
+    nextValue += bounceDeltaValue
+  }
   return nextValue
 }
 

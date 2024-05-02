@@ -19,8 +19,16 @@ import { subscribeMidiEvents } from './eg-midi-server'
 import { egSacnService } from './eg-sacn'
 import { egVideo } from './eg-video-playback'
 import { createEGViewServer } from './eg-view-server'
-import { defaultMainState, Effect, MainState, MainStateSchema, Media } from './state-schema'
 import {
+  defaultMainState,
+  Effect,
+  MainState,
+  MainStateSchema,
+  Media,
+  SliderField,
+} from './state-schema'
+import {
+  getDashboardUI,
   getEffectsUI,
   getEffectUI,
   getLibraryKeyUI,
@@ -115,12 +123,14 @@ const video = egVideo(egInfo, mediaFilesPath, {
     if (playback && playback.playingFrame != null && playback.playingFrame % 10 === 0) {
       wsServer.update(`videoFrameInfo/${playerId}`, {
         index: playback.playingFrame,
+        isForward: playback.isForward,
       })
     }
   },
 })
 
 const recentGradientValues: Record<string, number> = {}
+const bounceTimes: Record<string, number> = {}
 
 function mainLoop() {
   const nowTime = Date.now()
@@ -131,8 +141,11 @@ function mainLoop() {
     relativeTime,
     video,
     recentGradientValues,
+    bounceTimes,
+    mainState,
   }
 
+  // console.log(Object.keys(recentGradientValues))
   wsServer.update('relativeTime', relativeTime)
 
   const egReadyFrame = getEGReadyFrame(mainState, context)
@@ -188,11 +201,11 @@ wsServer.update('startTime', startTime)
 
 function updateMediaChildrenUI(mediaKey: string, mediaState: Media, uiContext: UIContext) {
   if (mediaState.type === 'video') {
-    wsServer.update(`${mediaKey}:effects`, getEffectsUI(mediaKey, mediaState.effects))
+    wsServer.update(`${mediaKey}:effects`, getEffectsUI(mediaKey, mediaState.effects, uiContext))
     mediaState.effects?.forEach((effect) => {
       wsServer.update(
-        `${mediaKey}:effects:${effect.key}`,
-        getEffectUI([mediaKey, effect.key], effect)
+        `${mediaKey}.effects.${effect.key}`,
+        getEffectUI(`${mediaKey}.effects.${effect.key}`, effect, uiContext)
       )
     })
     return
@@ -207,7 +220,7 @@ function updateMediaUI(mediaKey: string, mediaState: Media, uiContext: UIContext
   }
   if (mediaState.type === 'layers') {
     mediaState.layers?.forEach((layer) => {
-      const layerKey = `${mediaKey}:layer:${layer.key}`
+      const layerKey = `${mediaKey}.layer.${layer.key}`
       wsServer.update(layerKey, getMediaLayerUI(layerKey, layer, uiContext))
       updateMediaChildrenUI(layerKey, layer.media, uiContext)
     })
@@ -215,7 +228,7 @@ function updateMediaUI(mediaKey: string, mediaState: Media, uiContext: UIContext
   }
   if (mediaState.type === 'sequence') {
     mediaState.sequence?.forEach((sequenceItem) => {
-      const sequenceItemKey = `${mediaKey}:item:${sequenceItem.key}`
+      const sequenceItemKey = `${mediaKey}.item.${sequenceItem.key}`
       wsServer.update(sequenceItemKey, getMediaSequenceUI(sequenceItemKey, sequenceItem, uiContext))
       updateMediaChildrenUI(sequenceItemKey, sequenceItem.media, uiContext)
     })
@@ -223,11 +236,14 @@ function updateMediaUI(mediaKey: string, mediaState: Media, uiContext: UIContext
   }
 }
 
-const uiContext: UIContext = { video }
+const uiContext: UIContext = { video, mainState }
 
 function updateUI() {
+  uiContext.mainState = mainState
   wsServer.update('mainState', mainState)
   wsServer.updateRoot(getUIRoot(mainState, uiContext))
+  wsServer.update('liveDashboard', getDashboardUI(mainState, uiContext, 'liveMedia'))
+  wsServer.update('readyDashboard', getDashboardUI(mainState, uiContext, 'readyMedia'))
   // wsServer.update('quickEffects', getQuickEffects())
   // wsServer.update('beatEffects', getBeatEffects(mainState))
   updateMediaUI('readyMedia', mainState.readyMedia, uiContext)
@@ -320,7 +336,7 @@ function mainStateEffect(state: MainState, prevState: MainState) {
       if (!activeItem || !activeItem.maxDuration) {
         return false
       }
-      const mediaPathString = mediaPath.join(':')
+      const mediaPathString = mediaPath.join('.')
       clearTimeout(sequenceAutoTransitions[mediaPathString])
       const maxDurationMs = 1_000 * activeItem.maxDuration
       const timeUntilMaxDuration = media.lastTransitionTime
@@ -397,7 +413,7 @@ function handleVideoEndBehavior() {
     if (playingFrame === null || frameCount === null) return false
     const framesRemaining = frameCount - playingFrame
     const approxTimeRemaining = (1000 * framesRemaining) / mainAnimationFPS
-    const mediaPathString = mediaPath.join(':')
+    const mediaPathString = mediaPath.join('.')
     clearTimeout(sequenceVideoEndTransitions[mediaPathString])
     sequenceVideoEndTransitions[mediaPathString] = setTimeout(
       () => {
@@ -510,39 +526,6 @@ function matchActiveMedia(
   })
 }
 
-function sliderUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
-  if (
-    event.target.key === pathToCheck &&
-    event.target.propKey === 'onValueChange' &&
-    event.target.component === 'RiseSliderField'
-  ) {
-    mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload[0]))
-    return true
-  }
-  return false
-}
-
-function switchUpdate(event: TemplateEvent, pathToCheck: string, statePath: string[]): boolean {
-  if (
-    event.target.key === pathToCheck &&
-    event.target.propKey === 'onCheckedChange' &&
-    event.target.component === 'RiseSwitch'
-  ) {
-    mainStateUpdate((state: MainState) => updateState(state, statePath, event.payload))
-    return true
-  }
-  return false
-}
-
-function updateState(state: any, path: string[], value: any): any {
-  if (path.length === 0) return value
-  const [first, ...rest] = path
-  return {
-    ...state,
-    [first]: updateState(state[first] ?? {}, rest, value),
-  }
-}
-
 // let manualTapBeatCount = 0
 // let manualTapBeatStart = 0
 // let manualTapBeatLastTime = 0
@@ -619,20 +602,196 @@ wsServer.onActionEvent((event) => {
   if (handleMediaEvent(event)) return
   if (handleTransitionEvent(event)) return
   if (handleEffectEvent(event)) return
+  if (updateValuesIndex(event)) return
   if (handleLibraryEvent(event)) return
 
   console.log('Unknown event', event)
 })
 
+function updateSliderField(
+  mainStateKey: 'liveMedia' | 'readyMedia',
+  sliderPath: string,
+  updater: (state: SliderField | undefined) => SliderField
+) {
+  mainStateUpdate((state) => {
+    const slidersKey = mainStateKey === 'liveMedia' ? 'liveSliderFields' : 'readySliderFields'
+    const sliders = state[slidersKey]
+    return {
+      ...state,
+      [slidersKey]: {
+        ...sliders,
+        [sliderPath]: updater(sliders[sliderPath]),
+      },
+    }
+  })
+}
+
+function updateValuesIndex(event: ActionEvent): boolean {
+  const { action } = event.dataState
+  const actionName = action?.[0]
+  if (actionName !== 'updateValuesIndex') {
+    return false
+  }
+  const key = action?.[1]
+  const field = action?.[2]
+  const [mainStateKey, ...restKey] = key.split('.') as ['liveMedia' | 'readyMedia', string[]]
+  const sliderKey = restKey.join('.')
+  if (field === 'smoothing') {
+    updateSliderField(mainStateKey, sliderKey, (slider) => ({
+      ...slider,
+      smoothing: event.payload[0],
+    }))
+    return true
+  }
+  if (field === 'bounceAmount') {
+    updateSliderField(mainStateKey, sliderKey, (slider) => ({
+      ...slider,
+      bounceAmount: event.payload[0],
+    }))
+    return true
+  }
+  if (field === 'bounceDuration') {
+    updateSliderField(mainStateKey, sliderKey, (slider) => ({
+      ...slider,
+      bounceDuration: event.payload[0],
+    }))
+    return true
+  }
+  if (field === 'bounce') {
+    bounceField(key)
+    return true
+  }
+  if (field === 'value') {
+    updateSliderValue(event.dataState.action[1], event.payload[0])
+    return true
+  }
+
+  if (field === 'addDashBounce') {
+    const mediaPath = key.split('.')
+    addToDashboard(mediaPath, 'bounce-button')
+    return true
+  }
+  if (field === 'addDashSlider') {
+    const mediaPath = key.split('.')
+    addToDashboard(mediaPath, 'slider', action?.[3])
+    return true
+  }
+  return false
+}
+
+function mediaSliderUpdate(sliderPath: string[], media: Media, value: number): Media {
+  if (sliderPath.length === 0) return media
+  const [subMediaKey, ...restSliderPath] = sliderPath
+  if (subMediaKey === 'effects') {
+    if (media.type !== 'video') return media
+    const [effectKey, effectField] = restSliderPath
+    return {
+      ...media,
+      effects: media.effects?.map((effect) => {
+        if (effect.key !== effectKey) return effect
+        return { ...effect, [effectField]: value }
+      }),
+    }
+  }
+  if (subMediaKey === 'layer') {
+    if (media.type !== 'layers') return media
+    const [layerKey, ...restPath] = restSliderPath
+    return {
+      ...media,
+      layers: media.layers?.map((layer) => {
+        if (layer.key !== layerKey) return layer
+        return {
+          ...layer,
+          media: mediaSliderUpdate(restPath, layer.media, value),
+        }
+      }),
+    }
+  }
+  if (subMediaKey === 'item') {
+    if (media.type !== 'sequence') return media
+    const [itemKey, ...restPath] = restSliderPath
+    return {
+      ...media,
+      sequence: media.sequence?.map((item) => {
+        if (item.key !== itemKey) return item
+        return {
+          ...item,
+          media: mediaSliderUpdate(restPath, item.media, value),
+        }
+      }),
+    }
+  }
+  return media
+}
+
+function updateSliderValue(fieldPath: string, value: number) {
+  console.log('updateSliderValue', fieldPath, value)
+  const [rootMediaKey, ...restFieldPath] = fieldPath.split('.')
+  if (rootMediaKey !== 'liveMedia' && rootMediaKey !== 'readyMedia') return
+  mainStateUpdate((state) => {
+    const media = rootMediaKey === 'liveMedia' ? state.liveMedia : state.readyMedia
+    return {
+      ...state,
+      [rootMediaKey]: mediaSliderUpdate(restFieldPath, media, value),
+    }
+  })
+  console.log('done')
+}
+
+function addToDashboard(
+  mediaPath: string[],
+  type: 'slider' | 'bounce-button',
+  opts?: {
+    min?: number
+    max?: number
+    step?: number
+  }
+) {
+  const [rootMediaKey, ...restMediaPath] = mediaPath
+  if (rootMediaKey === 'liveMedia' || rootMediaKey !== 'readyMedia') {
+    mainStateUpdate((state) => {
+      const dashboardKey = rootMediaKey === 'liveMedia' ? 'liveDashboard' : 'readyDashboard'
+      const prevDashboard = state[dashboardKey]
+      return {
+        ...state,
+        [dashboardKey]: [
+          ...prevDashboard,
+          {
+            key: randomUUID(),
+            field: restMediaPath.join('.'),
+            behavior: type,
+            ...opts,
+          },
+        ],
+      }
+    })
+    return
+  }
+  console.warn('Cannot add to dash from to non-media. hide this button from the UI.')
+}
+
+function bounceField(key: string) {
+  console.log('do bounce ' + key)
+  bounceTimes[key] = Date.now()
+  console.log('bounceTimes', bounceTimes)
+}
+
 function handleEffectEvent(event: ActionEvent): boolean {
-  const actionName = event.dataState.action?.[0]
+  const { action } = event.dataState
+  const actionName = action?.[0]
   if (actionName !== 'updateEffect') {
     return false
   }
 
-  const mediaPath = event.dataState.action?.[1]?.[0]?.split(':')
-  const effectKey = event.dataState.action?.[1]?.[1]
-  const effectField = event.dataState.action?.[2]
+  const fullEffectPath = action?.[1].split('.')
+  const effectField = action?.[2]
+
+  const mediaPath = fullEffectPath.slice(0, -2)
+  if (fullEffectPath.at(-2) !== 'effects') {
+    console.warn('Invalid effect path')
+    return false
+  }
+  const effectKey = fullEffectPath.at(-1)
 
   if (!mediaPath || !effectKey || !effectField) {
     console.warn('Invalid effect event', event)
@@ -698,12 +857,14 @@ function handleTransitionEvent(event: ActionEvent): boolean {
   if (event.dataState.action?.[0] !== 'updateTransition') {
     return false
   }
-  if (event.dataState.action?.[1] === 'manual') {
+  const transitionKey = event.dataState.action?.[1]
+  if (transitionKey !== 'mainTransition') throw new Error('Invalid transition key')
+  if (event.dataState.action?.[2] === 'manual') {
     isMidiTouchingManualTransition = false
     setManualTransition(event.payload[0])
     return true
   }
-  if (event.dataState.action?.[1] === 'duration') {
+  if (event.dataState.action?.[2] === 'duration') {
     mainStateUpdate((state) => ({
       ...state,
       transition: {
@@ -713,11 +874,11 @@ function handleTransitionEvent(event: ActionEvent): boolean {
     }))
     return true
   }
-  if (event.dataState.action?.[1] === 'startAuto') {
+  if (event.dataState.action?.[2] === 'startAuto') {
     startAutoTransition()
     return true
   }
-  if (event.dataState.action?.[1] === 'mode') {
+  if (event.dataState.action?.[2] === 'mode') {
     mainStateUpdate((state) => ({
       ...state,
       transition: {
@@ -815,7 +976,7 @@ function handleMediaEvent(event: ActionEvent): boolean {
     return false
   }
 
-  const mediaPath = event.dataState.action?.[1]?.split(':')
+  const mediaPath = event.dataState.action?.[1]?.split('.')
   const action = event.dataState.action?.[2]
   if (!mediaPath || !action) {
     console.warn('Invalid media event', event)

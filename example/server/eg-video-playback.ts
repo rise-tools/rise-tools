@@ -14,6 +14,7 @@ export type VideoPlaybackInstance = {
   restart: () => void
   setParams: (params: PlaybackParams) => void
   frameCount: number
+  isForward: boolean
   playingFrame: number | null
   info: DBFile
 }
@@ -100,10 +101,8 @@ export function egVideo(
     let resume = () => {}
     let pause = () => {}
 
-    let isForwardPlaying = true
-
     async function startReadbackReverse() {
-      isForwardPlaying = false
+      playback.isForward = false
       handleFrameIndexUpdate(frameCount)
       const readbackInstance = playCount++
       console.log('startReadbackReverse', readbackInstance)
@@ -141,7 +140,7 @@ export function egVideo(
     }
 
     function startReadbackForward() {
-      isForwardPlaying = true
+      playback.isForward = true
       handleFrameIndexUpdate(0)
       let totalBufferRead = 0
       const readbackInstance = playCount++
@@ -215,7 +214,7 @@ export function egVideo(
     function consumeFrame() {
       if (bufferQueue.length > 0) {
         if (playback.playingFrame != null) {
-          const deltaFrame = isForwardPlaying ? 1 : -1
+          const deltaFrame = playback.isForward ? 1 : -1
           handleFrameIndexUpdate(playback.playingFrame + deltaFrame)
         }
         const frame = bufferQueue.shift()
@@ -228,9 +227,9 @@ export function egVideo(
     }
     function setParams(params: PlaybackParams) {
       playbackParams = params
-      if (isForwardPlaying && params.reverse) {
+      if (playback.isForward && params.reverse) {
         startReadbackReverse() // todo, reverse at the correct frame!!
-      } else if (!isForwardPlaying && !params.reverse) {
+      } else if (!playback.isForward && !params.reverse) {
         startReadbackForward()
       }
     }
@@ -247,11 +246,12 @@ export function egVideo(
       frameCount,
       playingFrame: null,
       info: file,
+      isForward: !playbackParams.reverse,
     }
-    if (playbackParams.reverse) {
-      startReadbackReverse()
-    } else {
+    if (playback.isForward) {
       startReadbackForward()
+    } else {
+      startReadbackReverse()
     }
     return playback
   }
