@@ -545,7 +545,8 @@ function gradientValueField(
     rootMediaKey === 'liveMedia'
       ? context.mainState.liveSliderFields
       : context.mainState.readySliderFields
-  const bounceDuration = sliderFields[mediaPath.join('.')]?.bounceDuration || DefaultBounceDuration
+  const sliderField = sliderFields[mediaPath.join('.')]
+  const bounceDuration = sliderField?.bounceDuration || DefaultBounceDuration
   return {
     $: 'component',
     key: key || undefined,
@@ -562,7 +563,7 @@ function gradientValueField(
                 key: 'gradient',
                 props: {
                   label: 'Smoothing Speed',
-                  value: sliderFields[key]?.smoothing || DefaultSmoothing,
+                  value: sliderField?.smoothing || DefaultSmoothing,
                   min: 0,
                   max: 1,
                   step: 0.01,
@@ -590,7 +591,7 @@ function gradientValueField(
                 key: 'bounceamount',
                 props: {
                   label: 'Bounce Amount',
-                  value: sliderFields[key]?.bounceAmount || DefaultBounceAmount,
+                  value: sliderField?.bounceAmount || DefaultBounceAmount,
                   min: -1,
                   max: 1,
                   step: 0.01,
@@ -606,7 +607,7 @@ function gradientValueField(
                 key: 'bounceDuration',
                 props: {
                   label: `Bounce Duration: ${bounceDuration.toFixed(1)}sec`,
-                  value: sliderFields[key]?.bounceDuration || DefaultBounceDuration,
+                  value: bounceDuration,
                   min: 0.2,
                   max: 4,
                   step: 0.1,
@@ -873,7 +874,7 @@ export function getMediaControls(
   return [
     {
       $: 'component',
-      key: 'MediaMode',
+      key: 'MediaModeSelect',
       component: 'RiseSelectField',
       props: {
         value: state.type,
