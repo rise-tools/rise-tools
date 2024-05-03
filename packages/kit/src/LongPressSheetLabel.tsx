@@ -1,5 +1,6 @@
-import React from 'react'
-import { Label, Sheet, YStack } from 'tamagui'
+import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
+import React, { useCallback, useMemo, useRef } from 'react'
+import { Label, YStack } from 'tamagui'
 import { z } from 'zod'
 
 const LongPressSheetLabelProps = z.object({
@@ -9,38 +10,34 @@ const LongPressSheetLabelProps = z.object({
 })
 
 export function LongPressSheetLabel(props: z.infer<typeof LongPressSheetLabelProps>) {
-  const [open, setOpen] = React.useState(false)
+  // ref
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null)
+
+  // variables
+  const snapPoints = useMemo(() => ['50%'], [])
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present()
+  }, [])
+
   return (
-    <>
-      <Label
-        {...props.labelProps}
-        onPress={() => {
-          setOpen(true)
-        }}
-      >
+    <YStack>
+      <Label {...props.labelProps} onPress={handlePresentModalPress}>
         {props.children}
       </Label>
-
-      <Sheet
-        forceRemoveScrollEnabled={open}
-        modal={true}
-        open={open}
-        onOpenChange={setOpen}
-        // snapPoints={[50]}
-        // snapPointsMode={snapPointsMode}
-        dismissOnSnapToBottom
-        // position={position}
-        // onPositionChange={setPosition}
-        zIndex={100_000}
-        animation="medium"
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        enableContentPanningGesture={true}
+        activeOffsetY={[-1, 1]}
+        failOffsetX={[-5, 5]}
+        snapPoints={snapPoints}
       >
-        <Sheet.Overlay animation="quick" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Sheet.Handle />
-        <Sheet.Frame padding="$4" justifyContent="center" space="$5">
-          <YStack gap="$3">{props.sheet}</YStack>
-        </Sheet.Frame>
-      </Sheet>
-    </>
+        <BottomSheetView>
+          <YStack padding="$2">{props.sheet}</YStack>
+        </BottomSheetView>
+      </BottomSheetModal>
+    </YStack>
   )
 }
 
