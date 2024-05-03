@@ -17,7 +17,6 @@ import { eg as egInfo } from './eg'
 import { getEGLiveFrame, getEGReadyFrame, getSequenceActiveItem } from './eg-main'
 import { getMidiFields } from './eg-midi-fields'
 import { subscribeMidiEvents } from './eg-midi-server'
-import { prolink } from './eg-prolink'
 import { egSacnService } from './eg-sacn'
 import { egVideo } from './eg-video-playback'
 import { createEGViewServer } from './eg-view-server'
@@ -43,8 +42,6 @@ import {
   getUIRoot,
   UIContext,
 } from './ui'
-
-prolink.handleBeat(() => {})
 
 let mainState: MainState = defaultMainState
 
