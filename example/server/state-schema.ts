@@ -158,34 +158,9 @@ const sequenceItemSchema = z.object({
 export type SequenceItem = {
   key: string
   maxDuration?: null | number
-  goOnVideoEnd: undefined | boolean
+  goOnVideoEnd?: boolean
   media: Media
 }
-
-export type SequenceMedia = {
-  type: 'sequence'
-  label?: string
-  activeKey?: string | undefined
-  lastTransitionTime?: number | undefined
-  sequence: SequenceItem[]
-}
-const sequenceMediaSchema: z.ZodType<SequenceMedia> = z.object({
-  type: z.literal('sequence'),
-  label: z.string().optional(),
-  activeKey: z.string().optional(),
-  lastTransitionTime: z.number().optional(),
-  sequence: z.array(sequenceItemSchema),
-})
-
-export type Media = OffMedia | ColorMedia | VideoMedia | LayersMedia | SequenceMedia
-
-const mediaSchema: z.ZodType<Media> = z.discriminatedUnion('type', [
-  offMediaSchema,
-  colorMediaSchema,
-  videoMediaSchema,
-  layersMediaSchema,
-  sequenceMediaSchema,
-])
 
 const fadeTransitionSchema = z.object({
   type: z.literal('fade'),
@@ -203,6 +178,37 @@ export type MaskTransition = z.infer<typeof maskTransitionSchema>
 
 const transitionSchema = z.discriminatedUnion('type', [fadeTransitionSchema, maskTransitionSchema])
 export type Transition = z.infer<typeof transitionSchema>
+
+export type SequenceMedia = {
+  type: 'sequence'
+  label?: string
+  activeKey?: string | undefined
+  nextActiveKey?: string | undefined
+  transitionStartTime?: number | undefined
+  transitionEndTime?: number | undefined
+  transition?: Transition
+  sequence: SequenceItem[]
+}
+const sequenceMediaSchema: z.ZodType<SequenceMedia> = z.object({
+  type: z.literal('sequence'),
+  label: z.string().optional(),
+  activeKey: z.string().optional(),
+  nextActiveKey: z.string().optional(),
+  transitionStartTime: z.number().optional(),
+  transitionEndTime: z.number().optional(),
+  transition: transitionSchema.optional(),
+  sequence: z.array(sequenceItemSchema),
+})
+
+export type Media = OffMedia | ColorMedia | VideoMedia | LayersMedia | SequenceMedia
+
+const mediaSchema: z.ZodType<Media> = z.discriminatedUnion('type', [
+  offMediaSchema,
+  colorMediaSchema,
+  videoMediaSchema,
+  layersMediaSchema,
+  sequenceMediaSchema,
+])
 
 const transitionStateSchema = z.object({
   manual: z.number().nullable(),
@@ -222,7 +228,7 @@ export const dashboardItemSchema = z.object({
   key: z.string(),
   // label: z.string().optional(),
   field: z.string(),
-  behavior: z.enum(['slider', 'bounce-button']),
+  behavior: z.enum(['slider', 'bounceButton', 'goNextButton']),
   min: z.number().optional(),
   max: z.number().optional(),
   step: z.number().optional(),

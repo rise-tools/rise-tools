@@ -2,7 +2,12 @@ import { ComponentDataState, ServerDataState } from '@final-ui/react'
 import React from 'react'
 
 import { hslToHex } from './color'
-import { DefaultBounceAmount, DefaultBounceDuration, DefaultSmoothing } from './constants'
+import {
+  DefaultBounceAmount,
+  DefaultBounceDuration,
+  DefaultSmoothing,
+  DefaultTransitionDuration,
+} from './constants'
 import { getSequenceActiveItem } from './eg-main'
 import { DashMidi, getDashboardMidiFields } from './eg-midi-fields'
 import { EGVideo } from './eg-video-playback'
@@ -24,6 +29,7 @@ import {
 export type UIContext = {
   video: EGVideo
   mainState: MainState
+  libraryKeys: string[]
 }
 
 function icon(name: string): ComponentDataState {
@@ -241,7 +247,7 @@ function getVideoControls(mediaPath: string, state: VideoMedia, ctx: UIContext):
           icon: icon('Sparkles'),
           onPress: {
             $: 'event',
-            action: ['navigate', `${mediaPath}:effects`],
+            action: ['navigate', `${mediaPath}.effects`],
           },
         },
       },
@@ -417,6 +423,7 @@ function getMediaFieldLabel(media: Media, path: string[]): string {
     if (!effect) return 'Unknown'
     return `${effect.type} ${fieldKey}`
   }
+  return path.join('.')
   return path.at(-1)
 }
 
@@ -444,7 +451,7 @@ export function getDashboardUI(
       component: 'YStack',
       props: { gap: '$4' },
       children: dash.map((item) => {
-        if (item.behavior === 'bounce-button') {
+        if (item.behavior === 'bounceButton') {
           return dashboardItem(rootMediaKey, item.key, midi, {
             $: 'component',
             component: 'Button',
@@ -453,6 +460,23 @@ export function getDashboardUI(
               onPress: {
                 $: 'event',
                 action: ['updateValuesIndex', `${rootMediaKey}.${item.field}`, 'bounce'],
+              },
+            },
+          })
+        }
+        if (item.behavior === 'goNextButton') {
+          return dashboardItem(rootMediaKey, item.key, midi, {
+            $: 'component',
+            component: 'Button',
+            children: `Go Next ${getFieldLabel(item.field.split('.'), rootMediaKey, context)}`,
+            props: {
+              onPress: {
+                $: 'event',
+                action: [
+                  'updateMedia',
+                  item.field ? `${rootMediaKey}.${item.field}` : rootMediaKey,
+                  'goNext',
+                ],
               },
             },
           })
@@ -557,6 +581,31 @@ function gradientValueField(
         key === null
           ? null
           : [
+              {
+                $: 'component',
+                component: 'XStack',
+                props: { gap: '$2' },
+                children: [
+                  {
+                    $: 'component',
+                    component: 'Button',
+                    children: '0',
+                    props: {
+                      size: '$2',
+                      onPress: { $: 'event', action: ['updateValuesIndex', key, 'set', 0] },
+                    },
+                  },
+                  {
+                    $: 'component',
+                    component: 'Button',
+                    children: '1',
+                    props: {
+                      size: '$2',
+                      onPress: { $: 'event', action: ['updateValuesIndex', key, 'set', 1] },
+                    },
+                  },
+                ],
+              },
               {
                 $: 'component',
                 component: 'RiseSliderField',
@@ -1163,7 +1212,6 @@ function getLayersControls(
         key: 'addLayer',
         component: 'YStack',
         children: [
-          ...header,
           {
             key: 'addLayer',
             $: 'component',
@@ -1218,11 +1266,23 @@ function getSequenceControls(
         {
           key: 'goNext',
           $: 'component',
-          component: 'Button',
+          component: 'RiseLongPressSheetButton',
           children: 'Go Next',
           props: {
-            theme: 'green',
-            icon: icon('Play'),
+            sheet: [
+              {
+                $: 'component',
+                component: 'Button',
+                children: 'Save to Dashboard',
+                props: {
+                  onPress: { $: 'event', action: ['updateMedia', mediaPath, 'saveGoNextToDash'] },
+                },
+              },
+            ],
+            buttonProps: {
+              theme: 'green',
+              icon: icon('Play'),
+            },
             onPress: {
               $: 'event',
               action: ['updateMedia', mediaPath, 'goNext'],
@@ -1235,6 +1295,22 @@ function getSequenceControls(
         key: 'footer',
         component: 'YStack',
         children: [
+          {
+            key: 'transitionDuration',
+            $: 'component',
+            component: 'RiseSliderField',
+            props: {
+              label: `Transition Duration: ${Math.round((state.transition?.duration || 0) / 1000).toFixed(1)}sec`,
+              min: 0,
+              max: 15_000,
+              step: 10,
+              value: state.transition?.duration || DefaultTransitionDuration,
+              onValueChange: {
+                $: 'event',
+                action: ['updateMedia', mediaPath, 'transitionDuration'],
+              },
+            },
+          },
           {
             key: 'add2Sequence',
             $: 'component',
@@ -1251,22 +1327,25 @@ function getSequenceControls(
               },
             },
           },
-          // {
-          //   key: 'add2SequenceLibrary',
-          //   $: 'component',
-          //   component: 'RiseDropdownButton',
-          //   props: {
-          //     options: { $: 'ref', ref: ['libraryItems'] },
-          //     onSelect: {
-          //       $: 'event',
-          //       action: ['updateMedia', mediaPath, 'addToSequenceFromLibrary'],
-          //     },
-          //     buttonProps: {
-          //       icon: icon('Plus'),
-          //       children: 'Add from library...',
-          //     },
-          //   },
-          // },
+          {
+            key: 'add2SequenceLibrary',
+            $: 'component',
+            component: 'RiseDropdownButton',
+            props: {
+              options: ctx.libraryKeys.map((libraryKey) => ({
+                key: libraryKey,
+                label: libraryKey,
+              })),
+              onSelect: {
+                $: 'event',
+                action: ['updateMedia', mediaPath, 'addToSequenceFromLibrary'],
+              },
+              buttonProps: {
+                icon: icon('Plus'),
+                children: 'Add from library...',
+              },
+            },
+          },
           ...getGenericMediaUI(mediaPath, state, ctx),
           ...footer,
         ],
@@ -1274,7 +1353,7 @@ function getSequenceControls(
       items: (state.sequence || []).map((item) => {
         return {
           key: item.key,
-          label: `${getMediaTitle(item.media, ctx)}${item.key === activeMedia?.key ? ' (Active)' : ''}`,
+          label: `${getMediaTitle(item.media, ctx)}${item.key === activeMedia?.key ? ' (Active)' : ''}${item.key === state.nextActiveKey ? ' (Transitioning)' : ''}`,
           onPress: {
             $: 'event',
             action: ['navigate', `${mediaPath}.item.${item.key}`],
@@ -1290,6 +1369,7 @@ export function getMediaLayerUI(
   layer: Layer,
   context: UIContext
 ): ServerDataState {
+  // return [title('Hello world')]
   return getMediaUI(mediaPath, layer.media, context, {
     footer: [],
     header: [
@@ -1386,7 +1466,7 @@ export function getLibraryUI(keys: string[]): ServerDataState[] {
             { $: 'event', action: 'navigate-back' },
             { $: 'event', action: ['libraryAction', key, 'goReady'] },
           ],
-          onLongPress: { $: 'event', action: ['navigate', `library/${key}`] },
+          onLongPress: { $: 'event', action: ['navigate', `library.${key}`] },
         },
       }))
     ),
@@ -1428,6 +1508,7 @@ function getResetDropdown(mediaPath: string, hidden: boolean = false): Component
     ? null
     : {
         icon: icon('Delete'),
+        theme: 'red',
         children: 'Reset...',
       }
   return {
@@ -1626,7 +1707,64 @@ function getSequenceItemMaxDuration(mediaPath: string, item: SequenceItem): Serv
           $: 'event',
           action: ['updateMedia', mediaPath, 'maxDuration'],
         },
-        max: 60,
+        longPressSheet: [
+          {
+            $: 'component',
+            component: 'Button',
+            props: {
+              onPress: {
+                $: 'event',
+                action: ['updateMedia', mediaPath, 'maxDuration', 30],
+              },
+            },
+            children: '30 sec',
+          },
+          {
+            $: 'component',
+            component: 'Button',
+            props: {
+              onPress: {
+                $: 'event',
+                action: ['updateMedia', mediaPath, 'maxDuration', 60],
+              },
+            },
+            children: '60 sec (1 min)',
+          },
+          {
+            $: 'component',
+            component: 'Button',
+            props: {
+              onPress: {
+                $: 'event',
+                action: ['updateMedia', mediaPath, 'maxDuration', 120],
+              },
+            },
+            children: '120 sec (2 min)',
+          },
+          {
+            $: 'component',
+            component: 'Button',
+            props: {
+              onPress: {
+                $: 'event',
+                action: ['updateMedia', mediaPath, 'maxDuration', 300],
+              },
+            },
+            children: '300 sec (5 min)',
+          },
+          {
+            $: 'component',
+            component: 'Button',
+            props: {
+              onPress: {
+                $: 'event',
+                action: ['updateMedia', mediaPath, 'maxDuration', 600],
+              },
+            },
+            children: '600 sec (10 min)',
+          },
+        ],
+        max: 120,
         min: 0.1,
         step: 0.1,
       },
@@ -1659,30 +1797,34 @@ export function getMediaSequenceUI(
   }
   return getMediaUI(mediaPath, item.media, context, {
     header: [
-      section('Sequence Item Controls', [
-        ...getSequenceItemMaxDuration(mediaPath, item),
-        ...videoEnd,
-        {
-          $: 'component',
-          key: 'removeItem',
-          component: 'Button',
-          children: 'Remove from Sequence',
-          props: {
-            theme: 'red',
-            icon: icon('Trash'),
-            onPress: [
-              {
-                $: 'event',
-                action: ['updateMedia', mediaPath, 'removeItem', item.key],
-              },
-              {
-                $: 'event',
-                action: 'navigate-back',
-              },
-            ],
+      section(
+        'Sequence Item Controls',
+        [
+          ...getSequenceItemMaxDuration(mediaPath, item),
+          ...videoEnd,
+          {
+            $: 'component',
+            key: 'removeItem',
+            component: 'Button',
+            children: 'Remove from Sequence',
+            props: {
+              theme: 'red',
+              icon: icon('Trash'),
+              onPress: [
+                {
+                  $: 'event',
+                  action: ['updateMedia', mediaPath, 'removeItem', item.key],
+                },
+                {
+                  $: 'event',
+                  action: 'navigate-back',
+                },
+              ],
+            },
           },
-        },
-      ]),
+        ],
+        'heading'
+      ),
     ],
   })
 }

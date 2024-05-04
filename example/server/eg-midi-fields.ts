@@ -2,7 +2,7 @@ import { Dashboard, MainState } from './state-schema'
 
 export type MidiField = {
   key: string
-  behavior: 'bounce-button' | 'slider'
+  behavior: 'bounceButton' | 'goNextButton' | 'slider'
   field: string
   min?: number
   max?: number
@@ -17,8 +17,8 @@ export type MidiField = {
 //     if (item.behavior === 'slider') {
 //       liveSliders.push({ behavior: 'slider', field: `liveMedia.${item.field}` })
 //     }
-//     if (item.behavior === 'bounce-button') {
-//       liveButtons.push({ behavior: 'bounce-button', field: `liveMedia.${item.field}` })
+//     if (item.behavior === 'bounceButton') {
+//       liveButtons.push({ behavior: 'bounceButton', field: `liveMedia.${item.field}` })
 //     }
 //   })
 //   state.readyDashboard.forEach((item) => {
@@ -30,9 +30,9 @@ export type MidiField = {
 //         max: item.max,
 //       })
 //     }
-//     if (item.behavior === 'bounce-button') {
+//     if (item.behavior === 'bounceButton') {
 //       readyButtons.push({
-//         behavior: 'bounce-button',
+//         behavior: 'bounceButton',
 //         field: `readyMedia.${item.field}`,
 //         min: item.min,
 //         max: item.max,
@@ -54,9 +54,16 @@ export function getDashboardMidiFields(dash: Dashboard, keyPrefix: string) {
     if (item.behavior === 'slider') {
       sliders.push({ behavior: 'slider', field: `${keyPrefix}.${item.field}`, key: item.key })
     }
-    if (item.behavior === 'bounce-button') {
+    if (item.behavior === 'bounceButton') {
       buttons.push({
-        behavior: 'bounce-button',
+        behavior: 'bounceButton',
+        field: `${keyPrefix}.${item.field}`,
+        key: item.key,
+      })
+    }
+    if (item.behavior === 'goNextButton') {
+      buttons.push({
+        behavior: 'goNextButton',
         field: `${keyPrefix}.${item.field}`,
         key: item.key,
       })

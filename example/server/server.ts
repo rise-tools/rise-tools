@@ -211,9 +211,16 @@ function performMainLoopStep(inMs: number) {
 
 wsServer.update('startTime', startTime)
 
-function updateMediaChildrenUI(mediaKey: string, mediaState: Media, uiContext: UIContext) {
+function updateMediaUI(
+  mediaKey: string,
+  mediaState: Media,
+  uiContext: UIContext,
+  childrenOnly?: boolean
+) {
+  // console.log('updateMediaUI', mediaKey, childrenOnly, mediaState)
+  if (!childrenOnly) wsServer.update(mediaKey, getMediaUI(mediaKey, mediaState, uiContext))
   if (mediaState.type === 'video') {
-    wsServer.update(`${mediaKey}:effects`, getEffectsUI(mediaKey, mediaState.effects, uiContext))
+    wsServer.update(`${mediaKey}.effects`, getEffectsUI(mediaKey, mediaState.effects, uiContext))
     mediaState.effects?.forEach((effect) => {
       wsServer.update(
         `${mediaKey}.effects.${effect.key}`,
@@ -222,19 +229,12 @@ function updateMediaChildrenUI(mediaKey: string, mediaState: Media, uiContext: U
     })
     return
   }
-}
-
-function updateMediaUI(mediaKey: string, mediaState: Media, uiContext: UIContext) {
-  wsServer.update(mediaKey, getMediaUI(mediaKey, mediaState, uiContext))
-  if (mediaState.type === 'video') {
-    updateMediaChildrenUI(mediaKey, mediaState, uiContext)
-    return
-  }
   if (mediaState.type === 'layers') {
     mediaState.layers?.forEach((layer) => {
+      // console.log('layer UI', layer.key)
       const layerKey = `${mediaKey}.layer.${layer.key}`
       wsServer.update(layerKey, getMediaLayerUI(layerKey, layer, uiContext))
-      updateMediaChildrenUI(layerKey, layer.media, uiContext)
+      updateMediaUI(layerKey, layer.media, uiContext, true)
     })
     return
   }
@@ -242,16 +242,17 @@ function updateMediaUI(mediaKey: string, mediaState: Media, uiContext: UIContext
     mediaState.sequence?.forEach((sequenceItem) => {
       const sequenceItemKey = `${mediaKey}.item.${sequenceItem.key}`
       wsServer.update(sequenceItemKey, getMediaSequenceUI(sequenceItemKey, sequenceItem, uiContext))
-      updateMediaChildrenUI(sequenceItemKey, sequenceItem.media, uiContext)
+      updateMediaUI(sequenceItemKey, sequenceItem.media, uiContext, true)
     })
     return
   }
 }
 
-const uiContext: UIContext = { video, mainState }
+const uiContext: UIContext = { video, mainState, libraryKeys }
 
 function updateUI() {
   uiContext.mainState = mainState
+  uiContext.libraryKeys = libraryKeys
   wsServer.update('mainState', mainState)
   wsServer.updateRoot(getUIRoot(mainState, uiContext))
   wsServer.update('liveDashboard', getDashboardUI(mainState, uiContext, 'liveMedia'))
@@ -272,7 +273,7 @@ function updateLibraryUI() {
   )
   wsServer.update('library', getLibraryUI(libraryKeys))
   libraryKeys.forEach((key) => {
-    wsServer.update(`library/${key}`, getLibraryKeyUI(key))
+    wsServer.update(`library.${key}`, getLibraryKeyUI(key))
   })
 }
 
@@ -295,6 +296,7 @@ function mainStateUpdate(updater: (state: MainState) => MainState) {
   midiDashboard = getMidiFields(mainState)
 }
 
+const sequenceTransitionEnds: Record<string, undefined | NodeJS.Timeout> = {}
 const sequenceAutoTransitions: Record<string, undefined | NodeJS.Timeout> = {}
 const sequenceVideoEndTransitions: Record<string, undefined | NodeJS.Timeout> = {}
 
@@ -365,8 +367,8 @@ function mainStateEffect(state: MainState, prevState: MainState) {
       const mediaPathString = mediaPath.join('.')
       clearTimeout(sequenceAutoTransitions[mediaPathString])
       const maxDurationMs = 1_000 * activeItem.maxDuration
-      const timeUntilMaxDuration = media.lastTransitionTime
-        ? media.lastTransitionTime + maxDurationMs - Date.now()
+      const timeUntilMaxDuration = media.transitionStartTime
+        ? media.transitionStartTime + maxDurationMs - Date.now()
         : maxDurationMs
       sequenceAutoTransitions[mediaPathString] = setTimeout(
         () => {
@@ -427,6 +429,7 @@ function handleAudioPlayback(state: MainState, prevState: MainState) {
 function handleVideoEndBehavior() {
   matchAllMedia(mainState, (media, mediaPath) => {
     if (media.type !== 'sequence') return false
+    const mediaPathString = mediaPath.join('.')
     const activeItem = getSequenceActiveItem(media)
     if (!activeItem) return false
     if (activeItem.media.type !== 'video') return false
@@ -438,18 +441,50 @@ function handleVideoEndBehavior() {
     if (playingFrame === null || frameCount === null) return false
     const framesRemaining = frameCount - playingFrame
     const approxTimeRemaining = (1000 * framesRemaining) / mainAnimationFPS
-    const mediaPathString = mediaPath.join('.')
     clearTimeout(sequenceVideoEndTransitions[mediaPathString])
     sequenceVideoEndTransitions[mediaPathString] = setTimeout(
       () => {
-        console.log('video ended. going next.')
+        // console.log('video ended. going next.')
         delete sequenceVideoEndTransitions[mediaPathString]
         delete sequenceAutoTransitions[mediaPathString]
         goNext(mediaPath)
       },
       Math.max(1, approxTimeRemaining)
     )
-    // console.log('player', approxTimeRemaining)
+  })
+  matchAllMedia(mainState, (media, mediaPath) => {
+    if (media.type !== 'sequence') return false
+    const mediaPathString = mediaPath.join('.')
+    const { transitionEndTime, transition } = media
+    if (transitionEndTime && transition) {
+      // handle video transition ending
+      clearTimeout(sequenceTransitionEnds[mediaPathString])
+      const now = Date.now()
+      const timeRemaining = transitionEndTime - now
+      // const progress = 1 - timeRemaining / transition.duration // actually wedont need this
+      sequenceTransitionEnds[mediaPathString] = setTimeout(
+        () => {
+          delete sequenceTransitionEnds[mediaPathString]
+          rootMediaUpdate(mediaPathString.split('.'), (media: Media): Media => {
+            if (media.type !== 'sequence') return media
+            const { nextActiveKey } = media
+            if (!nextActiveKey) return media
+            return {
+              ...media,
+              transitionEndTime: undefined,
+              transitionStartTime: undefined,
+              activeKey: nextActiveKey,
+              nextActiveKey: undefined,
+            }
+          })
+          // goNext(mediaPath)
+        },
+        Math.max(1, timeRemaining)
+      )
+      // console.log('player', approxTimeRemaining)
+      return true
+    }
+    return false
   })
 }
 
@@ -624,6 +659,7 @@ wsServer.onActionEvent((event) => {
   //   }))
   //   return
   // }
+  console.log(event)
   if (handleMediaEvent(event)) return
   if (handleTransitionEvent(event)) return
   if (handleEffectEvent(event)) return
@@ -709,12 +745,16 @@ function updateValuesIndex(event: ActionEvent): boolean {
     return true
   }
   if (field === 'value') {
-    updateSliderValue(event.dataState.action[1], event.payload[0])
+    updateSliderValue(action[1], event.payload[0])
     return true
   }
-
+  if (field === 'set') {
+    const value = action[3]
+    updateSliderValue(key, value)
+    return true
+  }
   if (field === 'addDashBounce') {
-    addToDashboard(key, 'bounce-button')
+    addToDashboard(key, 'bounceButton')
     return true
   }
   if (field === 'addDashSlider') {
@@ -799,14 +839,14 @@ function updateSliderValue(fieldPath: string, value: number) {
 
 function addToDashboard(
   mediaKey: string,
-  type: 'slider' | 'bounce-button',
+  behavior: 'slider' | 'bounceButton' | 'goNextButton',
   opts?: {
     min?: number
     max?: number
     step?: number
   }
 ) {
-  console.log('add to dash', mediaKey, type, opts)
+  console.log('add to dash', mediaKey, behavior, opts)
   const mediaPath = mediaKey.split('.')
   const [rootMediaKey, ...restMediaPath] = mediaPath
   if (rootMediaKey === 'liveMedia' || rootMediaKey === 'readyMedia') {
@@ -820,7 +860,7 @@ function addToDashboard(
           {
             key: randomUUID(),
             field: restMediaPath.join('.'),
-            behavior: type,
+            behavior,
             ...opts,
           },
         ],
@@ -1256,7 +1296,38 @@ function handleMediaEvent(event: ActionEvent): boolean {
     })
     return true
   }
+  if (action === 'saveGoNextToDash') {
+    const mediaKey = mediaPath.join('.')
+    addToDashboard(mediaKey, 'goNextButton')
+    return true
+  }
+  if (action === 'addToSequenceFromLibrary') {
+    const libraryKey = event.payload
+    console.log('adding to sequence', libraryKey)
+    rootMediaUpdate(mediaPath, (media) => {
+      return media
+    })
+  }
+  if (action === 'transitionDuration') {
+    rootMediaUpdate(mediaPath, (media) => {
+      if (media.type !== 'sequence') {
+        console.warn('addToSequence on non-sequence media', media)
+        return media
+      }
+      return {
+        ...media,
+        transition: {
+          type: media.transition?.type || 'fade',
+          mode: media.transition?.mode || 'mix',
+          duration: event.payload[0],
+        },
+      }
+    })
+    return true
+  }
+
   if (action === 'goNext') {
+    console.log('going next', mediaPath)
     goNext(mediaPath)
     return true
   }
@@ -1359,6 +1430,7 @@ function handleMediaEvent(event: ActionEvent): boolean {
   if (action === 'maxDuration') {
     let duration: null | number = null
     if (Array.isArray(event.payload)) duration = event.payload[0] // slider gives us an array
+    if (event.dataState.action?.[3]) duration = event.dataState.action?.[3] // hardcoded events
     if (event.payload === true) duration = 10
     if (event.payload === false) duration = null
     const targetPath = mediaPath.slice(0, -2)
@@ -1421,10 +1493,16 @@ function goNext(mediaPath: string[]) {
       console.warn('goNext: next media not identified')
       return media
     }
+    let transitionDuration = 0
+    if (media.transition?.duration) {
+      transitionDuration = media.transition.duration
+    }
+    const now = Date.now()
     return {
       ...media,
-      activeKey: nextKey,
-      lastTransitionTime: Date.now(),
+      nextActiveKey: nextKey,
+      transitionEndTime: now + transitionDuration,
+      transitionStartTime: now,
     }
   })
 }
@@ -1481,14 +1559,16 @@ subscribeMidiEvents((event) => {
   if (liveButton !== -1) {
     const midiConfig = midiDashboard.live.buttons[liveButton]
     if (!midiConfig) return
-    if (midiConfig.behavior === 'bounce-button') bounceField(midiConfig.field)
+    if (midiConfig.behavior === 'bounceButton') bounceField(midiConfig.field)
+    if (midiConfig.behavior === 'goNextButton') goNext(midiConfig.field.split('.'))
     return
   }
+
   const readyButton = midiReadyButtons.indexOf(channel)
   if (readyButton !== -1) {
     const midiConfig = midiDashboard.ready.buttons[readyButton]
     if (!midiConfig) return
-    if (midiConfig.behavior === 'bounce-button') bounceField(midiConfig.field)
+    if (midiConfig.behavior === 'bounceButton') bounceField(midiConfig.field)
     return
   }
   const liveSlider = midiLiveSliders.indexOf(channel)
@@ -1537,7 +1617,7 @@ function createBlankMedia(type: Media['type']): Media {
     return { type, layers: [] }
   }
   if (type === 'sequence') {
-    return { type, sequence: [] }
+    return { type, sequence: [], transition: { type: 'fade', duration: 1000, mode: 'mix' } }
   }
 
   return { type: 'off' }

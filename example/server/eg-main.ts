@@ -1,4 +1,9 @@
-import { DefaultBounceAmount, DefaultBounceDuration, DefaultSmoothing } from './constants'
+import {
+  DefaultBounceAmount,
+  DefaultBounceDuration,
+  DefaultSmoothing,
+  DefaultTransitionDuration,
+} from './constants'
 import { eg as egInfo, EGInfo } from './eg'
 import { Frame } from './eg-sacn'
 import {
@@ -394,7 +399,41 @@ export function getSequenceActiveItem(media: SequenceMedia): SequenceItem | unde
 
 function sequenceFrame(media: SequenceMedia, ctx: StateContext, mediaPath: string): Frame {
   const activeMedia = getSequenceActiveItem(media)
+  const now = ctx.nowTime
+  // handle media.transition. and transitionStartTime and transitionEndTime
+  const {
+    transitionStartTime,
+    transitionEndTime,
+    transition: transitionSpec,
+    nextActiveKey,
+  } = media
+  const duration = transitionSpec?.duration || DefaultTransitionDuration
   if (!activeMedia) return blackFrame
+  const activeMediaKey = `${mediaPath}.item.${activeMedia.key}`
+
+  const activeMediaFrame = activeMedia && mediaFrame(activeMedia.media, ctx, activeMediaKey)
+  if (!activeMediaFrame) {
+    return blackFrame
+  }
+  if (
+    transitionSpec &&
+    nextActiveKey &&
+    transitionStartTime &&
+    transitionEndTime
+    // transitionEndTime <= now
+    // now <= transitionStartTime + duration
+  ) {
+    // transition in progress
+    const progress = (now - transitionStartTime) / duration
+    const nextItem = media.sequence.find((item) => item.key === nextActiveKey)
+    const nextMedia = nextItem?.media
+    if (!nextMedia) return activeMediaFrame
+    const nextActiveMediaKey = `${mediaPath}.item.${nextActiveKey}`
+    const nextFrame = mediaFrame(nextMedia, ctx, nextActiveMediaKey)
+    if (progress >= 1) return nextFrame
+    return transition(egInfo, activeMediaFrame, nextFrame, transitionSpec, progress)
+  }
+
   return mediaFrame(activeMedia.media, ctx, `${mediaPath}.item.${activeMedia.key}`)
 }
 
