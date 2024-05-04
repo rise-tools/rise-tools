@@ -1,5 +1,6 @@
 import crypto from 'node:crypto'
 
+import { ServerHandlerResponse } from './response'
 import {
   HandlerEventDataState,
   isComponentDataState,
@@ -9,15 +10,16 @@ import {
 
 /** Server data state*/
 export type ServerDataState = JSONValue | ServerHandlerEventDataState
-export type ServerHandlerEventDataState = HandlerEventDataState & {
-  handler: (args: any) => void
-}
+export type ServerHandlerEventDataState<T = ServerHandlerFunction | AsyncServerHandlerFunction> =
+  HandlerEventDataState & {
+    handler: T
+  }
 export function isServerEventDataState(obj: ServerDataState): obj is ServerHandlerEventDataState {
   return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
 }
 
 export function getAllEventHandlers(dataState: ServerDataState) {
-  const acc: Record<string, (args: any) => any> = {}
+  const acc: Record<string, ServerHandlerFunction | AsyncServerHandlerFunction> = {}
   function traverse(dataState: ServerDataState) {
     if (!dataState || typeof dataState !== 'object') {
       return
@@ -39,7 +41,10 @@ export function getAllEventHandlers(dataState: ServerDataState) {
   return acc
 }
 
-export function handler(func: (args: any) => any): ServerHandlerEventDataState {
+type ServerHandlerFunction = (args: any) => ServerHandlerResponse | JSONValue
+export function handler(
+  func: ServerHandlerFunction
+): ServerHandlerEventDataState<ServerHandlerFunction> {
   const key = crypto.randomUUID()
   return {
     $: 'event',
@@ -49,7 +54,10 @@ export function handler(func: (args: any) => any): ServerHandlerEventDataState {
   }
 }
 
-export function asyncHandler(func: (args: any) => Promise<any>): ServerHandlerEventDataState {
+type AsyncServerHandlerFunction = (args: any) => Promise<ReturnType<ServerHandlerFunction>>
+export function asyncHandler(
+  func: AsyncServerHandlerFunction
+): ServerHandlerEventDataState<AsyncServerHandlerFunction> {
   const key = crypto.randomUUID()
   return {
     $: 'event',

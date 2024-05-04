@@ -27,7 +27,7 @@ export type ReferencedDataState = {
   ref: Path
 }
 type EventDataState = ActionEventDataState | HandlerEventDataState
-export type ActionEventDataState<T = any> = {
+export type ActionEventDataState<T = string | string[]> = {
   $: 'event'
   action?: T
 }
