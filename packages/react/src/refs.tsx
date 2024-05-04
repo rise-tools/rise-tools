@@ -2,25 +2,28 @@ import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, use
 
 import { Stream } from './streams'
 import {
+  ActionEventDataState,
   BaseTemplate,
   ComponentRegistry,
+  DataState,
   isComponentDataState,
   isCompositeDataState,
-  JSONValue,
   Path,
   ReferencedDataState,
   TemplateEvent,
 } from './template'
 
-export type Store<T = JSONValue> = Stream<T>
+export type Store<T = DataState> = Stream<T>
 
+export type DataSourceActionEventHandler = (event: ActionEventDataState) => void
 export type DataSource = {
   get: (key: string) => Store
+  onEvent: (handler: DataSourceActionEventHandler) => void
   sendEvent: (event: TemplateEvent) => Promise<any>
 }
 
 /** Refs */
-type DataValues = Record<string, JSONValue>
+type DataValues = Record<string, DataState>
 
 function lookupRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
   if (typeof ref === 'string') {
@@ -61,9 +64,9 @@ export function extractRefKey(ref: Path) {
   return ref[0]
 }
 
-function findAllRefs(stateNode: JSONValue, dataValues: DataValues): Set<string> {
+function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> {
   const currentRefKeys = new Set<string>()
-  function searchRefs(stateNode: JSONValue) {
+  function searchRefs(stateNode: DataState | object) {
     if (!stateNode || typeof stateNode !== 'object') {
       return
     }
@@ -103,7 +106,7 @@ function createRefStateManager(
     [rootKey]: dataSource.get(rootKey).get(),
   }
   let refSubscriptions: Record<string, () => void> = {}
-  function setRefValue(refKey: string, value: JSONValue) {
+  function setRefValue(refKey: string, value: DataState) {
     if (dataValues[refKey] !== value) {
       dataValues = { ...dataValues, [refKey]: value }
       setDataValues(dataValues)
@@ -149,7 +152,7 @@ function createRefStateManager(
   }
 }
 
-function resolveValueRefs(dataValues: DataValues, value: JSONValue): JSONValue {
+function resolveValueRefs(dataValues: DataValues, value: DataState): DataState {
   if (!value || typeof value !== 'object') {
     return value
   }
@@ -160,15 +163,20 @@ function resolveValueRefs(dataValues: DataValues, value: JSONValue): JSONValue {
     if (isCompositeDataState(value) && value.$ === 'ref') {
       return resolveRef(dataValues, value.ref)
     }
+    // @ts-ignore
     return Object.fromEntries(
       Object.entries(value).map(([key, item]) => {
+        // tbd: Typescript complains b/c the return type of this can also be
+        // Record<string, DataState>. However, the end return type is always "DataState".
+        // We likely need an inner function
+        // @ts-ignore
         return [key, resolveValueRefs(dataValues, item)]
       })
     )
   }
 }
 
-function resolveRef(dataValues: DataValues, lookup: ReferencedDataState['ref']): JSONValue {
+function resolveRef(dataValues: DataValues, lookup: ReferencedDataState['ref']): DataState {
   const value = extractRefValue(dataValues, lookup)
   return resolveValueRefs(dataValues, value)
 }

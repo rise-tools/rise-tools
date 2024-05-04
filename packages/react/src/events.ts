@@ -1,7 +1,8 @@
 import crypto from 'node:crypto'
 
-import { ServerHandlerResponse } from './response'
+import { ServerResponse } from './response'
 import {
+  DataState,
   HandlerEventDataState,
   isComponentDataState,
   isEventDataState,
@@ -9,17 +10,16 @@ import {
 } from './template'
 
 /** Server data state*/
-export type ServerDataState = JSONValue | ServerHandlerEventDataState
-export type ServerHandlerEventDataState<T = ServerHandlerFunction | AsyncServerHandlerFunction> =
-  HandlerEventDataState & {
-    handler: T
-  }
+export type ServerDataState = DataState | ServerHandlerEventDataState
+export type ServerHandlerEventDataState<T = ServerHandlerFunction> = HandlerEventDataState & {
+  handler: T
+}
 export function isServerEventDataState(obj: ServerDataState): obj is ServerHandlerEventDataState {
   return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
 }
 
 export function getAllEventHandlers(dataState: ServerDataState) {
-  const acc: Record<string, ServerHandlerFunction | AsyncServerHandlerFunction> = {}
+  const acc: Record<string, ServerHandlerFunction> = {}
   function traverse(dataState: ServerDataState) {
     if (!dataState || typeof dataState !== 'object') {
       return
@@ -41,10 +41,10 @@ export function getAllEventHandlers(dataState: ServerDataState) {
   return acc
 }
 
-type ServerHandlerFunction = (args: any) => ServerHandlerResponse | JSONValue
+type SyncServerHandlerFunction = (args: any) => ServerResponse | JSONValue
 export function handler(
-  func: ServerHandlerFunction
-): ServerHandlerEventDataState<ServerHandlerFunction> {
+  func: SyncServerHandlerFunction
+): ServerHandlerEventDataState<SyncServerHandlerFunction> {
   const key = crypto.randomUUID()
   return {
     $: 'event',
@@ -54,7 +54,7 @@ export function handler(
   }
 }
 
-type AsyncServerHandlerFunction = (args: any) => Promise<ReturnType<ServerHandlerFunction>>
+type AsyncServerHandlerFunction = (args: any) => Promise<ReturnType<SyncServerHandlerFunction>>
 export function asyncHandler(
   func: AsyncServerHandlerFunction
 ): ServerHandlerEventDataState<AsyncServerHandlerFunction> {
@@ -66,3 +66,5 @@ export function asyncHandler(
     handler: func,
   }
 }
+
+export type ServerHandlerFunction = SyncServerHandlerFunction | AsyncServerHandlerFunction

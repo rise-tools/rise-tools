@@ -3,7 +3,10 @@ import {
   extractRefKey,
   getAllEventHandlers,
   isHandlerEvent,
+  res,
   ServerDataState,
+  ServerHandlerFunction,
+  ServerResponse,
 } from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
@@ -32,7 +35,7 @@ export function createWSServerDataSource() {
 
   const clientSenders = new Map<string, (value: ServerWebsocketMessage) => void>()
 
-  const eventHandlers = new Map<string, Record<string, (args: any) => any>>()
+  const eventHandlers = new Map<string, Record<string, ServerHandlerFunction>>()
 
   function update(key: string, value: ServerDataState) {
     values.set(key, value)
@@ -96,13 +99,15 @@ export function createWSServerDataSource() {
         )
         return
       }
-      const res = await handleEvent(message.event)
+      let response = await handleEvent(message.event)
+      if (!(response instanceof ServerResponse)) {
+        response = res.json(response)
+      }
       if (dataState.async) {
         clientSenders.get(clientId)?.({
           $: 'evt-res',
           key: dataState.key,
-          ok: true,
-          val: res,
+          res: response,
         })
       }
     } catch (error: any) {
@@ -110,8 +115,7 @@ export function createWSServerDataSource() {
         clientSenders.get(clientId)?.({
           $: 'evt-res',
           key: dataState.key,
-          ok: false,
-          val: error,
+          res: res.json(error).status(500),
         })
         return
       }

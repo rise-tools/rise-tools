@@ -45,34 +45,35 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   }
 
   useEffect(() => {
+    return dataSource.onEvent((dataState) => {
+      const [action, path] = Array.isArray(dataState.action)
+        ? dataState.action
+        : [dataState.action, '']
+      if (action === 'navigate') {
+        router.push(`/connection/${params.id}?path=${path}`)
+        return
+      }
+      if (action === 'navigate-back') {
+        router.back()
+        return
+      }
+    })
+  }, [])
+
+  useEffect(() => {
     if (path === undefined) {
       router.back()
     }
   }, [path])
 
-  const onEvent = useCallback(
-    async (event: TemplateEvent) => {
-      if (isActionEvent(event)) {
-        const [action, path] = Array.isArray(event.dataState.action)
-          ? event.dataState.action
-          : [event.dataState.action, '']
-        if (action === 'navigate') {
-          router.push(`/connection/${params.id}?path=${path}`)
-          return
-        }
-        if (action === 'navigate-back') {
-          router.back()
-          return
-        }
-      }
-      return dataSource.sendEvent(event)
-    },
-    [dataSource]
-  )
-
   return (
     <DataBoundary dataSource={dataSource} path={path!}>
-      <Template components={components} dataSource={dataSource} path={path!} onEvent={onEvent} />
+      <Template
+        components={components}
+        dataSource={dataSource}
+        path={path!}
+        onEvent={dataSource.sendEvent}
+      />
     </DataBoundary>
   )
 }

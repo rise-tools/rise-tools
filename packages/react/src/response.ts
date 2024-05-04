@@ -1,6 +1,4 @@
-import { ActionEventDataState } from './template'
-
-export type ServerHandlerResponse = any
+import { ActionEventDataState, JSONValue } from './template'
 
 // tbd
 // what kind of API do we want?
@@ -16,7 +14,7 @@ export type ServerHandlerResponse = any
 // client-side hooks such as "onEvent()" where you can listen to e.g. global onError and display
 // an appropriate error state
 export const res = {
-  json(payload: any) {
+  json(payload: JSONValue) {
     const res = new ServerResponse()
     res.payload = payload
     return res
@@ -27,8 +25,18 @@ export class ServerResponse {
   actions: ActionEventDataState[] = []
   payload: any
 
+  // what are default values in `fetch`?
+  statusCode: number = 200
+  ok: boolean = true
+
   action(action: ActionEventDataState) {
     this.actions.push(action)
+    return this
+  }
+
+  status(code: number) {
+    this.statusCode = code
+    this.ok = code >= 200 && code < 300
     return this
   }
 }

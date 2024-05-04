@@ -10,7 +10,13 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
 }
 
 /** Data state */
-export type DataState = JSONValue | ReferencedComponentDataState
+export type DataState =
+  | JSONValue
+  | ReferencedComponentDataState
+  | ComponentDataState
+  | ReferencedDataState
+  | EventDataState
+  | DataState[]
 export type ComponentDataState = {
   $: 'component'
   key?: string
@@ -46,15 +52,8 @@ export function isActionEvent(event: TemplateEvent): event is TemplateEvent<Acti
   return isEventDataState(event.dataState) && 'action' in event.dataState
 }
 
-type SafeObject = {
-  [key: string]: JSONValue
-  $?: never
-}
 export type JSONValue =
-  | ComponentDataState
-  | ReferencedDataState
-  | EventDataState
-  | SafeObject
+  | { [key: string]: JSONValue; $?: never }
   | string
   | number
   | boolean
@@ -82,15 +81,15 @@ export function isCompositeDataState(obj: any): obj is ComponentDataState | Refe
     (obj.$ === 'component' || obj.$ === 'ref')
   )
 }
-export function isComponentDataState(obj: JSONValue): obj is ComponentDataState {
+export function isComponentDataState(obj: DataState): obj is ComponentDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'component'
 }
 export function isReferencedComponentDataState(
-  obj: JSONValue
+  obj: DataState
 ): obj is ReferencedComponentDataState {
   return isComponentDataState(obj) && 'path' in obj
 }
-export function isEventDataState(obj: JSONValue): obj is EventDataState {
+export function isEventDataState(obj: DataState): obj is EventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
 }
 
@@ -138,7 +137,7 @@ export function BaseTemplate({
     return <Component key={stateNode.key} {...componentProps} children={children} />
   }
 
-  function render(stateNode: JSONValue, path: Path): React.ReactNode {
+  function render(stateNode: DataState, path: Path): React.ReactNode {
     if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
@@ -161,7 +160,7 @@ export function BaseTemplate({
 
   function renderProp(
     propKey: string,
-    propValue: JSONValue,
+    propValue: DataState,
     parentNode: ComponentDataState | ReferencedComponentDataState,
     path: Path
   ): any {

@@ -1,8 +1,11 @@
 import {
   createWritableStream,
   type DataSource,
+  DataSourceActionEventHandler,
+  DataState,
+  isActionEvent,
   isHandlerEvent,
-  type JSONValue,
+  ServerResponse,
   Store,
   Stream,
   type TemplateEvent,
@@ -27,14 +30,13 @@ export type EventWebsocketMessage = {
 export type UpdateWebsocketMessage = {
   $: 'up'
   key: string
-  val: JSONValue
+  val: DataState
 }
 
 export type EventResponseWebsocketMessage = {
   $: 'evt-res'
   key: string
-  ok: boolean
-  val: JSONValue
+  res: ServerResponse
 }
 
 export type ClientWebsocketMessage =
@@ -44,8 +46,7 @@ export type ClientWebsocketMessage =
 
 export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponseWebsocketMessage
 
-type Handler = (value: JSONValue) => void
-type PromiseHandler = (value: any) => void
+type Handler = (value: DataState) => void
 
 type WebSocketState = {
   status?: 'connected' | 'disconnected'
@@ -77,6 +78,8 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
     })
   })
 
+  const actionEventHandlers: Set<DataSourceActionEventHandler> = new Set()
+
   rws.onmessage = (eventData) => {
     const event = JSON.parse(eventData.data) as ServerWebsocketMessage
     switch (event['$']) {
@@ -89,19 +92,25 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
         break
       }
       case 'evt-res': {
+        const { res } = event
         const promise = promises.get(event.key)
         if (promise) {
           const [resolve, reject] = promise
-          if (event.ok) {
-            resolve(event.val)
+          if (res.ok) {
+            resolve(res.payload)
           } else {
-            reject(event.val)
+            reject(res.payload)
           }
           promises.delete(event.key)
         } else {
           console.warn(
             `No callback registered for the event: ${JSON.stringify(event)}. If your request takes more than 10 seconds, you may need to provide a custom timeout.`
           )
+        }
+        if (res.actions) {
+          actionEventHandlers.forEach((handler) => {
+            res.actions.forEach((action) => handler(action))
+          })
         }
         break
       }
@@ -147,7 +156,7 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
     }
   }
 
-  const promises = new Map<string, [PromiseHandler, PromiseHandler]>()
+  const promises = new Map<string, [Handler, Handler]>()
 
   return {
     get: (key: string) => {
@@ -160,7 +169,19 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
       return newStore
     },
     state: createStateStream(rws),
+    onEvent: (handler) => {
+      actionEventHandlers.add(handler)
+      return () => actionEventHandlers.delete(handler)
+    },
     sendEvent: async (event) => {
+      if (isActionEvent(event)) {
+        actionEventHandlers.forEach((handler) => handler(event.dataState))
+        // should we change it so that we never send ActionEvents to the server?
+        // we would remove "wsDataSource.onActionEvent()" and require all users to use functions as props
+        // that would be the cleanest and would save bandwidth. but it's not going to work for EG as that server
+        // is just too big for that change
+        // return
+      }
       send({ $: 'evt', event })
       if (isHandlerEvent(event)) {
         return new Promise((resolve, reject) => {
