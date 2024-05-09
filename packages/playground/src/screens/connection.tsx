@@ -2,7 +2,7 @@ import { RiseComponents } from '@final-ui/kit'
 import { isActionEvent, Template, TemplateEvent } from '@final-ui/react'
 import { TamaguiComponents } from '@final-ui/tamagui'
 import { Stack } from 'expo-router'
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import { createParam } from 'solito'
 import { useRouter } from 'solito/router'
 
@@ -44,36 +44,28 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
     return null
   }
 
-  useEffect(() => {
-    return dataSource.onEvent((dataState) => {
-      const [action, path] = Array.isArray(dataState.action)
-        ? dataState.action
-        : [dataState.action, '']
-      if (action === 'navigate') {
-        router.push(`/connection/${params.id}?path=${path}`)
-        return
+  const onEvent = useCallback(
+    async (event: TemplateEvent) => {
+      if (isActionEvent(event)) {
+        const [action, path] = Array.isArray(event.dataState.action)
+          ? event.dataState.action
+          : [event.dataState.action, '']
+        if (action === 'navigate') {
+          router.push(`/connection/${params.id}?path=${path}`)
+          return
+        }
+        if (action === 'navigate-back') {
+          router.back()
+          return
+        }
       }
-      if (action === 'navigate-back') {
-        router.back()
-        return
-      }
-    })
-  }, [])
-
-  useEffect(() => {
-    if (path === undefined) {
-      router.back()
-    }
-  }, [path])
+    },
+    [dataSource]
+  )
 
   return (
     <DataBoundary dataSource={dataSource} path={path!}>
-      <Template
-        components={components}
-        dataSource={dataSource}
-        path={path!}
-        onEvent={dataSource.sendEvent}
-      />
+      <Template components={components} dataSource={dataSource} path={path!} onEvent={onEvent} />
     </DataBoundary>
   )
 }

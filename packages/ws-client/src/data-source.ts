@@ -3,7 +3,6 @@ import {
   type DataSource,
   DataSourceActionEventHandler,
   DataState,
-  isActionEvent,
   isHandlerEvent,
   ServerResponse,
   Store,
@@ -174,14 +173,6 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
       return () => actionEventHandlers.delete(handler)
     },
     sendEvent: async (event) => {
-      if (isActionEvent(event)) {
-        actionEventHandlers.forEach((handler) => handler(event.dataState))
-        // should we change it so that we never send ActionEvents to the server?
-        // we would remove "wsDataSource.onActionEvent()" and require all users to use functions as props
-        // that would be the cleanest and would save bandwidth. but it's not going to work for EG as that server
-        // is just too big for that change
-        // return
-      }
       send({ $: 'evt', event })
       if (isHandlerEvent(event)) {
         return new Promise((resolve, reject) => {
