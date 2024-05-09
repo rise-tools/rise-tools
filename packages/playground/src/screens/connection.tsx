@@ -80,13 +80,7 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
         components={components}
         dataSource={dataSource}
         path={path!}
-        onEvent={async (event) => {
-          if (isActionEvent(event)) {
-            handleActionEvent(event.dataState)
-            return
-          }
-          return dataSource.sendEvent(event)
-        }}
+        onEvent={dataSource.sendEvent}
       />
     </DataBoundary>
   )
