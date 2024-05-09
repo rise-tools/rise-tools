@@ -164,13 +164,8 @@ function resolveValueRefs(dataValues: DataValues, value: DataState): DataState {
     if (isCompositeDataState(value) && value.$ === 'ref') {
       return resolveRef(dataValues, value.ref)
     }
-    // @ts-ignore
     return Object.fromEntries(
       Object.entries(value).map(([key, item]) => {
-        // tbd: Typescript complains b/c the return type of this can also be
-        // Record<string, DataState>. However, the end return type is always "DataState".
-        // We likely need an inner function
-        // @ts-ignore
         return [key, resolveValueRefs(dataValues, item)]
       })
     )
