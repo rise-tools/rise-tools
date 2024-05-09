@@ -1,7 +1,5 @@
 import React from 'react'
 
-import { ServerResponse } from './response'
-
 /** Components */
 type ComponentIdentifier = string
 
@@ -17,8 +15,8 @@ export type DataState =
   | ReferencedComponentDataState
   | ComponentDataState
   | ReferencedDataState
-  | ActionDataState
-  | EventDataState
+  | ActionEventDataState
+  | HandlerEventDataState
   | DataState[]
 export type ComponentDataState = {
   $: 'component'
@@ -35,15 +33,6 @@ export type ReferencedDataState = {
   $: 'ref'
   ref: Path
 }
-export type ActionDataState<T = any> = {
-  $: 'action'
-  action: T
-}
-export type EventDataState = {
-  $: 'event'
-  key: string
-  timeout?: number
-}
 export type JSONValue =
   | { [key: string]: JSONValue; $?: never }
   | string
@@ -53,15 +42,27 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent<K = any> = {
+type Event<T = any, K = any> = {
   target: {
     key?: string
     component: string
     propKey: string
     path: Path
   }
-  dataState: EventDataState
+  dataState: T
   payload: K
+}
+export type ActionEvent = Event<ActionEventDataState>
+export type HandlerEvent = Event<HandlerEventDataState>
+export type TemplateEvent = ActionEvent | HandlerEvent
+export type ActionEventDataState<T = any> = {
+  $: 'event'
+  action: T
+}
+export type HandlerEventDataState = {
+  $: 'event'
+  key: string
+  timeout?: number
 }
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
@@ -80,25 +81,25 @@ export function isReferencedComponentDataState(
 ): obj is ReferencedComponentDataState {
   return isComponentDataState(obj) && 'path' in obj
 }
-export function isEventDataState(obj: DataState): obj is EventDataState {
+export function isEventDataState(
+  obj: DataState
+): obj is ActionEventDataState | HandlerEventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
 }
-export function isActionDataState(obj: DataState): obj is ActionDataState {
-  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'action'
+export function isActionEvent(event: TemplateEvent): event is ActionEvent {
+  return isEventDataState(event.dataState) && 'action' in event.dataState
 }
 
 export function BaseTemplate({
   path = '',
   components,
   dataState,
-  onAction,
-  onEvent,
+  onTemplateEvent,
 }: {
   path?: Path
   components: ComponentRegistry
   dataState: DataState
-  onEvent?: (event: TemplateEvent) => any
-  onAction?: (action: ActionDataState['action']) => void
+  onTemplateEvent?: (event: TemplateEvent) => any
 }) {
   function renderComponent(stateNode: ComponentDataState, path: Path) {
     const componentDefinition = components[stateNode.component]
@@ -168,7 +169,7 @@ export function BaseTemplate({
         if (payload?.nativeEvent) {
           payload = '[native code]'
         }
-        return onEvent?.({
+        return onTemplateEvent?.({
           target: {
             key: parentNode.key,
             component: parentNode.component,
@@ -177,12 +178,8 @@ export function BaseTemplate({
           },
           dataState: propValue,
           payload,
-        })
-      }
-    }
-    if (isActionDataState(propValue)) {
-      return () => {
-        return onAction?.(propValue.action)
+          // tbd: can we avoid this cast?
+        } as TemplateEvent)
       }
     }
     if (Array.isArray(propValue)) {

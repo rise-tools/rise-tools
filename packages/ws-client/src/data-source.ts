@@ -2,10 +2,10 @@ import {
   createWritableStream,
   type DataSource,
   DataState,
+  HandlerEvent,
   ServerResponse,
   Store,
   Stream,
-  type TemplateEvent,
 } from '@final-ui/react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
@@ -21,7 +21,7 @@ export type UnsubscribeWebsocketMessage = {
 
 export type EventWebsocketMessage = {
   $: 'evt'
-  event: TemplateEvent
+  event: HandlerEvent
 }
 
 export type UpdateWebsocketMessage = {

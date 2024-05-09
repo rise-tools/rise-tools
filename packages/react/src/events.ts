@@ -3,7 +3,7 @@ import crypto from 'node:crypto'
 import { ServerResponse } from './response'
 import {
   DataState,
-  EventDataState,
+  HandlerEventDataState,
   isComponentDataState,
   isEventDataState,
   JSONValue,
@@ -11,8 +11,9 @@ import {
 
 /** Server data state*/
 export type ServerDataState = DataState | ServerEventDataState
-export type ServerEventDataState<T = ServerHandlerFunction> = EventDataState & {
-  handler: T
+export type ServerHandlerFunction = (args: any) => Promise<ServerResponse | JSONValue>
+export type ServerEventDataState = HandlerEventDataState & {
+  handler: ServerHandlerFunction
 }
 export function isServerEventDataState(obj: ServerDataState): obj is ServerEventDataState {
   return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
@@ -41,8 +42,7 @@ export function getAllEventHandlers(dataState: ServerDataState) {
   return acc
 }
 
-export type ServerHandlerFunction = (args: any) => Promise<ServerResponse | JSONValue>
-export function handler(func: ServerHandlerFunction): ServerEventDataState<ServerHandlerFunction> {
+export function handler(func: ServerHandlerFunction): ServerEventDataState {
   const key = crypto.randomUUID()
   return {
     $: 'event',

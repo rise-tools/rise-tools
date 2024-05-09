@@ -1,23 +1,25 @@
-import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
 import { ServerResponse } from './response'
 import { Stream } from './streams'
 import {
+  ActionEventDataState,
   BaseTemplate,
   ComponentRegistry,
   DataState,
+  HandlerEvent,
+  isActionEvent,
   isComponentDataState,
   isCompositeDataState,
   Path,
   ReferencedDataState,
-  TemplateEvent,
 } from './template'
 
 export type Store<T = DataState> = Stream<T>
 
 export type DataSource = {
   get: (key: string) => Store
-  sendEvent: (event: TemplateEvent) => Promise<ServerResponse>
+  sendEvent: (event: HandlerEvent) => Promise<ServerResponse>
 }
 
 /** Refs */
@@ -189,7 +191,7 @@ export function Template({
   path?: Path
   dataSource: DataSource
   components: ComponentRegistry
-  onAction: ComponentProps<typeof BaseTemplate>['onAction']
+  onAction: (event: ActionEventDataState) => void
   onEvent?: DataSource['sendEvent']
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
@@ -200,15 +202,17 @@ export function Template({
     const release = refStateManager.current.activate()
     return () => release()
   }, [])
-
   const rootDataState = resolveRef(dataValues, path)
   return (
     <BaseTemplate
       components={components}
       path={path}
       dataState={rootDataState}
-      onAction={onAction}
-      onEvent={async (event) => {
+      onTemplateEvent={async (event) => {
+        if (isActionEvent(event)) {
+          onAction?.(event.dataState)
+          return
+        }
         const res = await onEvent(event)
         if (res.actions) {
           for (const action of res.actions) {
