@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
-import { ServerResponseDataState } from './response'
+import { isResponseDataState, ServerResponseDataState } from './response'
 import { Stream } from './streams'
 import {
   ActionEvent,
@@ -187,7 +187,7 @@ export function Template({
   path?: Path
   dataSource: DataSource
   components: ComponentRegistry
-  onAction: (action: ActionEventDataState) => void
+  onAction?: (action: ActionEventDataState) => void
   onEvent?: (event: HandlerEvent) => Promise<ServerResponseDataState>
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
@@ -206,6 +206,11 @@ export function Template({
         return
       }
       const res = await onEvent(event)
+      if (!isResponseDataState(res)) {
+        throw new Error(
+          `Invalid response from "onEvent" handler. Expected ServerResponseDataState. Received: ${JSON.stringify(res)}`
+        )
+      }
       if (res.actions) {
         for (const action of res.actions) {
           onAction?.(action)
