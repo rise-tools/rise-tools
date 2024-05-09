@@ -1,4 +1,4 @@
-import { res, TemplateEvent } from '@final-ui/react'
+import { createResponse, TemplateEvent } from '@final-ui/react'
 import WS from 'jest-websocket-mock'
 
 import { createWSDataSource, EventResponseWebsocketMessage } from '../data-source'
@@ -31,7 +31,7 @@ it('should resolve a promise once response comes in', async () => {
   const response: EventResponseWebsocketMessage = {
     $: 'evt-res',
     key: 'key',
-    res: res({}),
+    res: createResponse({}),
   }
 
   const promise = dataSource.sendEvent(event)
@@ -68,7 +68,7 @@ it('should timeout if response comes later than timeout specified', async () => 
   const response: EventResponseWebsocketMessage = {
     $: 'evt-res',
     key: 'key',
-    res: res({}),
+    res: createResponse({}),
   }
 
   const promise = dataSource.sendEvent(event)
