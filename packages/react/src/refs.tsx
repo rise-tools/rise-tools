@@ -1,8 +1,8 @@
 import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
+import { ServerResponse } from './response'
 import { Stream } from './streams'
 import {
-  ActionEventDataState,
   BaseTemplate,
   ComponentRegistry,
   DataState,
@@ -15,11 +15,9 @@ import {
 
 export type Store<T = DataState> = Stream<T>
 
-export type DataSourceActionEventHandler = (event: ActionEventDataState) => void
 export type DataSource = {
   get: (key: string) => Store
-  onEvent: (handler: DataSourceActionEventHandler) => void
-  sendEvent: (event: TemplateEvent) => Promise<any>
+  sendEvent: (event: TemplateEvent) => Promise<ServerResponse | null>
 }
 
 /** Refs */

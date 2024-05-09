@@ -1,11 +1,5 @@
 import { RiseComponents } from '@final-ui/kit'
-import {
-  ActionEvent,
-  ActionEventDataState,
-  isActionEvent,
-  Template,
-  TemplateEvent,
-} from '@final-ui/react'
+import { ActionEventDataState, isActionEvent, Template, TemplateEvent } from '@final-ui/react'
 import { TamaguiComponents } from '@final-ui/tamagui'
 import { Stack } from 'expo-router'
 import React, { useCallback, useEffect } from 'react'
@@ -56,38 +50,47 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
     }
   }, [path])
 
-  const handleActionEvent = (dataState: ActionEventDataState) => {
-    const [action, path] = Array.isArray(dataState.action)
-      ? dataState.action
-      : [dataState.action, '']
-    if (action === 'navigate') {
-      router.push(`/connection/${params.id}?path=${path}`)
-      return
-    }
-    if (action === 'navigate-back') {
-      router.back()
-      return
-    }
-  }
+  const handleActionEvent = useCallback(
+    (dataState: ActionEventDataState) => {
+      const [action, path] = Array.isArray(dataState.action)
+        ? dataState.action
+        : [dataState.action, '']
+      if (action === 'navigate') {
+        router.push(`/connection/${params.id}?path=${path}`)
+        return true
+      }
+      if (action === 'navigate-back') {
+        router.back()
+        return true
+      }
+    },
+    [router]
+  )
 
-  useEffect(() => {
-    dataSource.onEvent((event) => handleActionEvent(event))
-  }, [dataSource])
+  const onEvent = useCallback(
+    async (event: TemplateEvent) => {
+      if (isActionEvent(event)) {
+        if (handleActionEvent(event.dataState)) {
+          // do not send handled events to the server
+          return
+        }
+      }
+      const res = await dataSource.sendEvent(event)
+      // res is `null` if we sent `actionEvent` to the server
+      // we would have to disable sending action events to the server to make response always defined
+      if (res?.actions) {
+        for (const action of res.actions) {
+          handleActionEvent(action)
+        }
+      }
+      return res
+    },
+    [dataSource]
+  )
 
   return (
     <DataBoundary dataSource={dataSource} path={path!}>
-      <Template
-        components={components}
-        dataSource={dataSource}
-        path={path!}
-        onEvent={async (event) => {
-          if (isActionEvent(event)) {
-            handleActionEvent(event.dataState)
-            return
-          }
-          return dataSource.sendEvent(event)
-        }}
-      />
+      <Template components={components} dataSource={dataSource} path={path!} onEvent={onEvent} />
     </DataBoundary>
   )
 }

@@ -1,7 +1,6 @@
 import {
   createWritableStream,
   type DataSource,
-  DataSourceActionEventHandler,
   DataState,
   isHandlerEvent,
   ServerResponse,
@@ -77,8 +76,6 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
     })
   })
 
-  const actionEventHandlers: Set<DataSourceActionEventHandler> = new Set()
-
   rws.onmessage = (eventData) => {
     const event = JSON.parse(eventData.data) as ServerWebsocketMessage
     switch (event['$']) {
@@ -96,20 +93,15 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
         if (promise) {
           const [resolve, reject] = promise
           if (res.ok) {
-            resolve(res.payload)
+            resolve(res)
           } else {
-            reject(res.payload)
+            reject(res)
           }
           promises.delete(event.key)
         } else {
           console.warn(
             `No callback registered for the event: ${JSON.stringify(event)}. If your request takes more than 10 seconds, you may need to provide a custom timeout.`
           )
-        }
-        if (res.actions) {
-          actionEventHandlers.forEach((handler) => {
-            res.actions.forEach((action) => handler(action))
-          })
         }
         break
       }
@@ -155,7 +147,10 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
     }
   }
 
-  const promises = new Map<string, [Handler, Handler]>()
+  const promises = new Map<
+    string,
+    [(value: ServerResponse) => void, (value: ServerResponse) => void]
+  >()
 
   return {
     get: (key: string) => {
@@ -168,10 +163,6 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
       return newStore
     },
     state: createStateStream(rws),
-    onEvent: (handler) => {
-      actionEventHandlers.add(handler)
-      return () => actionEventHandlers.delete(handler)
-    },
     sendEvent: async (event) => {
       send({ $: 'evt', event })
       if (isHandlerEvent(event)) {
@@ -184,6 +175,8 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
             }
           }, event.dataState.timeout || 10_000)
         })
+      } else {
+        return null
       }
     },
   }
