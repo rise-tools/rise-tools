@@ -51,7 +51,7 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-type Event<T = any, K = any> = {
+export type TemplateEvent<T = any, K = any> = {
   target: {
     key?: string
     component: string
@@ -61,9 +61,8 @@ type Event<T = any, K = any> = {
   dataState: T
   payload: K
 }
-export type ActionEvent = Event<ActionEventDataState>
-export type HandlerEvent = Event<HandlerEventDataState>
-export type TemplateEvent = ActionEvent | HandlerEvent
+export type ActionEvent = TemplateEvent<ActionEventDataState>
+export type HandlerEvent = TemplateEvent<HandlerEventDataState>
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
   return (
@@ -178,8 +177,7 @@ export function BaseTemplate({
           },
           dataState: propValue,
           payload,
-          // tbd: can we avoid this cast?
-        } as TemplateEvent)
+        })
       }
     }
     if (Array.isArray(propValue)) {

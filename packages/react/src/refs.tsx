@@ -1,8 +1,9 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import { ServerResponse } from './response'
 import { Stream } from './streams'
 import {
+  ActionEvent,
   ActionEventDataState,
   BaseTemplate,
   ComponentRegistry,
@@ -203,27 +204,31 @@ export function Template({
     return () => release()
   }, [])
   const rootDataState = resolveRef(dataValues, path)
+  const onTemplateEvent = useCallback(
+    async (event: ActionEvent | HandlerEvent) => {
+      if (isActionEvent(event)) {
+        onAction?.(event.dataState)
+        return
+      }
+      const res = await onEvent(event)
+      if (res.actions) {
+        for (const action of res.actions) {
+          onAction?.(action)
+        }
+      }
+      if (!res.ok) {
+        throw res.payload
+      }
+      return res.payload
+    },
+    [onAction, onEvent]
+  )
   return (
     <BaseTemplate
       components={components}
       path={path}
       dataState={rootDataState}
-      onTemplateEvent={async (event) => {
-        if (isActionEvent(event)) {
-          onAction?.(event)
-          return
-        }
-        const res = await onEvent(event)
-        if (res.actions) {
-          for (const action of res.actions) {
-            onAction?.(action)
-          }
-        }
-        if (!res.ok) {
-          throw res.payload
-        }
-        return res.payload
-      }}
+      onTemplateEvent={onTemplateEvent}
     />
   )
 }
