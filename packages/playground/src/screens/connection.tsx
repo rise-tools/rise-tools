@@ -2,7 +2,7 @@ import { RiseComponents } from '@final-ui/kit'
 import { isActionEvent, Template, TemplateEvent } from '@final-ui/react'
 import { TamaguiComponents } from '@final-ui/tamagui'
 import { Stack } from 'expo-router'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { createParam } from 'solito'
 import { useRouter } from 'solito/router'
 
@@ -44,6 +44,12 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
     return null
   }
 
+  useEffect(() => {
+    if (path === undefined) {
+      router.back()
+    }
+  }, [path])
+
   const onEvent = useCallback(
     async (event: TemplateEvent) => {
       if (isActionEvent(event)) {
@@ -59,6 +65,7 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
           return
         }
       }
+      return dataSource.sendEvent(event)
     },
     [dataSource]
   )
