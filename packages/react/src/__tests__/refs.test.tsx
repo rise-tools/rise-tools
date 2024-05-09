@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { ActionEventDataState, DataSource, res, Template } from '..'
+import { ActionEventDataState, createResponse, DataSource, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
@@ -138,7 +138,7 @@ it('should resolve a ref', () => {
   `)
 })
 
-it('should send an event with ref as a path when trigerred by referenced component', () => {
+it('should send an action with ref as a path when trigerred by referenced component', () => {
   const dataSource: DataSource = {
     get: (store: string) => {
       if (store === 'secondStore') {
@@ -188,7 +188,7 @@ it('should send an event with ref as a path when trigerred by referenced compone
         },
       }
     },
-    sendEvent: jest.fn().mockResolvedValue(res(null)),
+    sendEvent: jest.fn().mockResolvedValue(createResponse(null)),
   }
 
   const onAction = jest.fn()
