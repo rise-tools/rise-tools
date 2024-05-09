@@ -1,14 +1,11 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
 import { ServerResponse } from './response'
 import { Stream } from './streams'
 import {
-  ActionEventDataState,
   BaseTemplate,
   ComponentRegistry,
   DataState,
-  HandlerEventDataState,
-  isActionEvent,
   isComponentDataState,
   isCompositeDataState,
   Path,
@@ -20,7 +17,7 @@ export type Store<T = DataState> = Stream<T>
 
 export type DataSource = {
   get: (key: string) => Store
-  sendEvent: (event: TemplateEvent<HandlerEventDataState>) => Promise<ServerResponse>
+  sendEvent: (event: TemplateEvent) => Promise<ServerResponse>
 }
 
 /** Refs */
@@ -192,8 +189,8 @@ export function Template({
   path?: Path
   dataSource: DataSource
   components: ComponentRegistry
-  onAction: (action: ActionEventDataState) => void
-  onEvent?: DataSource['sendEvent']
+  onAction: ComponentProps<typeof BaseTemplate>['onAction']
+  onEvent?: ComponentProps<typeof BaseTemplate>['onEvent']
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
@@ -210,16 +207,13 @@ export function Template({
       components={components}
       path={path}
       dataState={rootDataState}
+      onAction={onAction}
       onEvent={async (event) => {
-        if (isActionEvent(event)) {
-          onAction(event.dataState.action)
-          return
-        }
         const res = await onEvent(event)
         if (res.actions) {
           // response has local actions to execute on the client as a follow-up
           for (const action of res.actions) {
-            onAction(action)
+            onAction?.(action)
           }
         }
         if (!res.ok) {

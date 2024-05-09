@@ -1,5 +1,5 @@
 import { RiseComponents } from '@final-ui/kit'
-import { ActionEventDataState, isActionEvent, Template, TemplateEvent } from '@final-ui/react'
+import { Template } from '@final-ui/react'
 import { TamaguiComponents } from '@final-ui/tamagui'
 import { Stack } from 'expo-router'
 import React, { useCallback, useEffect } from 'react'
@@ -51,15 +51,13 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   }, [path])
 
   const onAction = useCallback(
-    (dataState: ActionEventDataState) => {
-      const [action, path] = Array.isArray(dataState.action)
-        ? dataState.action
-        : [dataState.action, '']
-      if (action === 'navigate') {
+    (action: string | string[]) => {
+      const [operation, path] = Array.isArray(action) ? action : [action, '']
+      if (operation === 'navigate') {
         router.push(`/connection/${params.id}?path=${path}`)
         return true
       }
-      if (action === 'navigate-back') {
+      if (operation === 'navigate-back') {
         router.back()
         return true
       }

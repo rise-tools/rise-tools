@@ -17,6 +17,7 @@ export type DataState =
   | ReferencedComponentDataState
   | ComponentDataState
   | ReferencedDataState
+  | ActionDataState
   | EventDataState
   | DataState[]
 export type ComponentDataState = {
@@ -34,21 +35,16 @@ export type ReferencedDataState = {
   $: 'ref'
   ref: Path
 }
-type EventDataState = ActionEventDataState | HandlerEventDataState
-export type ActionEventDataState<T = any> = {
-  $: 'event'
-  action?: T
+export type ActionDataState<T = any> = {
+  $: 'action'
+  action: T
 }
-export type HandlerEventDataState = {
+export type EventDataState = {
   $: 'event'
   key: string
   async: boolean
   timeout?: number
 }
-export function isActionEvent(event: TemplateEvent): event is TemplateEvent<ActionEventDataState> {
-  return isEventDataState(event.dataState) && 'action' in event.dataState
-}
-
 export type JSONValue =
   | { [key: string]: JSONValue; $?: never }
   | string
@@ -58,14 +54,14 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent<T = EventDataState, K = any> = {
+export type TemplateEvent<K = any> = {
   target: {
     key?: string
     component: string
     propKey: string
     path: Path
   }
-  dataState: T
+  dataState: EventDataState
   payload: K
 }
 
@@ -88,19 +84,22 @@ export function isReferencedComponentDataState(
 export function isEventDataState(obj: DataState): obj is EventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
 }
+export function isActionDataState(obj: DataState): obj is ActionDataState {
+  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'action'
+}
 
 export function BaseTemplate({
   path = '',
   components,
   dataState,
+  onAction,
   onEvent,
 }: {
   path?: Path
   components: ComponentRegistry
   dataState: DataState
-  onEvent?: (
-    event: TemplateEvent<ActionEventDataState> | TemplateEvent<HandlerEventDataState>
-  ) => Promise<ServerResponse | null>
+  onEvent?: (event: TemplateEvent) => Promise<ServerResponse>
+  onAction?: (action: ActionDataState['action']) => void
 }) {
   function renderComponent(stateNode: ComponentDataState, path: Path) {
     const componentDefinition = components[stateNode.component]
@@ -180,6 +179,11 @@ export function BaseTemplate({
           dataState: propValue,
           payload,
         })
+      }
+    }
+    if (isActionDataState(propValue)) {
+      return () => {
+        return onAction?.(propValue.action)
       }
     }
     if (Array.isArray(propValue)) {

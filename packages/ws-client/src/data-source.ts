@@ -2,7 +2,6 @@ import {
   createWritableStream,
   type DataSource,
   DataState,
-  HandlerEventDataState,
   ServerResponse,
   Store,
   Stream,
@@ -22,7 +21,7 @@ export type UnsubscribeWebsocketMessage = {
 
 export type EventWebsocketMessage = {
   $: 'evt'
-  event: TemplateEvent<HandlerEventDataState>
+  event: TemplateEvent
 }
 
 export type UpdateWebsocketMessage = {

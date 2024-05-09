@@ -5,7 +5,6 @@ import {
   ServerDataState,
   ServerHandlerFunction,
   ServerResponse,
-  TemplateEvent,
 } from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
@@ -15,19 +14,10 @@ import type {
   UnsubscribeWebsocketMessage,
 } from '@final-ui/ws-client'
 
-type ActionEventHandler = (
-  event: TemplateEvent<ActionEventHandler>,
-  eventOpts: {
-    time: number
-    clientId: string
-  }
-) => void
-
 export function createWSServerDataSource() {
   const values = new Map<string, ServerDataState>()
 
   const clientSubscribers = new Map<string, Map<string, () => void>>()
-  const eventSubscribers = new Set<ActionEventHandler>()
   const subscribers = new Map<string, Set<(value: ServerDataState) => void>>()
 
   let clientIdIndex = 0
@@ -154,11 +144,6 @@ export function createWSServerDataSource() {
     update('', value)
   }
 
-  function onActionEvent(handler: ActionEventHandler) {
-    eventSubscribers.add(handler)
-    return () => eventSubscribers.delete(handler)
-  }
-
   function get(key: string) {
     return values.get(key)
   }
@@ -176,5 +161,5 @@ export function createWSServerDataSource() {
     return () => handlers.delete(handler)
   }
 
-  return { update, onActionEvent, subscribe, get, updateRoot, handleWSConnection }
+  return { update, subscribe, get, updateRoot, handleWSConnection }
 }

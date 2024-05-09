@@ -3,18 +3,18 @@ import crypto from 'node:crypto'
 import { ServerResponse } from './response'
 import {
   DataState,
-  HandlerEventDataState,
+  EventDataState,
   isComponentDataState,
   isEventDataState,
   JSONValue,
 } from './template'
 
 /** Server data state*/
-export type ServerDataState = DataState | ServerHandlerEventDataState
-export type ServerHandlerEventDataState<T = ServerHandlerFunction> = HandlerEventDataState & {
+export type ServerDataState = DataState | ServerEventDataState
+export type ServerEventDataState<T = ServerHandlerFunction> = EventDataState & {
   handler: T
 }
-export function isServerEventDataState(obj: ServerDataState): obj is ServerHandlerEventDataState {
+export function isServerEventDataState(obj: ServerDataState): obj is ServerEventDataState {
   return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
 }
 
@@ -44,7 +44,7 @@ export function getAllEventHandlers(dataState: ServerDataState) {
 type SyncServerHandlerFunction = (args: any) => ServerResponse | JSONValue
 export function handler(
   func: SyncServerHandlerFunction
-): ServerHandlerEventDataState<SyncServerHandlerFunction> {
+): ServerEventDataState<SyncServerHandlerFunction> {
   const key = crypto.randomUUID()
   return {
     $: 'event',
@@ -57,7 +57,7 @@ export function handler(
 type AsyncServerHandlerFunction = (args: any) => Promise<ReturnType<SyncServerHandlerFunction>>
 export function asyncHandler(
   func: AsyncServerHandlerFunction
-): ServerHandlerEventDataState<AsyncServerHandlerFunction> {
+): ServerEventDataState<AsyncServerHandlerFunction> {
   const key = crypto.randomUUID()
   return {
     $: 'event',

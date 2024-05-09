@@ -1,4 +1,4 @@
-import { ActionEventDataState, JSONValue } from './template'
+import { ActionDataState, JSONValue } from './template'
 
 // tbd
 // what kind of API do we want?
@@ -22,15 +22,18 @@ export const res = {
 }
 
 export class ServerResponse {
-  actions: ActionEventDataState[] = []
+  actions: ActionDataState[] = []
   payload: any
 
   // what are default values in `fetch`?
   statusCode: number = 200
   ok: boolean = true
 
-  action(action: ActionEventDataState) {
-    this.actions.push(action)
+  action(action: any) {
+    this.actions.push({
+      $: 'action',
+      action,
+    })
     return this
   }
 
