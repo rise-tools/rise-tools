@@ -83,7 +83,7 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
           handleActionEvent(action)
         }
       }
-      return res
+      return res?.payload
     },
     [dataSource]
   )
