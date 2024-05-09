@@ -2,7 +2,7 @@ import {
   createWritableStream,
   type DataSource,
   DataState,
-  isHandlerEvent,
+  HandlerEventDataState,
   ServerResponse,
   Store,
   Stream,
@@ -22,7 +22,7 @@ export type UnsubscribeWebsocketMessage = {
 
 export type EventWebsocketMessage = {
   $: 'evt'
-  event: TemplateEvent
+  event: TemplateEvent<HandlerEventDataState>
 }
 
 export type UpdateWebsocketMessage = {
@@ -157,19 +157,15 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
     state: createStateStream(rws),
     sendEvent: async (event) => {
       send({ $: 'evt', event })
-      if (isHandlerEvent(event)) {
-        return new Promise((resolve, reject) => {
-          promises.set(event.dataState.key, resolve)
-          setTimeout(() => {
-            if (promises.has(event.dataState.key)) {
-              reject(new Error('Request timeout'))
-              promises.delete(event.dataState.key)
-            }
-          }, event.dataState.timeout || 10_000)
-        })
-      } else {
-        return null
-      }
+      return new Promise((resolve, reject) => {
+        promises.set(event.dataState.key, resolve)
+        setTimeout(() => {
+          if (promises.has(event.dataState.key)) {
+            reject(new Error('Request timeout'))
+            promises.delete(event.dataState.key)
+          }
+        }, event.dataState.timeout || 10_000)
+      })
     },
   }
 }

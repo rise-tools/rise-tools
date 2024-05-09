@@ -1,12 +1,4 @@
-import React, {
-  ComponentProps,
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
 import { ServerResponse } from './response'
 import { Stream } from './streams'
@@ -15,6 +7,7 @@ import {
   BaseTemplate,
   ComponentRegistry,
   DataState,
+  HandlerEventDataState,
   isActionEvent,
   isComponentDataState,
   isCompositeDataState,
@@ -27,7 +20,7 @@ export type Store<T = DataState> = Stream<T>
 
 export type DataSource = {
   get: (key: string) => Store
-  sendEvent: (event: TemplateEvent) => Promise<ServerResponse | null>
+  sendEvent: (event: TemplateEvent<HandlerEventDataState>) => Promise<ServerResponse>
 }
 
 /** Refs */
@@ -200,7 +193,7 @@ export function Template({
   dataSource: DataSource
   components: ComponentRegistry
   onAction: (action: ActionEventDataState) => void
-  onEvent?: ComponentProps<typeof BaseTemplate>['onEvent']
+  onEvent?: DataSource['sendEvent']
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
@@ -211,41 +204,31 @@ export function Template({
     return () => release()
   }, [])
 
-  const onTemplateEvent = useCallback(
-    async (event: TemplateEvent) => {
-      if (isActionEvent(event)) {
-        onAction(event.dataState.action)
-        return
-      }
-      const res = await onEvent(event)
-      if (!res) {
-        // res is `null` if we sent `actionEvent` to the server
-        // we would have to disable sending action events to the server to make response always defined
-        return
-      }
-      if (res.actions) {
-        // response has local actions to execute on the client as a follow-up
-        for (const action of res.actions) {
-          onAction(action)
-        }
-      }
-      if (!res.ok) {
-        // if response was not okay, throw the payload as an error
-        throw res.payload
-      }
-      // resolve otherwise
-      return res?.payload
-    },
-    [dataSource, onAction]
-  )
-
   const rootDataState = resolveRef(dataValues, path)
   return (
     <BaseTemplate
       components={components}
       path={path}
       dataState={rootDataState}
-      onEvent={onTemplateEvent}
+      onEvent={async (event) => {
+        if (isActionEvent(event)) {
+          onAction(event.dataState.action)
+          return
+        }
+        const res = await onEvent(event)
+        if (res.actions) {
+          // response has local actions to execute on the client as a follow-up
+          for (const action of res.actions) {
+            onAction(action)
+          }
+        }
+        if (!res.ok) {
+          // if response was not okay, throw the payload as an error
+          throw res.payload
+        }
+        // resolve otherwise
+        return res?.payload
+      }}
     />
   )
 }

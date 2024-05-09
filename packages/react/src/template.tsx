@@ -45,11 +45,6 @@ export type HandlerEventDataState = {
   async: boolean
   timeout?: number
 }
-export function isHandlerEvent(
-  event: TemplateEvent
-): event is TemplateEvent<HandlerEventDataState> {
-  return isEventDataState(event.dataState) && 'key' in event.dataState
-}
 export function isActionEvent(event: TemplateEvent): event is TemplateEvent<ActionEventDataState> {
   return isEventDataState(event.dataState) && 'action' in event.dataState
 }
@@ -73,7 +68,6 @@ export type TemplateEvent<T = EventDataState, K = any> = {
   dataState: T
   payload: K
 }
-export type ActionEvent<T = any, K = any> = TemplateEvent<ActionEventDataState<T>, K>
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
   return (
@@ -104,7 +98,9 @@ export function BaseTemplate({
   path?: Path
   components: ComponentRegistry
   dataState: DataState
-  onEvent?: (event: TemplateEvent) => Promise<ServerResponse | null>
+  onEvent?: (
+    event: TemplateEvent<ActionEventDataState> | TemplateEvent<HandlerEventDataState>
+  ) => Promise<ServerResponse | null>
 }) {
   function renderComponent(stateNode: ComponentDataState, path: Path) {
     const componentDefinition = components[stateNode.component]

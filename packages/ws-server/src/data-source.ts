@@ -1,12 +1,11 @@
 import {
-  ActionEvent,
   extractRefKey,
   getAllEventHandlers,
-  isHandlerEvent,
   res,
   ServerDataState,
   ServerHandlerFunction,
   ServerResponse,
+  TemplateEvent,
 } from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
@@ -17,7 +16,7 @@ import type {
 } from '@final-ui/ws-client'
 
 type ActionEventHandler = (
-  event: ActionEvent,
+  event: TemplateEvent<ActionEventHandler>,
   eventOpts: {
     time: number
     clientId: string
@@ -81,11 +80,6 @@ export function createWSServerDataSource() {
   }
 
   async function handleMessage(clientId: string, message: EventWebsocketMessage) {
-    if (!isHandlerEvent(message.event)) {
-      eventSubscribers.forEach((handler) => handler(message.event, { time: Date.now(), clientId }))
-      return
-    }
-
     const {
       dataState,
       target: { path },
