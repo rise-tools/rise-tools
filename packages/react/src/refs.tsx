@@ -210,7 +210,7 @@ export function Template({
       dataState={rootDataState}
       onTemplateEvent={async (event) => {
         if (isActionEvent(event)) {
-          onAction?.(event.dataState)
+          onAction?.(event)
           return
         }
         const res = await onEvent(event)

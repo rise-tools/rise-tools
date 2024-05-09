@@ -33,6 +33,15 @@ export type ReferencedDataState = {
   $: 'ref'
   ref: Path
 }
+export type ActionEventDataState<T = any> = {
+  $: 'event'
+  action: T
+}
+export type HandlerEventDataState = {
+  $: 'event'
+  key: string
+  timeout?: number
+}
 export type JSONValue =
   | { [key: string]: JSONValue; $?: never }
   | string
@@ -55,15 +64,6 @@ type Event<T = any, K = any> = {
 export type ActionEvent = Event<ActionEventDataState>
 export type HandlerEvent = Event<HandlerEventDataState>
 export type TemplateEvent = ActionEvent | HandlerEvent
-export type ActionEventDataState<T = any> = {
-  $: 'event'
-  action: T
-}
-export type HandlerEventDataState = {
-  $: 'event'
-  key: string
-  timeout?: number
-}
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
   return (
