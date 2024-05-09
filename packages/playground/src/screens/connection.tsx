@@ -50,7 +50,7 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
     }
   }, [path])
 
-  const handleActionEvent = useCallback(
+  const onAction = useCallback(
     (dataState: ActionEventDataState) => {
       const [action, path] = Array.isArray(dataState.action)
         ? dataState.action
@@ -67,39 +67,9 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
     [router]
   )
 
-  const onEvent = useCallback(
-    async (event: TemplateEvent) => {
-      if (isActionEvent(event)) {
-        if (handleActionEvent(event.dataState)) {
-          // do not send handled events to the server
-          return
-        }
-      }
-      const res = await dataSource.sendEvent(event)
-      if (!res) {
-        // res is `null` if we sent `actionEvent` to the server
-        // we would have to disable sending action events to the server to make response always defined
-        return
-      }
-      if (res.actions) {
-        // response has local actions to execute on the client as a follow-up
-        for (const action of res.actions) {
-          handleActionEvent(action)
-        }
-      }
-      if (!res.ok) {
-        // if response was not okay, throw the payload as an error
-        throw res.payload
-      }
-      // resolve otherwise
-      return res?.payload
-    },
-    [dataSource, handleActionEvent]
-  )
-
   return (
     <DataBoundary dataSource={dataSource} path={path!}>
-      <Template components={components} dataSource={dataSource} path={path!} onEvent={onEvent} />
+      <Template components={components} dataSource={dataSource} path={path!} onAction={onAction} />
     </DataBoundary>
   )
 }

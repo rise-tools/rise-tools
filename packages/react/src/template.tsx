@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { ServerResponse } from './response'
+
 /** Components */
 type ComponentIdentifier = string
 
@@ -102,7 +104,7 @@ export function BaseTemplate({
   path?: Path
   components: ComponentRegistry
   dataState: DataState
-  onEvent?: (event: TemplateEvent) => Promise<any>
+  onEvent?: (event: TemplateEvent) => Promise<ServerResponse | null>
 }) {
   function renderComponent(stateNode: ComponentDataState, path: Path) {
     const componentDefinition = components[stateNode.component]

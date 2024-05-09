@@ -1,11 +1,21 @@
-import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import React, {
+  ComponentProps,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import { ServerResponse } from './response'
 import { Stream } from './streams'
 import {
+  ActionEventDataState,
   BaseTemplate,
   ComponentRegistry,
   DataState,
+  isActionEvent,
   isComponentDataState,
   isCompositeDataState,
   Path,
@@ -183,12 +193,14 @@ export function Template({
   components,
   dataSource,
   path = '',
-  onEvent,
+  onAction,
+  onEvent = dataSource.sendEvent,
 }: {
   path?: Path
   dataSource: DataSource
   components: ComponentRegistry
-  onEvent: ComponentProps<typeof BaseTemplate>['onEvent']
+  onAction: (action: ActionEventDataState) => void
+  onEvent?: ComponentProps<typeof BaseTemplate>['onEvent']
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
@@ -198,8 +210,42 @@ export function Template({
     const release = refStateManager.current.activate()
     return () => release()
   }, [])
+
+  const onTemplateEvent = useCallback(
+    async (event: TemplateEvent) => {
+      if (isActionEvent(event)) {
+        onAction(event.dataState.action)
+        return
+      }
+      const res = await onEvent(event)
+      if (!res) {
+        // res is `null` if we sent `actionEvent` to the server
+        // we would have to disable sending action events to the server to make response always defined
+        return
+      }
+      if (res.actions) {
+        // response has local actions to execute on the client as a follow-up
+        for (const action of res.actions) {
+          onAction(action)
+        }
+      }
+      if (!res.ok) {
+        // if response was not okay, throw the payload as an error
+        throw res.payload
+      }
+      // resolve otherwise
+      return res?.payload
+    },
+    [dataSource, onAction]
+  )
+
   const rootDataState = resolveRef(dataValues, path)
   return (
-    <BaseTemplate components={components} path={path} dataState={rootDataState} onEvent={onEvent} />
+    <BaseTemplate
+      components={components}
+      path={path}
+      dataState={rootDataState}
+      onEvent={onTemplateEvent}
+    />
   )
 }
