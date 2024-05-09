@@ -1,6 +1,7 @@
 import {
   extractRefKey,
   getAllEventHandlers,
+  HandlerEvent,
   isResponseDataState,
   res,
   ServerDataState,
@@ -14,10 +15,19 @@ import type {
   UnsubscribeWebsocketMessage,
 } from '@final-ui/ws-client'
 
+type EventSubscriber = (
+  event: HandlerEvent,
+  eventOpts: {
+    time: number
+    clientId: string
+  }
+) => void
+
 export function createWSServerDataSource() {
   const values = new Map<string, ServerDataState>()
 
   const clientSubscribers = new Map<string, Map<string, () => void>>()
+  const eventSubscribers = new Set<EventSubscriber>()
   const subscribers = new Map<string, Set<(value: ServerDataState) => void>>()
 
   let clientIdIndex = 0
@@ -74,6 +84,8 @@ export function createWSServerDataSource() {
       dataState,
       target: { path },
     } = message.event
+
+    eventSubscribers.forEach((handler) => handler(message.event, { time: Date.now(), clientId }))
 
     try {
       const handleEvent = eventHandlers.get(extractRefKey(path))?.[dataState.key]
@@ -154,5 +166,10 @@ export function createWSServerDataSource() {
     return () => handlers.delete(handler)
   }
 
-  return { update, subscribe, get, updateRoot, handleWSConnection }
+  function onEvent(subscriber: EventSubscriber) {
+    eventSubscribers.add(subscriber)
+    return () => eventSubscribers.delete(subscriber)
+  }
+
+  return { update, onEvent, subscribe, get, updateRoot, handleWSConnection }
 }
