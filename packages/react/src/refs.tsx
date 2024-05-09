@@ -211,17 +211,14 @@ export function Template({
       onEvent={async (event) => {
         const res = await onEvent(event)
         if (res.actions) {
-          // response has local actions to execute on the client as a follow-up
           for (const action of res.actions) {
             onAction?.(action)
           }
         }
         if (!res.ok) {
-          // if response was not okay, throw the payload as an error
           throw res.payload
         }
-        // resolve otherwise
-        return res?.payload
+        return res.payload
       }}
     />
   )
