@@ -85,7 +85,7 @@ export function createWSServerDataSource() {
       }
       let response = await handleEvent(message.event)
       if (!isResponseDataState(response)) {
-        response = res(response)
+        response = res(response ?? null)
       }
       clientSenders.get(clientId)?.({
         $: 'evt-res',
