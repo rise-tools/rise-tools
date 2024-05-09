@@ -41,30 +41,14 @@ export function getAllEventHandlers(dataState: ServerDataState) {
   return acc
 }
 
-type SyncServerHandlerFunction = (args: any) => ServerResponse | JSONValue
-export function handler(
-  func: SyncServerHandlerFunction
-): ServerEventDataState<SyncServerHandlerFunction> {
-  const key = crypto.randomUUID()
-  return {
-    $: 'event',
-    key,
-    async: false,
-    handler: func,
-  }
-}
-
-type AsyncServerHandlerFunction = (args: any) => Promise<ReturnType<SyncServerHandlerFunction>>
+export type ServerHandlerFunction = (args: any) => Promise<ServerResponse | JSONValue>
 export function asyncHandler(
-  func: AsyncServerHandlerFunction
-): ServerEventDataState<AsyncServerHandlerFunction> {
+  func: ServerHandlerFunction
+): ServerEventDataState<ServerHandlerFunction> {
   const key = crypto.randomUUID()
   return {
     $: 'event',
     key,
-    async: true,
     handler: func,
   }
 }
-
-export type ServerHandlerFunction = SyncServerHandlerFunction | AsyncServerHandlerFunction

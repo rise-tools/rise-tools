@@ -3,7 +3,6 @@ import {
   getAllEventHandlers,
   res,
   ServerDataState,
-  ServerHandlerFunction,
   ServerResponse,
 } from '@final-ui/react'
 import type {
@@ -87,25 +86,18 @@ export function createWSServerDataSource() {
       if (!(response instanceof ServerResponse)) {
         response = res.json(response)
       }
-      if (dataState.async) {
-        clientSenders.get(clientId)?.({
-          $: 'evt-res',
-          key: dataState.key,
-          res: response,
-        })
-      }
+      clientSenders.get(clientId)?.({
+        $: 'evt-res',
+        key: dataState.key,
+        res: response,
+      })
     } catch (error: any) {
-      if (dataState.async) {
-        clientSenders.get(clientId)?.({
-          $: 'evt-res',
-          key: dataState.key,
-          res: res.json(error).status(500),
-        })
-        return
-      }
-      console.warn(
-        `Unhandled exception in event handler: ${message.event}. Error: ${JSON.stringify(error)}`
-      )
+      clientSenders.get(clientId)?.({
+        $: 'evt-res',
+        key: dataState.key,
+        res: res.json(error).status(500),
+      })
+      return
     }
   }
 

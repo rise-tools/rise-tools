@@ -42,7 +42,6 @@ export type ActionDataState<T = any> = {
 export type EventDataState = {
   $: 'event'
   key: string
-  async: boolean
   timeout?: number
 }
 export type JSONValue =
