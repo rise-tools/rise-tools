@@ -17,7 +17,9 @@ export type DataState =
   | ReferencedDataState
   | ActionEventDataState
   | HandlerEventDataState
+  | { [key: string]: DataState; $?: never }
   | DataState[]
+
 export type ComponentDataState = {
   $: 'component'
   key?: string

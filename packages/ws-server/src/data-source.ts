@@ -1,9 +1,10 @@
 import {
   extractRefKey,
   getAllEventHandlers,
+  isResponseDataState,
   res,
   ServerDataState,
-  ServerResponse,
+  ServerHandlerFunction,
 } from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
@@ -83,8 +84,8 @@ export function createWSServerDataSource() {
         return
       }
       let response = await handleEvent(message.event)
-      if (!(response instanceof ServerResponse)) {
-        response = res.json(response)
+      if (!isResponseDataState(response)) {
+        response = res(response)
       }
       clientSenders.get(clientId)?.({
         $: 'evt-res',
@@ -95,7 +96,7 @@ export function createWSServerDataSource() {
       clientSenders.get(clientId)?.({
         $: 'evt-res',
         key: dataState.key,
-        res: res.json(error).status(500),
+        res: res(error).status(500),
       })
       return
     }

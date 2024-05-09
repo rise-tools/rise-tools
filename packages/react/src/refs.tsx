@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
-import { ServerResponse } from './response'
+import { ServerResponseDataState } from './response'
 import { Stream } from './streams'
 import {
   ActionEvent,
@@ -20,7 +20,7 @@ export type Store<T = DataState> = Stream<T>
 
 export type DataSource = {
   get: (key: string) => Store
-  sendEvent: (event: HandlerEvent) => Promise<ServerResponse>
+  sendEvent: (event: HandlerEvent) => Promise<ServerResponseDataState>
 }
 
 /** Refs */
@@ -193,7 +193,7 @@ export function Template({
   dataSource: DataSource
   components: ComponentRegistry
   onAction: (action: ActionEventDataState) => void
-  onEvent?: (event: HandlerEvent) => Promise<ServerResponse>
+  onEvent?: (event: HandlerEvent) => Promise<ServerResponseDataState>
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(

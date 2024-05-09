@@ -1,6 +1,6 @@
 import crypto from 'node:crypto'
 
-import { ServerResponse } from './response'
+import { ServerResponseDataState } from './response'
 import {
   DataState,
   HandlerEventDataState,
@@ -11,7 +11,10 @@ import {
 
 /** Server data state*/
 export type ServerDataState = DataState | ServerEventDataState
-export type ServerHandlerFunction = (args: any) => Promise<ServerResponse | JSONValue>
+type ServerHandlerReturnType = ServerResponseDataState | JSONValue | void
+export type ServerHandlerFunction = (
+  args: any
+) => Promise<ServerHandlerReturnType> | ServerHandlerReturnType
 export type ServerEventDataState = HandlerEventDataState & {
   handler: ServerHandlerFunction
 }
