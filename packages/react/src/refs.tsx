@@ -192,8 +192,8 @@ export function Template({
   path?: Path
   dataSource: DataSource
   components: ComponentRegistry
-  onAction: (event: ActionEventDataState) => void
-  onEvent?: DataSource['sendEvent']
+  onAction: (action: ActionEventDataState) => void
+  onEvent?: (event: HandlerEvent) => Promise<ServerResponse>
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
