@@ -20,7 +20,7 @@ it('should render a component', () => {
           height: 50,
         },
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -51,7 +51,7 @@ it('should render an array of components', () => {
           children: 'Hello, world!',
         },
       ]}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -94,7 +94,7 @@ it('should use component key when provided', () => {
           ],
         },
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -127,7 +127,7 @@ it('should render a component with single children', () => {
           children: 'Hello, world!',
         },
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -159,7 +159,7 @@ it('should render a component with children of different types', () => {
           },
         ],
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -207,7 +207,7 @@ it('should accept component as a prop', () => {
           },
         },
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -252,7 +252,7 @@ it('should accept object as a prop', () => {
           },
         },
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -284,7 +284,7 @@ it('should accept event handler as a prop', () => {
           },
         },
       }}
-      onEvent={onEvent}
+      onTemplateEvent={onEvent}
     />
   )
 
@@ -330,7 +330,7 @@ it('should validate props with a validator', () => {
         component: 'View',
         props,
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -351,10 +351,11 @@ it('should send an event with path', () => {
           ['data-testid']: 'button',
           onClick: {
             $: 'event',
+            action: 'go-back',
           },
         },
       }}
-      onEvent={onEvent}
+      onTemplateEvent={onEvent}
     />
   )
   fireEvent.click(component.getByTestId('button'))

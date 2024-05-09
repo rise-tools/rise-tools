@@ -1,4 +1,4 @@
-import { TemplateEvent } from '@final-ui/react'
+import { res, TemplateEvent } from '@final-ui/react'
 import WS from 'jest-websocket-mock'
 
 import { createWSDataSource, EventResponseWebsocketMessage } from '../data-source'
@@ -31,14 +31,21 @@ it('should resolve a promise once response comes in', async () => {
   const response: EventResponseWebsocketMessage = {
     $: 'evt-res',
     key: 'key',
-    ok: true,
-    val: 'response',
+    res: res({}),
   }
 
   const promise = dataSource.sendEvent(event)
   ws.send(response)
 
-  expect(await promise).toEqual('response')
+  expect(await promise).toMatchInlineSnapshot(`
+    Object {
+      "$": "response",
+      "actions": Array [],
+      "ok": true,
+      "payload": Object {},
+      "statusCode": 200,
+    }
+  `)
 })
 
 it('should timeout if response comes later than timeout specified', async () => {
@@ -61,8 +68,7 @@ it('should timeout if response comes later than timeout specified', async () => 
   const response: EventResponseWebsocketMessage = {
     $: 'evt-res',
     key: 'key',
-    ok: true,
-    val: 'response',
+    res: res({}),
   }
 
   const promise = dataSource.sendEvent(event)
