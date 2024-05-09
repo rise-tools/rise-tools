@@ -3,7 +3,6 @@ import {
   type DataSource,
   DataSourceActionEventHandler,
   DataState,
-  isActionEvent,
   isHandlerEvent,
   ServerResponse,
   Store,
@@ -174,13 +173,6 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
       return () => actionEventHandlers.delete(handler)
     },
     sendEvent: async (event) => {
-      if (isActionEvent(event)) {
-        actionEventHandlers.forEach((handler) => {
-          handler(event.dataState)
-        })
-        // optional - do not send action event to the server, because it could be local-only
-        return
-      }
       send({ $: 'evt', event })
       if (isHandlerEvent(event)) {
         return new Promise((resolve, reject) => {
