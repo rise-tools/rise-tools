@@ -89,14 +89,9 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
       }
       case 'evt-res': {
         const { res } = event
-        const promise = promises.get(event.key)
-        if (promise) {
-          const [resolve, reject] = promise
-          if (res.ok) {
-            resolve(res)
-          } else {
-            reject(res)
-          }
+        const resolve = promises.get(event.key)
+        if (resolve) {
+          resolve(res)
           promises.delete(event.key)
         } else {
           console.warn(
@@ -147,10 +142,7 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
     }
   }
 
-  const promises = new Map<
-    string,
-    [(value: ServerResponse) => void, (value: ServerResponse) => void]
-  >()
+  const promises = new Map<string, (value: ServerResponse) => void>()
 
   return {
     get: (key: string) => {
@@ -167,7 +159,7 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
       send({ $: 'evt', event })
       if (isHandlerEvent(event)) {
         return new Promise((resolve, reject) => {
-          promises.set(event.dataState.key, [resolve, reject])
+          promises.set(event.dataState.key, resolve)
           setTimeout(() => {
             if (promises.has(event.dataState.key)) {
               reject(new Error('Request timeout'))
