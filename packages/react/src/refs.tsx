@@ -190,7 +190,7 @@ export function Template({
   dataSource: DataSource
   components: ComponentRegistry
   onAction: ComponentProps<typeof BaseTemplate>['onAction']
-  onEvent?: ComponentProps<typeof BaseTemplate>['onEvent']
+  onEvent?: DataSource['sendEvent']
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(

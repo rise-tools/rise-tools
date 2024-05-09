@@ -97,7 +97,7 @@ export function BaseTemplate({
   path?: Path
   components: ComponentRegistry
   dataState: DataState
-  onEvent?: (event: TemplateEvent) => Promise<ServerResponse>
+  onEvent?: (event: TemplateEvent) => any
   onAction?: (action: ActionDataState['action']) => void
 }) {
   function renderComponent(stateNode: ComponentDataState, path: Path) {
