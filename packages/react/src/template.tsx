@@ -42,6 +42,10 @@ export type HandlerEventDataState = {
   key: string
   timeout?: number
 }
+export function isActionEvent(event: TemplateEvent): event is ActionEvent {
+  return isEventDataState(event.dataState) && 'action' in event.dataState
+}
+
 export type JSONValue =
   | { [key: string]: JSONValue; $?: never }
   | string
@@ -84,9 +88,6 @@ export function isEventDataState(
   obj: DataState
 ): obj is ActionEventDataState | HandlerEventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
-}
-export function isActionEvent(event: TemplateEvent): event is ActionEvent {
-  return isEventDataState(event.dataState) && 'action' in event.dataState
 }
 
 export function BaseTemplate({
