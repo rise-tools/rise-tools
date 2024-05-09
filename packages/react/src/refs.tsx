@@ -1,26 +1,30 @@
-import React, { ComponentProps, Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
+import { isResponseDataState, ServerResponseDataState } from './response'
 import { Stream } from './streams'
 import {
+  ActionEvent,
+  ActionEventDataState,
   BaseTemplate,
   ComponentRegistry,
+  DataState,
+  HandlerEvent,
+  isActionEvent,
   isComponentDataState,
   isCompositeDataState,
-  JSONValue,
   Path,
   ReferencedDataState,
-  TemplateEvent,
 } from './template'
 
-export type Store<T = JSONValue> = Stream<T>
+export type Store<T = DataState> = Stream<T>
 
 export type DataSource = {
   get: (key: string) => Store
-  sendEvent: (event: TemplateEvent) => Promise<any>
+  sendEvent: (event: HandlerEvent) => Promise<ServerResponseDataState>
 }
 
 /** Refs */
-type DataValues = Record<string, JSONValue>
+type DataValues = Record<string, DataState>
 
 function lookupRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
   if (typeof ref === 'string') {
@@ -61,9 +65,9 @@ export function extractRefKey(ref: Path) {
   return ref[0]
 }
 
-function findAllRefs(stateNode: JSONValue, dataValues: DataValues): Set<string> {
+function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> {
   const currentRefKeys = new Set<string>()
-  function searchRefs(stateNode: JSONValue) {
+  function searchRefs(stateNode: DataState | object) {
     if (!stateNode || typeof stateNode !== 'object') {
       return
     }
@@ -103,7 +107,7 @@ function createRefStateManager(
     [rootKey]: dataSource.get(rootKey).get(),
   }
   let refSubscriptions: Record<string, () => void> = {}
-  function setRefValue(refKey: string, value: JSONValue) {
+  function setRefValue(refKey: string, value: DataState) {
     if (dataValues[refKey] !== value) {
       dataValues = { ...dataValues, [refKey]: value }
       setDataValues(dataValues)
@@ -149,7 +153,7 @@ function createRefStateManager(
   }
 }
 
-function resolveValueRefs(dataValues: DataValues, value: JSONValue): JSONValue {
+function resolveValueRefs(dataValues: DataValues, value: DataState): DataState {
   if (!value || typeof value !== 'object') {
     return value
   }
@@ -168,7 +172,7 @@ function resolveValueRefs(dataValues: DataValues, value: JSONValue): JSONValue {
   }
 }
 
-function resolveRef(dataValues: DataValues, lookup: ReferencedDataState['ref']): JSONValue {
+function resolveRef(dataValues: DataValues, lookup: ReferencedDataState['ref']): DataState {
   const value = extractRefValue(dataValues, lookup)
   return resolveValueRefs(dataValues, value)
 }
@@ -177,12 +181,14 @@ export function Template({
   components,
   dataSource,
   path = '',
-  onEvent,
+  onAction,
+  onEvent = dataSource.sendEvent,
 }: {
   path?: Path
   dataSource: DataSource
   components: ComponentRegistry
-  onEvent: ComponentProps<typeof BaseTemplate>['onEvent']
+  onAction?: (action: ActionEventDataState) => void
+  onEvent?: (event: HandlerEvent) => Promise<ServerResponseDataState>
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
@@ -193,7 +199,36 @@ export function Template({
     return () => release()
   }, [])
   const rootDataState = resolveRef(dataValues, path)
+  const onTemplateEvent = useCallback(
+    async (event: ActionEvent | HandlerEvent) => {
+      if (isActionEvent(event)) {
+        onAction?.(event.dataState)
+        return
+      }
+      const res = await onEvent(event)
+      if (!isResponseDataState(res)) {
+        throw new Error(
+          `Invalid response from "onEvent" handler. Expected ServerResponseDataState. Received: ${JSON.stringify(res)}`
+        )
+      }
+      if (res.actions) {
+        for (const action of res.actions) {
+          onAction?.(action)
+        }
+      }
+      if (!res.ok) {
+        throw res.payload
+      }
+      return res.payload
+    },
+    [onAction, onEvent]
+  )
   return (
-    <BaseTemplate components={components} path={path} dataState={rootDataState} onEvent={onEvent} />
+    <BaseTemplate
+      components={components}
+      path={path}
+      dataState={rootDataState}
+      onTemplateEvent={onTemplateEvent}
+    />
   )
 }

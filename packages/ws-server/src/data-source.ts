@@ -1,9 +1,11 @@
 import {
-  ActionEvent,
+  createResponse,
   extractRefKey,
   getAllEventHandlers,
-  isHandlerEvent,
+  HandlerEvent,
+  isResponseDataState,
   ServerDataState,
+  ServerHandlerFunction,
 } from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
@@ -13,8 +15,8 @@ import type {
   UnsubscribeWebsocketMessage,
 } from '@final-ui/ws-client'
 
-type ActionEventHandler = (
-  event: ActionEvent,
+type EventSubscriber = (
+  event: HandlerEvent,
   eventOpts: {
     time: number
     clientId: string
@@ -25,14 +27,14 @@ export function createWSServerDataSource() {
   const values = new Map<string, ServerDataState>()
 
   const clientSubscribers = new Map<string, Map<string, () => void>>()
-  const eventSubscribers = new Set<ActionEventHandler>()
+  const eventSubscribers = new Set<EventSubscriber>()
   const subscribers = new Map<string, Set<(value: ServerDataState) => void>>()
 
   let clientIdIndex = 0
 
   const clientSenders = new Map<string, (value: ServerWebsocketMessage) => void>()
 
-  const eventHandlers = new Map<string, Record<string, (args: any) => any>>()
+  const eventHandlers = new Map<string, Record<string, ServerHandlerFunction>>()
 
   function update(key: string, value: ServerDataState) {
     values.set(key, value)
@@ -78,15 +80,12 @@ export function createWSServerDataSource() {
   }
 
   async function handleMessage(clientId: string, message: EventWebsocketMessage) {
-    if (!isHandlerEvent(message.event)) {
-      eventSubscribers.forEach((handler) => handler(message.event, { time: Date.now(), clientId }))
-      return
-    }
-
     const {
       dataState,
       target: { path },
     } = message.event
+
+    eventSubscribers.forEach((handler) => handler(message.event, { time: Date.now(), clientId }))
 
     try {
       const handleEvent = eventHandlers.get(extractRefKey(path))?.[dataState.key]
@@ -96,28 +95,22 @@ export function createWSServerDataSource() {
         )
         return
       }
-      const res = await handleEvent(message.event)
-      if (dataState.async) {
-        clientSenders.get(clientId)?.({
-          $: 'evt-res',
-          key: dataState.key,
-          ok: true,
-          val: res,
-        })
+      let response = await handleEvent(message.event)
+      if (!isResponseDataState(response)) {
+        response = createResponse(response ?? null)
       }
+      clientSenders.get(clientId)?.({
+        $: 'evt-res',
+        key: dataState.key,
+        res: response,
+      })
     } catch (error: any) {
-      if (dataState.async) {
-        clientSenders.get(clientId)?.({
-          $: 'evt-res',
-          key: dataState.key,
-          ok: false,
-          val: error,
-        })
-        return
-      }
-      console.warn(
-        `Unhandled exception in event handler: ${message.event}. Error: ${JSON.stringify(error)}`
-      )
+      clientSenders.get(clientId)?.({
+        $: 'evt-res',
+        key: dataState.key,
+        res: createResponse(error).status(500),
+      })
+      return
     }
   }
 
@@ -156,11 +149,6 @@ export function createWSServerDataSource() {
     update('', value)
   }
 
-  function onActionEvent(handler: ActionEventHandler) {
-    eventSubscribers.add(handler)
-    return () => eventSubscribers.delete(handler)
-  }
-
   function get(key: string) {
     return values.get(key)
   }
@@ -178,5 +166,10 @@ export function createWSServerDataSource() {
     return () => handlers.delete(handler)
   }
 
-  return { update, onActionEvent, subscribe, get, updateRoot, handleWSConnection }
+  function onEvent(subscriber: EventSubscriber) {
+    eventSubscribers.add(subscriber)
+    return () => eventSubscribers.delete(subscriber)
+  }
+
+  return { update, onEvent, subscribe, get, updateRoot, handleWSConnection }
 }

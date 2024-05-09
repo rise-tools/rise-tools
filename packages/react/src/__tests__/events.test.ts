@@ -10,6 +10,7 @@ it('should return all event handlers from the object', () => {
       // this is not an event handler and should be ignored
       onPress: {
         $: 'event',
+        action: 'foo',
       },
     },
     children: {

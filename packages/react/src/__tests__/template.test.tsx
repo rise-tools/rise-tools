@@ -1,5 +1,5 @@
-import { fireEvent, render } from '@testing-library/react'
-import React from 'react'
+import { act, fireEvent, render } from '@testing-library/react'
+import React, { useState } from 'react'
 
 import { BaseTemplate, ComponentDefinition, ComponentRegistry, TemplateEvent } from '../template'
 
@@ -20,7 +20,7 @@ it('should render a component', () => {
           height: 50,
         },
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -51,7 +51,7 @@ it('should render an array of components', () => {
           children: 'Hello, world!',
         },
       ]}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -94,7 +94,7 @@ it('should use component key when provided', () => {
           ],
         },
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -127,7 +127,7 @@ it('should render a component with single children', () => {
           children: 'Hello, world!',
         },
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -159,7 +159,7 @@ it('should render a component with children of different types', () => {
           },
         ],
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -207,7 +207,7 @@ it('should accept component as a prop', () => {
           },
         },
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -252,7 +252,7 @@ it('should accept object as a prop', () => {
           },
         },
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
@@ -284,7 +284,7 @@ it('should accept event handler as a prop', () => {
           },
         },
       }}
-      onEvent={onEvent}
+      onTemplateEvent={onEvent}
     />
   )
 
@@ -330,14 +330,14 @@ it('should validate props with a validator', () => {
         component: 'View',
         props,
       }}
-      onEvent={jest.fn()}
+      onTemplateEvent={jest.fn()}
     />
   )
 
   expect(validator).toHaveBeenCalledWith(props)
 })
 
-it('should send an event with path', () => {
+it('should send a template event', () => {
   const onEvent = jest.fn()
   const component = render(
     <BaseTemplate
@@ -351,14 +351,68 @@ it('should send an event with path', () => {
           ['data-testid']: 'button',
           onClick: {
             $: 'event',
+            action: 'go-back',
           },
         },
       }}
-      onEvent={onEvent}
+      onTemplateEvent={onEvent}
     />
   )
   fireEvent.click(component.getByTestId('button'))
 
   const firedEvent = onEvent.mock.lastCall[0] as TemplateEvent
   expect(firedEvent.target.path).toBe('mainState')
+})
+
+it('should pass return type from onTemplateEvent back to component', async () => {
+  const onEvent = jest.fn().mockReturnValue('Mike')
+
+  const component = render(
+    <BaseTemplate
+      components={{
+        Profile: {
+          component: ({ onClick }) => {
+            const [name, setName] = useState()
+            if (!name) {
+              return (
+                <div
+                  data-testid="button"
+                  onClick={async () => {
+                    const name = await onClick()
+                    setName(name)
+                  }}
+                >
+                  Click to load!
+                </div>
+              )
+            }
+            return <div>{name}</div>
+          },
+        },
+      }}
+      path="mainState"
+      dataState={{
+        $: 'component',
+        key: 'button',
+        component: 'Profile',
+        props: {
+          onClick: {
+            $: 'event',
+            action: 'go-back',
+          },
+        },
+      }}
+      onTemplateEvent={onEvent}
+    />
+  )
+  await act(async () => {
+    fireEvent.click(component.getByTestId('button'))
+  })
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div>
+        Mike
+      </div>
+    </DocumentFragment>
+  `)
 })

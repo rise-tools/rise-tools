@@ -10,7 +10,16 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
 }
 
 /** Data state */
-export type DataState = JSONValue | ReferencedComponentDataState
+export type DataState =
+  | JSONValue
+  | ReferencedComponentDataState
+  | ComponentDataState
+  | ReferencedDataState
+  | ActionEventDataState
+  | HandlerEventDataState
+  | { [key: string]: DataState; $?: never }
+  | DataState[]
+
 export type ComponentDataState = {
   $: 'component'
   key?: string
@@ -26,35 +35,21 @@ export type ReferencedDataState = {
   $: 'ref'
   ref: Path
 }
-type EventDataState = ActionEventDataState | HandlerEventDataState
 export type ActionEventDataState<T = any> = {
   $: 'event'
-  action?: T
+  action: T
 }
 export type HandlerEventDataState = {
   $: 'event'
   key: string
-  async: boolean
   timeout?: number
 }
-export function isHandlerEvent(
-  event: TemplateEvent
-): event is TemplateEvent<HandlerEventDataState> {
-  return isEventDataState(event.dataState) && 'key' in event.dataState
-}
-export function isActionEvent(event: TemplateEvent): event is TemplateEvent<ActionEventDataState> {
+export function isActionEvent(event: TemplateEvent): event is ActionEvent {
   return isEventDataState(event.dataState) && 'action' in event.dataState
 }
 
-type SafeObject = {
-  [key: string]: JSONValue
-  $?: never
-}
 export type JSONValue =
-  | ComponentDataState
-  | ReferencedDataState
-  | EventDataState
-  | SafeObject
+  | { [key: string]: JSONValue; $?: never }
   | string
   | number
   | boolean
@@ -62,7 +57,7 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent<T = EventDataState, K = any> = {
+export type TemplateEvent<T = any, K = any> = {
   target: {
     key?: string
     component: string
@@ -72,7 +67,8 @@ export type TemplateEvent<T = EventDataState, K = any> = {
   dataState: T
   payload: K
 }
-export type ActionEvent<T = any, K = any> = TemplateEvent<ActionEventDataState<T>, K>
+export type ActionEvent = TemplateEvent<ActionEventDataState>
+export type HandlerEvent = TemplateEvent<HandlerEventDataState>
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
   return (
@@ -82,15 +78,17 @@ export function isCompositeDataState(obj: any): obj is ComponentDataState | Refe
     (obj.$ === 'component' || obj.$ === 'ref')
   )
 }
-export function isComponentDataState(obj: JSONValue): obj is ComponentDataState {
+export function isComponentDataState(obj: DataState): obj is ComponentDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'component'
 }
 export function isReferencedComponentDataState(
-  obj: JSONValue
+  obj: DataState
 ): obj is ReferencedComponentDataState {
   return isComponentDataState(obj) && 'path' in obj
 }
-export function isEventDataState(obj: JSONValue): obj is EventDataState {
+export function isEventDataState(
+  obj: DataState
+): obj is ActionEventDataState | HandlerEventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
 }
 
@@ -98,12 +96,12 @@ export function BaseTemplate({
   path = '',
   components,
   dataState,
-  onEvent,
+  onTemplateEvent,
 }: {
   path?: Path
   components: ComponentRegistry
   dataState: DataState
-  onEvent?: (event: TemplateEvent) => Promise<any>
+  onTemplateEvent?: (event: TemplateEvent) => any
 }) {
   function renderComponent(stateNode: ComponentDataState, path: Path) {
     const componentDefinition = components[stateNode.component]
@@ -138,7 +136,7 @@ export function BaseTemplate({
     return <Component key={stateNode.key} {...componentProps} children={children} />
   }
 
-  function render(stateNode: JSONValue, path: Path): React.ReactNode {
+  function render(stateNode: DataState, path: Path): React.ReactNode {
     if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
@@ -161,7 +159,7 @@ export function BaseTemplate({
 
   function renderProp(
     propKey: string,
-    propValue: JSONValue,
+    propValue: DataState,
     parentNode: ComponentDataState | ReferencedComponentDataState,
     path: Path
   ): any {
@@ -173,7 +171,7 @@ export function BaseTemplate({
         if (payload?.nativeEvent) {
           payload = '[native code]'
         }
-        return onEvent?.({
+        return onTemplateEvent?.({
           target: {
             key: parentNode.key,
             component: parentNode.component,

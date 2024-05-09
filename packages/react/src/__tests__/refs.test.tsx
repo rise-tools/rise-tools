@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { DataSource, Template, TemplateEvent } from '..'
+import { ActionEventDataState, createResponse, DataSource, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
@@ -138,7 +138,7 @@ it('should resolve a ref', () => {
   `)
 })
 
-it('should send an event with ref as a path when trigerred by referenced component', () => {
+it('should send an action with ref as a path when trigerred by referenced component', () => {
   const dataSource: DataSource = {
     get: (store: string) => {
       if (store === 'secondStore') {
@@ -153,6 +153,7 @@ it('should send an event with ref as a path when trigerred by referenced compone
                 ['data-testid']: 'button-referenced',
                 onClick: {
                   $: 'event',
+                  action: 'go-back-referenced',
                 },
               },
             }
@@ -174,6 +175,7 @@ it('should send an event with ref as a path when trigerred by referenced compone
                   ['data-testid']: 'button-local',
                   onClick: {
                     $: 'event',
+                    action: 'go-back-local',
                   },
                 },
               },
@@ -186,23 +188,23 @@ it('should send an event with ref as a path when trigerred by referenced compone
         },
       }
     },
-    sendEvent: jest.fn(),
+    sendEvent: jest.fn().mockResolvedValue(createResponse(null)),
   }
 
-  const onEvent = jest.fn()
+  const onAction = jest.fn()
   const component = render(
     <Template
       components={BUILT_IN_COMPONENTS}
       path="mainStore"
       dataSource={dataSource}
-      onEvent={onEvent}
+      onAction={onAction}
     />
   )
   fireEvent.click(component.getByTestId('button-local'))
-  expect((onEvent.mock.lastCall[0] as TemplateEvent).target.path).toEqual('mainStore')
+  expect((onAction.mock.lastCall[0] as ActionEventDataState).action).toEqual('go-back-local')
 
   fireEvent.click(component.getByTestId('button-referenced'))
-  expect((onEvent.mock.lastCall[0] as TemplateEvent).target.path).toEqual('secondStore')
+  expect((onAction.mock.lastCall[0] as ActionEventDataState).action).toEqual('go-back-referenced')
 })
 
 it('should subscribe to the root store', () => {
