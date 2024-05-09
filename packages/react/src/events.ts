@@ -42,9 +42,7 @@ export function getAllEventHandlers(dataState: ServerDataState) {
 }
 
 export type ServerHandlerFunction = (args: any) => Promise<ServerResponse | JSONValue>
-export function asyncHandler(
-  func: ServerHandlerFunction
-): ServerEventDataState<ServerHandlerFunction> {
+export function handler(func: ServerHandlerFunction): ServerEventDataState<ServerHandlerFunction> {
   const key = crypto.randomUUID()
   return {
     $: 'event',

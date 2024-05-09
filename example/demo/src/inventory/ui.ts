@@ -39,7 +39,7 @@ export function getHomeScreen(): ServerDataState {
             props: {
               unstyled: true,
               onPress: {
-                $: 'event',
+                $: 'action',
                 action: ['navigate', `inventory:${item.key}:details`],
               },
               pressStyle: {
