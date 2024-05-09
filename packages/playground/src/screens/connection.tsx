@@ -76,13 +76,22 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
         }
       }
       const res = await dataSource.sendEvent(event)
-      // res is `null` if we sent `actionEvent` to the server
-      // we would have to disable sending action events to the server to make response always defined
-      if (res?.actions) {
+      if (!res) {
+        // res is `null` if we sent `actionEvent` to the server
+        // we would have to disable sending action events to the server to make response always defined
+        return
+      }
+      if (res.actions) {
+        // response has local actions to execute on the client as a follow-up
         for (const action of res.actions) {
           handleActionEvent(action)
         }
       }
+      if (!res.ok) {
+        // if response was not okay, throw the payload as an error
+        throw res.payload
+      }
+      // resolve otherwise
       return res?.payload
     },
     [dataSource, handleActionEvent]
