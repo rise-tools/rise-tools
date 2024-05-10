@@ -1,4 +1,4 @@
-import { handler, ServerDataState } from '@final-ui/react'
+import { action, handler, ServerDataState } from '@final-ui/react'
 
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
@@ -38,10 +38,7 @@ export function getHomeScreen(): ServerDataState {
             component: 'Button',
             props: {
               unstyled: true,
-              onPress: {
-                $: 'event',
-                action: ['navigate', `inventory:${item.key}:details`],
-              },
+              onPress: action(['navigate', `inventory:${item.key}:details`]),
               pressStyle: {
                 opacity: 0.8,
               },
