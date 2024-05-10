@@ -1,6 +1,6 @@
 import { ActionEventDataState, JSONValue } from './template'
 
-export function createResponse(payload: JSONValue): ServerResponseDataState {
+export function response(payload: JSONValue): ServerResponseDataState {
   return {
     $: 'response',
     payload,
