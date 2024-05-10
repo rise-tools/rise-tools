@@ -1,9 +1,9 @@
 import {
-  createResponse,
   extractRefKey,
   getAllEventHandlers,
   HandlerEvent,
   isResponseDataState,
+  response,
   ServerDataState,
   ServerHandlerFunction,
 } from '@final-ui/react'
@@ -95,20 +95,20 @@ export function createWSServerDataSource() {
         )
         return
       }
-      let response = await handleEvent(message.event)
-      if (!isResponseDataState(response)) {
-        response = createResponse(response ?? null)
+      let res = await handleEvent(message.event)
+      if (!isResponseDataState(res)) {
+        res = response(res ?? null)
       }
       clientSenders.get(clientId)?.({
         $: 'evt-res',
         key: dataState.key,
-        res: response,
+        res,
       })
     } catch (error: any) {
       clientSenders.get(clientId)?.({
         $: 'evt-res',
         key: dataState.key,
-        res: createResponse(error).status(500),
+        res: response(error).status(500),
       })
       return
     }
