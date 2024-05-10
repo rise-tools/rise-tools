@@ -46,12 +46,16 @@ export function getAllEventHandlers(dataState: ServerDataState) {
   return acc
 }
 
-export function handler(func: ServerHandlerFunction): ServerEventDataState {
+export function handler(
+  func: ServerHandlerFunction,
+  actions: ActionEventDataState[] = []
+): ServerEventDataState {
   const key = crypto.randomUUID()
   return {
     $: 'event',
     key,
     handler: func,
+    actions,
   }
 }
 

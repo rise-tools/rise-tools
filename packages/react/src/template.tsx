@@ -42,6 +42,7 @@ export type ActionEventDataState<T = any> = {
 export type HandlerEventDataState = {
   $: 'event'
   key: string
+  actions: ActionEventDataState[]
   timeout?: number
 }
 export function isActionEvent(event: TemplateEvent): event is ActionEvent {
