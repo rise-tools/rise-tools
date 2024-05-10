@@ -48,14 +48,14 @@ export function getAllEventHandlers(dataState: ServerDataState) {
 
 export function handler(
   func: ServerHandlerFunction,
-  ...actions: ActionEventDataState[]
+  action: ActionEventDataState | ActionEventDataState[]
 ): ServerEventDataState {
   const key = crypto.randomUUID()
   return {
     $: 'event',
     key,
     handler: func,
-    actions,
+    actions: Array.isArray(action) ? action : [action],
   }
 }
 
