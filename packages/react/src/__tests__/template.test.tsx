@@ -285,7 +285,7 @@ it('should accept event handler as a prop', () => {
         component: 'View',
         props: {
           ['data-testid']: 'button',
-          onClick: action('navigate'),
+          onClick: action('foo-action'),
         },
       }}
       onTemplateEvent={onEvent}
@@ -300,7 +300,7 @@ it('should accept event handler as a prop', () => {
   expect(firedEvent).toMatchObject({
     dataState: {
       $: 'event',
-      action: 'navigate',
+      action: 'foo-action',
     },
     target: {
       key: 'button',
