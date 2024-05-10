@@ -2,6 +2,7 @@ import crypto from 'node:crypto'
 
 import { ServerResponseDataState } from './response'
 import {
+  ActionEventDataState,
   DataState,
   HandlerEventDataState,
   isComponentDataState,
@@ -51,5 +52,12 @@ export function handler(func: ServerHandlerFunction): ServerEventDataState {
     $: 'event',
     key,
     handler: func,
+  }
+}
+
+export function action(action: any): ActionEventDataState {
+  return {
+    $: 'event',
+    action,
   }
 }
