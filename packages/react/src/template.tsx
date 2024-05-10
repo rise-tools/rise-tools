@@ -189,9 +189,6 @@ export function BaseTemplate({
       }
     }
     if (Array.isArray(propValue)) {
-      if (propValue.length === 0) {
-        return
-      }
       if (assertEvery(propValue, isActionEventDataState)) {
         return async (payload: any) => {
           propValue.map((dataState) =>
