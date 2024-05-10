@@ -1,4 +1,4 @@
-export function assertAll<T>(arr: T[], fn: (item: T) => boolean): boolean {
+export function assertEveryOrNone<T>(arr: T[], fn: (item: T) => boolean): boolean {
   if (arr.length === 0) {
     // as per Array.prototype.every
     return true
