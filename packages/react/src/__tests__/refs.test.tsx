@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { action, ActionEventDataState, createResponse, DataSource, Template } from '..'
+import { action, ActionEventDataState, createResponse, DataSource, handler, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
@@ -296,6 +296,32 @@ it('should manage subscription to stores referenced by refs', () => {
 
   expect(mainStoreUnsubscribeFunction).toHaveBeenCalledTimes(1)
   expect(secondStoreUnsubscribeFunction).toHaveBeenCalledTimes(1)
+})
+
+it('should dispatch all actions associated with an event', () => {
+  const dataSource: DataSource = {
+    get: () => ({
+      subscribe: jest.fn().mockReturnValue(jest.fn()),
+      get() {
+        return {
+          $: 'component',
+          component: 'View',
+          props: {
+            ['data-testid']: 'button',
+            onClick: handler(() => {}, [action('go-back'), action('go-back')]),
+          },
+        }
+      },
+    }),
+    sendEvent: jest.fn().mockReturnValue(createResponse(null)),
+  }
+  const onAction = jest.fn()
+  const component = render(
+    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} onAction={onAction} />
+  )
+  fireEvent.click(component.getByTestId('button'))
+  expect(onAction).toHaveBeenCalledTimes(2)
+  expect(onAction).toHaveBeenLastCalledWith(action('go-back'))
 })
 
 it.skip('should remove subscription to refs no longer in use', () => {
