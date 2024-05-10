@@ -1,17 +1,17 @@
-import { assertEvery } from '../utils'
+import { assertAll } from '../utils'
 
 it('should return true if items are of the same type', () => {
-  expect(assertEvery([], (item) => typeof item === 'object')).toBe(true)
-  expect(assertEvery([1, 2, 3], (item: number) => typeof item === 'number')).toBe(true)
-  expect(assertEvery([{ $: 'event' }, { $: 'event' }], (item) => item.$ === 'event')).toBe(true)
-  expect(assertEvery([{ $: 'event' }, { $: 'event' }], (item) => item.$ === 'action')).toBe(true)
+  expect(assertAll([], (item) => typeof item === 'object')).toBe(true)
+  expect(assertAll([1, 2, 3], (item: number) => typeof item === 'number')).toBe(true)
+  expect(assertAll([{ $: 'event' }, { $: 'event' }], (item) => item.$ === 'event')).toBe(true)
+  expect(assertAll([{ $: 'event' }, { $: 'event' }], (item) => item.$ === 'action')).toBe(false)
 })
 
 it('should throw if items are different', () => {
   expect(() =>
-    assertEvery([{ $: 'event' }, { $: 'action' }, { $: 'event' }], (item) => item.$ === 'event')
+    assertAll([{ $: 'event' }, { $: 'action' }, { $: 'event' }], (item) => item.$ === 'event')
   ).toThrowError()
   expect(() =>
-    assertEvery([{ $: 'event' }, { $: 'action' }, { $: 'event' }], (item) => item.$ === 'action')
+    assertAll([{ $: 'event' }, { $: 'action' }, { $: 'event' }], (item) => item.$ === 'action')
   ).toThrowError()
 })

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { assertEvery } from './utils'
+import { assertAll } from './utils'
 
 /** Components */
 type ComponentIdentifier = string
@@ -189,7 +189,7 @@ export function BaseTemplate({
       }
     }
     if (Array.isArray(propValue)) {
-      if (assertEvery(propValue, isActionEventDataState)) {
+      if (assertAll(propValue, isActionEventDataState)) {
         return async (payload: any) => {
           propValue.map((dataState) =>
             onTemplateEvent?.({
