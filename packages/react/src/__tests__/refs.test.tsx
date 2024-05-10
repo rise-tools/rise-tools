@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { ActionEventDataState, createResponse, DataSource, Template } from '..'
+import { action, ActionEventDataState, createResponse, DataSource, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
@@ -151,10 +151,7 @@ it('should send an action with ref as a path when trigerred by referenced compon
               component: 'View',
               props: {
                 ['data-testid']: 'button-referenced',
-                onClick: {
-                  $: 'event',
-                  action: 'go-back-referenced',
-                },
+                onClick: action('go-back-referenced'),
               },
             }
           },
@@ -173,10 +170,7 @@ it('should send an action with ref as a path when trigerred by referenced compon
                 component: 'View',
                 props: {
                   ['data-testid']: 'button-local',
-                  onClick: {
-                    $: 'event',
-                    action: 'go-back-local',
-                  },
+                  onClick: action('go-back-local'),
                 },
               },
               {

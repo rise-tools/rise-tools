@@ -1,4 +1,4 @@
-import { getAllEventHandlers, handler, ServerDataState } from '../events'
+import { action, getAllEventHandlers, handler, ServerDataState } from '../events'
 
 it('should return all event handlers from the object', () => {
   const eventHandler = handler(jest.fn())
@@ -8,10 +8,7 @@ it('should return all event handlers from the object', () => {
     component: 'View',
     props: {
       // this is not an event handler and should be ignored
-      onPress: {
-        $: 'event',
-        action: 'foo',
-      },
+      onPress: action('foo'),
     },
     children: {
       $: 'component',

@@ -1,7 +1,14 @@
 import { act, fireEvent, render } from '@testing-library/react'
 import React, { useState } from 'react'
 
-import { BaseTemplate, ComponentDefinition, ComponentRegistry, TemplateEvent } from '../template'
+import { action } from '../events'
+import {
+  ActionEvent,
+  BaseTemplate,
+  ComponentDefinition,
+  ComponentRegistry,
+  TemplateEvent,
+} from '../template'
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
   View: {
@@ -278,10 +285,7 @@ it('should accept event handler as a prop', () => {
         component: 'View',
         props: {
           ['data-testid']: 'button',
-          onClick: {
-            $: 'event',
-            action: 'navigate',
-          },
+          onClick: action('foo-action'),
         },
       }}
       onTemplateEvent={onEvent}
@@ -296,7 +300,7 @@ it('should accept event handler as a prop', () => {
   expect(firedEvent).toMatchObject({
     dataState: {
       $: 'event',
-      action: 'navigate',
+      action: 'foo-action',
     },
     target: {
       key: 'button',
@@ -349,10 +353,7 @@ it('should send a template event', () => {
         component: 'View',
         props: {
           ['data-testid']: 'button',
-          onClick: {
-            $: 'event',
-            action: 'go-back',
-          },
+          onClick: action('go-back'),
         },
       }}
       onTemplateEvent={onEvent}
@@ -396,10 +397,7 @@ it('should pass return type from onTemplateEvent back to component', async () =>
         key: 'button',
         component: 'Profile',
         props: {
-          onClick: {
-            $: 'event',
-            action: 'go-back',
-          },
+          onClick: action('go-back'),
         },
       }}
       onTemplateEvent={onEvent}
@@ -415,4 +413,28 @@ it('should pass return type from onTemplateEvent back to component', async () =>
       </div>
     </DocumentFragment>
   `)
+})
+
+it('should fire multiple template events for an array of actions', () => {
+  const onEvent = jest.fn()
+  const component = render(
+    <BaseTemplate
+      components={BUILT_IN_COMPONENTS}
+      path="mainState"
+      dataState={{
+        $: 'component',
+        key: 'button',
+        component: 'View',
+        props: {
+          ['data-testid']: 'button',
+          onClick: [action('go-back'), action('go-back-again')],
+        },
+      }}
+      onTemplateEvent={onEvent}
+    />
+  )
+  fireEvent.click(component.getByTestId('button'))
+
+  expect((onEvent.mock.calls[0][0] as ActionEvent).dataState.action).toBe('go-back')
+  expect((onEvent.mock.calls[1][0] as ActionEvent).dataState.action).toBe('go-back-again')
 })

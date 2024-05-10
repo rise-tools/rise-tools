@@ -91,6 +91,9 @@ export function isEventDataState(
 ): obj is ActionEventDataState | HandlerEventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
 }
+export function isActionEventDataState(obj: DataState): obj is ActionEventDataState {
+  return isEventDataState(obj) && 'action' in obj
+}
 
 export function BaseTemplate({
   path = '',
@@ -184,6 +187,22 @@ export function BaseTemplate({
       }
     }
     if (Array.isArray(propValue)) {
+      if (propValue.every(isActionEventDataState)) {
+        return async (payload: any) => {
+          propValue.map((dataState) =>
+            onTemplateEvent?.({
+              target: {
+                key: parentNode.key,
+                component: parentNode.component,
+                propKey,
+                path,
+              },
+              dataState,
+              payload,
+            })
+          )
+        }
+      }
       return propValue.map((item) => renderProp(propKey, item, parentNode, path))
     }
     if (isCompositeDataState(propValue)) {
