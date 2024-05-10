@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { action, ActionEventDataState, DataSource, response, Template } from '..'
+import { action, ActionEventDataState, DataSource, handler, response, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
@@ -313,7 +313,7 @@ it('should dispatch all actions associated with an event', () => {
         }
       },
     }),
-    sendEvent: jest.fn().mockReturnValue(createResponse(null)),
+    sendEvent: jest.fn().mockReturnValue(response(null)),
   }
   const onAction = jest.fn()
   const component = render(
