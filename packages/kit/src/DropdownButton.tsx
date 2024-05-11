@@ -1,7 +1,5 @@
-import { LinearGradient } from '@tamagui/linear-gradient'
-import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
-import React, { useMemo } from 'react'
-import { Adapt, Button, Select, Sheet, SizableText, XStack, YStack } from 'tamagui'
+import React from 'react'
+import { Button, Sheet, YStack } from 'tamagui'
 import { z } from 'zod'
 
 const DropdownButtonProps = z.object({
@@ -47,7 +45,7 @@ export function DropdownButton(props: z.infer<typeof DropdownButtonProps>) {
         <Sheet.Handle />
         <Sheet.Frame padding="$4" justifyContent="center" space="$5">
           <YStack gap="$3">
-            {options?.map((item, i) => {
+            {options?.map((item) => {
               return (
                 <Button
                   key={item.key}

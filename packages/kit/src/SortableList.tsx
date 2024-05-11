@@ -1,20 +1,18 @@
-import React from "react";
-import DraggableFlatList, {
-  ScaleDecorator,
-} from "react-native-draggable-flatlist";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { Label, View } from "tamagui";
-import { z } from "zod";
+import React from 'react'
+import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { Label, View } from 'tamagui'
+import { z } from 'zod'
 
 function keyExtractor(item: z.infer<typeof SortableListItemSchema>) {
-  return item.key;
+  return item.key
 }
 
 const SortableListItemSchema = z.object({
   key: z.string(),
   label: z.string(),
   onPress: z.function().optional(),
-});
+})
 
 const SortableListProps = z.object({
   footer: z.any(),
@@ -22,7 +20,7 @@ const SortableListProps = z.object({
   items: z.array(SortableListItemSchema),
   // tbd: support this event again
   onReorder: z.function().optional(),
-});
+})
 
 export function SortableList(props: z.infer<typeof SortableListProps>) {
   return (
@@ -32,12 +30,12 @@ export function SortableList(props: z.infer<typeof SortableListProps>) {
         data={props.items}
         keyExtractor={keyExtractor}
         onDragEnd={({ data }) => {
-          props.onReorder?.(data.map((item) => item.key));
+          props.onReorder?.(data.map((item) => item.key))
         }}
         ListHeaderComponent={() => props.header}
         ListFooterComponent={() => props.footer}
         renderItem={(row) => {
-          const { item, drag, isActive } = row;
+          const { item, drag, isActive } = row
           return (
             <ScaleDecorator>
               <TouchableOpacity
@@ -47,7 +45,7 @@ export function SortableList(props: z.infer<typeof SortableListProps>) {
                 style={[
                   {
                     padding: 10,
-                    backgroundColor: "white",
+                    backgroundColor: 'white',
                     margin: 10,
                     borderRadius: 10,
                   },
@@ -56,13 +54,13 @@ export function SortableList(props: z.infer<typeof SortableListProps>) {
                 <Label>{item.label}</Label>
               </TouchableOpacity>
             </ScaleDecorator>
-          );
+          )
         }}
       />
     </View>
-  );
+  )
 }
 
 SortableList.validate = (props: any) => {
-  return SortableListProps.parse(props);
-};
+  return SortableListProps.parse(props)
+}
