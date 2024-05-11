@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { action, ActionEventDataState, DataSource, handler, response, Template } from '..'
+import { action, ActionDataState, DataSource, handler, response, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
@@ -151,7 +151,7 @@ it('should send an action with ref as a path when trigerred by referenced compon
               component: 'View',
               props: {
                 ['data-testid']: 'button-referenced',
-                onClick: action('go-back-referenced'),
+                onClick: handler(action('go-back-referenced')),
               },
             }
           },
@@ -170,7 +170,7 @@ it('should send an action with ref as a path when trigerred by referenced compon
                 component: 'View',
                 props: {
                   ['data-testid']: 'button-local',
-                  onClick: action('go-back-local'),
+                  onClick: handler(action('go-back-local')),
                 },
               },
               {
@@ -195,10 +195,10 @@ it('should send an action with ref as a path when trigerred by referenced compon
     />
   )
   fireEvent.click(component.getByTestId('button-local'))
-  expect((onAction.mock.lastCall[0] as ActionEventDataState).action).toEqual('go-back-local')
+  expect((onAction.mock.lastCall[0] as ActionDataState).name).toEqual('go-back-local')
 
   fireEvent.click(component.getByTestId('button-referenced'))
-  expect((onAction.mock.lastCall[0] as ActionEventDataState).action).toEqual('go-back-referenced')
+  expect((onAction.mock.lastCall[0] as ActionDataState).name).toEqual('go-back-referenced')
 })
 
 it('should subscribe to the root store', () => {
@@ -308,7 +308,7 @@ it('should dispatch all actions associated with an event', () => {
           component: 'View',
           props: {
             ['data-testid']: 'button',
-            onClick: handler(() => {}, [action('go-back'), action('go-back')]),
+            onClick: handler([action('go-back'), action('go-back')]),
           },
         }
       },

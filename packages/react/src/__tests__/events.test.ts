@@ -8,7 +8,7 @@ it('should return all event handlers from the object', () => {
     component: 'View',
     props: {
       // this is not an event handler and should be ignored
-      onPress: action('foo'),
+      onPress: handler(action('foo')),
     },
     children: {
       $: 'component',
