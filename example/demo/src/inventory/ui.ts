@@ -38,7 +38,7 @@ export function getHomeScreen(): ServerDataState {
             component: 'Button',
             props: {
               unstyled: true,
-              onPress: action(['navigate', `inventory:${item.key}:details`]),
+              onPress: handler(action(['navigate', `inventory:${item.key}:details`])),
               pressStyle: {
                 opacity: 0.8,
               },
