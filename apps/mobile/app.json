@@ -3,34 +3,32 @@
     "name": "Rise",
     "slug": "riseremote",
     "scheme": "rise",
-    "version": "1.0.2",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/RiseIcon.png",
+    "icon": "./assets/RiseIcon2.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/RiseSplash.png",
+      "image": "./assets/RiseSplash2.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/e375003a-c8cd-4eec-bec8-202333e67dc6"
+      "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.xplatlabs.riseplayground",
-      "buildNumber": "6"
+      "bundleIdentifier": "link.verse.rise",
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.xplatlabs.rise",
-      "versionCode": 4
+      "package": "link.verse.rise"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -44,12 +42,8 @@
         "origin": false
       },
       "eas": {
-        "projectId": "e375003a-c8cd-4eec-bec8-202333e67dc6"
+        "projectId": "d8f030d6-44d4-44cd-bec1-21d303f650b3"
       }
-    },
-    "owner": "finalui",
-    "runtimeVersion": {
-      "policy": "appVersion"
     }
   }
 }

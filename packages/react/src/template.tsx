@@ -1,7 +1,5 @@
 import React from 'react'
 
-import { assertEveryOrNone } from './utils'
-
 /** Components */
 type ComponentIdentifier = string
 
@@ -12,16 +10,7 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
 }
 
 /** Data state */
-export type DataState =
-  | JSONValue
-  | ReferencedComponentDataState
-  | ComponentDataState
-  | ReferencedDataState
-  | ActionEventDataState
-  | HandlerEventDataState
-  | { [key: string]: DataState; $?: never }
-  | DataState[]
-
+export type DataState = JSONValue | ReferencedComponentDataState
 export type ComponentDataState = {
   $: 'component'
   key?: string
@@ -37,22 +26,34 @@ export type ReferencedDataState = {
   $: 'ref'
   ref: Path
 }
+type EventDataState = ActionEventDataState | HandlerEventDataState
 export type ActionEventDataState<T = any> = {
   $: 'event'
-  action: T
+  action?: T
 }
 export type HandlerEventDataState = {
   $: 'event'
   key: string
-  actions: ActionEventDataState[]
-  timeout?: number
+  async: boolean
 }
-export function isActionEvent(event: TemplateEvent): event is ActionEvent {
+export function isHandlerEvent(
+  event: TemplateEvent
+): event is TemplateEvent<HandlerEventDataState> {
+  return isEventDataState(event.dataState) && 'key' in event.dataState
+}
+export function isActionEvent(event: TemplateEvent): event is TemplateEvent<ActionEventDataState> {
   return isEventDataState(event.dataState) && 'action' in event.dataState
 }
 
+type SafeObject = {
+  [key: string]: JSONValue
+  $?: never
+}
 export type JSONValue =
-  | { [key: string]: JSONValue; $?: never }
+  | ComponentDataState
+  | ReferencedDataState
+  | EventDataState
+  | SafeObject
   | string
   | number
   | boolean
@@ -60,7 +61,7 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent<T = any, K = any> = {
+export type TemplateEvent<T = EventDataState, K = any> = {
   target: {
     key?: string
     component: string
@@ -70,8 +71,7 @@ export type TemplateEvent<T = any, K = any> = {
   dataState: T
   payload: K
 }
-export type ActionEvent = TemplateEvent<ActionEventDataState>
-export type HandlerEvent = TemplateEvent<HandlerEventDataState>
+export type ActionEvent<T = any, K = any> = TemplateEvent<ActionEventDataState<T>, K>
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
   return (
@@ -81,33 +81,28 @@ export function isCompositeDataState(obj: any): obj is ComponentDataState | Refe
     (obj.$ === 'component' || obj.$ === 'ref')
   )
 }
-export function isComponentDataState(obj: DataState): obj is ComponentDataState {
+export function isComponentDataState(obj: JSONValue): obj is ComponentDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'component'
 }
 export function isReferencedComponentDataState(
-  obj: DataState
+  obj: JSONValue
 ): obj is ReferencedComponentDataState {
   return isComponentDataState(obj) && 'path' in obj
 }
-export function isEventDataState(
-  obj: DataState
-): obj is ActionEventDataState | HandlerEventDataState {
+export function isEventDataState(obj: JSONValue): obj is EventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
-}
-export function isActionEventDataState(obj: DataState): obj is ActionEventDataState {
-  return isEventDataState(obj) && 'action' in obj
 }
 
 export function BaseTemplate({
   path = '',
   components,
   dataState,
-  onTemplateEvent,
+  onEvent,
 }: {
   path?: Path
   components: ComponentRegistry
   dataState: DataState
-  onTemplateEvent?: (event: TemplateEvent) => any
+  onEvent?: (event: TemplateEvent) => Promise<any>
 }) {
   function renderComponent(stateNode: ComponentDataState, path: Path) {
     const componentDefinition = components[stateNode.component]
@@ -142,7 +137,7 @@ export function BaseTemplate({
     return <Component key={stateNode.key} {...componentProps} children={children} />
   }
 
-  function render(stateNode: DataState, path: Path): React.ReactNode {
+  function render(stateNode: JSONValue, path: Path): React.ReactNode {
     if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
@@ -165,7 +160,7 @@ export function BaseTemplate({
 
   function renderProp(
     propKey: string,
-    propValue: DataState,
+    propValue: JSONValue,
     parentNode: ComponentDataState | ReferencedComponentDataState,
     path: Path
   ): any {
@@ -177,7 +172,7 @@ export function BaseTemplate({
         if (payload?.nativeEvent) {
           payload = '[native code]'
         }
-        return onTemplateEvent?.({
+        return onEvent?.({
           target: {
             key: parentNode.key,
             component: parentNode.component,
@@ -190,22 +185,6 @@ export function BaseTemplate({
       }
     }
     if (Array.isArray(propValue)) {
-      if (assertEveryOrNone(propValue, isActionEventDataState)) {
-        return async (payload: any) => {
-          propValue.map((dataState) =>
-            onTemplateEvent?.({
-              target: {
-                key: parentNode.key,
-                component: parentNode.component,
-                propKey,
-                path,
-              },
-              dataState,
-              payload,
-            })
-          )
-        }
-      }
       return propValue.map((item) => renderProp(propKey, item, parentNode, path))
     }
     if (isCompositeDataState(propValue)) {
@@ -221,7 +200,30 @@ export function BaseTemplate({
     return propValue
   }
 
-  return <>{render(dataState, path)}</>
+  return <ErrorBoundary>{render(dataState, path)}</ErrorBoundary>
 }
 
-export class RenderError extends Error {}
+/** Error boundary */
+class RenderError extends Error {}
+class ErrorBoundary extends React.Component<
+  React.PropsWithChildren<object>,
+  { error: RenderError | null }
+> {
+  constructor(props: React.PropsWithChildren<object>) {
+    super(props)
+    this.state = { error: null }
+  }
+
+  static getDerivedStateFromError(error: RenderError) {
+    return { error }
+  }
+
+  render() {
+    if (this.state.error) {
+      // tbd: render fallback ui
+      return null
+    }
+
+    return this.props.children
+  }
+}
