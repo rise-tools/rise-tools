@@ -55,8 +55,8 @@ export function handler(
   func: ServerHandlerFunction | Action,
   action: Action = []
 ): ServerEventDataState | ActionEventDataState {
-  const key = crypto.randomUUID()
   if (typeof func === 'function') {
+    const key = crypto.randomUUID()
     return {
       $: 'event',
       key,
