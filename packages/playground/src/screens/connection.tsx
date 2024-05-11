@@ -1,11 +1,12 @@
 import { RiseComponents } from '@final-ui/kit'
-import { isActionEvent, Template, TemplateEvent } from '@final-ui/react'
+import { ActionEventDataState, Template } from '@final-ui/react'
 import { TamaguiComponents } from '@final-ui/tamagui'
 import { Stack } from 'expo-router'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { createParam } from 'solito'
 import { useRouter } from 'solito/router'
 
+import { DataBoundary } from '../data-boundary'
 import { useDataSource } from '../data-sources'
 import { Connection, useConnection } from '../provider/storage'
 import { NotFoundScreen } from './not-found'
@@ -43,25 +44,30 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
     return null
   }
 
-  const onEvent = useCallback(
-    async (event: TemplateEvent) => {
-      if (isActionEvent(event)) {
-        const [action, path] = Array.isArray(event.dataState.action)
-          ? event.dataState.action
-          : [event.dataState.action, '']
-        if (action === 'navigate') {
-          router.push(`/connection/${params.id}?path=${path}`)
-          return
-        }
-        if (action === 'navigate-back') {
-          router.back()
-          return
-        }
+  useEffect(() => {
+    if (path === undefined) {
+      router.back()
+    }
+  }, [path])
+
+  const onAction = useCallback(
+    (event: ActionEventDataState<string | string[]>) => {
+      const [action, path] = Array.isArray(event.action) ? event.action : [event.action, '']
+      if (action === 'navigate') {
+        router.push(`/connection/${params.id}?path=${path}`)
+        return true
       }
-      return dataSource.sendEvent(event)
+      if (action === 'navigate-back') {
+        router.back()
+        return true
+      }
     },
-    [dataSource]
+    [router]
   )
 
-  return <Template components={components} dataSource={dataSource} path={path} onEvent={onEvent} />
+  return (
+    <DataBoundary dataSource={dataSource} path={path!}>
+      <Template components={components} dataSource={dataSource} path={path!} onAction={onAction} />
+    </DataBoundary>
+  )
 }

@@ -1,53 +1,28 @@
 {
   "build": {
-    "dev": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "simulator": true,
-        "image": "latest"
-      }
-    },
-    "dev-device": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "image": "latest"
-      }
-    },
-    "preview": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "image": "latest"
-      }
-    },
     "production": {
       "distribution": "store",
       "android": {
         "buildType": "app-bundle"
       },
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
+      },
+      "channel": "production"
     }
   },
   "submit": {
     "production": {
       "ios": {
-        "appleId": "eric@vicenti.net",
-        "ascAppId": "6476430405",
-        "appleTeamId": "JJ2F38D5FA"
+        "appleId": "mike@reactnative.cloud",
+        "ascAppId": "6499588861",
+        "appleTeamId": "4VF4XH2X2T"
       }
     }
   },
   "cli": {
+    "appVersionSource": "remote",
     "promptToConfigurePushNotifications": false
   }
 }

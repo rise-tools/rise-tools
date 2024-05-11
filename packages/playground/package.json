@@ -1,6 +1,6 @@
 {
   "name": "@final-ui/playground",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
   "main": "lib",
@@ -31,10 +31,10 @@
   },
   "homepage": "https://github.com/final-ui/final#readme",
   "dependencies": {
-    "@final-ui/kit": "0.1.2",
-    "@final-ui/react": "0.1.2",
-    "@final-ui/tamagui": "0.1.2",
-    "@final-ui/ws-client": "0.1.2",
+    "@final-ui/kit": "0.2.0",
+    "@final-ui/react": "0.2.0",
+    "@final-ui/tamagui": "0.2.0",
+    "@final-ui/ws-client": "0.2.0",
     "@gorhom/bottom-sheet": "^4.6.1",
     "@hookform/resolvers": "^3.3.4",
     "@tamagui/animations-react-native": "^1.94.4",

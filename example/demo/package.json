@@ -14,15 +14,18 @@
   },
   "homepage": "https://github.com/final-ui/final#readme",
   "scripts": {
-    "start": "tsx src/server.ts",
-    "dev": "tsx --watch src/server.ts"
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev --port 3005",
+    "start": "wrangler dev --port 3005",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
-    "@final-ui/react": "0.1.2",
-    "@final-ui/ws-server": "0.1.2"
+    "@final-ui/react": "0.2.0",
+    "@final-ui/ws-server": "0.2.0"
   },
   "devDependencies": {
-    "@types/node": "^18.6.4",
-    "tsx": "^4.7.2"
+    "@cloudflare/workers-types": "^4.20240423.0",
+    "typescript": "^5.1.3",
+    "wrangler": "^3.0.0"
   }
 }

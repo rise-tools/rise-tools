@@ -1,9 +1,11 @@
 import {
+  createWritableStream,
   type DataSource,
-  isHandlerEvent,
-  type JSONValue,
-  type Store,
-  type TemplateEvent,
+  DataState,
+  HandlerEvent,
+  ServerResponseDataState,
+  Store,
+  Stream,
 } from '@final-ui/react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
@@ -19,20 +21,19 @@ export type UnsubscribeWebsocketMessage = {
 
 export type EventWebsocketMessage = {
   $: 'evt'
-  event: TemplateEvent
+  event: HandlerEvent
 }
 
 export type UpdateWebsocketMessage = {
   $: 'up'
   key: string
-  val: JSONValue
+  val: DataState
 }
 
 export type EventResponseWebsocketMessage = {
   $: 'evt-res'
   key: string
-  ok: boolean
-  val: JSONValue
+  res: ServerResponseDataState
 }
 
 export type ClientWebsocketMessage =
@@ -42,10 +43,17 @@ export type ClientWebsocketMessage =
 
 export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponseWebsocketMessage
 
-type Handler = () => void
-type PromiseHandler = (value: any) => void
+type Handler = (value: DataState) => void
 
-export function createWSDataSource(wsUrl: string): DataSource {
+type WebSocketState = {
+  status?: 'connected' | 'disconnected'
+}
+
+export type WebSocketDataSource = DataSource & {
+  state: Stream<WebSocketState>
+}
+
+export function createWSDataSource(wsUrl: string): WebSocketDataSource {
   const rws = new ReconnectingWebSocket(wsUrl)
   function send(payload: ClientWebsocketMessage) {
     rws.send(JSON.stringify(payload))
@@ -74,22 +82,20 @@ export function createWSDataSource(wsUrl: string): DataSource {
         cache.set(event.key, event.val)
         const handlers = subscriptions.get(event.key)
         if (handlers) {
-          handlers.forEach((handle) => handle())
+          handlers.forEach((handle) => handle(event.val))
         }
         break
       }
       case 'evt-res': {
-        const promise = promises.get(event.key)
-        if (promise) {
-          const [resolve, reject] = promise
-          if (event.ok) {
-            resolve(event.val)
-          } else {
-            reject(event.val)
-          }
+        const { res } = event
+        const resolve = promises.get(event.key)
+        if (resolve) {
+          resolve(res)
           promises.delete(event.key)
         } else {
-          console.warn(`No callback registered for the event: ${JSON.stringify(event)}`)
+          console.warn(
+            `No callback registered for the event: ${JSON.stringify(event)}. If your request takes more than 10 seconds, you may need to provide a custom timeout.`
+          )
         }
         break
       }
@@ -101,7 +107,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
 
   const stores = new Map<string, Store>()
 
-  function createStore(key: string) {
+  function createStore(key: string): Store {
     const handlers =
       subscriptions.get(key) ||
       (() => {
@@ -112,7 +118,7 @@ export function createWSDataSource(wsUrl: string): DataSource {
 
     return {
       get: () => cache.get(key),
-      subscribe: (handler: () => void) => {
+      subscribe: (handler) => {
         const shouldSubscribeRemotely = handlers.size === 0
         handlers.add(handler)
         if (shouldSubscribeRemotely) {
@@ -135,9 +141,9 @@ export function createWSDataSource(wsUrl: string): DataSource {
     }
   }
 
-  const promises = new Map<string, [PromiseHandler, PromiseHandler]>()
+  const promises = new Map<string, (value: ServerResponseDataState) => void>()
 
-  const dataSource: DataSource = {
+  return {
     get: (key: string) => {
       const store = stores.get(key)
       if (store) {
@@ -147,16 +153,28 @@ export function createWSDataSource(wsUrl: string): DataSource {
       stores.set(key, newStore)
       return newStore
     },
+    state: createStateStream(rws),
     sendEvent: async (event) => {
       send({ $: 'evt', event })
-      if (isHandlerEvent(event)) {
-        return new Promise((resolve, reject) => {
-          // tbd: do we want to register a timeout here?
-          promises.set(event.dataState.key, [resolve, reject])
-        })
-      }
+      return new Promise((resolve, reject) => {
+        promises.set(event.dataState.key, resolve)
+        setTimeout(() => {
+          if (promises.has(event.dataState.key)) {
+            reject(new Error('Request timeout'))
+            promises.delete(event.dataState.key)
+          }
+        }, event.dataState.timeout || 10_000)
+      })
     },
   }
+}
 
-  return dataSource
+const createStateStream = (ws: ReconnectingWebSocket) => {
+  const [setState, state] = createWritableStream<WebSocketState>({ status: undefined })
+
+  ws.addEventListener('open', () => setState({ status: 'connected' }))
+  ws.addEventListener('close', () => setState({ status: 'disconnected' }))
+  ws.addEventListener('error', () => setState({ status: 'disconnected' }))
+
+  return state
 }
