@@ -12,15 +12,6 @@
       }
     },
     {
-      "label": "EG server",
-      "type": "shell",
-      "command": "cd ./example/server && npm run dev",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-      }
-    },
-    {
       "label": "Demo server",
       "type": "shell",
       "command": "cd ./example/demo && npm run dev",
@@ -30,17 +21,8 @@
       }
     },
     {
-      "label": "EG dashboard",
-      "type": "shell",
-      "command": "cd ./example/dashboard && npm run dev",
-      "presentation": {
-        "reveal": "always",
-        "panel": "new",
-      }
-    },
-    {
       "label": "Start all servers",
-      "dependsOn": ["Mobile Expo", "EG server", "Demo server", "EG dashboard"]
+      "dependsOn": ["Mobile Expo", "Demo server"]
     }
   ]
 }
