@@ -205,6 +205,9 @@ export function Template({
         onAction?.(event.dataState)
         return
       }
+      for (const action of event.dataState.actions) {
+        onAction?.(action)
+      }
       const res = await onEvent(event)
       if (!isResponseDataState(res)) {
         throw new Error(
