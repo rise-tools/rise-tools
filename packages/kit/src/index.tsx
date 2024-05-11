@@ -1,5 +1,5 @@
 import { DropdownButton } from './DropdownButton'
-import { RiseForm, RiseSubmitButton, RiseTextField } from './Form'
+import { Form, SubmitButton, TextField } from './Form'
 import { Icon } from './Icon'
 import { QRCode } from './QRCode'
 import { SelectField } from './SelectField'
@@ -7,6 +7,7 @@ import { Slider, SliderField } from './Slider'
 import { SortableList } from './SortableList'
 import { SwitchField } from './SwitchField'
 
+// tbd: enforce same components are exported
 export const RiseComponents = {
   RiseQRCode: {
     component: QRCode,
@@ -41,15 +42,15 @@ export const RiseComponents = {
     validator: SwitchField.validate,
   },
   RiseForm: {
-    component: RiseForm,
-    validator: RiseForm.validate,
+    component: Form,
+    validator: Form.validate,
   },
   RiseTextField: {
-    component: RiseTextField,
-    validator: RiseTextField.validate,
+    component: TextField,
+    validator: TextField.validate,
   },
   RiseSubmitButton: {
-    component: RiseSubmitButton,
-    validator: RiseSubmitButton.validate,
+    component: SubmitButton,
+    validator: SubmitButton.validate,
   },
 }

@@ -1,4 +1,4 @@
-import { ComponentProps, ReactElement } from 'react'
+import { JSXElementConstructor, ReactElement } from 'react'
 
 import { handler } from './events'
 import { ComponentDataState, JSONValue } from './template'
@@ -17,14 +17,11 @@ export function jsx(
 ): ComponentDataState {
   const { type, props } = componentFactory(passedProps)
   if (typeof type !== 'string') {
-    throw new Error('Invalid component.')
+    throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
   const serialisedProps = Object.fromEntries(
     Object.entries(props).map(([key, value]) => {
       if (typeof value === 'function') {
-        // tbd: how do we now if it's async or not?
-        // maybe some symbol on the function?
-        // or, force users to pass "onSubmit={asyncHandler(() => {}}" instead of pure function.
         return [key, handler(value)]
       }
       return [key, value]
@@ -39,13 +36,13 @@ export function jsx(
   }
 }
 
-export function createComponentDefinition<T extends React.ComponentType, K = ComponentProps<T>>(
-  type: string,
-  validator?: (props: K) => K
-) {
-  return (props: K): ReactElement => ({
+export function createComponentDefinition<
+  T extends JSXElementConstructor<any> | keyof JSX.IntrinsicElements,
+  P = React.ComponentProps<T>,
+>(type: string) {
+  return (props: P): ReactElement => ({
     type,
-    props: validator ? validator(props) : props,
+    props,
     key: null,
   })
 }

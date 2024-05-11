@@ -1,6 +1,4 @@
 import { action, ServerDataState } from '@final-ui/react'
-import { createComponentDefinition } from '@final-ui/react/jsx-runtime'
-import type * as t from 'tamagui'
 
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
@@ -171,15 +169,6 @@ export function getHomeScreen(): ServerDataState {
     ],
   }
 }
-
-// tbd: we need a better way to design this API, should ideally come from tamagui package.
-const YStack = createComponentDefinition<typeof t.YStack>('YStack')
-const XStack = createComponentDefinition<typeof t.XStack>('XStack')
-const Image = createComponentDefinition<typeof t.Image>('Image')
-const H2 = createComponentDefinition<typeof t.H2>('H2')
-const SizableText = createComponentDefinition<typeof t.H2>('SizableText')
-const Paragraph = createComponentDefinition<typeof t.H2>('Paragraph')
-const Button = createComponentDefinition<typeof t.H2>('Button')
 
 export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
   // @ts-ignore return type of JSX factory needs to be changed

@@ -1,7 +1,7 @@
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import React, { useMemo } from 'react'
-import { Adapt, Button, Select, Sheet, SizableText, XStack, YStack } from 'tamagui'
+import { Adapt, Select, Sheet, SizableText, XStack, YStack } from 'tamagui'
 import { z } from 'zod'
 
 const DropdownButtonProps = z.object({
