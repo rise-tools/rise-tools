@@ -93,8 +93,8 @@ export function isEventDataState(
 ): obj is ActionEventDataState | HandlerEventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
 }
-export function isHandlerEvent(obj: DataState): obj is HandlerEvent {
-  return isEventDataState(obj) && 'key' in obj
+export function isHandlerEvent(obj: TemplateEvent): obj is TemplateEvent<HandlerEventDataState> {
+  return isEventDataState(obj.dataState) && 'key' in obj.dataState
 }
 
 export function BaseTemplate({
