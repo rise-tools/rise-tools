@@ -1,4 +1,4 @@
-import { handler, ServerDataState } from '@final-ui/react'
+import { action, ServerDataState } from '@final-ui/react'
 import { createComponentDefinition } from '@final-ui/react/jsx-runtime'
 import type * as t from 'tamagui'
 
@@ -40,10 +40,7 @@ export function getHomeScreen(): ServerDataState {
             component: 'Button',
             props: {
               unstyled: true,
-              onPress: {
-                $: 'event',
-                action: ['navigate', `inventory:${item.key}:details`],
-              },
+              onPress: action(['navigate', `inventory:${item.key}:details`]),
               pressStyle: {
                 opacity: 0.8,
               },

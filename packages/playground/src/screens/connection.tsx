@@ -1,5 +1,5 @@
 import { RiseComponents } from '@final-ui/kit'
-import { isActionEvent, Template, TemplateEvent } from '@final-ui/react'
+import { ActionEventDataState, Template } from '@final-ui/react'
 import { TamaguiComponents } from '@final-ui/tamagui'
 import { Stack } from 'expo-router'
 import React, { useCallback, useEffect } from 'react'
@@ -50,29 +50,24 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
     }
   }, [path])
 
-  const onEvent = useCallback(
-    async (event: TemplateEvent) => {
-      if (isActionEvent(event)) {
-        const [action, path] = Array.isArray(event.dataState.action)
-          ? event.dataState.action
-          : [event.dataState.action, '']
-        if (action === 'navigate') {
-          router.push(`/connection/${params.id}?path=${path}`)
-          return
-        }
-        if (action === 'navigate-back') {
-          router.back()
-          return
-        }
+  const onAction = useCallback(
+    (event: ActionEventDataState<string | string[]>) => {
+      const [action, path] = Array.isArray(event.action) ? event.action : [event.action, '']
+      if (action === 'navigate') {
+        router.push(`/connection/${params.id}?path=${path}`)
+        return true
       }
-      return dataSource.sendEvent(event)
+      if (action === 'navigate-back') {
+        router.back()
+        return true
+      }
     },
-    [dataSource]
+    [router]
   )
 
   return (
     <DataBoundary dataSource={dataSource} path={path!}>
-      <Template components={components} dataSource={dataSource} path={path!} onEvent={onEvent} />
+      <Template components={components} dataSource={dataSource} path={path!} onAction={onAction} />
     </DataBoundary>
   )
 }

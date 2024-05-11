@@ -30,8 +30,8 @@ export function DropdownButton(props: z.infer<typeof DropdownButtonProps>) {
       disablePreventBodyScroll
       // native
     >
-      <Select.Trigger backgroundColor="$color4" alignItems="center" padding={0} f={0}>
-        <XStack f={1} jc="center">
+      <Select.Trigger backgroundColor="$color4" alignItems="center" padding={0} flex={0}>
+        <XStack flex={1} justifyContent="center">
           {props.icon}
           <SizableText>{props.children}</SizableText>
         </XStack>

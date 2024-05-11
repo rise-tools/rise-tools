@@ -1,6 +1,9 @@
 import crypto from 'node:crypto'
 
+import { ServerResponseDataState } from './response'
 import {
+  ActionEventDataState,
+  DataState,
   HandlerEventDataState,
   isComponentDataState,
   isEventDataState,
@@ -8,16 +11,20 @@ import {
 } from './template'
 
 /** Server data state*/
-export type ServerDataState = JSONValue | ServerHandlerEventDataState
-export type ServerHandlerEventDataState = HandlerEventDataState & {
-  handler: (args: any) => void
+export type ServerDataState = DataState | ServerEventDataState
+type ServerHandlerReturnType = ServerResponseDataState | JSONValue | void
+export type ServerHandlerFunction = (
+  args: any
+) => Promise<ServerHandlerReturnType> | ServerHandlerReturnType
+export type ServerEventDataState = HandlerEventDataState & {
+  handler: ServerHandlerFunction
 }
-export function isServerEventDataState(obj: ServerDataState): obj is ServerHandlerEventDataState {
+export function isServerEventDataState(obj: ServerDataState): obj is ServerEventDataState {
   return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
 }
 
 export function getAllEventHandlers(dataState: ServerDataState) {
-  const acc: Record<string, (args: any) => any> = {}
+  const acc: Record<string, ServerHandlerFunction> = {}
   function traverse(dataState: ServerDataState) {
     if (!dataState || typeof dataState !== 'object') {
       return
@@ -39,22 +46,22 @@ export function getAllEventHandlers(dataState: ServerDataState) {
   return acc
 }
 
-export function handler(func: (args: any) => any): ServerHandlerEventDataState {
+export function handler(
+  func: ServerHandlerFunction,
+  action: ActionEventDataState | ActionEventDataState[] = []
+): ServerEventDataState {
   const key = crypto.randomUUID()
   return {
     $: 'event',
     key,
-    async: false,
     handler: func,
+    actions: Array.isArray(action) ? action : [action],
   }
 }
 
-export function asyncHandler(func: (args: any) => Promise<any>): ServerHandlerEventDataState {
-  const key = crypto.randomUUID()
+export function action(action: any): ActionEventDataState {
   return {
     $: 'event',
-    key,
-    async: true,
-    handler: func,
+    action,
   }
 }

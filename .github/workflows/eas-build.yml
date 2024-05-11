@@ -1,8 +1,18 @@
-name: Build new version for App Store / Play Store
+name: Build and submit native app
 
 on:
   # Manual trigger
   workflow_dispatch:
+    inputs:
+      platform:
+        description: Choose the platform to deploy
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - ios
+          - android
 
 jobs:
   update:
@@ -37,5 +47,5 @@ jobs:
         run: npm install
 
       - name: Build and submit new version
-        run: eas build --auto-submit --platform=all --non-interactive
+        run: eas build --auto-submit --platform=${{ github.event.inputs.platform }} --non-interactive
         working-directory: ./apps/mobile

@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { DataSource, Template, TemplateEvent } from '..'
+import { action, ActionEventDataState, DataSource, handler, response, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
@@ -138,7 +138,7 @@ it('should resolve a ref', () => {
   `)
 })
 
-it('should send an event with ref as a path when trigerred by referenced component', () => {
+it('should send an action with ref as a path when trigerred by referenced component', () => {
   const dataSource: DataSource = {
     get: (store: string) => {
       if (store === 'secondStore') {
@@ -151,9 +151,7 @@ it('should send an event with ref as a path when trigerred by referenced compone
               component: 'View',
               props: {
                 ['data-testid']: 'button-referenced',
-                onClick: {
-                  $: 'event',
-                },
+                onClick: action('go-back-referenced'),
               },
             }
           },
@@ -172,9 +170,7 @@ it('should send an event with ref as a path when trigerred by referenced compone
                 component: 'View',
                 props: {
                   ['data-testid']: 'button-local',
-                  onClick: {
-                    $: 'event',
-                  },
+                  onClick: action('go-back-local'),
                 },
               },
               {
@@ -186,23 +182,23 @@ it('should send an event with ref as a path when trigerred by referenced compone
         },
       }
     },
-    sendEvent: jest.fn(),
+    sendEvent: jest.fn().mockResolvedValue(response(null)),
   }
 
-  const onEvent = jest.fn()
+  const onAction = jest.fn()
   const component = render(
     <Template
       components={BUILT_IN_COMPONENTS}
       path="mainStore"
       dataSource={dataSource}
-      onEvent={onEvent}
+      onAction={onAction}
     />
   )
   fireEvent.click(component.getByTestId('button-local'))
-  expect((onEvent.mock.lastCall[0] as TemplateEvent).target.path).toEqual('mainStore')
+  expect((onAction.mock.lastCall[0] as ActionEventDataState).action).toEqual('go-back-local')
 
   fireEvent.click(component.getByTestId('button-referenced'))
-  expect((onEvent.mock.lastCall[0] as TemplateEvent).target.path).toEqual('secondStore')
+  expect((onAction.mock.lastCall[0] as ActionEventDataState).action).toEqual('go-back-referenced')
 })
 
 it('should subscribe to the root store', () => {
@@ -300,6 +296,32 @@ it('should manage subscription to stores referenced by refs', () => {
 
   expect(mainStoreUnsubscribeFunction).toHaveBeenCalledTimes(1)
   expect(secondStoreUnsubscribeFunction).toHaveBeenCalledTimes(1)
+})
+
+it('should dispatch all actions associated with an event', () => {
+  const dataSource: DataSource = {
+    get: () => ({
+      subscribe: jest.fn().mockReturnValue(jest.fn()),
+      get() {
+        return {
+          $: 'component',
+          component: 'View',
+          props: {
+            ['data-testid']: 'button',
+            onClick: handler(() => {}, [action('go-back'), action('go-back')]),
+          },
+        }
+      },
+    }),
+    sendEvent: jest.fn().mockReturnValue(response(null)),
+  }
+  const onAction = jest.fn()
+  const component = render(
+    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} onAction={onAction} />
+  )
+  fireEvent.click(component.getByTestId('button'))
+  expect(onAction).toHaveBeenCalledTimes(2)
+  expect(onAction).toHaveBeenLastCalledWith(action('go-back'))
 })
 
 it.skip('should remove subscription to refs no longer in use', () => {

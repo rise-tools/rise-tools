@@ -1,11 +1,11 @@
 import {
   createWritableStream,
   type DataSource,
-  isHandlerEvent,
-  type JSONValue,
+  DataState,
+  HandlerEvent,
+  ServerResponseDataState,
   Store,
   Stream,
-  type TemplateEvent,
 } from '@final-ui/react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
@@ -21,20 +21,19 @@ export type UnsubscribeWebsocketMessage = {
 
 export type EventWebsocketMessage = {
   $: 'evt'
-  event: TemplateEvent
+  event: HandlerEvent
 }
 
 export type UpdateWebsocketMessage = {
   $: 'up'
   key: string
-  val: JSONValue
+  val: DataState
 }
 
 export type EventResponseWebsocketMessage = {
   $: 'evt-res'
   key: string
-  ok: boolean
-  val: JSONValue
+  res: ServerResponseDataState
 }
 
 export type ClientWebsocketMessage =
@@ -44,8 +43,7 @@ export type ClientWebsocketMessage =
 
 export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponseWebsocketMessage
 
-type Handler = (value: JSONValue) => void
-type PromiseHandler = (value: any) => void
+type Handler = (value: DataState) => void
 
 type WebSocketState = {
   status?: 'connected' | 'disconnected'
@@ -89,14 +87,10 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
         break
       }
       case 'evt-res': {
-        const promise = promises.get(event.key)
-        if (promise) {
-          const [resolve, reject] = promise
-          if (event.ok) {
-            resolve(event.val)
-          } else {
-            reject(event.val)
-          }
+        const { res } = event
+        const resolve = promises.get(event.key)
+        if (resolve) {
+          resolve(res)
           promises.delete(event.key)
         } else {
           console.warn(
@@ -147,7 +141,7 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
     }
   }
 
-  const promises = new Map<string, [PromiseHandler, PromiseHandler]>()
+  const promises = new Map<string, (value: ServerResponseDataState) => void>()
 
   return {
     get: (key: string) => {
@@ -162,17 +156,15 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
     state: createStateStream(rws),
     sendEvent: async (event) => {
       send({ $: 'evt', event })
-      if (isHandlerEvent(event)) {
-        return new Promise((resolve, reject) => {
-          promises.set(event.dataState.key, [resolve, reject])
-          setTimeout(() => {
-            if (promises.has(event.dataState.key)) {
-              reject(new Error('Request timeout'))
-              promises.delete(event.dataState.key)
-            }
-          }, event.dataState.timeout || 10_000)
-        })
-      }
+      return new Promise((resolve, reject) => {
+        promises.set(event.dataState.key, resolve)
+        setTimeout(() => {
+          if (promises.has(event.dataState.key)) {
+            reject(new Error('Request timeout'))
+            promises.delete(event.dataState.key)
+          }
+        }, event.dataState.timeout || 10_000)
+      })
     },
   }
 }

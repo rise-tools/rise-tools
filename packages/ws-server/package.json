@@ -1,6 +1,6 @@
 {
   "name": "@final-ui/ws-server",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
   "main": "lib",
@@ -30,8 +30,8 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
-    "@final-ui/react": "0.1.2",
-    "@final-ui/ws-client": "0.1.2",
+    "@final-ui/react": "0.2.0",
+    "@final-ui/ws-client": "0.2.0",
     "metro-react-native-babel-preset": "^0.77.0"
   }
 }

@@ -20,8 +20,8 @@
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
-    "@final-ui/react": "0.1.2",
-    "@final-ui/ws-server": "0.1.2"
+    "@final-ui/react": "0.2.0",
+    "@final-ui/ws-server": "0.2.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240423.0",

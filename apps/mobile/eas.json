@@ -8,7 +8,8 @@
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_DEMO_WS_URL": "ws://rise-demo-server-inventory.grabbou.workers.dev"
-      }
+      },
+      "channel": "production"
     }
   },
   "submit": {
@@ -21,6 +22,7 @@
     }
   },
   "cli": {
+    "appVersionSource": "remote",
     "promptToConfigurePushNotifications": false
   }
 }
