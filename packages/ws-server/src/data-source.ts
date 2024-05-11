@@ -1,11 +1,11 @@
 import {
   extractRefKey,
   getAllEventHandlers,
+  HandlerEvent,
   isResponseDataState,
   response,
   ServerDataState,
   ServerHandlerFunction,
-  TemplateEvent,
 } from '@final-ui/react'
 import type {
   ClientWebsocketMessage,
@@ -16,7 +16,7 @@ import type {
 } from '@final-ui/ws-client'
 
 type EventSubscriber = (
-  event: TemplateEvent,
+  event: HandlerEvent,
   eventOpts: {
     time: number
     clientId: string
