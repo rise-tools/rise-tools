@@ -15,11 +15,12 @@ const { useParam } = createParam<{ id: string }>()
 
 export function EditConnectionScreen() {
   const [id] = useParam('id')
-  const [connection, { remove, update }] = useConnection(id)
+  const [connection, operations] = useConnection(id)
   const goHomeLink = useLink({
     href: '/',
   })
-  if (!connection) return <NotFoundScreen />
+  if (!connection || !operations) return <NotFoundScreen />
+  const { remove, update } = operations
   return (
     <YStack flex={1} space padding="$4">
       <ConnectionForm
@@ -27,7 +28,6 @@ export function EditConnectionScreen() {
           update((conn) => ({ ...conn, ...values }))
           goHomeLink.onPress()
         }}
-        // @ts-ignore
         defaultValues={connection}
         submitButton={({ submit }) => <Button onPress={() => submit()}>Save Connection</Button>}
       />
