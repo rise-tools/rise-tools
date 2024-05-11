@@ -3,7 +3,10 @@
   "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
-  "main": "lib",
+  "exports": {
+    ".": "./src/index.js",
+    "./jsx-runtime": "./lib/jsx-runtime.js"
+  },
   "react-native": "src",
   "files": [
     "src",
