@@ -1,12 +1,15 @@
 import React from 'react'
-import { Label, Slider as TamaguiSlider, Spinner, YStack } from 'tamagui'
+import { SizableText, Slider as TamaguiSlider, Spinner, YStack } from 'tamagui'
 import { z } from 'zod'
+
+import { LongPressSheetLabel } from './LongPressSheetLabel'
 
 const SliderProps = z.object({
   value: z.number(),
   min: z.number().optional().default(0),
   max: z.number().optional().default(100),
   step: z.number().optional().default(1),
+  longPressSheet: z.any().optional(),
   onValueChange: z.function().args(z.array(z.number())).optional(),
 })
 
@@ -39,6 +42,7 @@ const SliderFieldProps = SliderProps.extend({
 
 export function SliderField(props: z.infer<typeof SliderFieldProps>) {
   let content = <Spinner />
+  // tbd: this is always number, isn't it? (we validate props)
   if (typeof props.value === 'number') {
     content = (
       <TamaguiSlider
@@ -56,9 +60,17 @@ export function SliderField(props: z.infer<typeof SliderFieldProps>) {
       </TamaguiSlider>
     )
   }
+  if (!props.longPressSheet) {
+    return (
+      <YStack>
+        <SizableText>{props.label}</SizableText>
+        {content}
+      </YStack>
+    )
+  }
   return (
     <YStack>
-      <Label>{props.label}</Label>
+      <LongPressSheetLabel sheet={props.longPressSheet}>{props.label}</LongPressSheetLabel>
       {content}
     </YStack>
   )

@@ -29,6 +29,9 @@ export function SortableList(props: z.infer<typeof SortableListProps>) {
         containerStyle={{ flex: 1 }}
         data={props.items}
         keyExtractor={keyExtractor}
+        onDragEnd={({ data }) => {
+          props.onReorder?.(data.map((item) => item.key))
+        }}
         ListHeaderComponent={() => props.header}
         ListFooterComponent={() => props.footer}
         renderItem={(row) => {
@@ -39,7 +42,14 @@ export function SortableList(props: z.infer<typeof SortableListProps>) {
                 onPress={() => item.onPress?.()}
                 onLongPress={drag}
                 disabled={isActive}
-                style={[{ padding: 10, backgroundColor: 'white', margin: 10, borderRadius: 10 }]}
+                style={[
+                  {
+                    padding: 10,
+                    backgroundColor: 'white',
+                    margin: 10,
+                    borderRadius: 10,
+                  },
+                ]}
               >
                 <Label>{item.label}</Label>
               </TouchableOpacity>

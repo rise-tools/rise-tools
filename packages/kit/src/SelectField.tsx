@@ -8,6 +8,7 @@ const SelectFieldProps = z.object({
   value: z.string().nullable(),
   id: z.string().optional(),
   label: z.string().optional(),
+  hidden: z.boolean().optional(),
   unselectedLabel: z.string().optional().default('...'),
   onValueChange: z.function().args(z.string()).optional(),
   options: z
@@ -21,7 +22,7 @@ const SelectFieldProps = z.object({
 })
 
 export function SelectField(props: z.infer<typeof SelectFieldProps>) {
-  const { value, options } = props
+  const { value, options, hidden } = props
   return (
     <YStack>
       <Label>{props.label}</Label>
@@ -33,7 +34,13 @@ export function SelectField(props: z.infer<typeof SelectFieldProps>) {
         disablePreventBodyScroll
         // native
       >
-        <Select.Trigger iconAfter={ChevronDown}>
+        <Select.Trigger
+          opacity={hidden ? 0 : 1}
+          height={hidden ? 0 : undefined}
+          width={hidden ? 0 : undefined}
+          display={hidden ? 'none' : undefined}
+          iconAfter={ChevronDown}
+        >
           <Select.Value placeholder={props.unselectedLabel} />
         </Select.Trigger>
 
