@@ -38,8 +38,8 @@ export default function HomeLayout() {
     return null
   }
   return (
-    <Provider config={tamaguiConfig}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Provider config={tamaguiConfig}>
         <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
           <ExpoStorageProvider>
             <Stack>
@@ -53,7 +53,7 @@ export default function HomeLayout() {
             </Stack>
           </ExpoStorageProvider>
         </ThemeProvider>
-      </GestureHandlerRootView>
-    </Provider>
+      </Provider>
+    </GestureHandlerRootView>
   )
 }
