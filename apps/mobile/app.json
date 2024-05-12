@@ -51,9 +51,5 @@
     "runtimeVersion": {
       "policy": "appVersion"
     }
-  },
-  "experiments": {
-    "typedRoutes": true,
-    "tsconfigPaths": true
   }
 }
