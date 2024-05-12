@@ -4,12 +4,12 @@
     "paths": {
       "@final-ui/playground": ["./packages/playground/src"],
       "@final-ui/react": ["./packages/react/src"],
-      "@final-ui/react/server": ["./packages/react/src/server"],
       "@final-ui/react/jsx-runtime": ["./packages/react/src/jsx"],
       "@final-ui/ws-client": ["./packages/ws-client/src"],
       "@final-ui/ws-server": ["./packages/ws-server/src"],
       "@final-ui/tamagui": ["./packages/tamagui/src"],
-      "@final-ui/kit": ["./packages/kit/src"]
+      "@final-ui/kit": ["./packages/kit/src"],
+      "@final-ui/kit/server": ["./packages/react/src/server"]
     },
     "composite": true,
     "strictNullChecks": true,
