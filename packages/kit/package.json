@@ -7,7 +7,6 @@
     ".": "./lib/index.js",
     "./server": "./lib/server.js"
   },
-  "react-native": "src",
   "files": [
     "src",
     "lib",
