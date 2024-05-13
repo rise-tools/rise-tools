@@ -49,9 +49,9 @@ export function getAllEventHandlers(dataState: ServerDataState) {
 
 type Action = ActionDataState | ActionDataState[]
 
-export function handler(action: Action): ActionEventDataState
-export function handler(func: ServerHandlerFunction, action?: Action): ServerEventDataState
-export function handler(
+export function event(action: Action): ActionEventDataState
+export function event(func: ServerHandlerFunction, action?: Action): ServerEventDataState
+export function event(
   func: ServerHandlerFunction | Action,
   action: Action = []
 ): ServerEventDataState | ActionEventDataState {

@@ -1,4 +1,4 @@
-import { action, handler, ServerDataState } from '@final-ui/react'
+import { action, event, ServerDataState } from '@final-ui/react'
 
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
@@ -38,7 +38,7 @@ export function getHomeScreen(): ServerDataState {
             component: 'Button',
             props: {
               unstyled: true,
-              onPress: handler(action(['navigate', `inventory:${item.key}:details`])),
+              onPress: event(action(['navigate', `inventory:${item.key}:details`])),
               pressStyle: {
                 opacity: 0.8,
               },
@@ -272,7 +272,7 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
                 key: 'decrement',
                 props: {
                   theme: 'red',
-                  onPress: handler(() => {
+                  onPress: event(() => {
                     ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
                       ...data,
                       [item.key]: {
@@ -290,7 +290,7 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
                 key: 'increment',
                 props: {
                   theme: 'blue',
-                  onPress: handler(() => {
+                  onPress: event(() => {
                     ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
                       ...data,
                       [item.key]: {
