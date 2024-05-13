@@ -12,7 +12,7 @@
 	"references": [{
     "path": "../../packages/react"
   }, {
-    "path": "../../packages/kit"
+    "path": "../../packages/tamagui"
   }, {
     "path": "../../packages/ws-server"
   }]

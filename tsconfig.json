@@ -8,6 +8,7 @@
       "@final-ui/ws-client": ["./packages/ws-client/src"],
       "@final-ui/ws-server": ["./packages/ws-server/src"],
       "@final-ui/tamagui": ["./packages/tamagui/src"],
+      "@final-ui/tamagui/server": ["./packages/tamagui/src/server"],
       "@final-ui/kit": ["./packages/kit/src"],
       "@final-ui/kit/server": ["./packages/react/src/server"]
     },

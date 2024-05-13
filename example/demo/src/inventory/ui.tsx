@@ -1,4 +1,15 @@
 import { action, ServerDataState } from '@final-ui/react'
+import {
+  Button,
+  H2,
+  H4,
+  Image,
+  Paragraph,
+  ScrollView,
+  SizableText,
+  XStack,
+  YStack,
+} from '@final-ui/tamagui/server'
 
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
@@ -15,159 +26,49 @@ export function getInventoryExample(ctx: UIContext): Record<string, ServerDataSt
 }
 
 export function getHomeScreen(): ServerDataState {
-  return {
-    $: 'component',
-    component: 'YStack',
-    props: {
-      backgroundColor: '$background',
-    },
-    children: [
-      {
-        $: 'component',
-        key: 'items',
-        component: 'ScrollView',
-        props: {
-          contentContainerStyle: {
-            paddingBottom: 20,
-          },
-        },
-        children: inventory.map(
-          (item, idx): ServerDataState => ({
-            $: 'component',
-            key: item.key,
-            component: 'Button',
-            props: {
-              unstyled: true,
-              onPress: action(['navigate', `inventory:${item.key}:details`]),
-              pressStyle: {
-                opacity: 0.8,
-              },
-            },
-            children: {
-              $: 'component',
-              component: 'XStack',
-              props: {
-                gap: 10,
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-                alignItems: 'center',
-                borderBottomWidth: idx === inventory.length - 1 ? 0 : 1,
-                borderBottomColor: '$gray4',
-              },
-              children: [
-                {
-                  $: 'component',
-                  key: 'photo',
-                  component: 'Image',
-                  props: {
-                    source: {
-                      uri: {
-                        $: 'ref',
-                        ref: [`inventory-items`, item.key, 'photo'],
-                      },
-                    },
-                    style: {
-                      width: 75,
-                      height: 75,
-                    },
-                    resizeMode: 'contain',
-                  },
-                },
-                {
-                  $: 'component',
-                  key: 'info',
-                  component: 'YStack',
-                  children: [
-                    {
-                      $: 'component',
-                      key: 'title',
-                      component: 'H4',
-                      children: {
-                        $: 'ref',
-                        ref: [`inventory-items`, item.key, 'title'],
-                      },
-                    },
-                    {
-                      $: 'component',
-                      key: 'details',
-                      component: 'XStack',
-                      props: {
-                        gap: 10,
-                      },
-                      children: [
-                        {
-                          $: 'component',
-                          key: 'quantity',
-                          component: 'XStack',
-                          props: {
-                            gap: '$1',
-                          },
-                          children: [
-                            {
-                              $: 'component',
-                              key: 'label',
-                              component: 'SizableText',
-                              props: {
-                                size: '$4',
-                              },
-                              children: `Quantity:`,
-                            },
-                            {
-                              $: 'component',
-                              key: 'value',
-                              component: 'SizableText',
-                              props: {
-                                size: '$4',
-                              },
-                              children: {
-                                $: 'ref',
-                                ref: [`inventory-items`, item.key, 'quantity'],
-                              },
-                            },
-                          ],
-                        },
-                        {
-                          $: 'component',
-                          key: 'price',
-                          component: 'XStack',
-                          props: {
-                            gap: '$1',
-                          },
-                          children: [
-                            {
-                              $: 'component',
-                              key: 'label',
-                              component: 'SizableText',
-                              props: {
-                                size: '$4',
-                              },
-                              children: `Price:`,
-                            },
-                            {
-                              $: 'component',
-                              key: 'value',
-                              component: 'SizableText',
-                              props: {
-                                size: '$4',
-                              },
-                              children: {
-                                $: 'ref',
-                                ref: [`inventory-items`, item.key, 'price'],
-                              },
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          })
-        ),
-      },
-    ],
-  }
+  // @ts-ignore fix return type
+  return (
+    <YStack backgroundColor={'$background'}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+        {inventory.map((item, idx) => (
+          <Button
+            unstyled
+            // @ts-ignore modify type so that we accept Action or event
+            onPress={action(['navigate', `inventory:${item.key}:details`])}
+            pressStyle={{ opacity: 0.8 }}
+          >
+            <YStack
+              gap={10}
+              paddingHorizontal={20}
+              paddingVertical={10}
+              alignItems="center"
+              borderBottomWidth={idx === inventory.length - 1 ? 0 : 1}
+              borderBottomColor="$gray4"
+            >
+              <Image
+                source={{ uri: item.photo }}
+                style={{ width: 75, height: 75 }}
+                resizeMode="contain"
+              />
+              <YStack>
+                <H4 children={item.title} />
+                <XStack gap={10}>
+                  <XStack gap="$1">
+                    <SizableText size="$4">Quantity:</SizableText>
+                    <SizableText size="$4" children={item.quantity} />
+                  </XStack>
+                  <XStack gap="$1">
+                    <SizableText size="$4">Price:</SizableText>
+                    <SizableText size="$4" children={item.price} />
+                  </XStack>
+                </XStack>
+              </YStack>
+            </YStack>
+          </Button>
+        ))}
+      </ScrollView>
+    </YStack>
+  )
 }
 
 export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
