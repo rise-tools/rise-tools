@@ -1,9 +1,16 @@
 import { JSXElementConstructor, ReactElement } from 'react'
 
-import { handler } from './events'
-import { ComponentDataState, JSONValue } from './template'
+import { handler, ServerEventDataState } from './events'
+import {
+  ActionEventDataState,
+  ComponentDataState,
+  isActionEventDataState,
+  JSONValue,
+} from './template'
 
-type Props = Record<string, JSONValue | ((args: any) => any)> & {
+type AllowedDataStates = ServerEventDataState | ActionEventDataState | ((args: any) => any)
+
+type Props = Record<string, JSONValue | AllowedDataStates> & {
   children: JSONValue
 }
 
@@ -23,6 +30,9 @@ export function jsx(
     Object.entries(props).map(([key, value]) => {
       if (typeof value === 'function') {
         return [key, handler(value)]
+      }
+      if (isActionEventDataState(value)) {
+        return [key, handler(() => {}, value)]
       }
       return [key, value]
     })
