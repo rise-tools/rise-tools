@@ -1,4 +1,4 @@
-import { ActionEventDataState, JSONValue } from './template'
+import { ActionDataState, JSONValue } from './template'
 
 export function response(payload: JSONValue): ServerResponseDataState {
   return {
@@ -25,11 +25,11 @@ export type ResponseDataState = {
   payload: JSONValue
   statusCode: number
   ok: boolean
-  actions: ActionEventDataState[]
+  actions: ActionDataState[]
 }
 
 export type ServerResponseDataState = ResponseDataState & {
-  action(action: ActionEventDataState): ServerResponseDataState
+  action(action: ActionDataState): ServerResponseDataState
   status(code: number): ServerResponseDataState
 }
 

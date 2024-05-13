@@ -182,6 +182,9 @@ export const TamaguiComponents: ComponentRegistry = {
   Dialog: {
     component: t.Dialog,
   },
+  DialogTrigger: {
+    component: t.Dialog.Trigger,
+  },
   DialogTitle: {
     component: t.Dialog.Title,
   },

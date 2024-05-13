@@ -2,6 +2,7 @@ import crypto from 'node:crypto'
 
 import { ServerResponseDataState } from './response'
 import {
+  ActionDataState,
   ActionEventDataState,
   DataState,
   HandlerEventDataState,
@@ -46,22 +47,33 @@ export function getAllEventHandlers(dataState: ServerDataState) {
   return acc
 }
 
-export function handler(
-  func: ServerHandlerFunction,
-  action: ActionEventDataState | ActionEventDataState[] = []
-): ServerEventDataState {
-  const key = crypto.randomUUID()
-  return {
-    $: 'event',
-    key,
-    handler: func,
-    actions: Array.isArray(action) ? action : [action],
+type Action = ActionDataState | ActionDataState[]
+
+export function event(action: Action): ActionEventDataState
+export function event(func: ServerHandlerFunction, action?: Action): ServerEventDataState
+export function event(
+  func: ServerHandlerFunction | Action,
+  action: Action = []
+): ServerEventDataState | ActionEventDataState {
+  if (typeof func === 'function') {
+    const key = crypto.randomUUID()
+    return {
+      $: 'event',
+      key,
+      handler: func,
+      actions: Array.isArray(action) ? action : [action],
+    }
+  } else {
+    return {
+      $: 'event',
+      actions: Array.isArray(func) ? func : [func],
+    }
   }
 }
 
-export function action(action: any): ActionEventDataState {
+export function action<T = any>(name: T): ActionDataState<T> {
   return {
-    $: 'event',
-    action,
+    $: 'action',
+    name,
   }
 }
