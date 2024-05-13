@@ -3,15 +3,15 @@ import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useSta
 import { isResponseDataState, ServerResponseDataState } from './response'
 import { Stream } from './streams'
 import {
+  ActionDataState,
   ActionEvent,
-  ActionEventDataState,
   BaseTemplate,
   ComponentRegistry,
   DataState,
   HandlerEvent,
-  isActionEvent,
   isComponentDataState,
   isCompositeDataState,
+  isHandlerEvent,
   Path,
   ReferencedDataState,
 } from './template'
@@ -187,7 +187,7 @@ export function Template({
   path?: Path
   dataSource: DataSource
   components: ComponentRegistry
-  onAction?: (action: ActionEventDataState) => void
+  onAction?: (action: ActionDataState) => void
   onEvent?: (event: HandlerEvent) => Promise<ServerResponseDataState>
 }) {
   const [dataValues, setDataValues] = useState<DataValues>({})
@@ -201,12 +201,11 @@ export function Template({
   const rootDataState = resolveRef(dataValues, path)
   const onTemplateEvent = useCallback(
     async (event: ActionEvent | HandlerEvent) => {
-      if (isActionEvent(event)) {
-        onAction?.(event.dataState)
-        return
-      }
-      for (const action of event.dataState.actions) {
+      for (const action of event.dataState.actions || []) {
         onAction?.(action)
+      }
+      if (!isHandlerEvent(event)) {
+        return
       }
       const res = await onEvent(event)
       if (!isResponseDataState(res)) {
