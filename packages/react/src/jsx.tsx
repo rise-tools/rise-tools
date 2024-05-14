@@ -26,7 +26,7 @@ export const jsxs = jsx
 export function jsx(
   componentFactory: (props: any) => React.ReactElement<Props>,
   { children, ...passedProps }: Props,
-  key: string
+  key?: string
 ): ComponentDataState {
   const { type, props } = componentFactory(passedProps)
   if (typeof type !== 'string') {
