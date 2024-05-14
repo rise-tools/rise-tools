@@ -1,4 +1,4 @@
-import { JSXElementConstructor, ReactElement } from 'react'
+import React from 'react'
 
 import { event, ServerEventDataState } from './events'
 import {
@@ -6,6 +6,7 @@ import {
   ComponentDataState,
   DataState,
   isActionDataState,
+  isComponentDataState,
   JSONValue,
   ReferencedDataState,
 } from './template'
@@ -20,20 +21,22 @@ type Props = Record<string, JSONValue | AllowedDataStates> & {
   children: DataState
 }
 
-// tbd: investigate this
+export type Element = ComponentDataState
+export type ElementType<P> = (props: Extend<P, AllowedDataStates>) => Element
+
 export const jsxs = jsx
 
 export function jsx(
-  componentFactory: (props: any) => React.ReactElement<Props>,
+  componentFactory: ReturnType<typeof createComponentDefinition>,
   { children, ...passedProps }: Props,
   key?: string
 ): ComponentDataState {
-  const { type, props } = componentFactory(passedProps)
-  if (typeof type !== 'string') {
+  const component = componentFactory(passedProps)
+  if (!isComponentDataState(component)) {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
-  const serialisedProps = Object.fromEntries(
-    Object.entries(props).map(([key, value]) => {
+  const props = Object.fromEntries(
+    Object.entries(passedProps).map(([key, value]) => {
       if (typeof value === 'function') {
         return [key, event(value)]
       }
@@ -44,10 +47,9 @@ export function jsx(
     })
   )
   return {
-    $: 'component',
-    component: type,
+    ...component,
     key,
-    props: serialisedProps,
+    props,
     children,
   }
 }
@@ -57,12 +59,11 @@ type Extend<P, K> = {
 }
 
 export function createComponentDefinition<
-  T extends JSXElementConstructor<any> | keyof JSX.IntrinsicElements,
+  T extends React.JSXElementConstructor<any> | keyof React.JSX.IntrinsicElements,
   P = React.ComponentProps<T>,
->(type: string) {
-  return (props: Extend<P, AllowedDataStates>): ReactElement => ({
-    type,
-    props,
-    key: null,
+>(type: string): ElementType<P> {
+  return () => ({
+    $: 'component' as const,
+    component: type,
   })
 }

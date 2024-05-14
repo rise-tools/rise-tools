@@ -1,4 +1,10 @@
-import { action, jsx, ServerDataState } from '@final-ui/react'
+import {
+  action,
+  ComponentDataState,
+  Element as JSXElement,
+  ElementType as JSXElementType,
+  ServerDataState,
+} from '@final-ui/react'
 import {
   Button,
   H2,
@@ -14,14 +20,14 @@ import {
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
 
-// Overwrite JSX.Element type to ComponentDataState and exclude React.Element-specific properties
-// When our `jsx` factory is used, this will be the return type.
+// Define JSX Element and ElementType
+// Need to unload `React` or remove `React.JSX.Element` and `React.JSX.ElementType` from global namespace
+// to run this
+// WIP: overwrite instead
 declare global {
   namespace JSX {
-    interface Element extends ReturnType<typeof jsx> {
-      key?: string
-      type: never
-    }
+    type Element = JSXElement
+    type ElementType = JSXElementType<any>
   }
 }
 
