@@ -4,6 +4,7 @@ import { event, ServerEventDataState } from './events'
 import {
   ActionDataState,
   ComponentDataState,
+  DataState,
   isActionDataState,
   JSONValue,
   ReferencedDataState,
@@ -16,7 +17,7 @@ type AllowedDataStates =
   | ((args: any) => any)
 
 type Props = Record<string, JSONValue | AllowedDataStates> & {
-  children: JSONValue
+  children: DataState
 }
 
 // tbd: investigate this
