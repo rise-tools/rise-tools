@@ -33,7 +33,6 @@ export function getHomeScreen(): ServerDataState {
         {inventory.map((item, idx) => (
           <Button
             unstyled
-            // @ts-ignore modify type so that we accept Action or event
             onPress={action(['navigate', `inventory:${item.key}:details`])}
             pressStyle={{ opacity: 0.8 }}
           >
@@ -77,7 +76,6 @@ export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
     <YStack flex={1} backgroundColor={'$background'} gap="$3">
       <Image
         key="photo"
-        // @ts-ignore ref needs to be valid prop
         source={{
           uri: {
             $: 'ref',

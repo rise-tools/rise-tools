@@ -1,14 +1,19 @@
 import { JSXElementConstructor, ReactElement } from 'react'
 
-import { handler, ServerEventDataState } from './events'
+import { event, ServerEventDataState } from './events'
 import {
-  ActionEventDataState,
+  ActionDataState,
   ComponentDataState,
-  isActionEventDataState,
+  isActionDataState,
   JSONValue,
+  ReferencedDataState,
 } from './template'
 
-type AllowedDataStates = ServerEventDataState | ActionEventDataState | ((args: any) => any)
+type AllowedDataStates =
+  | ServerEventDataState
+  | ActionDataState
+  | ReferencedDataState
+  | ((args: any) => any)
 
 type Props = Record<string, JSONValue | AllowedDataStates> & {
   children: JSONValue
@@ -29,10 +34,10 @@ export function jsx(
   const serialisedProps = Object.fromEntries(
     Object.entries(props).map(([key, value]) => {
       if (typeof value === 'function') {
-        return [key, handler(value)]
+        return [key, event(value)]
       }
-      if (isActionEventDataState(value)) {
-        return [key, handler(() => {}, value)]
+      if (isActionDataState(value)) {
+        return [key, event(value)]
       }
       return [key, value]
     })
@@ -46,11 +51,15 @@ export function jsx(
   }
 }
 
+type Extend<P, K> = {
+  [Key in keyof P]: P[Key] extends infer T ? (T extends object ? K | Extend<T, K> : T | K) : never
+}
+
 export function createComponentDefinition<
   T extends JSXElementConstructor<any> | keyof JSX.IntrinsicElements,
   P = React.ComponentProps<T>,
 >(type: string) {
-  return (props: P): ReactElement => ({
+  return (props: Extend<P, AllowedDataStates>): ReactElement => ({
     type,
     props,
     key: null,

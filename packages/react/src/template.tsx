@@ -96,6 +96,9 @@ export function isEventDataState(
 export function isHandlerEvent(obj: TemplateEvent): obj is TemplateEvent<HandlerEventDataState> {
   return isEventDataState(obj.dataState) && 'key' in obj.dataState
 }
+export function isActionDataState(obj: any): obj is ActionDataState {
+  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'action'
+}
 
 export function BaseTemplate({
   path = '',
