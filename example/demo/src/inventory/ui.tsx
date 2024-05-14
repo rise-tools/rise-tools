@@ -1,4 +1,4 @@
-import { action, ServerDataState } from '@final-ui/react'
+import { action, jsx, ServerDataState } from '@final-ui/react'
 import {
   Button,
   H2,
@@ -14,6 +14,17 @@ import {
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
 
+// Overwrite JSX.Element type to ComponentDataState and exclude React.Element-specific properties
+// When our `jsx` factory is used, this will be the return type.
+declare global {
+  namespace JSX {
+    interface Element extends ReturnType<typeof jsx> {
+      key?: string
+      type: never
+    }
+  }
+}
+
 export function getInventoryExample(ctx: UIContext): Record<string, ServerDataState> {
   const inventoryItems = Object.fromEntries(inventory.map((item) => [item.key, item]))
   return {
@@ -25,8 +36,7 @@ export function getInventoryExample(ctx: UIContext): Record<string, ServerDataSt
   }
 }
 
-export function getHomeScreen(): ServerDataState {
-  // @ts-ignore fix return type
+export function getHomeScreen() {
   return (
     <YStack backgroundColor={'$background'}>
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
@@ -70,8 +80,7 @@ export function getHomeScreen(): ServerDataState {
   )
 }
 
-export function getItemScreen(item: Item, ctx: UIContext): ServerDataState {
-  // @ts-ignore return type of JSX factory needs to be changed
+export function getItemScreen(item: Item, ctx: UIContext) {
   return (
     <YStack flex={1} backgroundColor={'$background'} gap="$3">
       <Image
