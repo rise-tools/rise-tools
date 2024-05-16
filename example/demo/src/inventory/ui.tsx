@@ -114,7 +114,7 @@ export function Item(item: Item, ctx: UIContext) {
             />
           </XStack>
           <Button
-            key="inc"
+            key="dec"
             theme="red"
             onPress={() => {
               ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
@@ -128,8 +128,8 @@ export function Item(item: Item, ctx: UIContext) {
             children="-"
           />
           <Button
-            key="dec"
-            theme="red"
+            key="inc"
+            theme="blue"
             onPress={() => {
               ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
                 ...data,
