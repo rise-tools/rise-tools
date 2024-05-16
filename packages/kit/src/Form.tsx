@@ -1,6 +1,6 @@
 import { ComponentProps, createContext, ReactNode, useContext, useEffect, useState } from 'react'
 import React from 'react'
-import { Button, Fieldset, Form, Input } from 'tamagui'
+import { Button, Fieldset, Form as TForm, Input } from 'tamagui'
 
 type FormContext = {
   values: {
@@ -20,7 +20,7 @@ const FormContext = createContext<FormContext>({
   },
 })
 
-export function RiseForm({ children, onSubmit, ...props }: ComponentProps<typeof Form>) {
+export function Form({ children, onSubmit, ...props }: ComponentProps<typeof TForm>) {
   const [values, setValues] = useState({})
   const [isSubmitting, setSubmitting] = useState(false)
 
@@ -39,14 +39,14 @@ export function RiseForm({ children, onSubmit, ...props }: ComponentProps<typeof
         setValue: (key, value) => setValues((state) => ({ ...state, [key]: value })),
       }}
     >
-      <Form {...props} onSubmit={submit}>
+      <TForm {...props} onSubmit={submit}>
         {children}
-      </Form>
+      </TForm>
     </FormContext.Provider>
   )
 }
 
-export const RiseTextField = ({
+export const TextField = ({
   label,
   name,
   value,
@@ -75,17 +75,17 @@ export const RiseTextField = ({
   )
 }
 
-export const RiseSubmitButton = (props: ComponentProps<typeof Button>) => {
+export const SubmitButton = (props: ComponentProps<typeof Button>) => {
   const formContext = useContext(FormContext)
 
   return (
-    <Form.Trigger asChild>
+    <TForm.Trigger asChild>
       <Button disabled={formContext.isSubmitting} {...props} />
-    </Form.Trigger>
+    </TForm.Trigger>
   )
 }
 
 // tbd: add validation with Zod
-RiseForm.validate = (props: any) => props
-RiseSubmitButton.validate = (props: any) => props
-RiseTextField.validate = (props: any) => props
+Form.validate = (props: any) => props
+SubmitButton.validate = (props: any) => props
+TextField.validate = (props: any) => props

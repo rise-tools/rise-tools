@@ -1,6 +1,6 @@
 import { createWSServerDataSource } from '@final-ui/ws-server'
 
-import { getInventoryExample } from './inventory/ui'
+import { InventoryExample } from './inventory/ui'
 import { UIContext } from './types'
 
 function setupDataSource() {
@@ -11,7 +11,7 @@ function setupDataSource() {
       dataSource.update(key, updater(dataSource.get(key)))
     },
   }
-  for (const [key, value] of Object.entries(getInventoryExample(ctx))) {
+  for (const [key, value] of Object.entries(InventoryExample(ctx))) {
     dataSource.update(key, value)
   }
 

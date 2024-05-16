@@ -16,7 +16,6 @@
     "@final-ui/playground": "0.2.0",
     "@react-navigation/native": "^6.1.6",
     "@shopify/react-native-skia": "0.1.221",
-    "babel-plugin-module-resolver": "^4.1.0",
     "burnt": "^0.12.1",
     "expo": "50",
     "expo-asset": "~9.0.2",
