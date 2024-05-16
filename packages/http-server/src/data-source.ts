@@ -3,10 +3,6 @@ import { isReactElement, ServerDataState, UI } from '@final-ui/react'
 export function createHTTPDataSource() {
   const values = new Map<string, ServerDataState>()
 
-  const getDataStateForPath = (path: string) => {
-    return values.get(path)
-  }
-
   function update(key: string, value: ServerDataState | UI) {
     if (isReactElement(value)) {
       throw new Error(
@@ -20,10 +16,14 @@ export function createHTTPDataSource() {
     return update('', value)
   }
 
-  function handleRequest(request: Request) {
-    const url = new URL(request.url)
-    return new Response(JSON.stringify(getDataStateForPath(url.pathname)))
+  function get(path: string) {
+    return values.get(path)
   }
 
-  return { update, updateRoot, handleRequest }
+  function handleRequest(request: Request) {
+    const url = new URL(request.url)
+    return new Response(JSON.stringify(get(url.pathname)))
+  }
+
+  return { get, update, updateRoot, handleRequest }
 }
