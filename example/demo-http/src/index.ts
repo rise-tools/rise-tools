@@ -1,32 +1,19 @@
 import { createHTTPDataSource } from '@final-ui/http-server'
 
-import { UIContext } from './types'
-import { Example } from './ui'
+import { models } from './ui'
 
 function setupDataSource() {
   const dataSource = createHTTPDataSource()
-
-  const ctx: UIContext = {
-    update: (key, updater) => {
-      dataSource.update(key, updater(dataSource.get(key)))
-    },
+  for (const [key, model] of Object.entries(models)) {
+    dataSource.update(key, model)
   }
-
-  for (const [key, value] of Object.entries(Example(ctx))) {
-    dataSource.update(key, value)
-  }
-
   return dataSource
 }
+
+const dataSource = setupDataSource()
+
 export default {
   async fetch(request) {
-    // tbd: we should make this unique for each user
-    // tbd: use permanent storage in the example
-    // env.STORAGE.get(env.STORAGE.idFromName('global-state'))
-    const ds = setupDataSource()
-    // userModel
-
-    const userModel = model('', () => kadas.get())
-    return ds.handleRequest(request)
+    return dataSource.handleRequest(request)
   },
 } satisfies ExportedHandler

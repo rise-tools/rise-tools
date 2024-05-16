@@ -1,28 +1,32 @@
 import { Text, View } from '@final-ui/tamagui/server'
 
-import { UIContext } from './types'
+import { db } from './db'
 
-export function Example(ctx: UIContext) {
-  console.log(ctx)
-  return {
-    // tbd: this should be lazy-loaded
-    '': <Root />,
-    '/user': <User />,
-  }
+export const routes = {
+  '/': Root,
+  '/item': Item,
 }
 
-function User() {
+async function Item() {
   return (
     <View>
-      <Text>User</Text>
+      <Text>Item</Text>
     </View>
   )
 }
 
-function Root() {
+async function Root() {
+  const { data, error } = await db.from('inventory').select()
+  if (error) {
+    return (
+      <View>
+        <Text>There was an error loading: {error.message}</Text>
+      </View>
+    )
+  }
   return (
     <View>
-      <Text>Current value</Text>
+      <Text>Items in inventory: {JSON.stringify(data)}</Text>
     </View>
   )
 }
