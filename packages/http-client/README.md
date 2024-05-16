@@ -1,2 +1,2 @@
-@final-ui/ws-client
+@final-ui/http-client
 =====

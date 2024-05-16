@@ -20,7 +20,8 @@
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
-    "@final-ui/tamagui": "0.2.0"
+    "@final-ui/tamagui": "0.2.0",
+    "@final-ui/http-server": "0.2.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240423.0",

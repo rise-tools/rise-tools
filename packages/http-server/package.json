@@ -1,5 +1,5 @@
 {
-  "name": "@final-ui/http-client",
+  "name": "@final-ui/http-server",
   "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
@@ -16,14 +16,14 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/final-ui/final.git",
-    "directory": "packages/http-client"
+    "directory": "packages/http-server"
   },
   "publishConfig": {
     "access": "public"
   },
-  "author": "Eric Vicenti <ericvicenti@gmail.com> (https://github.com/ericvicenti)",
+  "author":  "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "contributors": [
-    "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
+    "Eric Vicenti <ericvicenti@gmail.com> (https://github.com/ericvicenti)"
   ],
   "bugs": {
     "url": "https://github.com/final-ui/final/issues"

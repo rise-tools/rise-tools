@@ -9,13 +9,27 @@ export default {
   async fetch(request, env) {
     // tbd: we should make this unique for each user
     const dataState = env.STORAGE.get(env.STORAGE.idFromName('global-state'))
-    return new Response(
-      JSON.stringify(
-        <View>
-          <Text>Current value: {await dataState.get()}</Text>
-        </View>
-      )
-    )
+    const url = new URL(request.url)
+    switch (url.pathname) {
+      case '/user': {
+        return new Response(
+          JSON.stringify(
+            <View>
+              <Text>User</Text>
+            </View>
+          )
+        )
+      }
+      default: {
+        return new Response(
+          JSON.stringify(
+            <View>
+              <Text>Current value: {await dataState.get()}</Text>
+            </View>
+          )
+        )
+      }
+    }
   },
 } satisfies ExportedHandler<Env>
 
