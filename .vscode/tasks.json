@@ -23,6 +23,19 @@
     {
       "label": "Start all servers",
       "dependsOn": ["Mobile Expo", "Demo server"]
+    },
+    {
+      "label": "Demo server (HTTP)",
+      "type": "shell",
+      "command": "cd ./example/demo-http && npm run dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+      }
+    },
+    {
+      "label": "Start all servers",
+      "dependsOn": ["Mobile Expo", "Demo server", "Demo server (HTTP)"]
     }
   ]
 }
