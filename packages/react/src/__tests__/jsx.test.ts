@@ -20,5 +20,9 @@ it('should turn action into event', () => {
   expect(isEventDataState(el.props!.onPress)).toBe(true)
 })
 
-it.skip('should compose higher-order functions together')
-it.skip('should create ComponentDataState')
+it.skip('should compose higher-order functions together', () => {
+  // todo
+})
+it.skip('should create ComponentDataState', () => {
+  // todo
+})
