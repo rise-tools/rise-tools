@@ -24,7 +24,19 @@ export function createHTTPDataSource() {
 
   async function handleRequest(request: Request) {
     const url = new URL(request.url)
-    return new Response(JSON.stringify(await get(url.pathname)))
+    switch (request.method) {
+      case 'GET': {
+        return new Response(JSON.stringify(await get(url.pathname)))
+      }
+      case 'POST': {
+        // const data = await get(url.pathname)
+        // tbd: handle events
+        // return new Response(JSON.stringify({}))
+        throw new Error('Unsupported method.')
+      }
+      default:
+        throw new Error('Unsupported method.')
+    }
   }
 
   return { update, handleRequest }

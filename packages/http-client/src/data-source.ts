@@ -1,4 +1,4 @@
-import { type DataSource, DataState, ServerResponseDataState, Store } from '@final-ui/react'
+import { type DataSource, DataState, Store } from '@final-ui/react'
 
 type Handler = (value: DataState) => void
 
@@ -32,20 +32,20 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
       subscribe: (handler) => {
         const shouldSubscribeRemotely = handlers.size === 0
         if (shouldSubscribeRemotely) {
-          // sub
+          // tbd: sub
         }
         return () => {
           handlers.delete(handler)
           const shouldUnsubscribeRemotely = handlers.size === 0
           if (shouldUnsubscribeRemotely) {
-            // unsub
+            // tbd: unsub
           }
         }
       },
     }
   }
 
-  const promises = new Map<string, (value: ServerResponseDataState) => void>()
+  // const promises = new Map<string, (value: ServerResponseDataState) => void>()
 
   return {
     get: (key: string) => {
@@ -57,17 +57,8 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
       stores.set(key, newStore)
       return newStore
     },
-    sendEvent: async (event) => {
-      // send({ $: 'evt', event })
-      // return new Promise((resolve, reject) => {
-      //   promises.set(event.dataState.key, resolve)
-      //   setTimeout(() => {
-      //     if (promises.has(event.dataState.key)) {
-      //       reject(new Error('Request timeout'))
-      //       promises.delete(event.dataState.key)
-      //     }
-      //   }, event.dataState.timeout || 10_000)
-      // })
+    sendEvent: async () => {
+      throw new Error('Unsupported')
     },
   }
 }
