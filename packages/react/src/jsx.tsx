@@ -1,4 +1,4 @@
-import React from 'react'
+import type { JSXElementConstructor, ReactElement } from 'react'
 
 import { event, ServerEventDataState } from './events'
 import {
@@ -6,7 +6,6 @@ import {
   ComponentDataState,
   DataState,
   isActionDataState,
-  isComponentDataState,
   JSONValue,
   ReferencedDataState,
 } from './template'
@@ -21,22 +20,19 @@ type Props = Record<string, JSONValue | AllowedDataStates> & {
   children: DataState
 }
 
-export type Element = ComponentDataState
-export type ElementType<P> = (props: Extend<P, AllowedDataStates>) => Element
-
 export const jsxs = jsx
 
 export function jsx(
-  componentFactory: ReturnType<typeof createComponentDefinition>,
+  componentFactory: (props: any) => ReactElement<Props>,
   { children, ...passedProps }: Props,
   key?: string
 ): ComponentDataState {
-  const component = componentFactory(passedProps)
-  if (!isComponentDataState(component)) {
+  const { type, props } = componentFactory(passedProps)
+  if (typeof type !== 'string') {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
-  const props = Object.fromEntries(
-    Object.entries(passedProps).map(([key, value]) => {
+  const serialisedProps = Object.fromEntries(
+    Object.entries(props).map(([key, value]) => {
       if (typeof value === 'function') {
         return [key, event(value)]
       }
@@ -47,9 +43,10 @@ export function jsx(
     })
   )
   return {
-    ...component,
+    $: 'component',
+    component: type,
     key,
-    props,
+    props: serialisedProps,
     children,
   }
 }
@@ -59,11 +56,18 @@ type Extend<P, K> = {
 }
 
 export function createComponentDefinition<
-  T extends React.JSXElementConstructor<any> | keyof React.JSX.IntrinsicElements,
+  T extends JSXElementConstructor<any> | keyof JSX.IntrinsicElements,
   P = React.ComponentProps<T>,
->(type: string): ElementType<P> {
-  return () => ({
-    $: 'component' as const,
-    component: type,
+>(type: string) {
+  return (props: Extend<P, AllowedDataStates>): ReactElement => ({
+    type,
+    props,
+    key: null,
   })
 }
+
+export function isReactElement(obj: any): obj is ReactElement {
+  return obj !== null && 'type' in obj && 'props' in obj && 'key' in obj
+}
+
+export type UI = ReactElement | ComponentDataState

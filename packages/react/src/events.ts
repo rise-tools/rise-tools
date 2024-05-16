@@ -1,5 +1,7 @@
 import crypto from 'node:crypto'
 
+import type { ReactElement } from 'react'
+
 import { ServerResponseDataState } from './response'
 import {
   ActionDataState,
@@ -13,6 +15,8 @@ import {
 
 /** Server data state*/
 export type ServerDataState = DataState | ServerEventDataState
+export type RuntimeServerDataState = Exclude<ServerDataState, ReactElement>
+
 type ServerHandlerReturnType = ServerResponseDataState | JSONValue | void
 export type ServerHandlerFunction = (
   args: any
@@ -20,13 +24,13 @@ export type ServerHandlerFunction = (
 export type ServerEventDataState = HandlerEventDataState & {
   handler: ServerHandlerFunction
 }
-export function isServerEventDataState(obj: ServerDataState): obj is ServerEventDataState {
+export function isServerEventDataState(obj: RuntimeServerDataState): obj is ServerEventDataState {
   return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
 }
 
-export function getAllEventHandlers(dataState: ServerDataState) {
+export function getAllEventHandlers(dataState: RuntimeServerDataState) {
   const acc: Record<string, ServerHandlerFunction> = {}
-  function traverse(dataState: ServerDataState) {
+  function traverse(dataState: RuntimeServerDataState) {
     if (!dataState || typeof dataState !== 'object') {
       return
     }

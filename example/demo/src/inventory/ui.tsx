@@ -1,10 +1,4 @@
-import {
-  action,
-  ComponentDataState,
-  Element as JSXElement,
-  ElementType as JSXElementType,
-  ServerDataState,
-} from '@final-ui/react'
+import { action, ServerDataState } from '@final-ui/react'
 import {
   Button,
   H2,
@@ -20,29 +14,18 @@ import {
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
 
-// Define JSX Element and ElementType
-// Need to unload `React` or remove `React.JSX.Element` and `React.JSX.ElementType` from global namespace
-// to run this
-// WIP: overwrite instead
-declare global {
-  namespace JSX {
-    type Element = JSXElement
-    type ElementType = JSXElementType<any>
-  }
-}
-
-export function getInventoryExample(ctx: UIContext): Record<string, ServerDataState> {
+export function InventoryExample(ctx: UIContext): Record<string, ServerDataState> {
   const inventoryItems = Object.fromEntries(inventory.map((item) => [item.key, item]))
   return {
-    inventory: getHomeScreen(),
+    inventory: HomeScreen(),
     ['inventory-items']: inventoryItems,
     ...Object.fromEntries(
-      inventory.map((item) => [`inventory:${item.key}:details`, getItemScreen(item, ctx)])
+      inventory.map((item) => [`inventory:${item.key}:details`, Item(item, ctx)])
     ),
   }
 }
 
-export function getHomeScreen() {
+export function HomeScreen() {
   return (
     <YStack backgroundColor={'$background'}>
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
@@ -86,7 +69,7 @@ export function getHomeScreen() {
   )
 }
 
-export function getItemScreen(item: Item, ctx: UIContext) {
+export function Item(item: Item, ctx: UIContext) {
   return (
     <YStack flex={1} backgroundColor={'$background'} gap="$3">
       <Image
