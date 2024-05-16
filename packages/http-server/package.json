@@ -30,15 +30,6 @@
   },
   "homepage": "https://github.com/final-ui/final#readme",
   "dependencies": {
-  },
-  "devDependencies": {
-    "@final-ui/react": "0.2.0",
-    "@types/react": "^18.0.27",
-    "jest-websocket-mock": "^2.5.0",
-    "metro-react-native-babel-preset": "^0.77.0",
-    "react": "^18.2.0"
-  },
-  "peerDependencies": {
-    "react": "^18.2.0"
+    "@final-ui/react": "0.2.0"
   }
 }

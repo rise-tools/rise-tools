@@ -26,11 +26,8 @@
   },
   "homepage": "https://github.com/final-ui/final#readme",
   "dependencies": {
-    "ws": "^8.16.0"
-  },
-  "devDependencies": {
+    "ws": "^8.16.0",
     "@final-ui/react": "0.2.0",
-    "@final-ui/ws-client": "0.2.0",
-    "metro-react-native-babel-preset": "^0.77.0"
+    "@final-ui/ws-client": "0.2.0"
   }
 }
