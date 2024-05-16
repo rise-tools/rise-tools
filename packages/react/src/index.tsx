@@ -1,4 +1,5 @@
 export * from './events'
+export * from './jsx'
 export * from './refs'
 export * from './response'
 export * from './streams'
