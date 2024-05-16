@@ -1,3 +1,4 @@
+import { Text, View } from '@final-ui/tamagui/server'
 import { DurableObject } from 'cloudflare:workers'
 
 export interface Env {
@@ -8,7 +9,13 @@ export default {
   async fetch(request, env) {
     // tbd: we should make this unique for each user
     const dataState = env.STORAGE.get(env.STORAGE.idFromName('global-state'))
-    return new Response(await dataState.get())
+    return new Response(
+      JSON.stringify(
+        <View>
+          <Text>Current value: {await dataState.get()}</Text>
+        </View>
+      )
+    )
   },
 } satisfies ExportedHandler<Env>
 
