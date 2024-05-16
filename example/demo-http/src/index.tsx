@@ -1,3 +1,4 @@
+import { createHTTPDataSource } from '@final-ui/http-server'
 import { Text, View } from '@final-ui/tamagui/server'
 import { DurableObject } from 'cloudflare:workers'
 
@@ -5,31 +6,29 @@ export interface Env {
   STORAGE: DurableObjectNamespace<InMemoryStorage>
 }
 
+const httpDataSource = createHTTPDataSource()
+
+httpDataSource.update(
+  'user',
+  <View>
+    <Text>User</Text>
+  </View>
+)
+
+// this either needs to receive a function or need a model with some context to be able
+// to access cloudflare durable object or any other storage from context
+httpDataSource.updateRoot(
+  <View>
+    <Text>Current value</Text>
+  </View>
+)
+
 export default {
-  async fetch(request, env) {
+  async fetch(request) {
     // tbd: we should make this unique for each user
-    const dataState = env.STORAGE.get(env.STORAGE.idFromName('global-state'))
-    const url = new URL(request.url)
-    switch (url.pathname) {
-      case '/user': {
-        return new Response(
-          JSON.stringify(
-            <View>
-              <Text>User</Text>
-            </View>
-          )
-        )
-      }
-      default: {
-        return new Response(
-          JSON.stringify(
-            <View>
-              <Text>Current value: {await dataState.get()}</Text>
-            </View>
-          )
-        )
-      }
-    }
+    // tbd: use permanent storage in the example
+    // const dataState = env.STORAGE.get(env.STORAGE.idFromName('global-state'))
+    return httpDataSource.handleRequest(request)
   },
 } satisfies ExportedHandler<Env>
 
