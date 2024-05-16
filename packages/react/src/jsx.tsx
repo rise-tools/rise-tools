@@ -6,6 +6,7 @@ import {
   ComponentDataState,
   DataState,
   isActionDataState,
+  isComponentDataState,
   JSONValue,
   ReferencedDataState,
 } from './template'
@@ -23,16 +24,19 @@ type Props = Record<string, JSONValue | AllowedDataStates> & {
 export const jsxs = jsx
 
 export function jsx(
-  componentFactory: (props: any) => ReactElement<Props>,
+  componentFactory: (props: any) => ReactElement<Props> | ComponentDataState,
   { children, ...passedProps }: Props,
   key?: string
 ): ComponentDataState {
-  const { type, props } = componentFactory(passedProps)
-  if (typeof type !== 'string') {
+  const el = componentFactory(passedProps)
+  if (isComponentDataState(el)) {
+    return el
+  }
+  if (typeof el.type !== 'string') {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
   const serialisedProps = Object.fromEntries(
-    Object.entries(props).map(([key, value]) => {
+    Object.entries(el.props).map(([key, value]) => {
       if (typeof value === 'function') {
         return [key, event(value)]
       }
@@ -44,7 +48,7 @@ export function jsx(
   )
   return {
     $: 'component',
-    component: type,
+    component: el.type,
     key,
     props: serialisedProps,
     children,

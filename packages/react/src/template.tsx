@@ -80,7 +80,7 @@ export function isCompositeDataState(obj: any): obj is ComponentDataState | Refe
     (obj.$ === 'component' || obj.$ === 'ref')
   )
 }
-export function isComponentDataState(obj: DataState): obj is ComponentDataState {
+export function isComponentDataState(obj: any): obj is ComponentDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'component'
 }
 export function isReferencedComponentDataState(

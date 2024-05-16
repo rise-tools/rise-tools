@@ -17,10 +17,10 @@ import inventory, { Item } from './inventory'
 export function InventoryExample(ctx: UIContext): Record<string, ServerDataState | UI> {
   const inventoryItems = Object.fromEntries(inventory.map((item) => [item.key, item]))
   return {
-    inventory: HomeScreen(),
+    inventory: <HomeScreen />,
     ['inventory-items']: inventoryItems,
     ...Object.fromEntries(
-      inventory.map((item) => [`inventory:${item.key}:details`, Item(item, ctx)])
+      inventory.map((item) => [`inventory:${item.key}:details`, <Item item={item} ctx={ctx} />])
     ),
   }
 }
@@ -35,7 +35,7 @@ export function HomeScreen() {
             onPress={action(['navigate', `inventory:${item.key}:details`])}
             pressStyle={{ opacity: 0.8 }}
           >
-            <YStack
+            <XStack
               gap={10}
               paddingHorizontal={20}
               paddingVertical={10}
@@ -61,7 +61,7 @@ export function HomeScreen() {
                   </XStack>
                 </XStack>
               </YStack>
-            </YStack>
+            </XStack>
           </Button>
         ))}
       </ScrollView>
@@ -69,7 +69,7 @@ export function HomeScreen() {
   )
 }
 
-export function Item(item: Item, ctx: UIContext) {
+export function Item({ item, ctx }: { item: Item; ctx: UIContext }) {
   return (
     <YStack flex={1} backgroundColor={'$background'} gap="$3">
       <Image
