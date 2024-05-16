@@ -312,7 +312,11 @@ it('should accept event handler as a prop', () => {
       "target": Object {
         "component": "View",
         "key": "button",
-        "path": "",
+        "path": Array [
+          "",
+          "props",
+          "onClick",
+        ],
         "propKey": "onClick",
       },
     }
@@ -334,7 +338,7 @@ it('should validate props with a validator', () => {
           validator,
         },
       }}
-      path="mainState"
+      path={['mainState']}
       dataState={{
         $: 'component',
         key: 'button',
@@ -346,30 +350,6 @@ it('should validate props with a validator', () => {
   )
 
   expect(validator).toHaveBeenCalledWith(props)
-})
-
-it('should send a template event', () => {
-  const onEvent = jest.fn()
-  const component = render(
-    <BaseTemplate
-      components={BUILT_IN_COMPONENTS}
-      path="mainState"
-      dataState={{
-        $: 'component',
-        key: 'button',
-        component: 'View',
-        props: {
-          ['data-testid']: 'button',
-          onClick: event(action('go-back')),
-        },
-      }}
-      onTemplateEvent={onEvent}
-    />
-  )
-  fireEvent.click(component.getByTestId('button'))
-
-  const firedEvent = onEvent.mock.lastCall[0] as TemplateEvent
-  expect(firedEvent.target.path).toBe('mainState')
 })
 
 it('should pass return type from onTemplateEvent back to component', async () => {
@@ -398,7 +378,7 @@ it('should pass return type from onTemplateEvent back to component', async () =>
           },
         },
       }}
-      path="mainState"
+      path={['mainState']}
       dataState={{
         $: 'component',
         key: 'button',
@@ -427,7 +407,7 @@ it('should fire multiple template events for an array of actions', () => {
   const component = render(
     <BaseTemplate
       components={BUILT_IN_COMPONENTS}
-      path="mainState"
+      path={['mainState']}
       dataState={{
         $: 'component',
         key: 'button',

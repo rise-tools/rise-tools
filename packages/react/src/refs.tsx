@@ -15,6 +15,7 @@ import {
   Path,
   ReferencedDataState,
 } from './template'
+import { lookupValue } from './utils'
 
 export type Store<T = DataState> = Stream<T>
 
@@ -26,27 +27,8 @@ export type DataSource = {
 /** Refs */
 type DataValues = Record<string, DataState>
 
-function lookupRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
-  if (typeof ref === 'string') {
-    return dataValues[ref]
-  }
-
-  const [refKey, ...lookupKeys] = ref
-
-  let lookupValue = dataValues[refKey]
-  for (const key of lookupKeys) {
-    if (!lookupValue || typeof lookupValue !== 'object') {
-      return undefined
-    }
-    // @ts-ignore
-    lookupValue = lookupValue[key]
-  }
-
-  return lookupValue
-}
-
 function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
-  const value = lookupRefValue(dataValues, ref)
+  const value = lookupValue(dataValues, ref)
 
   if (isComponentDataState(value)) {
     return {
@@ -58,7 +40,14 @@ function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']
   return value
 }
 
-export function extractRefKey(ref: Path) {
+export function ref(ref: string | Path): ReferencedDataState {
+  return {
+    $: 'ref',
+    ref: Array.isArray(ref) ? ref : [ref],
+  }
+}
+
+export function extractRefKey(ref: string | Path) {
   if (typeof ref === 'string') {
     return ref
   }
@@ -180,16 +169,20 @@ function resolveRef(dataValues: DataValues, lookup: ReferencedDataState['ref']):
 export function Template({
   components,
   dataSource,
-  path = '',
+  path = [''],
   onAction,
   onEvent = dataSource.sendEvent,
 }: {
-  path?: Path
+  path?: string | Path
   dataSource: DataSource
   components: ComponentRegistry
   onAction?: (action: ActionDataState) => void
   onEvent?: (event: HandlerEvent) => Promise<ServerResponseDataState>
 }) {
+  if (typeof path === 'string') {
+    path = [path]
+  }
+
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
     createRefStateManager(setDataValues, dataSource, extractRefKey(path))

@@ -1,4 +1,4 @@
-import { action, ServerDataState, UI } from '@final-ui/react'
+import { action, ref, ServerDataState, UI } from '@final-ui/react'
 import {
   Button,
   H2,
@@ -75,10 +75,7 @@ export function Item({ item, ctx }: { item: Item; ctx: UIContext }) {
       <Image
         key="photo"
         source={{
-          uri: {
-            $: 'ref',
-            ref: [`inventory-items`, item.key, 'photo'],
-          },
+          uri: ref([`inventory-items`, item.key, 'photo']),
         }}
         style={{
           width: '100%',
@@ -88,30 +85,12 @@ export function Item({ item, ctx }: { item: Item; ctx: UIContext }) {
         resizeMode="contain"
       />
       <YStack key="info" paddingHorizontal="$4" gap="$3">
-        <H2
-          key="title"
-          children={{
-            $: 'ref',
-            ref: [`inventory-items`, item.key, 'title'],
-          }}
-        />
-        <Paragraph
-          key="description"
-          children={{
-            $: 'ref',
-            ref: [`inventory-items`, item.key, 'description'],
-          }}
-        />
+        <H2 key="title" children={ref([`inventory-items`, item.key, 'title'])} />
+        <Paragraph key="description" children={ref([`inventory-items`, item.key, 'description'])} />
         <XStack key="adjustments" gap="$3" alignItems="center">
           <XStack key="quantity" gap="$2">
             <SizableText size="$5">Quantity:</SizableText>
-            <SizableText
-              size="$5"
-              children={{
-                $: 'ref',
-                ref: [`inventory-items`, item.key, 'quantity'],
-              }}
-            />
+            <SizableText size="$5" children={ref([`inventory-items`, item.key, 'quantity'])} />
           </XStack>
           <Button
             key="dec"

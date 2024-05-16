@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { action, ActionDataState, DataSource, event, response, Template } from '..'
+import { action, ActionDataState, DataSource, event, ref, response, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
@@ -104,10 +104,7 @@ it('should resolve a ref', () => {
                 component: 'View',
                 children: 'Hello World!',
               },
-              {
-                $: 'ref',
-                ref: 'secondStore',
-              },
+              ref('secondStore'),
             ],
           }
         },
@@ -173,10 +170,7 @@ it('should send an action with ref as a path when trigerred by referenced compon
                   onClick: event(action('go-back-local')),
                 },
               },
-              {
-                $: 'ref',
-                ref: 'secondStore',
-              },
+              ref('secondStore'),
             ],
           }
         },
@@ -247,10 +241,7 @@ it('should manage subscription to stores referenced by refs', () => {
             return {
               $: 'component',
               component: 'View',
-              children: {
-                $: 'ref',
-                ref: ['secondStore', 'user', 'profile', 'name'],
-              },
+              children: ref(['secondStore', 'user', 'profile', 'name']),
             }
           },
         }

@@ -1,12 +1,11 @@
 import {
-  extractRefKey,
-  getAllEventHandlers,
   HandlerEvent,
   isReactElement,
   isResponseDataState,
+  isServerEventDataState,
+  lookupValue,
   response,
   ServerDataState,
-  ServerHandlerFunction,
   UI,
 } from '@final-ui/react'
 import type {
@@ -36,8 +35,6 @@ export function createWSServerDataSource() {
 
   const clientSenders = new Map<string, (value: ServerWebsocketMessage) => void>()
 
-  const eventHandlers = new Map<string, Record<string, ServerHandlerFunction>>()
-
   function update(key: string, value: ServerDataState | UI) {
     if (isReactElement(value)) {
       throw new Error(
@@ -45,9 +42,6 @@ export function createWSServerDataSource() {
       )
     }
     values.set(key, value)
-
-    const allEventHandlers = getAllEventHandlers(value)
-    eventHandlers.set(key, allEventHandlers)
 
     const handlers = clientSubscribers.get(key)
     if (!handlers) return
@@ -95,14 +89,15 @@ export function createWSServerDataSource() {
     eventSubscribers.forEach((handler) => handler(message.event, { time: Date.now(), clientId }))
 
     try {
-      const handleEvent = eventHandlers.get(extractRefKey(path))?.[dataState.key]
-      if (!handleEvent) {
-        console.warn(
+      const [storeName, ...lookupPath] = path
+      const store = values.get(storeName)
+      const value = lookupValue(store, lookupPath)
+      if (!isServerEventDataState(value)) {
+        throw new Error(
           `Missing event handler on the server for event: ${JSON.stringify(message.event)}`
         )
-        return
       }
-      let res = await handleEvent(message.event)
+      let res = await value.handler(message.event)
       if (!isResponseDataState(res)) {
         res = response(res ?? null)
       }

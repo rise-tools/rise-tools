@@ -30,7 +30,7 @@ export type ComponentDataState = {
 type ReferencedComponentDataState = ComponentDataState & {
   path: Path
 }
-export type Path = string | [string, ...(string | number)[]]
+export type Path = [string, ...(string | number)[]]
 export type ReferencedDataState = {
   $: 'ref'
   ref: Path
@@ -101,7 +101,7 @@ export function isActionDataState(obj: any): obj is ActionDataState {
 }
 
 export function BaseTemplate({
-  path = '',
+  path = [''],
   components,
   dataState,
   onTemplateEvent,
@@ -125,10 +125,9 @@ export function BaseTemplate({
 
     let componentProps = Object.fromEntries(
       Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
-        return [propKey, renderProp(propKey, propValue, stateNode, path)]
+        return [propKey, renderProp(propKey, propValue, stateNode, [...path, 'props', propKey])]
       })
     )
-
     if (typeof componentDefinition.validator === 'function') {
       try {
         componentProps = componentDefinition.validator(componentProps)
@@ -139,7 +138,7 @@ export function BaseTemplate({
       }
     }
 
-    const children = stateNode.children ? render(stateNode.children, path) : null
+    const children = stateNode.children ? render(stateNode.children, [...path, 'children']) : null
 
     return <Component key={stateNode.key} {...componentProps} children={children} />
   }
@@ -149,7 +148,7 @@ export function BaseTemplate({
       return stateNode
     }
     if (Array.isArray(stateNode)) {
-      return stateNode.map((item) => render(item, path))
+      return stateNode.map((item, idx) => render(item, [...path, idx]))
     }
     if (!isCompositeDataState(stateNode)) {
       throw new Error('Objects are not valid as a React child.')
@@ -192,7 +191,7 @@ export function BaseTemplate({
       }
     }
     if (Array.isArray(propValue)) {
-      return propValue.map((item) => renderProp(propKey, item, parentNode, path))
+      return propValue.map((item, idx) => renderProp(propKey, item, parentNode, [...path, idx]))
     }
     if (isCompositeDataState(propValue)) {
       return render(propValue, path)
@@ -200,14 +199,14 @@ export function BaseTemplate({
     if (propValue && typeof propValue === 'object') {
       return Object.fromEntries(
         Object.entries(propValue).map(([key, value]) => {
-          return [key, renderProp(key, value, parentNode, path)]
+          return [key, renderProp(key, value, parentNode, [...path, key])]
         })
       )
     }
     return propValue
   }
 
-  return <>{render(dataState, path)}</>
+  return <>{render(dataState, Array.isArray(path) ? path : [path])}</>
 }
 
 export class RenderError extends Error {}
