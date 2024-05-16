@@ -2,7 +2,7 @@ import { Text, View } from '@final-ui/tamagui/server'
 
 import { db } from './db'
 
-export const routes = {
+export const models = {
   '/': Root,
   '/item': Item,
 }
