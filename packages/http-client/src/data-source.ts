@@ -19,26 +19,25 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
         return handlers
       })()
 
-    // dumb auto fetcher. we should wait for somebody to subscribe
-    fetch(`${httpUrl}/${key}`)
-      .then((resp) => resp.json())
-      .then((value) => {
-        cache.set(key, value)
-        handlers.forEach((handler) => handler(value))
-      })
-
     return {
       get: () => cache.get(key),
       subscribe: (handler) => {
-        const shouldSubscribeRemotely = handlers.size === 0
-        if (shouldSubscribeRemotely) {
-          // tbd: sub
+        const shouldFetch = handlers.size === 0 && !cache.has(key)
+        // tbd: this should return promise so it works with Suspense on the client
+        if (shouldFetch) {
+          fetch(`${httpUrl}/${key}`)
+            .then((resp) => resp.json())
+            .then((value) => {
+              cache.set(key, value)
+              handlers.forEach((handler) => handler(value))
+            })
         }
+        handlers.add(handler)
         return () => {
           handlers.delete(handler)
-          const shouldUnsubscribeRemotely = handlers.size === 0
-          if (shouldUnsubscribeRemotely) {
-            // tbd: unsub
+          const shouldCleanCache = handlers.size === 0
+          if (shouldCleanCache) {
+            cache.delete(key)
           }
         }
       },
