@@ -1,4 +1,4 @@
-import { action, ServerDataState } from '@final-ui/react'
+import { action, ServerDataState, UI } from '@final-ui/react'
 import {
   Button,
   H2,
@@ -14,7 +14,7 @@ import {
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
 
-export function InventoryExample(ctx: UIContext): Record<string, ServerDataState> {
+export function InventoryExample(ctx: UIContext): Record<string, ServerDataState | UI> {
   const inventoryItems = Object.fromEntries(inventory.map((item) => [item.key, item]))
   return {
     inventory: HomeScreen(),
