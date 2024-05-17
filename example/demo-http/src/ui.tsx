@@ -25,7 +25,11 @@ async function Root() {
     )
   }
   return (
-    <View>
+    <View
+      onPress={() => {
+        console.log('pressed')
+      }}
+    >
       <Text>Items in inventory: {JSON.stringify(data)}</Text>
     </View>
   )

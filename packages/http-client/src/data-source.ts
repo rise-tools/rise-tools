@@ -1,8 +1,24 @@
-import { type DataSource, DataState, Store } from '@final-ui/react'
+import {
+  type DataSource,
+  DataState,
+  HandlerEvent,
+  ServerResponseDataState,
+  Store,
+} from '@final-ui/react'
 
 type Handler = (value: DataState) => void
 
 export type HTTPDataSource = DataSource
+export type EventPayload = {
+  $: 'evt'
+  event: HandlerEvent
+}
+
+export type EventResponse = {
+  $: 'evt-res'
+  key: string
+  res: ServerResponseDataState
+}
 
 export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
   const subscriptions = new Map<string, Set<Handler>>()
@@ -44,8 +60,6 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
     }
   }
 
-  // const promises = new Map<string, (value: ServerResponseDataState) => void>()
-
   return {
     get: (key: string) => {
       const store = stores.get(key)
@@ -56,8 +70,16 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
       stores.set(key, newStore)
       return newStore
     },
-    sendEvent: async () => {
-      throw new Error('Unsupported')
+    sendEvent: async (event) => {
+      const req = await fetch(httpUrl, {
+        method: 'POST',
+        body: JSON.stringify(event),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const message = (await req.json()) as EventResponse
+      return message.res
     },
   }
 }

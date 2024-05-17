@@ -1,4 +1,13 @@
-import { isReactElement, ServerDataState, UI } from '@final-ui/react'
+import type { EventPayload, EventResponse } from '@final-ui/http-client'
+import {
+  isReactElement,
+  isResponseDataState,
+  isServerEventDataState,
+  lookupValue,
+  response,
+  ServerDataState,
+  UI,
+} from '@final-ui/react'
 
 type Initializer = ServerDataState | UI | (() => Promise<ServerDataState | UI>)
 
@@ -29,10 +38,42 @@ export function createHTTPDataSource() {
         return new Response(JSON.stringify(await get(url.pathname)))
       }
       case 'POST': {
-        // const data = await get(url.pathname)
-        // tbd: handle events
-        // return new Response(JSON.stringify({}))
-        throw new Error('Unsupported method.')
+        const message = (await request.json()) as EventPayload
+
+        const {
+          dataState,
+          target: { path },
+        } = message.event
+
+        try {
+          const [storeName, ...lookupPath] = path
+          const store = await get(storeName)
+          const value = lookupValue(store, lookupPath)
+          if (!isServerEventDataState(value)) {
+            throw new Error(
+              `Missing event handler on the server for event: ${JSON.stringify(message.event)}`
+            )
+          }
+          let res = await value.handler(message.event)
+          if (!isResponseDataState(res)) {
+            res = response(res ?? null)
+          }
+          return new Response(
+            JSON.stringify({
+              $: 'evt-res',
+              key: dataState.key,
+              res,
+            } satisfies EventResponse)
+          )
+        } catch (error: any) {
+          return new Response(
+            JSON.stringify({
+              $: 'evt-res',
+              key: dataState.key,
+              res: response(error).status(500),
+            } satisfies EventResponse)
+          )
+        }
       }
       default:
         throw new Error('Unsupported method.')

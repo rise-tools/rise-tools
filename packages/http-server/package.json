@@ -31,5 +31,8 @@
   "homepage": "https://github.com/final-ui/final#readme",
   "dependencies": {
     "@final-ui/react": "0.2.0"
+  }, 
+  "devDependencies": {
+    "@final-ui/http-client": "0.2.0"
   }
 }
