@@ -24,8 +24,11 @@ type EventSubscriber = (
   }
 ) => void
 
+type Initializer = ServerDataState | UI | (() => Promise<ServerDataState | UI>)
+
 export function createWSServerDataSource() {
-  const values = new Map<string, ServerDataState>()
+  const values = new Map<string, Initializer>()
+  const cache = new Map<string, ServerDataState>()
 
   const clientSubscribers = new Map<string, Map<string, () => void>>()
   const eventSubscribers = new Set<EventSubscriber>()
@@ -35,12 +38,7 @@ export function createWSServerDataSource() {
 
   const clientSenders = new Map<string, (value: ServerWebsocketMessage) => void>()
 
-  function update(key: string, value: ServerDataState | UI) {
-    if (isReactElement(value)) {
-      throw new Error(
-        'Rise JSX not configured. You must set "jsx" to "react-jsx" and "jsxImportSource" to "@final-ui/react" in your tsconfig.json.'
-      )
-    }
+  function update(key: string, value: Initializer) {
     values.set(key, value)
 
     const handlers = clientSubscribers.get(key)
@@ -48,13 +46,30 @@ export function createWSServerDataSource() {
     handlers.forEach((handler) => handler())
   }
 
+  async function get(key: string) {
+    if (cache.has(key)) {
+      return cache.get(key)
+    }
+    let value = values.get(key)
+    if (typeof value === 'function') {
+      value = await value()
+    }
+    if (isReactElement(value)) {
+      throw new Error(
+        'Rise JSX not configured. You must set "jsx" to "react-jsx" and "jsxImportSource" to "@final-ui/react" in your tsconfig.json.'
+      )
+    }
+    cache.set(key, value)
+    return value
+  }
+
   function clientSubscribe(clientId: string, key: string) {
-    function send() {
+    async function send() {
       const sender = clientSenders.get(clientId)
       if (!sender) {
         return
       }
-      sender({ $: 'up', key, val: values.get(key) })
+      sender({ $: 'up', key, val: await get(key) })
     }
     const handlers =
       clientSubscribers.get(key) ||
@@ -90,7 +105,7 @@ export function createWSServerDataSource() {
 
     try {
       const [storeName, ...lookupPath] = path
-      const store = values.get(storeName)
+      const store = await get(storeName)
       const value = lookupValue(store, lookupPath)
       if (!isServerEventDataState(value)) {
         throw new Error(
@@ -151,11 +166,8 @@ export function createWSServerDataSource() {
     update('', value)
   }
 
-  function get(key: string) {
-    return values.get(key)
-  }
-
-  function subscribe(key: string, handler: (value?: ServerDataState) => void) {
+  // dead code - do we find this useful?
+  async function subscribe(key: string, handler: (value?: ServerDataState) => void) {
     const handlers =
       subscribers.get(key) ||
       (() => {
@@ -163,7 +175,7 @@ export function createWSServerDataSource() {
         subscribers.set(key, handlers)
         return handlers
       })()
-    handler(values.get(key))
+    handler(await get(key))
     handlers.add(handler)
     return () => handlers.delete(handler)
   }
