@@ -14,18 +14,21 @@ import {
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
 
-export function InventoryExample(ctx: UIContext): Record<string, ServerDataState | UI> {
+export function InventoryExample(ctx: UIContext) {
   const inventoryItems = Object.fromEntries(inventory.map((item) => [item.key, item]))
   return {
-    inventory: <HomeScreen />,
+    inventory: HomeScreen,
     ['inventory-items']: inventoryItems,
     ...Object.fromEntries(
-      inventory.map((item) => [`inventory:${item.key}:details`, <Item item={item} ctx={ctx} />])
+      inventory.map((item) => [
+        `inventory:${item.key}:details`,
+        () => <Item item={item} ctx={ctx} />,
+      ])
     ),
   }
 }
 
-export function HomeScreen() {
+function HomeScreen() {
   return (
     <YStack backgroundColor={'$background'}>
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>

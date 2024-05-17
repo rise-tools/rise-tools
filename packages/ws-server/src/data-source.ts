@@ -4,6 +4,7 @@ import {
   isResponseDataState,
   isServerEventDataState,
   lookupValue,
+  MaybeAsync,
   response,
   ServerDataState,
   UI,
@@ -24,7 +25,7 @@ type EventSubscriber = (
   }
 ) => void
 
-type Initializer = ServerDataState | UI | (() => Promise<ServerDataState | UI>)
+type Initializer = ServerDataState | UI | (() => MaybeAsync<ServerDataState | UI>)
 
 export function createWSServerDataSource() {
   const values = new Map<string, Initializer>()
@@ -162,7 +163,7 @@ export function createWSServerDataSource() {
     })
   }
 
-  function updateRoot(value: any) {
+  function updateRoot(value: Initializer) {
     update('', value)
   }
 
