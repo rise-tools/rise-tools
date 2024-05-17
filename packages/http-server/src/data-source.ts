@@ -61,17 +61,21 @@ export function createHTTPDataSource() {
           return new Response(
             JSON.stringify({
               $: 'evt-res',
-              key: dataState.key,
               res,
-            } satisfies EventResponse)
+            } satisfies EventResponse),
+            {
+              status: 200,
+            }
           )
         } catch (error: any) {
           return new Response(
             JSON.stringify({
               $: 'evt-res',
-              key: dataState.key,
-              res: response(error).status(500),
-            } satisfies EventResponse)
+              res: response(error),
+            } satisfies EventResponse),
+            {
+              status: 500,
+            }
           )
         }
       }

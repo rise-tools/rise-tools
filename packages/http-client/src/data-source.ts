@@ -16,7 +16,6 @@ export type EventPayload = {
 
 export type EventResponse = {
   $: 'evt-res'
-  key: string
   res: ServerResponseDataState
 }
 
