@@ -4,7 +4,7 @@ import { createWSDataSource } from '@final-ui/ws-client'
 const dataSources = new Map<string, ReturnType<typeof createWSDataSource>>()
 
 function createDataSource(url: string) {
-  if (url.match(/^ws:\/\//)) {
+  if (['ws:', 'wss:'].includes(new URL(url).protocol)) {
     return createWSDataSource(url)
   }
   return createHTTPDataSource(url)

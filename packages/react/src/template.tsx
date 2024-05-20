@@ -99,6 +99,12 @@ export function isHandlerEvent(obj: TemplateEvent): obj is TemplateEvent<Handler
 export function isActionDataState(obj: any): obj is ActionDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'action'
 }
+function itemKeyOrIndex(item: DataState, idx: number): string | number {
+  if (isComponentDataState(item)) {
+    return item.key || idx
+  }
+  return idx
+}
 
 export function BaseTemplate({
   path = [''],
@@ -148,7 +154,7 @@ export function BaseTemplate({
       return stateNode
     }
     if (Array.isArray(stateNode)) {
-      return stateNode.map((item, idx) => render(item, [...path, idx]))
+      return stateNode.map((item, idx) => render(item, [...path, itemKeyOrIndex(item, idx)]))
     }
     if (!isCompositeDataState(stateNode)) {
       throw new Error('Objects are not valid as a React child.')
@@ -191,7 +197,9 @@ export function BaseTemplate({
       }
     }
     if (Array.isArray(propValue)) {
-      return propValue.map((item, idx) => renderProp(propKey, item, parentNode, [...path, idx]))
+      return propValue.map((item, idx) =>
+        renderProp(propKey, item, parentNode, [...path, itemKeyOrIndex(item, idx)])
+      )
     }
     if (isCompositeDataState(propValue)) {
       return render(propValue, path)
