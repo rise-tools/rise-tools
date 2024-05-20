@@ -1,9 +1,10 @@
 {
-  "name": "@final-ui/ws-server",
+  "name": "@final-ui/http-server",
   "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
   "main": "lib",
+  "react-native": "src",
   "files": [
     "src",
     "lib",
@@ -15,19 +16,20 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/final-ui/final.git",
-    "directory": "packages/ws-server"
+    "directory": "packages/http-server"
   },
   "publishConfig": {
     "access": "public"
   },
-  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "author":  "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "contributors": [
+    "Eric Vicenti <ericvicenti@gmail.com> (https://github.com/ericvicenti)"
+  ],
   "bugs": {
     "url": "https://github.com/final-ui/final/issues"
   },
   "homepage": "https://github.com/final-ui/final#readme",
   "dependencies": {
-    "ws": "^8.16.0",
-    "@final-ui/react": "0.2.0",
-    "@final-ui/ws-client": "0.2.0"
+    "@final-ui/react": "0.2.0"
   }
 }

@@ -1,12 +1,12 @@
 {
-  "name": "@final-ui/demo-server",
+  "name": "@final-ui/demo-server-http",
   "private": true,
   "version": "0.1.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/final-ui/final.git",
-    "directory": "example/demo"
+    "directory": "example/demo-http"
   },
   "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "bugs": {
@@ -15,13 +15,14 @@
   "homepage": "https://github.com/final-ui/final#readme",
   "scripts": {
     "deploy": "wrangler deploy",
-    "dev": "wrangler dev --port 3005",
-    "start": "wrangler dev --port 3005",
+    "dev": "wrangler dev --port 3015",
+    "start": "wrangler dev --port 3015",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
+    "@final-ui/http-server": "0.2.0",
     "@final-ui/tamagui": "0.2.0",
-    "@final-ui/ws-server": "0.2.0"
+    "@supabase/supabase-js": "^2.43.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240423.0",

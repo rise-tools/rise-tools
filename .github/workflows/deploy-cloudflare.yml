@@ -3,6 +3,15 @@ name: Deploy Demo Server
 on:
   # Manual trigger
   workflow_dispatch:
+    inputs:
+      project:
+        description: Choose the project to deploy
+        required: true
+        default: demo
+        type: choice
+        options:
+          - demo
+          - demo-http
 
 jobs:
   deploy:
@@ -23,4 +32,4 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: "./example/demo"
+          workingDirectory: "./example/${{ github.event.inputs.project }}"

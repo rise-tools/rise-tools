@@ -6,6 +6,8 @@
       "@final-ui/react": ["./packages/react/src"],
       "@final-ui/react/jsx-runtime": ["./packages/react/src/jsx"],
       "@final-ui/ws-client": ["./packages/ws-client/src"],
+      "@final-ui/http-client": ["./packages/http-client/src"],
+      "@final-ui/http-server": ["./packages/http-server/src"],
       "@final-ui/ws-server": ["./packages/ws-server/src"],
       "@final-ui/tamagui": ["./packages/tamagui/src"],
       "@final-ui/tamagui/server": ["./packages/tamagui/src/server"],
