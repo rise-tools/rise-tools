@@ -4,6 +4,7 @@ import {
   isResponseDataState,
   isServerEventDataState,
   lookupValue,
+  MaybeAsync,
   response,
   ServerDataState,
   UI,
@@ -38,7 +39,7 @@ export function createWSServerDataSource() {
 
   const clientSenders = new Map<string, (value: ServerWebsocketMessage) => void>()
 
-  function update(key: string, value: ServerDataState | UI) {
+  function update(key: string, value: Initializer) {
     if (isReactElement(value)) {
       throw new Error(
         'Rise JSX not configured. You must set "jsx" to "react-jsx" and "jsxImportSource" to "@final-ui/react" in your tsconfig.json.'
@@ -49,6 +50,23 @@ export function createWSServerDataSource() {
     const handlers = clientSubscribers.get(key)
     if (!handlers) return
     handlers.forEach((handler) => handler())
+  }
+
+  async function get(key: string) {
+    if (cache.has(key)) {
+      return cache.get(key)
+    }
+    let value = values.get(key)
+    if (typeof value === 'function') {
+      value = await value()
+    }
+    if (isReactElement(value)) {
+      throw new Error(
+        'Rise JSX not configured. You must set "jsx" to "react-jsx" and "jsxImportSource" to "@final-ui/react" in your tsconfig.json.'
+      )
+    }
+    cache.set(key, value)
+    return value
   }
 
   function clientSubscribe(clientId: string, key: string) {
@@ -93,7 +111,7 @@ export function createWSServerDataSource() {
 
     try {
       const [storeName, ...lookupPath] = path
-      const store = values.get(storeName)
+      const store = await get(storeName)
       const value = lookupValue(store, lookupPath)
       if (!isServerEventDataState(value)) {
         throw new Error(
