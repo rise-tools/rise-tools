@@ -16,8 +16,13 @@ export function lookupValue(value: DataState, ref: (string | number)[]) {
     if (!lookupValue || typeof lookupValue !== 'object') {
       return undefined
     }
-    // @ts-ignore
-    lookupValue = lookupValue[key]
+    if (Array.isArray(lookupValue) && typeof key === 'string') {
+      lookupValue = lookupValue.find((item) => item.key === key)
+    } else {
+      lookupValue = lookupValue[key]
+    }
   }
   return lookupValue
 }
+
+export type MaybeAsync<T> = Promise<T> | T

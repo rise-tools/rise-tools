@@ -41,7 +41,6 @@ export function createHTTPDataSource() {
         const message = (await request.json()) as EventPayload
 
         const {
-          dataState,
           target: { path },
         } = message.event
 
