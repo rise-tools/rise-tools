@@ -5,7 +5,7 @@ import { AppForm, LabelSchema } from './form'
 
 const connectionFormSchema = z.object({
   label: LabelSchema.describe('Connection Label'),
-  host: z.string().url().toLowerCase().describe('Websocket URL // ws://demo-remote.verse.link'),
+  host: z.string().url().toLowerCase().describe('Server URL // wss://demo-remote.verse.link'),
   path: z.string().describe('Path/Location (optional) // Root Location'),
 })
 
