@@ -24,6 +24,12 @@ const View = {
   ),
 }
 
+// We render one element in an array w/o key to test the path. It will trigger warning about
+// missing keys by React.
+beforeEach(() => {
+  jest.spyOn(console, 'error').mockImplementation(jest.fn())
+})
+
 it('should assign correct path to an event target', () => {
   const onTemplateEvent = jest.fn()
 
@@ -64,6 +70,14 @@ it('should assign correct path to an event target', () => {
                       onClick: event(jest.fn()),
                     },
                   },
+                  {
+                    $: 'component',
+                    component: 'View',
+                    props: {
+                      ['data-testid']: 'button-prop-array-idx',
+                      onClick: event(jest.fn()),
+                    },
+                  },
                 ],
               },
             },
@@ -81,7 +95,7 @@ it('should assign correct path to an event target', () => {
       "",
       "children",
       "children",
-      0,
+      "container",
       "props",
       "onClick",
     ]
@@ -94,7 +108,7 @@ it('should assign correct path to an event target', () => {
       "",
       "children",
       "children",
-      0,
+      "container",
       "props",
       "header",
       "props",
@@ -109,14 +123,30 @@ it('should assign correct path to an event target', () => {
       "",
       "children",
       "children",
-      0,
+      "container",
       "props",
       "footer",
-      0,
+      "footer",
       "props",
       "onClick",
     ]
   `)
 
-  expect(onTemplateEvent).toHaveBeenCalledTimes(3)
+  // prop has elements as an array without keys
+  fireEvent.click(component.getByTestId('button-prop-array-idx'))
+  expect(onTemplateEvent.mock.lastCall[0].target.path).toMatchInlineSnapshot(`
+    Array [
+      "",
+      "children",
+      "children",
+      "container",
+      "props",
+      "footer",
+      1,
+      "props",
+      "onClick",
+    ]
+  `)
+
+  expect(onTemplateEvent).toHaveBeenCalledTimes(4)
 })
