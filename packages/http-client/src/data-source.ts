@@ -40,7 +40,7 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
         const shouldFetch = handlers.size === 0
         // tbd: this should return promise so it works with Suspense on the client
         if (shouldFetch) {
-          fetch(`${httpUrl}${key}`)
+          fetch(`${httpUrl}/${key}`)
             .then((resp) => resp.json())
             .then((value) => {
               cache.set(key, value)

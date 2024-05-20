@@ -14,8 +14,8 @@ type Initializer = ServerDataState | UI | (() => Promise<ServerDataState | UI>)
 export function createHTTPDataSource() {
   const values = new Map<string, Initializer>()
 
-  function update(key: string, value: Initializer) {
-    values.set(key, value)
+  function update(path: string, value: Initializer) {
+    values.set(path, value)
   }
 
   async function get(path: string) {
@@ -35,7 +35,8 @@ export function createHTTPDataSource() {
     const url = new URL(request.url)
     switch (request.method) {
       case 'GET': {
-        return new Response(JSON.stringify(await get(url.pathname)))
+        const { pathname: path } = url
+        return new Response(JSON.stringify(await get(path.startsWith('/') ? path.slice(1) : path)))
       }
       case 'POST': {
         const message = (await request.json()) as EventPayload
