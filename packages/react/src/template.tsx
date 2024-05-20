@@ -154,11 +154,7 @@ export function BaseTemplate({
       return stateNode
     }
     if (Array.isArray(stateNode)) {
-<<<<<<< HEAD
-      return stateNode.map((item, idx) => render(item, [...path, idx]))
-=======
       return stateNode.map((item, idx) => render(item, [...path, itemKeyOrIndex(item, idx)]))
->>>>>>> main
     }
     if (!isCompositeDataState(stateNode)) {
       throw new Error('Objects are not valid as a React child.')
@@ -218,7 +214,7 @@ export function BaseTemplate({
     return propValue
   }
 
-  return <>{render(dataState, Array.isArray(path) ? path : [path])}</>
+  return <>{render(dataState, path)}</>
 }
 
 export class RenderError extends Error {}
