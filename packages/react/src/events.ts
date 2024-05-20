@@ -8,7 +8,6 @@ import {
   ActionEventDataState,
   DataState,
   HandlerEventDataState,
-  isComponentDataState,
   isEventDataState,
   JSONValue,
 } from './template'
@@ -26,29 +25,6 @@ export type ServerEventDataState = HandlerEventDataState & {
 }
 export function isServerEventDataState(obj: RuntimeServerDataState): obj is ServerEventDataState {
   return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
-}
-
-export function getAllEventHandlers(dataState: RuntimeServerDataState) {
-  const acc: Record<string, ServerHandlerFunction> = {}
-  function traverse(dataState: RuntimeServerDataState) {
-    if (!dataState || typeof dataState !== 'object') {
-      return
-    }
-    if (Array.isArray(dataState)) {
-      dataState.forEach(traverse)
-      return
-    }
-    if (isComponentDataState(dataState)) {
-      Object.values(dataState.props || {}).forEach(traverse)
-      traverse(dataState.children)
-      return
-    }
-    if (isServerEventDataState(dataState)) {
-      acc[dataState.key] = dataState.handler
-    }
-  }
-  traverse(dataState)
-  return acc
 }
 
 type Action = ActionDataState | ActionDataState[]
