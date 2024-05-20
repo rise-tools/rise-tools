@@ -7,8 +7,8 @@ function setupDataSource() {
   const dataSource = createWSServerDataSource()
 
   const ctx: UIContext = {
-    update: (key, updater) => {
-      dataSource.update(key, updater(dataSource.get(key)))
+    update: async (key, updater) => {
+      dataSource.update(key, updater(await dataSource.get(key)))
     },
   }
   for (const [key, value] of Object.entries(InventoryExample(ctx))) {

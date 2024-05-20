@@ -24,3 +24,5 @@ export function lookupValue(value: DataState, ref: (string | number)[]) {
   }
   return lookupValue
 }
+
+export type MaybeAsync<T> = Promise<T> | T
