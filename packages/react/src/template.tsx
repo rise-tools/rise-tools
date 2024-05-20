@@ -214,7 +214,7 @@ export function BaseTemplate({
     return propValue
   }
 
-  return <>{render(dataState, Array.isArray(path) ? path : [path])}</>
+  return <>{render(dataState, path)}</>
 }
 
 export class RenderError extends Error {}
