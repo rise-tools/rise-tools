@@ -67,6 +67,7 @@ export function createHTTPDataSource() {
             }
           )
         } catch (error: any) {
+          console.error(error)
           return new Response(
             JSON.stringify({
               $: 'evt-res',

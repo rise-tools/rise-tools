@@ -37,10 +37,10 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
     return {
       get: () => cache.get(key),
       subscribe: (handler) => {
-        const shouldFetch = handlers.size === 0 && !cache.has(key)
+        const shouldFetch = handlers.size === 0
         // tbd: this should return promise so it works with Suspense on the client
         if (shouldFetch) {
-          fetch(`${httpUrl}/${key}`)
+          fetch(`${httpUrl}${key}`)
             .then((resp) => resp.json())
             .then((value) => {
               cache.set(key, value)
@@ -50,10 +50,6 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
         handlers.add(handler)
         return () => {
           handlers.delete(handler)
-          const shouldCleanCache = handlers.size === 0
-          if (shouldCleanCache) {
-            cache.delete(key)
-          }
         }
       },
     }
@@ -72,7 +68,7 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
     sendEvent: async (event) => {
       const req = await fetch(httpUrl, {
         method: 'POST',
-        body: JSON.stringify(event),
+        body: JSON.stringify({ event }),
         headers: {
           'Content-Type': 'application/json',
         },

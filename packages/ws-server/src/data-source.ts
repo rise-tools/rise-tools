@@ -29,7 +29,6 @@ type Initializer = ServerDataState | UI | (() => MaybeAsync<ServerDataState | UI
 
 export function createWSServerDataSource() {
   const values = new Map<string, Initializer>()
-  const cache = new Map<string, ServerDataState>()
 
   const clientSubscribers = new Map<string, Map<string, () => void>>()
   const eventSubscribers = new Set<EventSubscriber>()
@@ -46,7 +45,6 @@ export function createWSServerDataSource() {
       )
     }
     values.set(key, value)
-    cache.delete(key)
 
     const handlers = clientSubscribers.get(key)
     if (!handlers) return
@@ -54,9 +52,6 @@ export function createWSServerDataSource() {
   }
 
   async function get(key: string) {
-    if (cache.has(key)) {
-      return cache.get(key)
-    }
     let value = values.get(key)
     if (typeof value === 'function') {
       value = await value()
@@ -66,7 +61,6 @@ export function createWSServerDataSource() {
         'Rise JSX not configured. You must set "jsx" to "react-jsx" and "jsxImportSource" to "@final-ui/react" in your tsconfig.json.'
       )
     }
-    cache.set(key, value)
     return value
   }
 
