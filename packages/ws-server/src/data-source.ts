@@ -46,6 +46,7 @@ export function createWSServerDataSource() {
       )
     }
     values.set(key, value)
+    cache.delete(key)
 
     const handlers = clientSubscribers.get(key)
     if (!handlers) return
