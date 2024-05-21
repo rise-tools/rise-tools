@@ -20,6 +20,7 @@ it('should resolve a promise once response comes in', async () => {
     target: {
       key: 'key',
       path: 'mainStore',
+      propKey: 'onPress',
       component: 'View',
     },
     dataState: {
@@ -56,6 +57,7 @@ it('should timeout if response comes later than timeout specified', async () => 
     target: {
       key: 'key',
       path: 'mainStore',
+      propKey: 'onPress',
       component: 'View',
     },
     dataState: {

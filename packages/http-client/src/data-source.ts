@@ -1,8 +1,23 @@
-import { type DataSource, DataState, Store } from '@final-ui/react'
+import {
+  type DataSource,
+  DataState,
+  HandlerEvent,
+  ServerResponseDataState,
+  Store,
+} from '@final-ui/react'
 
 type Handler = (value: DataState) => void
 
 export type HTTPDataSource = DataSource
+export type EventPayload = {
+  $: 'evt'
+  event: HandlerEvent
+}
+
+export type EventResponse = {
+  $: 'evt-res'
+  res: ServerResponseDataState
+}
 
 export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
   const subscriptions = new Map<string, Set<Handler>>()
@@ -22,7 +37,7 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
     return {
       get: () => cache.get(key),
       subscribe: (handler) => {
-        const shouldFetch = handlers.size === 0 && !cache.has(key)
+        const shouldFetch = handlers.size === 0
         // tbd: this should return promise so it works with Suspense on the client
         if (shouldFetch) {
           fetch(`${httpUrl}/${key}`)
@@ -35,16 +50,10 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
         handlers.add(handler)
         return () => {
           handlers.delete(handler)
-          const shouldCleanCache = handlers.size === 0
-          if (shouldCleanCache) {
-            cache.delete(key)
-          }
         }
       },
     }
   }
-
-  // const promises = new Map<string, (value: ServerResponseDataState) => void>()
 
   return {
     get: (key: string) => {
@@ -56,8 +65,16 @@ export function createHTTPDataSource(httpUrl: string): HTTPDataSource {
       stores.set(key, newStore)
       return newStore
     },
-    sendEvent: async () => {
-      throw new Error('Unsupported')
+    sendEvent: async (event) => {
+      const req = await fetch(httpUrl, {
+        method: 'POST',
+        body: JSON.stringify({ event }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const message = (await req.json()) as EventResponse
+      return message.res
     },
   }
 }

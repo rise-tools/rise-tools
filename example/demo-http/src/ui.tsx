@@ -3,8 +3,8 @@ import { Text, View } from '@final-ui/tamagui/server'
 import { db } from './db'
 
 export const models = {
-  '/': Root,
-  '/item': Item,
+  '': Root,
+  item: Item,
 }
 
 async function Item() {
@@ -25,7 +25,11 @@ async function Root() {
     )
   }
   return (
-    <View>
+    <View
+      onPress={() => {
+        console.log('pressed')
+      }}
+    >
       <Text>Items in inventory: {JSON.stringify(data)}</Text>
     </View>
   )
