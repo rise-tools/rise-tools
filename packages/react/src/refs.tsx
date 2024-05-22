@@ -4,7 +4,6 @@ import { isResponseDataState, ServerResponseDataState } from './response'
 import { Stream } from './streams'
 import {
   ActionDataState,
-  ActionEvent,
   BaseTemplate,
   ComponentRegistry,
   DataState,
@@ -14,6 +13,7 @@ import {
   isHandlerEvent,
   Path,
   ReferencedDataState,
+  TemplateEvent,
 } from './template'
 import { lookupValue } from './utils'
 
@@ -193,7 +193,7 @@ export function Template({
   }, [])
   const rootDataState = resolveRef(dataValues, path)
   const onTemplateEvent = useCallback(
-    async (event: ActionEvent | HandlerEvent) => {
+    async (event: TemplateEvent) => {
       for (const action of event.dataState.actions || []) {
         onAction?.(action)
       }

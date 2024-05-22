@@ -21,6 +21,7 @@ export type UnsubscribeWebsocketMessage = {
 
 export type EventWebsocketMessage = {
   $: 'evt'
+  key: string
   event: HandlerEvent
 }
 
@@ -155,13 +156,14 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
     },
     state: createStateStream(rws),
     sendEvent: async (event) => {
-      send({ $: 'evt', event })
+      const key = (Date.now() * Math.random()).toString(16)
+      send({ $: 'evt', event, key })
       return new Promise((resolve, reject) => {
-        promises.set(event.dataState.key, resolve)
+        promises.set(key, resolve)
         setTimeout(() => {
-          if (promises.has(event.dataState.key)) {
+          if (promises.has(key)) {
             reject(new Error('Request timeout'))
-            promises.delete(event.dataState.key)
+            promises.delete(key)
           }
         }, event.dataState.timeout || 10_000)
       })
