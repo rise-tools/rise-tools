@@ -99,6 +99,7 @@ export function createWSServerDataSource() {
   async function handleMessage(clientId: string, message: EventWebsocketMessage) {
     const {
       dataState,
+      payload,
       target: { path },
     } = message.event
 
@@ -113,7 +114,7 @@ export function createWSServerDataSource() {
           `Missing event handler on the server for event: ${JSON.stringify(message.event)}`
         )
       }
-      let res = await value.handler(message.event)
+      let res = await value.handler(payload)
       if (!isResponseDataState(res)) {
         res = response(res ?? null)
       }
