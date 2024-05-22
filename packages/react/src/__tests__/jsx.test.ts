@@ -1,6 +1,6 @@
 import { action } from '../events'
 import { createComponentDefinition, jsx } from '../jsx'
-import { isComponentDataState, isEventDataState } from '../template'
+import { isActionsDataState, isComponentDataState, isEventDataState } from '../template'
 
 const DummyComponent = createComponentDefinition('DummyComponent')
 
@@ -28,5 +28,5 @@ it('should turn action into event', () => {
     onPress: action('my-action'),
     children: null,
   })
-  expect(isEventDataState(el.props!.onPress)).toBe(true)
+  expect(isActionsDataState(el.props!.onPress)).toBe(true)
 })
