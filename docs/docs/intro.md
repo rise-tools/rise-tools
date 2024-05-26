@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Intro to React Native Templates
+# Intro to Final UI
 
 - Core
 - Data Source

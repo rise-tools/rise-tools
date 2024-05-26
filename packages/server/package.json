@@ -1,6 +1,6 @@
 {
-  "name": "@final-ui/ws-server",
-  "version": "0.1.2",
+  "name": "@final-ui/server",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "description": "",
   "main": "lib",
@@ -27,11 +27,14 @@
   },
   "homepage": "https://github.com/final-ui/final#readme",
   "dependencies": {
-    "ws": "^8.16.0"
+    "fastify": "^4.27.0",
+    "ws": "^8.16.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@final-ui/react": "0.1.2",
     "@final-ui/ws-client": "0.1.2",
-    "metro-react-native-babel-preset": "^0.77.0"
+    "metro-react-native-babel-preset": "^0.77.0",
+    "node-fetch": "^3.3.2"
   }
 }

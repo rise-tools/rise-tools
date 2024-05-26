@@ -16,5 +16,7 @@
     "path": "../../packages/react"
   }, {
     "path": "../../packages/ws-server"
+  }, {
+    "path": "../../packages/server"
   }]
 }

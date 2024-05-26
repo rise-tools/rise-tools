@@ -1,6 +1,6 @@
 import { JSONValue } from '@final-ui/react'
 
-type Model<Value extends JSONValue> = {
+export type Model<Value extends JSONValue> = {
   get: () => Value
   set: (value: Value) => void
   invalidate: () => void

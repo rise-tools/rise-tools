@@ -1,15 +1,15 @@
 import { DataState } from '@final-ui/react'
-import { createWSServer } from '@final-ui/ws-server'
+import { createServer } from '@final-ui/server'
 
-const wsServer = createWSServer(3888)
+const server = createServer({}, 3888)
 
 const startTime = Date.now()
 
-wsServer.update('startTime', startTime)
+server.update('startTime', startTime)
 
 function updateUI() {
-  //   wsServer.update('mainState', mainState)
-  wsServer.updateRoot({
+  //   server.update('mainState', mainState)
+  server.updateRoot({
     $: 'component',
     component: 'ScrollView',
     props: {
@@ -67,7 +67,7 @@ function updateUI() {
       },
     ],
   })
-  wsServer.update('demoRobot', {
+  server.update('demoRobot', {
     $: 'component',
     component: 'ScrollView',
     children: [
@@ -97,14 +97,14 @@ function updateUI() {
     props: {},
   })
 
-  wsServer.update('demoHomeAutomation', {
+  server.update('demoHomeAutomation', {
     // lighting scene
     // background video
     // playlist
     // security mode
   })
 
-  wsServer.update('demoInstallation', {
+  server.update('demoInstallation', {
     // view: impress
     // colorTheme
     // soundResponse
