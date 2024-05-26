@@ -2,13 +2,7 @@ import { act, fireEvent, render } from '@testing-library/react'
 import React, { useState } from 'react'
 
 import { action, event } from '../events'
-import {
-  ActionEvent,
-  BaseTemplate,
-  ComponentDefinition,
-  ComponentRegistry,
-  TemplateEvent,
-} from '../template'
+import { BaseTemplate, ComponentDefinition, ComponentRegistry, TemplateEvent } from '../template'
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
   View: {
@@ -298,29 +292,29 @@ it('should accept event handler as a prop', () => {
 
   const firedEvent = onEvent.mock.lastCall[0] as TemplateEvent
   expect(firedEvent).toMatchInlineSnapshot(`
-Object {
-  "dataState": Object {
-    "$": "actions",
-    "actions": Array [
-      Object {
-        "$": "action",
-        "name": "foo-action",
+    Object {
+      "dataState": Object {
+        "$": "actions",
+        "actions": Array [
+          Object {
+            "$": "action",
+            "name": "foo-action",
+          },
+        ],
       },
-    ],
-  },
-  "payload": "[native code]",
-  "target": Object {
-    "component": "View",
-    "key": "button",
-    "path": Array [
-      "",
-      "props",
-      "onClick",
-    ],
-    "propKey": "onClick",
-  },
-}
-`)
+      "payload": "[native code]",
+      "target": Object {
+        "component": "View",
+        "key": "button",
+        "path": Array [
+          "",
+          "props",
+          "onClick",
+        ],
+        "propKey": "onClick",
+      },
+    }
+  `)
 })
 
 it('should validate props with a validator', () => {
@@ -422,19 +416,19 @@ it('should fire multiple template events for an array of actions', () => {
   )
   fireEvent.click(component.getByTestId('button'))
 
-  expect((onEvent.mock.calls[0][0] as ActionEvent).dataState).toMatchInlineSnapshot(`
-Object {
-  "$": "actions",
-  "actions": Array [
+  expect(onEvent.mock.calls[0][0].dataState).toMatchInlineSnapshot(`
     Object {
-      "$": "action",
-      "name": "go-back",
-    },
-    Object {
-      "$": "action",
-      "name": "go-back-again",
-    },
-  ],
-}
-`)
+      "$": "actions",
+      "actions": Array [
+        Object {
+          "$": "action",
+          "name": "go-back",
+        },
+        Object {
+          "$": "action",
+          "name": "go-back-again",
+        },
+      ],
+    }
+  `)
 })
