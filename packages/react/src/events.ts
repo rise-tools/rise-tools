@@ -1,13 +1,11 @@
-import crypto from 'node:crypto'
-
 import type { ReactElement } from 'react'
 
 import { ServerResponseDataState } from './response'
 import {
   ActionDataState,
-  ActionEventDataState,
+  ActionsDataState,
   DataState,
-  HandlerEventDataState,
+  EventDataState,
   isEventDataState,
   JSONValue,
 } from './template'
@@ -20,7 +18,7 @@ type ServerHandlerReturnType = ServerResponseDataState | JSONValue | void
 export type ServerHandlerFunction = (
   args: any
 ) => Promise<ServerHandlerReturnType> | ServerHandlerReturnType
-export type ServerEventDataState = HandlerEventDataState & {
+export type ServerEventDataState = EventDataState & {
   handler: ServerHandlerFunction
 }
 export function isServerEventDataState(obj: RuntimeServerDataState): obj is ServerEventDataState {
@@ -29,23 +27,21 @@ export function isServerEventDataState(obj: RuntimeServerDataState): obj is Serv
 
 type Action = ActionDataState | ActionDataState[]
 
-export function event(action: Action): ActionEventDataState
+export function event(action: Action): ActionsDataState
 export function event(func: ServerHandlerFunction, action?: Action): ServerEventDataState
 export function event(
   func: ServerHandlerFunction | Action,
   action: Action = []
-): ServerEventDataState | ActionEventDataState {
+): ServerEventDataState | ActionsDataState {
   if (typeof func === 'function') {
-    const key = crypto.randomUUID()
     return {
       $: 'event',
-      key,
       handler: func,
       actions: Array.isArray(action) ? action : [action],
     }
   } else {
     return {
-      $: 'event',
+      $: 'actions',
       actions: Array.isArray(func) ? func : [func],
     }
   }

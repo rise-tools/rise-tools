@@ -1,7 +1,11 @@
 import { response, TemplateEvent } from '@final-ui/react'
 import WS from 'jest-websocket-mock'
 
-import { createWSDataSource, EventResponseWebsocketMessage } from '../data-source'
+import {
+  createWSDataSource,
+  EventResponseWebsocketMessage,
+  EventWebsocketMessage,
+} from '../data-source'
 
 let ws: WS
 
@@ -29,14 +33,15 @@ it('should resolve a promise once response comes in', async () => {
     },
     payload: null,
   }
-  const res: EventResponseWebsocketMessage = {
-    $: 'evt-res',
-    key: 'key',
-    res: response({}),
-  }
 
   const promise = dataSource.sendEvent(event)
-  ws.send(res)
+
+  const message = (await ws.nextMessage) as EventWebsocketMessage
+  ws.send({
+    $: 'evt-res',
+    key: message.key,
+    res: response({}),
+  } satisfies EventResponseWebsocketMessage)
 
   expect(await promise).toMatchInlineSnapshot(`
     Object {
@@ -67,15 +72,16 @@ it('should timeout if response comes later than timeout specified', async () => 
     },
     payload: null,
   }
-  const res: EventResponseWebsocketMessage = {
-    $: 'evt-res',
-    key: 'key',
-    res: response({}),
-  }
 
   const promise = dataSource.sendEvent(event)
+  const message = (await ws.nextMessage) as EventWebsocketMessage
+
   setTimeout(() => {
-    ws.send(res)
+    ws.send({
+      $: 'evt-res',
+      key: message.key,
+      res: response({}),
+    } satisfies EventResponseWebsocketMessage)
   }, 2000)
 
   expect(promise).rejects.toMatch('timeout')

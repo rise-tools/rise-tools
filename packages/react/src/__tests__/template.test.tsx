@@ -2,13 +2,7 @@ import { act, fireEvent, render } from '@testing-library/react'
 import React, { useState } from 'react'
 
 import { action, event } from '../events'
-import {
-  ActionEvent,
-  BaseTemplate,
-  ComponentDefinition,
-  ComponentRegistry,
-  TemplateEvent,
-} from '../template'
+import { BaseTemplate, ComponentDefinition, ComponentRegistry, TemplateEvent } from '../template'
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
   View: {
@@ -300,7 +294,7 @@ it('should accept event handler as a prop', () => {
   expect(firedEvent).toMatchInlineSnapshot(`
     Object {
       "dataState": Object {
-        "$": "event",
+        "$": "actions",
         "actions": Array [
           Object {
             "$": "action",
@@ -422,9 +416,9 @@ it('should fire multiple template events for an array of actions', () => {
   )
   fireEvent.click(component.getByTestId('button'))
 
-  expect((onEvent.mock.calls[0][0] as ActionEvent).dataState).toMatchInlineSnapshot(`
+  expect(onEvent.mock.calls[0][0].dataState).toMatchInlineSnapshot(`
     Object {
-      "$": "event",
+      "$": "actions",
       "actions": Array [
         Object {
           "$": "action",

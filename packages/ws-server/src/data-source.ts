@@ -98,10 +98,12 @@ export function createWSServerDataSource() {
 
   async function handleMessage(clientId: string, message: EventWebsocketMessage) {
     const {
-      dataState,
-      payload,
-      target: { path },
-    } = message.event
+      event: {
+        payload,
+        target: { path },
+      },
+      key,
+    } = message
 
     eventSubscribers.forEach((handler) => handler(message.event, { time: Date.now(), clientId }))
 
@@ -120,13 +122,13 @@ export function createWSServerDataSource() {
       }
       clientSenders.get(clientId)?.({
         $: 'evt-res',
-        key: dataState.key,
+        key,
         res,
       })
     } catch (error: any) {
       clientSenders.get(clientId)?.({
         $: 'evt-res',
-        key: dataState.key,
+        key,
         res: response(error).status(500),
       })
       return

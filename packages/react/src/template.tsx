@@ -15,8 +15,8 @@ export type DataState =
   | ReferencedComponentDataState
   | ComponentDataState
   | ReferencedDataState
-  | ActionEventDataState
-  | HandlerEventDataState
+  | ActionsDataState
+  | EventDataState
   | { [key: string]: DataState; $?: never }
   | DataState[]
 
@@ -39,13 +39,12 @@ export type ActionDataState<T = any> = {
   $: 'action'
   name: T
 }
-export type ActionEventDataState = {
-  $: 'event'
+export type ActionsDataState = {
+  $: 'actions'
   actions: ActionDataState[]
 }
-export type HandlerEventDataState = {
+export type EventDataState = {
   $: 'event'
-  key: string
   actions?: ActionDataState[]
   timeout?: number
 }
@@ -59,18 +58,18 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent<T = any, K = any> = {
+export type TemplateEvent<P = EventDataState | ActionsDataState, K = any> = {
   target: {
     key?: string
     component: string
     propKey: string
     path: Path
   }
-  dataState: T
+  dataState: P
   payload: K
 }
-export type ActionEvent = TemplateEvent<ActionEventDataState>
-export type HandlerEvent = TemplateEvent<HandlerEventDataState>
+
+export type HandlerEvent = TemplateEvent<EventDataState>
 
 export function isCompositeDataState(obj: any): obj is ComponentDataState | ReferencedDataState {
   return (
@@ -88,13 +87,14 @@ export function isReferencedComponentDataState(
 ): obj is ReferencedComponentDataState {
   return isComponentDataState(obj) && 'path' in obj
 }
-export function isEventDataState(
-  obj: DataState
-): obj is ActionEventDataState | HandlerEventDataState {
+export function isEventDataState(obj: DataState): obj is EventDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
 }
-export function isHandlerEvent(obj: TemplateEvent): obj is TemplateEvent<HandlerEventDataState> {
-  return isEventDataState(obj.dataState) && 'key' in obj.dataState
+export function isHandlerEvent(obj: TemplateEvent): obj is HandlerEvent {
+  return isEventDataState(obj.dataState)
+}
+export function isActionsDataState(obj: DataState): obj is ActionsDataState {
+  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'actions'
 }
 export function isActionDataState(obj: any): obj is ActionDataState {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'action'
@@ -176,7 +176,7 @@ export function BaseTemplate({
     parentNode: ComponentDataState | ReferencedComponentDataState,
     path: Path
   ): any {
-    if (isEventDataState(propValue)) {
+    if (isEventDataState(propValue) || isActionsDataState(propValue)) {
       return async (payload: any) => {
         // React events (e.g. from onPress) contain cyclic structures that can't be serialized
         // with JSON.stringify and also provide little to no value for the server.
