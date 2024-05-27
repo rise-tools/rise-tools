@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import { isResponseDataState, ServerResponseDataState } from './response'
-import { LocalState, LocalStateContext } from './state'
+import { LocalState, LocalState } from './state'
 import { Stream } from './streams'
 import {
   ActionDataState,
@@ -197,15 +197,16 @@ export function Template({
 
   /* state */
   const [localState, setLocalState] = useState({})
+  const state: LocalState = {
+    values: localState,
+    setValue: (key, value) => setLocalState({ ...state, [key]: value }),
+  }
 
   const onTemplateEvent = useCallback(
     async (event: TemplateEvent) => {
       for (const action of event.dataState.actions || []) {
         if (action.name?.[0] === 'state-update') {
-          setLocalState((prevState) => ({
-            ...prevState,
-            [action.name[1]]: event.payload,
-          }))
+          state.setValue(action.name[1], event.payload)
         } else {
           onAction?.(action)
         }
@@ -233,18 +234,13 @@ export function Template({
   )
 
   return (
-    <LocalStateContext.Provider
-      value={{
-        values: localState,
-        setValue: (key, value) => setLocalState({ ...localState, [key]: value }),
-      }}
-    >
+    <LocalState.Provider value={state}>
       <BaseTemplate
         components={components}
         path={path}
         dataState={rootDataState}
         onTemplateEvent={onTemplateEvent}
       />
-    </LocalStateContext.Provider>
+    </LocalState.Provider>
   )
 }

@@ -1,6 +1,6 @@
 import React, { useCallback, useContext } from 'react'
 
-import { LocalState, LocalStateContext } from './state'
+import { LocalState } from './state'
 
 /** Components */
 type ComponentIdentifier = string
@@ -142,7 +142,7 @@ export function BaseTemplate({
         throw new RenderError(`Invalid component: ${stateNode.component}`)
       }
 
-      const localState = useContext(LocalStateContext)
+      const localState = useContext(LocalState)
       let componentProps = Object.fromEntries(
         Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
           return [
@@ -171,7 +171,7 @@ export function BaseTemplate({
   )
 
   function RenderState({ stateNode, path }: { stateNode: StateDataState; path: Path }) {
-    const state = useContext(LocalStateContext)
+    const state = useContext(LocalState)
     const value = state.values[stateNode.key] || stateNode.initialValue
     return render(value, path)
   }

@@ -13,7 +13,7 @@ export type LocalState = {
   setValue: (key: string, value: JSONValue) => void
 }
 
-export const LocalStateContext = createContext<LocalState>({
+export const LocalState = createContext<LocalState>({
   get values(): never {
     throw new Error('Wrap your form with a <RiseForm /> component')
   },
