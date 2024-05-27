@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import { isResponseDataState, ServerResponseDataState } from './response'
+import { LocalState, LocalStateContext } from './state'
 import { Stream } from './streams'
 import {
   ActionDataState,
@@ -183,6 +184,7 @@ export function Template({
     path = [path]
   }
 
+  /* refs */
   const [dataValues, setDataValues] = useState<DataValues>({})
   const refStateManager = useRef(
     createRefStateManager(setDataValues, dataSource, extractRefKey(path))
@@ -192,10 +194,21 @@ export function Template({
     return () => release()
   }, [])
   const rootDataState = resolveRef(dataValues, path)
+
+  /* state */
+  const [localState, setLocalState] = useState({})
+
   const onTemplateEvent = useCallback(
     async (event: TemplateEvent) => {
       for (const action of event.dataState.actions || []) {
-        onAction?.(action)
+        if (action.name?.[0] === 'state-update') {
+          setLocalState((prevState) => ({
+            ...prevState,
+            [action.name[1]]: event.payload,
+          }))
+        } else {
+          onAction?.(action)
+        }
       }
       if (!isHandlerEvent(event)) {
         return
@@ -218,12 +231,20 @@ export function Template({
     },
     [onAction, onEvent]
   )
+
   return (
-    <BaseTemplate
-      components={components}
-      path={path}
-      dataState={rootDataState}
-      onTemplateEvent={onTemplateEvent}
-    />
+    <LocalStateContext.Provider
+      value={{
+        values: localState,
+        setValue: (key, value) => setLocalState({ ...localState, [key]: value }),
+      }}
+    >
+      <BaseTemplate
+        components={components}
+        path={path}
+        dataState={rootDataState}
+        onTemplateEvent={onTemplateEvent}
+      />
+    </LocalStateContext.Provider>
   )
 }
