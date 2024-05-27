@@ -160,7 +160,6 @@ export function BaseTemplate({
           )
         }
       }
-      console.log('render', stateNode)
       return (
         <Component {...componentProps}>
           {render(stateNode.children, [...path, 'children'])}

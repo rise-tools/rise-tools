@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import { isResponseDataState, ServerResponseDataState } from './response'
-import { LocalState, LocalState } from './state'
+import { LocalState } from './state'
 import { Stream } from './streams'
 import {
   ActionDataState,
