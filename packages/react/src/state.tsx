@@ -14,6 +14,11 @@ function isStateModifier(obj: any): obj is StateModifier {
 }
 
 type SetStateAction<T> = ActionDataState<['state-update', string, StateValue<T>]>
+export function isStateUpdateAction<T extends JSONValue>(
+  action: ActionDataState
+): action is SetStateAction<T> {
+  return action.name[0] === 'state-update'
+}
 
 export function state<T extends JSONValue>(initialValue: T): StateDataState<T> {
   const key = (Date.now() * Math.random()).toString(16)
