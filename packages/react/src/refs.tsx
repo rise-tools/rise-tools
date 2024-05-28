@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import { isResponseDataState, ServerResponseDataState } from './response'
-import { LocalState } from './state'
+import { LocalState, modifyState } from './state'
 import { Stream } from './streams'
 import {
   ActionDataState,
@@ -205,8 +205,12 @@ export function Template({
   const onTemplateEvent = useCallback(
     async (event: TemplateEvent) => {
       for (const action of event.dataState.actions || []) {
+        // tbd: update this
         if (action.name?.[0] === 'state-update') {
-          state.setValue(action.name[1], event.payload)
+          state.setValue(
+            action.name[1],
+            modifyState(state.values[action.name[1]], action.name[2], event.payload)
+          )
         } else {
           onAction?.(action)
         }

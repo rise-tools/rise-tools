@@ -33,10 +33,10 @@ export type ComponentDataState = {
 type ReferencedComponentDataState = ComponentDataState & {
   path: Path
 }
-export type StateDataState = {
+export type StateDataState<T = JSONValue> = {
   $: 'state'
   key: string
-  initialValue: JSONValue
+  initialValue: T
 }
 export type Path = [string, ...(string | number)[]]
 export type ReferencedDataState = {
