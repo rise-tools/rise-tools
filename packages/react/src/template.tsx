@@ -171,7 +171,7 @@ export function BaseTemplate({
 
   function RenderState({ stateNode, path }: { stateNode: StateDataState; path: Path }) {
     const state = useContext(LocalState)
-    const value = state.values[stateNode.key] || stateNode.initialValue
+    const value = state[stateNode.key] || stateNode.initialValue
     return render(value, path)
   }
 
@@ -235,7 +235,7 @@ export function BaseTemplate({
       )
     }
     if (isStateDataState(propValue)) {
-      return render(localState.values[propValue.key] || propValue.initialValue, path)
+      return render(localState[propValue.key] || propValue.initialValue, path)
     }
     if (isCompositeDataState(propValue)) {
       return render(propValue, path)

@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import { isResponseDataState, ServerResponseDataState } from './response'
-import { isStateUpdateAction, LocalState, modifyState } from './state'
+import { applyStateUpdate, isStateUpdateAction, LocalState } from './state'
 import { Stream } from './streams'
 import {
   ActionDataState,
@@ -196,19 +196,17 @@ export function Template({
   const rootDataState = resolveRef(dataValues, path)
 
   /* state */
-  const [localState, setLocalState] = useState({})
-  const state: LocalState = {
-    values: localState,
-    setValue: (key, value) => setLocalState({ ...state, [key]: value }),
-  }
+  const [localState, setLocalState] = useState<LocalState>({})
 
   const onTemplateEvent = useCallback(
     async (event: TemplateEvent) => {
       for (const action of event.dataState.actions || []) {
-        // tbd
         if (isStateUpdateAction(action)) {
-          const [, stateKey, stateValue] = action.name
-          state.setValue(stateKey, modifyState(state.values[stateKey], stateValue, event.payload))
+          const [, stateKey, stateUpdate] = action.name
+          setLocalState({
+            ...localState,
+            [stateKey]: applyStateUpdate(localState[stateKey], stateUpdate, event.payload),
+          })
         } else {
           onAction?.(action)
         }
@@ -236,7 +234,7 @@ export function Template({
   )
 
   return (
-    <LocalState.Provider value={state}>
+    <LocalState.Provider value={localState}>
       <BaseTemplate
         components={components}
         path={path}

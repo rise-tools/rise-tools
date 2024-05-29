@@ -3,17 +3,17 @@ import { createContext } from 'react'
 import { action } from './events'
 import { ActionDataState, JSONValue, StateDataState } from './template'
 
-type StateValue<T> = T | StateModifier
-
+type StateUpdate<T> = T | StateModifier
+type SetStateAction<T> = ActionDataState<['state-update', string, StateUpdate<T>]>
 type StateModifier = {
   $: 'state-modifier'
   value: 'payload' | 'toggle'
 }
+
 function isStateModifier(obj: any): obj is StateModifier {
   return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'state-modifier'
 }
 
-type SetStateAction<T> = ActionDataState<['state-update', string, StateValue<T>]>
 export function isStateUpdateAction<T extends JSONValue>(
   action: ActionDataState
 ): action is SetStateAction<T> {
@@ -32,13 +32,13 @@ export function setStateAction<T>(
   return action(['state-update', state.key, value])
 }
 
-export function modifyState<T extends JSONValue>(
+export function applyStateUpdate<T extends JSONValue>(
   state: T,
-  nextState: StateValue<T>,
+  stateUpdate: StateUpdate<T>,
   payload: JSONValue
 ) {
-  if (isStateModifier(nextState)) {
-    switch (nextState.value) {
+  if (isStateModifier(stateUpdate)) {
+    switch (stateUpdate.value) {
       case 'payload': {
         return payload
       }
@@ -47,29 +47,21 @@ export function modifyState<T extends JSONValue>(
       }
     }
   }
-  return nextState
+  return stateUpdate
 }
 
-export const eventPayload = {
+export const eventPayload: StateModifier = {
   $: 'state-modifier',
   value: 'payload',
-} as const
-
-export const toggle = {
-  $: 'state-modifier',
-  value: 'toggle',
-} as const
-
-export type LocalState = {
-  values: Record<string, JSONValue>
-  setValue: (key: string, value: JSONValue) => void
 }
 
-export const LocalState = createContext<LocalState>({
-  get values(): never {
-    throw new Error('Wrap your form with a <RiseForm /> component')
-  },
-  setValue: () => {
-    throw new Error('Wrap your form with a <RiseForm /> component')
-  },
-})
+export const toggle: StateModifier = {
+  $: 'state-modifier',
+  value: 'toggle',
+}
+
+export type LocalState = Record<string, JSONValue>
+
+export const LocalState = createContext<LocalState>({})
+
+export function reducer() {}
