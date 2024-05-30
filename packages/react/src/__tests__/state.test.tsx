@@ -133,7 +133,6 @@ it('should toggle state', async () => {
             key: 'header',
             component: 'View',
             props: {
-              ['data-testid']: 'header',
               disabled: isDisabled,
             },
           },
@@ -154,9 +153,7 @@ it('should toggle state', async () => {
   const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
-      <div
-        data-testid="header"
-      />
+      <div />
       <div
         data-testid="button"
       />
@@ -168,7 +165,6 @@ it('should toggle state', async () => {
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       <div
-        data-testid="header"
         disabled=""
       />
       <div
@@ -189,9 +185,6 @@ it('should increment state', async () => {
             $: 'component',
             key: 'header',
             component: 'View',
-            props: {
-              ['data-testid']: 'header',
-            },
             children: counter,
           },
           {
@@ -211,9 +204,7 @@ it('should increment state', async () => {
   const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
-      <div
-        data-testid="header"
-      >
+      <div>
         1
       </div>
       <div
@@ -222,18 +213,24 @@ it('should increment state', async () => {
     </DocumentFragment>
   `)
   await act(async () => {
-    // tbd: batch updates?
-    fireEvent.click(component.getByTestId('button'))
-  })
-  await act(async () => {
-    // tbd: batch updates?
     fireEvent.click(component.getByTestId('button'))
   })
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
+      <div>
+        3
+      </div>
       <div
-        data-testid="header"
-      >
+        data-testid="button"
+      />
+    </DocumentFragment>
+  `)
+  await act(async () => {
+    fireEvent.click(component.getByTestId('button'))
+  })
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div>
         5
       </div>
       <div

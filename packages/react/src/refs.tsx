@@ -1,7 +1,15 @@
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 
 import { isResponseDataState, ServerResponseDataState } from './response'
-import { applyStateUpdateAction, isStateUpdateAction, LocalState } from './state'
+import { applyStateUpdateAction, isStateUpdateAction, LocalState, useLocalState } from './state'
 import { Stream } from './streams'
 import {
   ActionDataState,
@@ -196,16 +204,15 @@ export function Template({
   const rootDataState = resolveRef(dataValues, path)
 
   /* state */
-  const [localState, setLocalState] = useState<LocalState>({})
+  const [localState, dispatchStateUpdate] = useLocalState()
 
   const onTemplateEvent = useCallback(
     async (event: TemplateEvent) => {
       for (const action of event.dataState.actions || []) {
         if (isStateUpdateAction(action)) {
-          const [, state] = action.name
-          setLocalState({
-            ...localState,
-            [state.key]: applyStateUpdateAction(localState[state.key], action, event.payload),
+          dispatchStateUpdate({
+            action,
+            payload: event.payload,
           })
         } else {
           onAction?.(action)
