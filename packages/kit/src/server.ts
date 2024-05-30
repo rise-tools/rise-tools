@@ -20,4 +20,4 @@ export const RiseTextField = createComponentDefinition<typeof TextField>('RiseTe
 export const RiseSubmitButton = createComponentDefinition<typeof SubmitButton>('RiseSubmitButton')
 
 /** fully server-helpers */
-export { DropdownButton } from './server/DropdownButton'
+export { DropdownButton as RiseDropdownButton } from './server/DropdownButton'
