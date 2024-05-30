@@ -1,15 +1,7 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from 'react'
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import { isResponseDataState, ServerResponseDataState } from './response'
-import { applyStateUpdateAction, isStateUpdateAction, LocalState, useLocalState } from './state'
+import { isStateUpdateAction, LocalState, useLocalState } from './state'
 import { Stream } from './streams'
 import {
   ActionDataState,

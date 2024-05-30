@@ -3,15 +3,13 @@ import { createContext, useReducer } from 'react'
 import { action } from './events'
 import { ActionDataState, JSONValue, StateDataState } from './template'
 
+export type LocalState = Record<string, JSONValue>
+
 type StateUpdate<T> = T | StateModifier
 type UpdateStateAction<T> = ActionDataState<['state-update', StateDataState<T>, StateUpdate<T>]>
 type StateModifier = {
   $: 'state-modifier'
   value: 'payload' | 'toggle' | ['increment', number]
-}
-
-function isStateModifier(obj: any): obj is StateModifier {
-  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'state-modifier'
 }
 
 export function isStateUpdateAction<T extends JSONValue>(
@@ -46,6 +44,10 @@ const stateReducer = (
     ...localState,
     [stateDataState.key]: applyStateUpdateAction(currentState, stateUpdate, payload),
   }
+}
+
+function isStateModifier(obj: any): obj is StateModifier {
+  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'state-modifier'
 }
 
 function applyStateUpdateAction<T extends JSONValue>(
@@ -93,7 +95,4 @@ export const increment = (value: number): StateModifier => ({
   value: ['increment', value],
 })
 
-export type LocalState = Record<string, JSONValue>
 export const LocalState = createContext<LocalState>({})
-
-export function reducer() {}
