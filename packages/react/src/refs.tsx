@@ -224,6 +224,7 @@ export function Template({
           if (isStateUpdateAction(action)) {
             dispatchStateUpdate({
               action,
+              payload: res.payload,
             })
           } else {
             onAction?.(action)

@@ -36,7 +36,7 @@ export const useLocalState = () => {
 
 const stateReducer = (
   localState: LocalState,
-  { action, payload }: { action: UpdateStateAction<JSONValue>; payload?: JSONValue }
+  { action, payload }: { action: UpdateStateAction<JSONValue>; payload: JSONValue }
 ) => {
   const [, stateDataState, stateUpdate] = action.name
   const currentState = localState[stateDataState.key] || stateDataState.initialValue
