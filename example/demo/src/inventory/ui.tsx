@@ -1,14 +1,12 @@
-import { action, ref, state } from '@final-ui/react'
+import { action, ref } from '@final-ui/react'
 import {
   Button,
   H2,
   H4,
   Image,
-  Input,
   Paragraph,
   ScrollView,
   SizableText,
-  Text,
   XStack,
   YStack,
 } from '@final-ui/tamagui/server'
@@ -31,12 +29,8 @@ export function InventoryExample(ctx: UIContext) {
 }
 
 function HomeScreen() {
-  const [value, setText] = state('')
-
   return (
     <YStack backgroundColor={'$background'}>
-      <Input onChangeText={setText} value={value} />
-      <Text fontSize={24}>{value}</Text>
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {inventory.map((item, idx) => (
           <Button
