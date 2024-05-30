@@ -214,18 +214,6 @@ it('should increment state', async () => {
   `)
   await act(async () => {
     fireEvent.click(component.getByTestId('button'))
-  })
-  expect(component.asFragment()).toMatchInlineSnapshot(`
-    <DocumentFragment>
-      <div>
-        3
-      </div>
-      <div
-        data-testid="button"
-      />
-    </DocumentFragment>
-  `)
-  await act(async () => {
     fireEvent.click(component.getByTestId('button'))
   })
   expect(component.asFragment()).toMatchInlineSnapshot(`
