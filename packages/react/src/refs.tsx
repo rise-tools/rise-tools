@@ -221,7 +221,13 @@ export function Template({
       }
       if (res.actions) {
         for (const action of res.actions) {
-          onAction?.(action)
+          if (isStateUpdateAction(action)) {
+            dispatchStateUpdate({
+              action,
+            })
+          } else {
+            onAction?.(action)
+          }
         }
       }
       if (!res.ok) {

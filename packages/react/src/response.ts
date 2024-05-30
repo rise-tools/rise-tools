@@ -7,7 +7,6 @@ export function response(payload: JSONValue): ServerResponseDataState {
     // what are default values in `fetch`?
     statusCode: 200,
     ok: true,
-    // tbd: refactor this to `{ actions: {}}` object
     actions: [],
     action(action) {
       this.actions.push(action)
