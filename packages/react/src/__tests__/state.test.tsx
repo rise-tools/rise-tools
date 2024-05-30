@@ -3,6 +3,7 @@ import React from 'react'
 
 import { event } from '../events'
 import { DataSource, Template } from '../refs'
+import { response } from '../response'
 import { increment, setStateAction, state, toggle } from '../state'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
@@ -224,6 +225,49 @@ it('should increment state', async () => {
       <div
         data-testid="button"
       />
+    </DocumentFragment>
+  `)
+})
+
+it('should modify state after receiving response from the server', async () => {
+  const value = state('foo')
+  const dataSource: DataSource = {
+    get: () => ({
+      subscribe: jest.fn().mockReturnValue(jest.fn()),
+      get() {
+        return {
+          $: 'component',
+          component: 'View',
+          props: {
+            ['data-testid']: 'button',
+            onClick: event(jest.fn()),
+          },
+          children: value,
+        }
+      },
+    }),
+    sendEvent: jest.fn().mockReturnValue(response(null).action(setStateAction(value, 'bar'))),
+  }
+  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        data-testid="button"
+      >
+        foo
+      </div>
+    </DocumentFragment>
+  `)
+  await act(async () => {
+    fireEvent.click(component.getByTestId('button'))
+  })
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        data-testid="button"
+      >
+        bar
+      </div>
     </DocumentFragment>
   `)
 })
