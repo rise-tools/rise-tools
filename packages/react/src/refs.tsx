@@ -229,7 +229,7 @@ export function Template({
       }
       return res.payload
     },
-    [onAction, onEvent, localState]
+    [onAction, onEvent]
   )
 
   return (
