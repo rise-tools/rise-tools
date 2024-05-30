@@ -3,7 +3,7 @@ import React from 'react'
 
 import { event } from '../events'
 import { DataSource, Template } from '../refs'
-import { setStateAction, state, toggle } from '../state'
+import { increment, setStateAction, state, toggle } from '../state'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render initial state', () => {
@@ -171,6 +171,71 @@ it('should toggle state', async () => {
         data-testid="header"
         disabled=""
       />
+      <div
+        data-testid="button"
+      />
+    </DocumentFragment>
+  `)
+})
+
+it('should increment state', async () => {
+  const counter = state(1)
+  const dataSource: DataSource = {
+    get: () => ({
+      subscribe: () => jest.fn(),
+      get() {
+        return [
+          {
+            $: 'component',
+            key: 'header',
+            component: 'View',
+            props: {
+              ['data-testid']: 'header',
+            },
+            children: counter,
+          },
+          {
+            $: 'component',
+            key: 'button',
+            component: 'View',
+            props: {
+              ['data-testid']: 'button',
+              onClick: event(setStateAction(counter, increment(2))),
+            },
+          },
+        ]
+      },
+    }),
+    sendEvent: jest.fn(),
+  }
+  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        data-testid="header"
+      >
+        1
+      </div>
+      <div
+        data-testid="button"
+      />
+    </DocumentFragment>
+  `)
+  await act(async () => {
+    // tbd: batch updates?
+    fireEvent.click(component.getByTestId('button'))
+  })
+  await act(async () => {
+    // tbd: batch updates?
+    fireEvent.click(component.getByTestId('button'))
+  })
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        data-testid="header"
+      >
+        5
+      </div>
       <div
         data-testid="button"
       />

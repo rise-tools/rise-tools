@@ -4,10 +4,10 @@ import { action } from './events'
 import { ActionDataState, JSONValue, StateDataState } from './template'
 
 type StateUpdate<T> = T | StateModifier
-type SetStateAction<T> = ActionDataState<['state-update', string, StateUpdate<T>]>
+type UpdateStateAction<T> = ActionDataState<['state-update', StateDataState<T>, StateUpdate<T>]>
 type StateModifier = {
   $: 'state-modifier'
-  value: 'payload' | 'toggle'
+  value: 'payload' | 'toggle' | ['increment', number]
 }
 
 function isStateModifier(obj: any): obj is StateModifier {
@@ -16,7 +16,7 @@ function isStateModifier(obj: any): obj is StateModifier {
 
 export function isStateUpdateAction<T extends JSONValue>(
   action: ActionDataState
-): action is SetStateAction<T> {
+): action is UpdateStateAction<T> {
   return action.name[0] === 'state-update'
 }
 
@@ -28,26 +28,46 @@ export function state<T extends JSONValue>(initialValue: T): StateDataState<T> {
 export function setStateAction<T>(
   state: StateDataState<T>,
   value: T | StateModifier = eventPayload
-): SetStateAction<T> {
-  return action(['state-update', state.key, value])
+): UpdateStateAction<T> {
+  return action(['state-update', state, value])
 }
 
-export function applyStateUpdate<T extends JSONValue>(
+export function applyStateUpdateAction<T extends JSONValue>(
   state: T,
-  stateUpdate: StateUpdate<T>,
+  action: UpdateStateAction<T>,
   payload: JSONValue
 ) {
-  if (isStateModifier(stateUpdate)) {
-    switch (stateUpdate.value) {
-      case 'payload': {
-        return payload
+  const [, initialState, stateUpdate] = action.name
+  if (!isStateModifier(stateUpdate)) {
+    return stateUpdate
+  }
+  if (Array.isArray(stateUpdate.value)) {
+    const [type, value] = stateUpdate.value
+    switch (type) {
+      case 'increment': {
+        const s = state || initialState.initialValue
+        if (typeof s !== 'number') {
+          // tbd: what do do here
+          return value
+        }
+        return s + value
       }
-      case 'toggle': {
-        return !state
+      default: {
+        throw new Error('Unknown state modifier.')
       }
     }
   }
-  return stateUpdate
+  switch (stateUpdate.value) {
+    case 'payload': {
+      return payload
+    }
+    case 'toggle': {
+      return !state
+    }
+    default: {
+      throw new Error('Unknown state modifier.')
+    }
+  }
 }
 
 export const eventPayload: StateModifier = {
@@ -60,8 +80,12 @@ export const toggle: StateModifier = {
   value: 'toggle',
 }
 
-export type LocalState = Record<string, JSONValue>
+export const increment = (value: number): StateModifier => ({
+  $: 'state-modifier',
+  value: ['increment', value],
+})
 
+export type LocalState = Record<string, JSONValue>
 export const LocalState = createContext<LocalState>({})
 
 export function reducer() {}
