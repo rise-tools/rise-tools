@@ -47,8 +47,23 @@ export type ActionDataState<T = any> = {
   $: 'action'
   name: T
 }
+export type ResponseDataState = {
+  $: 'response'
+  payload: JSONValue
+  statusCode: number
+  ok: boolean
+  actions: ActionDataState[]
+}
+export type HandlerDataState = {
+  $: 'handler'
+  state: Record<string, StateDataState>
+  func?: HandlerFunction
+}
+export type HandlerReturnType = ResponseDataState | JSONValue | void
+export type HandlerFunction<T = any> = (args: T) => Promise<HandlerReturnType> | HandlerReturnType
 export type EventDataState = {
   $: 'event'
+  handler?: HandlerDataState | HandlerFunction
   actions?: ActionDataState[]
   timeout?: number
 }
@@ -103,6 +118,12 @@ export function isActionDataState(obj: any): obj is ActionDataState {
 }
 export function isActionDataStateArray(obj: any): obj is ActionDataState[] {
   return Array.isArray(obj) && obj.every(isActionDataState)
+}
+export function isResponseDataState(obj: any): obj is ResponseDataState {
+  return obj && typeof obj === 'object' && obj.$ === 'response'
+}
+export function isHandlerDataState(obj: any): obj is HandlerDataState {
+  return obj && typeof obj === 'object' && obj.$ === 'handler'
 }
 function isStateDataState(obj: any): obj is StateDataState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'state'
@@ -217,6 +238,13 @@ export function BaseTemplate({
           payload = '[native code]'
         }
         const dataState = isActionDataState(propValue) ? [propValue] : propValue
+        if (isEventDataState(propValue) && isHandlerDataState(propValue.handler)) {
+          payload = Object.fromEntries(
+            Object.entries(propValue.handler.state).map(([key, value]) => {
+              return [key, localState[value.key] || value.initialValue]
+            })
+          )
+        }
         return onTemplateEvent?.({
           target: {
             key: parentNode.key,

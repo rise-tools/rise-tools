@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
-import { isResponseDataState, ServerResponseDataState } from './response'
+import { ServerResponseDataState } from './response'
 import { isStateUpdateAction, LocalState, useLocalState } from './state'
 import { Stream } from './streams'
 import {
@@ -13,6 +13,7 @@ import {
   isCompositeDataState,
   isEventDataState,
   isHandlerEvent,
+  isResponseDataState,
   Path,
   ReferencedDataState,
   TemplateEvent,

@@ -1,30 +1,39 @@
 import type { ReactElement } from 'react'
 
-import { ServerResponseDataState } from './response'
-import { ActionDataState, DataState, EventDataState, isEventDataState, JSONValue } from './template'
+import {
+  ActionDataState,
+  DataState,
+  EventDataState,
+  HandlerFunction,
+  isEventDataState,
+  isHandlerDataState,
+  StateDataState,
+} from './template'
 
 /** Server data state*/
 export type ServerDataState = DataState | ServerEventDataState
 export type RuntimeServerDataState = Exclude<ServerDataState, ReactElement>
 
-type ServerHandlerReturnType = ServerResponseDataState | JSONValue | void
-export type ServerHandlerFunction = (
-  args: any
-) => Promise<ServerHandlerReturnType> | ServerHandlerReturnType
 export type ServerEventDataState = EventDataState & {
-  handler: ServerHandlerFunction
+  handler: HandlerFunction
 }
 export function isServerEventDataState(obj: RuntimeServerDataState): obj is ServerEventDataState {
-  return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
+  if (!isEventDataState(obj)) {
+    return false
+  }
+  return (
+    typeof obj.handler === 'function' ||
+    (isHandlerDataState(obj.handler) && typeof obj.handler.func === 'function')
+  )
 }
 
 export function event(
-  func: ServerHandlerFunction,
+  func: HandlerFunction,
   opts?: {
     actions?: ActionDataState[]
     timeout?: number
   }
-): ServerEventDataState {
+): EventDataState {
   return {
     $: 'event',
     handler: func,
@@ -39,3 +48,24 @@ export function action<T = any>(name: T): ActionDataState<T> {
     name,
   }
 }
+
+export function withState<T extends Record<string, any>>(
+  state: { [K in keyof T]: StateDataState<T[K]> },
+  handler: HandlerFunction<T>
+) {
+  return {
+    $: 'handler',
+    handler,
+    state,
+  }
+}
+
+withState(
+  {
+    isOpen: { $: 'state', key: 'isOpen', initialValue: false },
+    isOpen2: { $: 'state', key: 'isOpen', initialValue: 5 },
+  },
+  (args) => {
+    console.log(args)
+  }
+)
