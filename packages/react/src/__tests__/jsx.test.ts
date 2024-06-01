@@ -1,4 +1,3 @@
-import { action } from '../events'
 import { createComponentDefinition, jsx } from '../jsx'
 import { isComponentDataState, isEventDataState } from '../template'
 

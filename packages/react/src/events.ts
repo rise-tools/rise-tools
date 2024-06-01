@@ -28,9 +28,9 @@ export function isServerEventDataState(obj: RuntimeServerDataState): obj is Serv
 export function event(
   func: ServerHandlerFunction,
   opts?: {
-    actions: ActionDataState[]
+    actions?: ActionDataState[]
     timeout?: number
-    state: Record<string, StateDataState>
+    state?: Record<string, StateDataState>
   }
 ): ServerEventDataState {
   return {
