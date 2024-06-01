@@ -34,6 +34,18 @@ export function state<T extends JSONValue>(initialValue: T): StateDataState<T> {
   return { $: 'state', key, initialValue }
 }
 
+export function setStateAction(
+  state: StateDataState<number>,
+  value?: number | IncrementStateModifier
+): UpdateStateAction<number>
+export function setStateAction(
+  state: StateDataState<boolean>,
+  value?: boolean | ToggleStateModifier
+): UpdateStateAction<boolean>
+export function setStateAction<T extends JSONValue>(
+  state: StateDataState<T>,
+  value?: T | PayloadStateModifier
+): UpdateStateAction<T>
 export function setStateAction<T>(
   state: StateDataState<T>,
   value: T | StateModifier = eventPayload
@@ -87,17 +99,17 @@ function applyStateUpdateAction<T extends JSONValue>(
   }
 }
 
-export const eventPayload: StateModifier = {
+export const eventPayload: PayloadStateModifier = {
   $: 'state-modifier',
   type: 'payload',
 }
 
-export const toggle: StateModifier = {
+export const toggle: ToggleStateModifier = {
   $: 'state-modifier',
   type: 'toggle',
 }
 
-export const increment = (value: number): StateModifier => ({
+export const increment = (value: number): IncrementStateModifier => ({
   $: 'state-modifier',
   type: 'increment',
   value,
