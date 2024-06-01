@@ -71,10 +71,9 @@ export function createHTTPDataSource() {
             res,
           }
         } catch (error: any) {
-          console.error(error)
           return {
             $: 'evt-res',
-            res: response(error),
+            res: response(error).status(500),
           }
         }
       }
