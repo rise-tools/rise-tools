@@ -1,4 +1,4 @@
-import type { EventPayload, EventResponse } from '@final-ui/http-client'
+import type { EventPayload } from '@final-ui/http-client'
 import {
   isReactElement,
   isResponseDataState,
@@ -31,15 +31,22 @@ export function createHTTPDataSource() {
     return value
   }
 
-  async function handleRequest(request: Request) {
-    const url = new URL(request.url)
-    switch (request.method) {
+  async function handleRequest({
+    path,
+    method,
+    body,
+  }: {
+    path: string
+    method: string
+    body: unknown
+  }) {
+    switch (method) {
       case 'GET': {
-        const { pathname: path } = url
-        return new Response(JSON.stringify(await get(path.startsWith('/') ? path.slice(1) : path)))
+        return await get(path.startsWith('/') ? path.slice(1) : path)
       }
       case 'POST': {
-        const message = (await request.json()) as EventPayload
+        // tbd: validate body with `zod`
+        const message = body as EventPayload
 
         const {
           payload,
@@ -59,26 +66,16 @@ export function createHTTPDataSource() {
           if (!isResponseDataState(res)) {
             res = response(res ?? null)
           }
-          return new Response(
-            JSON.stringify({
-              $: 'evt-res',
-              res,
-            } satisfies EventResponse),
-            {
-              status: 200,
-            }
-          )
+          return {
+            $: 'evt-res',
+            res,
+          }
         } catch (error: any) {
           console.error(error)
-          return new Response(
-            JSON.stringify({
-              $: 'evt-res',
-              res: response(error),
-            } satisfies EventResponse),
-            {
-              status: 500,
-            }
-          )
+          return {
+            $: 'evt-res',
+            res: response(error),
+          }
         }
       }
       default:
