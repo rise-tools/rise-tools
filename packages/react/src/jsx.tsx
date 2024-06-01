@@ -9,12 +9,14 @@ import {
   isComponentDataState,
   JSONValue,
   ReferencedDataState,
+  StateDataState,
 } from './template'
 
 type AllowedDataStates =
   | ServerEventDataState
   | ActionDataState
   | ReferencedDataState
+  | StateDataState
   | ((args: any) => any)
 
 type Props = Record<string, JSONValue | AllowedDataStates> & {
