@@ -217,8 +217,7 @@ export function BaseTemplate({
         if (payload?.nativeEvent) {
           payload = '[native code]'
         }
-        const dataState =
-          isEventDataState(propValue) || isActionDataStateArray(propValue) ? propValue : [propValue]
+        const dataState = isActionDataState(propValue) ? [propValue] : propValue
         return onTemplateEvent?.({
           target: {
             key: parentNode.key,
