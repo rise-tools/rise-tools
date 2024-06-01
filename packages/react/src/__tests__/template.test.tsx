@@ -293,15 +293,12 @@ it('should accept event handler as a prop', () => {
   const firedEvent = onEvent.mock.lastCall[0] as TemplateEvent
   expect(firedEvent).toMatchInlineSnapshot(`
     Object {
-      "dataState": Object {
-        "$": "actions",
-        "actions": Array [
-          Object {
-            "$": "action",
-            "name": "foo-action",
-          },
-        ],
-      },
+      "dataState": Array [
+        Object {
+          "$": "action",
+          "name": "foo-action",
+        },
+      ],
       "payload": "[native code]",
       "target": Object {
         "component": "View",
@@ -417,18 +414,15 @@ it('should fire multiple template events for an array of actions', () => {
   fireEvent.click(component.getByTestId('button'))
 
   expect(onEvent.mock.calls[0][0].dataState).toMatchInlineSnapshot(`
-    Object {
-      "$": "actions",
-      "actions": Array [
-        Object {
-          "$": "action",
-          "name": "go-back",
-        },
-        Object {
-          "$": "action",
-          "name": "go-back-again",
-        },
-      ],
-    }
+    Array [
+      Object {
+        "$": "action",
+        "name": "go-back",
+      },
+      Object {
+        "$": "action",
+        "name": "go-back-again",
+      },
+    ]
   `)
 })
