@@ -7,9 +7,20 @@ export type LocalState = Record<string, JSONValue>
 
 type StateUpdate<T> = T | StateModifier
 type UpdateStateAction<T> = ActionDataState<['state-update', StateDataState<T>, StateUpdate<T>]>
-type StateModifier = {
+
+type StateModifier = PayloadStateModifier | ToggleStateModifier | IncrementStateModifier
+type PayloadStateModifier = {
   $: 'state-modifier'
-  value: 'payload' | 'toggle' | ['increment', number]
+  type: 'payload'
+}
+type ToggleStateModifier = {
+  $: 'state-modifier'
+  type: 'toggle'
+}
+type IncrementStateModifier = {
+  $: 'state-modifier'
+  type: 'increment'
+  value: number
 }
 
 export function isStateUpdateAction<T extends JSONValue>(
@@ -58,23 +69,19 @@ function applyStateUpdateAction<T extends JSONValue>(
   if (!isStateModifier(stateUpdate)) {
     return stateUpdate
   }
-  switch (stateUpdate.value) {
+  switch (stateUpdate.type) {
     case 'payload': {
       return payload
     }
     case 'toggle': {
       return !state
     }
-    default: {
-      if (Array.isArray(stateUpdate.value)) {
-        const [type, value] = stateUpdate.value
-        switch (type) {
-          case 'increment': {
-            // @ts-ignore what to do if `state` is not a number? same in other cases
-            return state + value
-          }
-        }
+    case 'increment':
+      if (typeof state !== 'number') {
+        throw new Error('Cannot increment non-number state.')
       }
+      return state + stateUpdate.value
+    default: {
       throw new Error('Unknown state modifier.')
     }
   }
@@ -82,17 +89,18 @@ function applyStateUpdateAction<T extends JSONValue>(
 
 export const eventPayload: StateModifier = {
   $: 'state-modifier',
-  value: 'payload',
+  type: 'payload',
 }
 
 export const toggle: StateModifier = {
   $: 'state-modifier',
-  value: 'toggle',
+  type: 'toggle',
 }
 
 export const increment = (value: number): StateModifier => ({
   $: 'state-modifier',
-  value: ['increment', value],
+  type: 'increment',
+  value,
 })
 
 export const LocalState = createContext<LocalState>({})
