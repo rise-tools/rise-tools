@@ -51,7 +51,6 @@ export type EventDataState = {
   $: 'event'
   actions?: ActionDataState[]
   timeout?: number
-  state?: Record<string, StateDataState>
 }
 
 export type JSONValue =

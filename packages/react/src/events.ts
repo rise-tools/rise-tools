@@ -38,7 +38,6 @@ export function event(
     handler: func,
     actions: opts?.actions,
     timeout: opts?.timeout,
-    state: opts?.state,
   }
 }
 
