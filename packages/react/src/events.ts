@@ -8,6 +8,7 @@ import {
   EventDataState,
   isEventDataState,
   JSONValue,
+  StateDataState,
 } from './template'
 
 /** Server data state*/
@@ -25,25 +26,27 @@ export function isServerEventDataState(obj: RuntimeServerDataState): obj is Serv
   return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
 }
 
-type Action = ActionDataState | ActionDataState[]
-
-export function event(action: Action): ActionsDataState
-export function event(func: ServerHandlerFunction, action?: Action): ServerEventDataState
 export function event(
-  func: ServerHandlerFunction | Action,
-  action: Action = []
-): ServerEventDataState | ActionsDataState {
-  if (typeof func === 'function') {
-    return {
-      $: 'event',
-      handler: func,
-      actions: Array.isArray(action) ? action : [action],
-    }
-  } else {
-    return {
-      $: 'actions',
-      actions: Array.isArray(func) ? func : [func],
-    }
+  func: ServerHandlerFunction,
+  opts?: {
+    actions: ActionDataState[]
+    timeout?: number
+    state: Record<string, StateDataState>
+  }
+): ServerEventDataState {
+  return {
+    $: 'event',
+    handler: func,
+    actions: opts?.actions,
+    timeout: opts?.timeout,
+    state: opts?.state,
+  }
+}
+
+export function actions(actions: ActionDataState | ActionDataState[]): ActionsDataState {
+  return {
+    $: 'actions',
+    actions: Array.isArray(actions) ? actions : [actions],
   }
 }
 

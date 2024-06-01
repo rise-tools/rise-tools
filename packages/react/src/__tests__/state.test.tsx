@@ -51,7 +51,7 @@ it('should set state with default payload', async () => {
             component: 'View',
             props: {
               ['data-testid']: 'button',
-              onClick: event(setStateAction(value)),
+              onClick: setStateAction(value),
             },
           },
         ]
@@ -98,7 +98,7 @@ it('should set state with custom value', async () => {
             component: 'View',
             props: {
               ['data-testid']: 'button',
-              onClick: event(setStateAction(value, 'custom-string-value')),
+              onClick: setStateAction(value, 'custom-string-value'),
             },
           },
         ]
@@ -143,7 +143,7 @@ it('should toggle state', async () => {
             component: 'View',
             props: {
               ['data-testid']: 'button',
-              onClick: event(setStateAction(isDisabled, toggle)),
+              onClick: setStateAction(isDisabled, toggle),
             },
           },
         ]
@@ -194,7 +194,7 @@ it('should increment state', async () => {
             component: 'View',
             props: {
               ['data-testid']: 'button',
-              onClick: event(setStateAction(counter, increment(2))),
+              onClick: setStateAction(counter, increment(2)),
             },
           },
         ]

@@ -1,6 +1,6 @@
 import type { JSXElementConstructor, ReactElement } from 'react'
 
-import { event, ServerEventDataState } from './events'
+import { actions, event, ServerEventDataState } from './events'
 import {
   ActionDataState,
   ComponentDataState,
@@ -43,7 +43,7 @@ export function jsx(
         return [key, event(value)]
       }
       if (isActionDataState(value)) {
-        return [key, event(value)]
+        return [key, actions(value)]
       }
       return [key, value]
     })

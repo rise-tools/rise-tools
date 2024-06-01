@@ -1,5 +1,6 @@
 import React, { useCallback, useContext } from 'react'
 
+import { actions } from './events'
 import { LocalState } from './state'
 
 /** Components */
@@ -18,6 +19,7 @@ export type DataState =
   | ComponentDataState
   | ReferencedDataState
   | ActionsDataState
+  | ActionDataState
   | EventDataState
   | StateDataState
   | { [key: string]: DataState; $?: never }
@@ -55,6 +57,7 @@ export type EventDataState = {
   $: 'event'
   actions?: ActionDataState[]
   timeout?: number
+  state?: Record<string, StateDataState>
 }
 
 export type JSONValue =
@@ -208,7 +211,11 @@ export function BaseTemplate({
     localState: LocalState,
     path: Path
   ): any {
-    if (isEventDataState(propValue) || isActionsDataState(propValue)) {
+    if (
+      isEventDataState(propValue) ||
+      isActionsDataState(propValue) ||
+      isActionDataState(propValue)
+    ) {
       return async (payload: any) => {
         // React events (e.g. from onPress) contain cyclic structures that can't be serialized
         // with JSON.stringify and also provide little to no value for the server.
@@ -216,6 +223,7 @@ export function BaseTemplate({
         if (payload?.nativeEvent) {
           payload = '[native code]'
         }
+        const dataState = isActionDataState(propValue) ? actions([propValue]) : propValue
         return onTemplateEvent?.({
           target: {
             key: parentNode.key,
@@ -223,7 +231,7 @@ export function BaseTemplate({
             propKey,
             path,
           },
-          dataState: propValue,
+          dataState,
           payload,
         })
       }

@@ -1,7 +1,7 @@
 import { act, fireEvent, render } from '@testing-library/react'
 import React, { useState } from 'react'
 
-import { action, event } from '../events'
+import { action, actions } from '../events'
 import { BaseTemplate, ComponentDefinition, ComponentRegistry, TemplateEvent } from '../template'
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
@@ -279,7 +279,7 @@ it('should accept event handler as a prop', () => {
         component: 'View',
         props: {
           ['data-testid']: 'button',
-          onClick: event(action('foo-action')),
+          onClick: action('foo-action'),
         },
       }}
       onTemplateEvent={onEvent}
@@ -378,7 +378,7 @@ it('should pass return type from onTemplateEvent back to component', async () =>
         key: 'button',
         component: 'Profile',
         props: {
-          onClick: event(action('go-back')),
+          onClick: action('go-back'),
         },
       }}
       onTemplateEvent={onEvent}
@@ -408,7 +408,7 @@ it('should fire multiple template events for an array of actions', () => {
         component: 'View',
         props: {
           ['data-testid']: 'button',
-          onClick: event([action('go-back'), action('go-back-again')]),
+          onClick: actions([action('go-back'), action('go-back-again')]),
         },
       }}
       onTemplateEvent={onEvent}
