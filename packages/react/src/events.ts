@@ -1,14 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { ServerResponseDataState } from './response'
-import {
-  ActionDataState,
-  DataState,
-  EventDataState,
-  isEventDataState,
-  JSONValue,
-  StateDataState,
-} from './template'
+import { ActionDataState, DataState, EventDataState, isEventDataState, JSONValue } from './template'
 
 /** Server data state*/
 export type ServerDataState = DataState | ServerEventDataState
@@ -30,7 +23,6 @@ export function event(
   opts?: {
     actions?: ActionDataState[]
     timeout?: number
-    state?: Record<string, StateDataState>
   }
 ): ServerEventDataState {
   return {
