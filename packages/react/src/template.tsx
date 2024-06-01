@@ -85,32 +85,31 @@ export function isCompositeDataState(
   return (
     obj !== null &&
     typeof obj === 'object' &&
-    '$' in obj &&
     (obj.$ === 'component' || obj.$ === 'ref' || obj.$ === 'state')
   )
 }
 export function isComponentDataState(obj: any): obj is ComponentDataState {
-  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'component'
+  return obj !== null && typeof obj === 'object' && obj.$ === 'component'
 }
 export function isReferencedComponentDataState(
   obj: DataState
 ): obj is ReferencedComponentDataState {
   return isComponentDataState(obj) && 'path' in obj
 }
-export function isEventDataState(obj: DataState): obj is EventDataState {
-  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'event'
+export function isEventDataState(obj: any): obj is EventDataState {
+  return obj !== null && typeof obj === 'object' && obj.$ === 'event'
 }
 export function isHandlerEvent(obj: TemplateEvent): obj is HandlerEvent {
   return isEventDataState(obj.dataState)
 }
-export function isActionsDataState(obj: DataState): obj is ActionsDataState {
-  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'actions'
+export function isActionsDataState(obj: any): obj is ActionsDataState {
+  return obj !== null && typeof obj === 'object' && obj.$ === 'actions'
 }
 export function isActionDataState(obj: any): obj is ActionDataState {
-  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'action'
+  return obj !== null && typeof obj === 'object' && obj.$ === 'action'
 }
 function isStateDataState(obj: any): obj is StateDataState {
-  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'state'
+  return obj !== null && typeof obj === 'object' && obj.$ === 'state'
 }
 function itemKeyOrIndex(item: DataState, idx: number): string | number {
   if (isComponentDataState(item)) {

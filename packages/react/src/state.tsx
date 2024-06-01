@@ -58,7 +58,7 @@ const stateReducer = (
 }
 
 function isStateModifier(obj: any): obj is StateModifier {
-  return obj !== null && typeof obj === 'object' && '$' in obj && obj.$ === 'state-modifier'
+  return obj !== null && typeof obj === 'object' && obj.$ === 'state-modifier'
 }
 
 function applyStateUpdateAction<T extends JSONValue>(
