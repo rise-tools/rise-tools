@@ -1,7 +1,7 @@
 import { act, fireEvent, render } from '@testing-library/react'
 import React, { useState } from 'react'
 
-import { action, actions } from '../events'
+import { action } from '../events'
 import { BaseTemplate, ComponentDefinition, ComponentRegistry, TemplateEvent } from '../template'
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
@@ -408,7 +408,7 @@ it('should fire multiple template events for an array of actions', () => {
         component: 'View',
         props: {
           ['data-testid']: 'button',
-          onClick: actions([action('go-back'), action('go-back-again')]),
+          onClick: [action('go-back'), action('go-back-again')],
         },
       }}
       onTemplateEvent={onEvent}

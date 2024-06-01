@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { action, ActionDataState, actions, DataSource, ref, response, Template } from '..'
+import { action, ActionDataState, DataSource, ref, response, Template } from '..'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render a component', () => {
@@ -299,7 +299,7 @@ it('should dispatch all actions associated with an event', () => {
           component: 'View',
           props: {
             ['data-testid']: 'button',
-            onClick: actions([action('go-back'), action('go-back')]),
+            onClick: [action('go-back'), action('go-back')],
           },
         }
       },

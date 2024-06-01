@@ -1,6 +1,5 @@
 import React, { useCallback, useContext } from 'react'
 
-import { actions } from './events'
 import { LocalState } from './state'
 
 /** Components */
@@ -18,7 +17,6 @@ export type DataState =
   | ReferencedComponentDataState
   | ComponentDataState
   | ReferencedDataState
-  | ActionsDataState
   | ActionDataState
   | EventDataState
   | StateDataState
@@ -49,10 +47,6 @@ export type ActionDataState<T = any> = {
   $: 'action'
   name: T
 }
-export type ActionsDataState = {
-  $: 'actions'
-  actions: ActionDataState[]
-}
 export type EventDataState = {
   $: 'event'
   actions?: ActionDataState[]
@@ -69,7 +63,7 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent<P = EventDataState | ActionsDataState, K = any> = {
+export type TemplateEvent<P = EventDataState | ActionDataState[], K = any> = {
   target: {
     key?: string
     component: string
@@ -105,11 +99,11 @@ export function isEventDataState(obj: any): obj is EventDataState {
 export function isHandlerEvent(obj: TemplateEvent): obj is HandlerEvent {
   return isEventDataState(obj.dataState)
 }
-export function isActionsDataState(obj: any): obj is ActionsDataState {
-  return obj !== null && typeof obj === 'object' && obj.$ === 'actions'
-}
 export function isActionDataState(obj: any): obj is ActionDataState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'action'
+}
+export function isActionDataStateArray(obj: any): obj is ActionDataState[] {
+  return Array.isArray(obj) && obj.every(isActionDataState)
 }
 function isStateDataState(obj: any): obj is StateDataState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'state'
@@ -213,8 +207,8 @@ export function BaseTemplate({
   ): any {
     if (
       isEventDataState(propValue) ||
-      isActionsDataState(propValue) ||
-      isActionDataState(propValue)
+      isActionDataState(propValue) ||
+      isActionDataStateArray(propValue)
     ) {
       return async (payload: any) => {
         // React events (e.g. from onPress) contain cyclic structures that can't be serialized
@@ -223,7 +217,8 @@ export function BaseTemplate({
         if (payload?.nativeEvent) {
           payload = '[native code]'
         }
-        const dataState = isActionDataState(propValue) ? actions([propValue]) : propValue
+        const dataState =
+          isEventDataState(propValue) || isActionDataStateArray(propValue) ? propValue : [propValue]
         return onTemplateEvent?.({
           target: {
             key: parentNode.key,

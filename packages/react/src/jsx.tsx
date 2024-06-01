@@ -1,11 +1,10 @@
 import type { JSXElementConstructor, ReactElement } from 'react'
 
-import { actions, event, ServerEventDataState } from './events'
+import { event, ServerEventDataState } from './events'
 import {
   ActionDataState,
   ComponentDataState,
   DataState,
-  isActionDataState,
   isComponentDataState,
   JSONValue,
   ReferencedDataState,
@@ -41,9 +40,6 @@ export function jsx(
     Object.entries(el.props).map(([key, value]) => {
       if (typeof value === 'function') {
         return [key, event(value)]
-      }
-      if (isActionDataState(value)) {
-        return [key, actions(value)]
       }
       return [key, value]
     })

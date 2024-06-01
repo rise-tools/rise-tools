@@ -3,7 +3,6 @@ import type { ReactElement } from 'react'
 import { ServerResponseDataState } from './response'
 import {
   ActionDataState,
-  ActionsDataState,
   DataState,
   EventDataState,
   isEventDataState,
@@ -40,13 +39,6 @@ export function event(
     actions: opts?.actions,
     timeout: opts?.timeout,
     state: opts?.state,
-  }
-}
-
-export function actions(actions: ActionDataState | ActionDataState[]): ActionsDataState {
-  return {
-    $: 'actions',
-    actions: Array.isArray(actions) ? actions : [actions],
   }
 }
 
