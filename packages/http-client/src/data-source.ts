@@ -1,4 +1,10 @@
-import { type DataSource, DataState, HandlerEvent, ServerResponseDataState, Store } from '@final-ui/react'
+import {
+  type DataSource,
+  DataState,
+  HandlerEvent,
+  ServerResponseDataState,
+  Store,
+} from '@final-ui/react'
 
 type Handler = (value: DataState) => void
 
