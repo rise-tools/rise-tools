@@ -1,6 +1,7 @@
 import React, { useCallback, useContext } from 'react'
 
-import { LocalState } from './state'
+import { LocalStateContext } from './state'
+import { useStream } from './streams'
 
 /** Components */
 type ComponentIdentifier = string
@@ -164,7 +165,7 @@ export function BaseTemplate({
         throw new RenderError(`Invalid component: ${stateNode.component}`)
       }
 
-      const localState = useContext(LocalState)
+      const localState = useContext(LocalStateContext)
       let componentProps = Object.fromEntries(
         Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
           return [
@@ -192,9 +193,9 @@ export function BaseTemplate({
   )
 
   function RenderState({ stateNode, path }: { stateNode: StateDataState; path: Path }) {
-    const state = useContext(LocalState)
-    const value = state[stateNode.key] || stateNode.initialValue
-    return render(value, path)
+    const localState = useContext(LocalStateContext)
+    const value = useStream(localState.getStream(stateNode.key))
+    return render(value || stateNode.initialValue, path)
   }
 
   function render(stateNode: DataState, path: Path): React.ReactNode {
@@ -228,7 +229,7 @@ export function BaseTemplate({
     propKey: string,
     propValue: DataState,
     parentNode: ComponentDataState | ReferencedComponentDataState,
-    localState: LocalState,
+    localState: LocalStateContext,
     path: Path
   ): any {
     if (
@@ -246,7 +247,7 @@ export function BaseTemplate({
         if (isEventDataState(propValue) && isHandlerDataState(propValue.handler)) {
           payload = Object.fromEntries(
             Object.entries(propValue.handler.state).map(([key, value]) => {
-              return [key, localState[value.key] || value.initialValue]
+              return [key, localState.getValue(value.key) || value.initialValue]
             })
           )
         }
@@ -269,7 +270,7 @@ export function BaseTemplate({
       )
     }
     if (isStateDataState(propValue)) {
-      return render(localState[propValue.key] || propValue.initialValue, path)
+      return render(localState.getValue(propValue.key) || propValue.initialValue, path)
     }
     if (isCompositeDataState(propValue)) {
       return render(propValue, path)

@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from 'react'
 
+import { JSONValue } from './template'
+
 export type Stream<V> = {
   get: () => V
   subscribe: (handler: (value: V) => void) => () => void
@@ -7,7 +9,7 @@ export type Stream<V> = {
 
 type Updater<S> = (prevState: S) => S
 
-export function createWritableStream<S extends object>(
+export function createWritableStream<S extends JSONValue>(
   initState: S
 ): [(newState: S | Updater<S>) => void, Stream<S>] {
   let state: S = initState
@@ -33,7 +35,7 @@ export function createWritableStream<S extends object>(
   return [writeState, stream]
 }
 
-export function useStream<S>(stream: Stream<S>): S {
+export function useStream<S>(stream?: Stream<S>) {
   return useSyncExternalStore(
     (onStoreChange) => {
       return stream ? stream.subscribe(onStoreChange) : () => {}

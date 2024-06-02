@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
-import { isStateUpdateAction, LocalState, useLocalState } from './state'
+import { isStateUpdateAction, LocalStateContext, useLocalState } from './state'
 import { Stream } from './streams'
 import {
   ActionDataState,
@@ -243,13 +243,22 @@ export function Template({
   )
 
   return (
-    <LocalState.Provider value={localState}>
+    <LocalStateContext.Provider
+      value={{
+        getStream(key) {
+          return localState[key]?.[1]
+        },
+        getValue(key) {
+          return localState[key]?.[1].get()
+        },
+      }}
+    >
       <BaseTemplate
         components={components}
         path={path}
         dataState={rootDataState}
         onTemplateEvent={onTemplateEvent}
       />
-    </LocalState.Provider>
+    </LocalStateContext.Provider>
   )
 }

@@ -1,9 +1,8 @@
 import { createContext, useReducer } from 'react'
 
 import { action } from './events'
+import { createWritableStream, Stream } from './streams'
 import { ActionDataState, JSONValue, StateDataState } from './template'
-
-export type LocalState = Record<string, JSONValue>
 
 type StateUpdate<T> = T | StateModifier
 type UpdateStateAction<T> = ActionDataState<['state-update', StateDataState<T>, StateUpdate<T>]>
@@ -57,15 +56,37 @@ export const useLocalState = () => {
   return useReducer(stateReducer, {})
 }
 
+export type LocalStateContext = {
+  getStream(key: string): Stream<JSONValue> | undefined
+  getValue(key: string): JSONValue | undefined
+}
+export const LocalStateContext = createContext<LocalStateContext>({
+  getStream: () => {
+    throw new Error('LocalState context not initialized')
+  },
+  getValue: () => {
+    throw new Error('LocalState context not initialized')
+  },
+})
+
+type LocalState = Record<string, ReturnType<typeof createWritableStream>>
+
 const stateReducer = (
   localState: LocalState,
   { action, payload }: { action: UpdateStateAction<JSONValue>; payload: JSONValue }
 ) => {
   const [, stateDataState, stateUpdate] = action.name
-  const currentState = localState[stateDataState.key] || stateDataState.initialValue
+
+  const [write, curr] = (localState[stateDataState.key] ??= createWritableStream(
+    stateDataState.initialValue
+  ))
+
+  write((state) => applyStateUpdateAction(state, stateUpdate, payload))
+
+  // tbd: improve the API so this is not required
   return {
     ...localState,
-    [stateDataState.key]: applyStateUpdateAction(currentState, stateUpdate, payload),
+    [stateDataState.key]: [write, curr],
   }
 }
 
@@ -114,5 +135,3 @@ export const increment = (value: number): IncrementStateModifier => ({
   type: 'increment',
   value,
 })
-
-export const LocalState = createContext<LocalState>({})
