@@ -18,7 +18,7 @@
     "start": "tsx ./src"
   },
   "dependencies": {
-    "@final-ui/http-server": "0.2.0",
+    "@final-ui/server": "0.2.0",
     "@final-ui/tamagui": "0.2.0",
     "@supabase/supabase-js": "^2.43.2",
     "fastify": "^4.27.0"

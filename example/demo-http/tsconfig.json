@@ -9,6 +9,6 @@
   }, {
     "path": "../../packages/tamagui"
   }, {
-    "path": "../../packages/http-server"
+    "path": "../../packages/server"
   }]
 }

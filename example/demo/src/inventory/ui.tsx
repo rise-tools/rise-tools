@@ -1,4 +1,6 @@
 import { action, ref } from '@final-ui/react'
+import { StateSetter } from '@final-ui/server'
+import { lookup, state, view } from '@final-ui/server'
 import {
   Button,
   H2,
@@ -11,24 +13,24 @@ import {
   YStack,
 } from '@final-ui/tamagui/server'
 
-import { UIContext } from '../types'
-import inventory, { Item } from './inventory'
+import defaultInventory, { Inventory, Item } from './inventory'
 
-export function InventoryExample(ctx: UIContext) {
-  const inventoryItems = Object.fromEntries(inventory.map((item) => [item.key, item]))
-  return {
-    inventory: HomeScreen,
-    ['inventory-items']: inventoryItems,
-    ...Object.fromEntries(
-      inventory.map((item) => [
-        `inventory:${item.key}:details`,
-        () => <Item item={item} ctx={ctx} />,
-      ])
-    ),
-  }
+// models
+const [inventoryItems, setInventoryState] = state(defaultInventory)
+const inventoryHome = view(({ get }) => <HomeScreen inventory={get(inventoryItems)} />)
+const inventoryItem = lookup((key) =>
+  view(({ get }) => {
+    const inventoryItem = get(inventoryItems).find((i) => i.key === key)
+    if (!inventoryItem) return <NotFound />
+    return <ItemScreen item={get(inventoryItems).get(key)} onItemUpdate={setInventoryState} />
+  })
+)
+export const models = {
+  inventory: inventoryHome,
+  item: inventoryItem,
 }
 
-function HomeScreen() {
+function HomeScreen({ inventory }: { inventory: Inventory }) {
   return (
     <YStack backgroundColor={'$background'}>
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
@@ -72,7 +74,13 @@ function HomeScreen() {
   )
 }
 
-export function Item({ item, ctx }: { item: Item; ctx: UIContext }) {
+export function ItemScreen({
+  item,
+  onUpdateInventory,
+}: {
+  item: Item
+  onUpdateInventory: StateSetter<Item[]>
+}) {
   return (
     <YStack flex={1} backgroundColor={'$background'} gap="$3">
       <Image
@@ -99,13 +107,17 @@ export function Item({ item, ctx }: { item: Item; ctx: UIContext }) {
             key="dec"
             theme="red"
             onPress={() => {
-              ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
-                ...data,
-                [item.key]: {
-                  ...data[item.key],
-                  quantity: data[item.key]!.quantity - 1,
-                },
-              }))
+              onUpdateInventory((inventory: Inventory) =>
+                inventory.map((item) => {
+                  if (item.key === item.key) {
+                    return {
+                      ...item,
+                      quantity: item.quantity - 1,
+                    }
+                  }
+                  return item
+                })
+              )
             }}
             children="-"
           />
@@ -113,18 +125,30 @@ export function Item({ item, ctx }: { item: Item; ctx: UIContext }) {
             key="inc"
             theme="blue"
             onPress={() => {
-              ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
-                ...data,
-                [item.key]: {
-                  ...data[item.key],
-                  quantity: data[item.key]!.quantity + 1,
-                },
-              }))
+              onUpdateInventory((inventory: Inventory) =>
+                inventory.map((item) => {
+                  if (item.key === item.key) {
+                    return {
+                      ...item,
+                      quantity: item.quantity + 1,
+                    }
+                  }
+                  return item
+                })
+              )
             }}
             children="+"
           />
         </XStack>
       </YStack>
+    </YStack>
+  )
+}
+
+function NotFound() {
+  return (
+    <YStack backgroundColor={'$background'}>
+      <SizableText size="$5">Not Found</SizableText>
     </YStack>
   )
 }
