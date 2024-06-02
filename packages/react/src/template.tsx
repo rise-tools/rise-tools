@@ -23,7 +23,6 @@ export type DataState<T = never> =
   | { [key: string]: DataState<T>; $?: never }
   | DataState[]
   | T
-
 export type ComponentDataState<T = never> = {
   $: 'component'
   key?: string
@@ -118,6 +117,9 @@ export function isEventDataState(obj: any): obj is EventDataState {
 }
 export function isHandlerEvent(obj: TemplateEvent): obj is HandlerEvent {
   return isEventDataState(obj.dataState)
+}
+export function isServerHandlerDataState(obj: any): obj is ServerHandlerDataState {
+  return isHandlerDataState(obj) && 'func' in obj && obj.func === 'function'
 }
 export function isActionDataState(obj: any): obj is ActionDataState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'action'

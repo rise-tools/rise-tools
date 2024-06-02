@@ -3,7 +3,7 @@ import {
   DataState,
   HandlerFunction,
   isEventDataState,
-  isHandlerDataState,
+  isServerHandlerDataState,
   ServerEventDataState,
   ServerHandlerDataState,
   StateDataState,
@@ -16,16 +16,11 @@ export function isServerEventDataState(obj: any): obj is ServerEventDataState {
   if (!isEventDataState(obj)) {
     return false
   }
-  return (
-    typeof obj.handler === 'function' ||
-    (isHandlerDataState(obj.handler) &&
-      'func' in obj.handler &&
-      typeof obj.handler.func === 'function')
-  )
+  return typeof obj.handler === 'function' || isServerHandlerDataState(obj.handler)
 }
 
 export function event(
-  func: HandlerFunction,
+  func: HandlerFunction | ServerHandlerDataState,
   opts?: {
     actions?: ActionDataState[]
     timeout?: number
