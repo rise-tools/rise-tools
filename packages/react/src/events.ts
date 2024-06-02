@@ -1,14 +1,7 @@
 import type { ReactElement } from 'react'
 
 import { ServerResponseDataState } from './response'
-import {
-  ActionDataState,
-  ActionsDataState,
-  DataState,
-  EventDataState,
-  isEventDataState,
-  JSONValue,
-} from './template'
+import { ActionDataState, DataState, EventDataState, isEventDataState, JSONValue } from './template'
 
 /** Server data state*/
 export type ServerDataState = DataState | ServerEventDataState
@@ -25,25 +18,18 @@ export function isServerEventDataState(obj: RuntimeServerDataState): obj is Serv
   return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
 }
 
-type Action = ActionDataState | ActionDataState[]
-
-export function event(action: Action): ActionsDataState
-export function event(func: ServerHandlerFunction, action?: Action): ServerEventDataState
 export function event(
-  func: ServerHandlerFunction | Action,
-  action: Action = []
-): ServerEventDataState | ActionsDataState {
-  if (typeof func === 'function') {
-    return {
-      $: 'event',
-      handler: func,
-      actions: Array.isArray(action) ? action : [action],
-    }
-  } else {
-    return {
-      $: 'actions',
-      actions: Array.isArray(func) ? func : [func],
-    }
+  func: ServerHandlerFunction,
+  opts?: {
+    actions?: ActionDataState[]
+    timeout?: number
+  }
+): ServerEventDataState {
+  return {
+    $: 'event',
+    handler: func,
+    actions: opts?.actions,
+    timeout: opts?.timeout,
   }
 }
 

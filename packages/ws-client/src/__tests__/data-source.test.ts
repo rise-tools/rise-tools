@@ -1,4 +1,4 @@
-import { response, TemplateEvent } from '@final-ui/react'
+import { event, HandlerEvent, response } from '@final-ui/react'
 import WS from 'jest-websocket-mock'
 
 import {
@@ -20,21 +20,18 @@ it('should resolve a promise once response comes in', async () => {
   const dataSource = createWSDataSource('ws://localhost:8080')
   await ws.connected
 
-  const event: TemplateEvent = {
+  const templateEvent: HandlerEvent = {
     target: {
       key: 'key',
-      path: 'mainStore',
+      path: ['mainStore'],
       propKey: 'onPress',
       component: 'View',
     },
-    dataState: {
-      $: 'event',
-      key: 'key',
-    },
+    dataState: event(jest.fn()),
     payload: null,
   }
 
-  const promise = dataSource.sendEvent(event)
+  const promise = dataSource.sendEvent(templateEvent)
 
   const message = (await ws.nextMessage) as EventWebsocketMessage
   ws.send({
@@ -58,22 +55,18 @@ it('should timeout if response comes later than timeout specified', async () => 
   const dataSource = createWSDataSource('ws://localhost:8080')
   await ws.connected
 
-  const event: TemplateEvent = {
+  const templateEvent: HandlerEvent = {
     target: {
       key: 'key',
-      path: 'mainStore',
+      path: ['mainStore'],
       propKey: 'onPress',
       component: 'View',
     },
-    dataState: {
-      $: 'event',
-      key: 'key',
-      timeout: 1000,
-    },
+    dataState: event(jest.fn(), { timeout: 1000 }),
     payload: null,
   }
 
-  const promise = dataSource.sendEvent(event)
+  const promise = dataSource.sendEvent(templateEvent)
   const message = (await ws.nextMessage) as EventWebsocketMessage
 
   setTimeout(() => {

@@ -1,6 +1,5 @@
-import { action } from '../events'
 import { createComponentDefinition, jsx } from '../jsx'
-import { isActionsDataState, isComponentDataState, isEventDataState } from '../template'
+import { isComponentDataState, isEventDataState } from '../template'
 
 const DummyComponent = createComponentDefinition('DummyComponent')
 
@@ -21,12 +20,4 @@ it('should turn function into event', () => {
     children: null,
   })
   expect(isEventDataState(el.props!.onPress)).toBe(true)
-})
-
-it('should turn action into event', () => {
-  const el = jsx(DummyComponent, {
-    onPress: action('my-action'),
-    children: null,
-  })
-  expect(isActionsDataState(el.props!.onPress)).toBe(true)
 })

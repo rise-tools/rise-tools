@@ -11,6 +11,7 @@ import {
   HandlerEvent,
   isComponentDataState,
   isCompositeDataState,
+  isEventDataState,
   isHandlerEvent,
   Path,
   ReferencedDataState,
@@ -200,7 +201,8 @@ export function Template({
 
   const onTemplateEvent = useCallback(
     async (event: TemplateEvent) => {
-      for (const action of event.dataState.actions || []) {
+      const actions = isEventDataState(event.dataState) ? event.dataState.actions : event.dataState
+      for (const action of actions || []) {
         if (isStateUpdateAction(action)) {
           dispatchStateUpdate({
             action,

@@ -1,7 +1,7 @@
 import { act, fireEvent, render } from '@testing-library/react'
 import React, { useState } from 'react'
 
-import { action, event } from '../events'
+import { action } from '../events'
 import { BaseTemplate, ComponentDefinition, ComponentRegistry, TemplateEvent } from '../template'
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
@@ -279,7 +279,7 @@ it('should accept event handler as a prop', () => {
         component: 'View',
         props: {
           ['data-testid']: 'button',
-          onClick: event(action('foo-action')),
+          onClick: action('foo-action'),
         },
       }}
       onTemplateEvent={onEvent}
@@ -293,15 +293,12 @@ it('should accept event handler as a prop', () => {
   const firedEvent = onEvent.mock.lastCall[0] as TemplateEvent
   expect(firedEvent).toMatchInlineSnapshot(`
     Object {
-      "dataState": Object {
-        "$": "actions",
-        "actions": Array [
-          Object {
-            "$": "action",
-            "name": "foo-action",
-          },
-        ],
-      },
+      "dataState": Array [
+        Object {
+          "$": "action",
+          "name": "foo-action",
+        },
+      ],
       "payload": "[native code]",
       "target": Object {
         "component": "View",
@@ -378,7 +375,7 @@ it('should pass return type from onTemplateEvent back to component', async () =>
         key: 'button',
         component: 'Profile',
         props: {
-          onClick: event(action('go-back')),
+          onClick: action('go-back'),
         },
       }}
       onTemplateEvent={onEvent}
@@ -408,7 +405,7 @@ it('should fire multiple template events for an array of actions', () => {
         component: 'View',
         props: {
           ['data-testid']: 'button',
-          onClick: event([action('go-back'), action('go-back-again')]),
+          onClick: [action('go-back'), action('go-back-again')],
         },
       }}
       onTemplateEvent={onEvent}
@@ -417,18 +414,15 @@ it('should fire multiple template events for an array of actions', () => {
   fireEvent.click(component.getByTestId('button'))
 
   expect(onEvent.mock.calls[0][0].dataState).toMatchInlineSnapshot(`
-    Object {
-      "$": "actions",
-      "actions": Array [
-        Object {
-          "$": "action",
-          "name": "go-back",
-        },
-        Object {
-          "$": "action",
-          "name": "go-back-again",
-        },
-      ],
-    }
+    Array [
+      Object {
+        "$": "action",
+        "name": "go-back",
+      },
+      Object {
+        "$": "action",
+        "name": "go-back-again",
+      },
+    ]
   `)
 })

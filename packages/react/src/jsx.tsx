@@ -5,7 +5,6 @@ import {
   ActionDataState,
   ComponentDataState,
   DataState,
-  isActionDataState,
   isComponentDataState,
   JSONValue,
   ReferencedDataState,
@@ -40,9 +39,6 @@ export function jsx(
   const serialisedProps = Object.fromEntries(
     Object.entries(el.props).map(([key, value]) => {
       if (typeof value === 'function') {
-        return [key, event(value)]
-      }
-      if (isActionDataState(value)) {
         return [key, event(value)]
       }
       return [key, value]
