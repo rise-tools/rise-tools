@@ -53,7 +53,7 @@ export function setStateAction<T>(
 }
 
 export type LocalState = {
-  get(state: StateDataState): Stream<JSONValue>
+  getStream(state: StateDataState): Stream<JSONValue>
 }
 
 export const useLocalState = (): [
@@ -69,7 +69,7 @@ export const useLocalState = (): [
   }
   return [
     {
-      get(state) {
+      getStream(state) {
         const [, stream] = getWritableStream(state)
         return stream
       },
@@ -83,7 +83,7 @@ export const useLocalState = (): [
 }
 
 export const LocalState = createContext<LocalState>({
-  get: () => {
+  getStream: () => {
     throw new Error('LocalState context not initialized')
   },
 })

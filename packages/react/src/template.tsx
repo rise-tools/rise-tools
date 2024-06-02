@@ -194,7 +194,7 @@ export function BaseTemplate({
 
   function RenderState({ stateNode, path }: { stateNode: StateDataState; path: Path }) {
     const localState = useContext(LocalState)
-    const value = useStream(localState.get(stateNode))
+    const value = useStream(localState.getStream(stateNode))
     return render(value, path)
   }
 
@@ -264,7 +264,7 @@ export function BaseTemplate({
     }
     if (isStateDataState(propValue)) {
       // tbd: how to make this work?
-      return render(localState.get(propValue).get(), path)
+      return render(localState.getStream(propValue).get(), path)
     }
     if (isCompositeDataState(propValue)) {
       return render(propValue, path)

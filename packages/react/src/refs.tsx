@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
-import { applyStateUpdateAction, isStateUpdateAction, LocalState, useLocalState } from './state'
+import { isStateUpdateAction, LocalState, useLocalState } from './state'
 import { Stream } from './streams'
 import {
   ActionDataState,
@@ -217,7 +217,7 @@ export function Template({
       if (isEventDataState(event.dataState) && isHandlerDataState(event.dataState.handler)) {
         event.payload = Object.fromEntries(
           Object.entries(event.dataState.handler.state).map(([key, value]) => {
-            return [key, localState.get(value).get()]
+            return [key, localState.getStream(value).get()]
           })
         )
       }
