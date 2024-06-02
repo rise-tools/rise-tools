@@ -56,13 +56,3 @@ export function withState<T extends Record<string, any>>(
     state,
   }
 }
-
-withState(
-  {
-    isOpen: { $: 'state', key: 'isOpen', initialValue: false },
-    isOpen2: { $: 'state', key: 'isOpen', initialValue: 5 },
-  },
-  (args) => {
-    console.log(args)
-  }
-)
