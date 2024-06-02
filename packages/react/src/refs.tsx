@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
-import { isStateUpdateAction, LocalStateContext, useLocalState } from './state'
+import { applyStateUpdateAction, isStateUpdateAction, LocalState, useLocalState } from './state'
 import { Stream } from './streams'
 import {
   ActionDataState,
@@ -11,6 +11,7 @@ import {
   isComponentDataState,
   isCompositeDataState,
   isEventDataState,
+  isHandlerDataState,
   isHandlerEvent,
   isResponseDataState,
   Path,
@@ -198,23 +199,32 @@ export function Template({
   const rootDataState = resolveRef(dataValues, path)
 
   /* state */
-  const [localState, dispatchStateUpdate] = useLocalState()
+  const localState = useLocalState()
 
   const onTemplateEvent = useCallback(
     async (event: TemplateEvent) => {
       const actions = isEventDataState(event.dataState) ? event.dataState.actions : event.dataState
       for (const action of actions || []) {
         if (isStateUpdateAction(action)) {
-          dispatchStateUpdate({
-            action,
-            payload: event.payload,
-          })
+          const [, state, stateUpdate] = action.name
+          localState.set(state, (currentValue) =>
+            applyStateUpdateAction(currentValue, stateUpdate, event.payload)
+          )
+          console.log(localState.get(state).get(), state, stateUpdate)
         } else {
           onAction?.(action)
         }
       }
       if (!isHandlerEvent(event)) {
         return
+      }
+      if (isEventDataState(event.dataState) && isHandlerDataState(event.dataState.handler)) {
+        event.payload = Object.fromEntries(
+          Object.entries(event.dataState.handler.state).map(([key, value]) => {
+            console.log('d', localState.get(value).get())
+            return [key, localState.get(value).get()]
+          })
+        )
       }
       const res = await onEvent(event)
       if (!isResponseDataState(res)) {
@@ -225,10 +235,10 @@ export function Template({
       if (res.actions) {
         for (const action of res.actions) {
           if (isStateUpdateAction(action)) {
-            dispatchStateUpdate({
-              action,
-              payload: res.payload,
-            })
+            const [, state, stateUpdate] = action.name
+            localState.set(state, (currentValue) =>
+              applyStateUpdateAction(currentValue, stateUpdate, event.payload)
+            )
           } else {
             onAction?.(action)
           }
@@ -243,22 +253,13 @@ export function Template({
   )
 
   return (
-    <LocalStateContext.Provider
-      value={{
-        getStream(key) {
-          return localState[key]?.[1]
-        },
-        getValue(key) {
-          return localState[key]?.[1].get()
-        },
-      }}
-    >
+    <LocalState.Provider value={localState}>
       <BaseTemplate
         components={components}
         path={path}
         dataState={rootDataState}
         onTemplateEvent={onTemplateEvent}
       />
-    </LocalStateContext.Provider>
+    </LocalState.Provider>
   )
 }

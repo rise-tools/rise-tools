@@ -1,6 +1,6 @@
 import React, { useCallback, useContext } from 'react'
 
-import { LocalStateContext } from './state'
+import { LocalState } from './state'
 import { useStream } from './streams'
 
 /** Components */
@@ -165,7 +165,7 @@ export function BaseTemplate({
         throw new RenderError(`Invalid component: ${stateNode.component}`)
       }
 
-      const localState = useContext(LocalStateContext)
+      const localState = useContext(LocalState)
       let componentProps = Object.fromEntries(
         Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
           return [
@@ -193,9 +193,9 @@ export function BaseTemplate({
   )
 
   function RenderState({ stateNode, path }: { stateNode: StateDataState; path: Path }) {
-    const localState = useContext(LocalStateContext)
-    const value = useStream(localState.getStream(stateNode.key))
-    return render(value || stateNode.initialValue, path)
+    const localState = useContext(LocalState)
+    const value = useStream(localState.get(stateNode))
+    return render(value, path)
   }
 
   function render(stateNode: DataState, path: Path): React.ReactNode {
@@ -229,7 +229,7 @@ export function BaseTemplate({
     propKey: string,
     propValue: DataState,
     parentNode: ComponentDataState | ReferencedComponentDataState,
-    localState: LocalStateContext,
+    localState: LocalState,
     path: Path
   ): any {
     if (
@@ -243,13 +243,6 @@ export function BaseTemplate({
         // tbd: figure a better way to handle this in a cross-platform way
         if (payload?.nativeEvent) {
           payload = '[native code]'
-        }
-        if (isEventDataState(propValue) && isHandlerDataState(propValue.handler)) {
-          payload = Object.fromEntries(
-            Object.entries(propValue.handler.state).map(([key, value]) => {
-              return [key, localState.getValue(value.key) || value.initialValue]
-            })
-          )
         }
         const dataState = isActionDataState(propValue) ? [propValue] : propValue
         return onTemplateEvent?.({
@@ -270,7 +263,7 @@ export function BaseTemplate({
       )
     }
     if (isStateDataState(propValue)) {
-      return render(localState.getValue(propValue.key) || propValue.initialValue, path)
+      return render(localState.get(propValue).get(), path)
     }
     if (isCompositeDataState(propValue)) {
       return render(propValue, path)

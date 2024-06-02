@@ -1,4 +1,4 @@
-import { createContext, useReducer } from 'react'
+import { createContext, useRef } from 'react'
 
 import { action } from './events'
 import { createWritableStream, Stream } from './streams'
@@ -52,49 +52,39 @@ export function setStateAction<T>(
   return action(['state-update', state, value])
 }
 
-export const useLocalState = () => {
-  return useReducer(stateReducer, {})
+export type LocalState = {
+  get(state: StateDataState): Stream<JSONValue>
+  set(state: StateDataState, value: JSONValue | ((value: JSONValue) => JSONValue)): void
+}
+export const useLocalState = (): LocalState => {
+  const localState = useRef<Record<string, ReturnType<typeof createWritableStream>>>({})
+  return {
+    get(state) {
+      if (!localState.current[state.key]) {
+        localState.current[state.key] = createWritableStream(state.initialValue)
+      }
+      return localState.current[state.key]?.[1] as Stream<JSONValue>
+    },
+    set(state, value) {
+      localState.current[state.key]?.[0](value)
+    },
+  }
 }
 
-export type LocalStateContext = {
-  getStream(key: string): Stream<JSONValue> | undefined
-  getValue(key: string): JSONValue | undefined
-}
-export const LocalStateContext = createContext<LocalStateContext>({
-  getStream: () => {
+export const LocalState = createContext<LocalState>({
+  get: () => {
     throw new Error('LocalState context not initialized')
   },
-  getValue: () => {
+  set: () => {
     throw new Error('LocalState context not initialized')
   },
 })
-
-type LocalState = Record<string, ReturnType<typeof createWritableStream>>
-
-const stateReducer = (
-  localState: LocalState,
-  { action, payload }: { action: UpdateStateAction<JSONValue>; payload: JSONValue }
-) => {
-  const [, stateDataState, stateUpdate] = action.name
-
-  const [write, curr] = (localState[stateDataState.key] ??= createWritableStream(
-    stateDataState.initialValue
-  ))
-
-  write((state) => applyStateUpdateAction(state, stateUpdate, payload))
-
-  // tbd: improve the API so this is not required
-  return {
-    ...localState,
-    [stateDataState.key]: [write, curr],
-  }
-}
 
 function isStateModifier(obj: any): obj is StateModifier {
   return obj !== null && typeof obj === 'object' && obj.$ === 'state-modifier'
 }
 
-function applyStateUpdateAction<T extends JSONValue>(
+export function applyStateUpdateAction<T extends JSONValue>(
   state: T,
   stateUpdate: StateUpdate<T>,
   payload: JSONValue
