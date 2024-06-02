@@ -1,6 +1,6 @@
 import type { JSXElementConstructor, ReactElement } from 'react'
 
-import { event, ServerEventDataState } from './events'
+import { event, ServerDataState } from './events'
 import {
   ActionDataState,
   ComponentDataState,
@@ -8,6 +8,7 @@ import {
   isComponentDataState,
   JSONValue,
   ReferencedDataState,
+  ServerEventDataState,
   StateDataState,
 } from './template'
 
@@ -22,13 +23,15 @@ type Props = Record<string, JSONValue | AllowedDataStates> & {
   children: DataState
 }
 
+export type UI = ReactElement<Props> | ComponentDataState<ServerDataState>
+
 export const jsxs = jsx
 
 export function jsx(
-  componentFactory: (props: any) => ReactElement<Props> | ComponentDataState,
+  componentFactory: (props: any) => UI,
   { children, ...passedProps }: Props,
   key?: string
-): ComponentDataState {
+): ComponentDataState<ServerDataState> {
   const el = componentFactory(passedProps)
   if (isComponentDataState(el)) {
     return el
@@ -71,5 +74,3 @@ export function createComponentDefinition<
 export function isReactElement(obj: any): obj is ReactElement {
   return obj !== null && typeof obj === 'object' && 'type' in obj && 'props' in obj && 'key' in obj
 }
-
-export type UI = ReactElement | ComponentDataState

@@ -1,29 +1,26 @@
-import type { ReactElement } from 'react'
-
 import {
   ActionDataState,
   DataState,
-  EventDataState,
   HandlerFunction,
   isEventDataState,
   isHandlerDataState,
+  ServerEventDataState,
+  ServerHandlerDataState,
   StateDataState,
 } from './template'
 
-/** Server data state*/
-export type ServerDataState = DataState | ServerEventDataState
-export type RuntimeServerDataState = Exclude<ServerDataState, ReactElement>
+/** Server data state */
+export type ServerDataState = DataState<ServerEventDataState>
 
-export type ServerEventDataState = EventDataState & {
-  handler: HandlerFunction
-}
-export function isServerEventDataState(obj: RuntimeServerDataState): obj is ServerEventDataState {
+export function isServerEventDataState(obj: any): obj is ServerEventDataState {
   if (!isEventDataState(obj)) {
     return false
   }
   return (
     typeof obj.handler === 'function' ||
-    (isHandlerDataState(obj.handler) && typeof obj.handler.func === 'function')
+    (isHandlerDataState(obj.handler) &&
+      'func' in obj.handler &&
+      typeof obj.handler.func === 'function')
   )
 }
 
@@ -33,7 +30,7 @@ export function event(
     actions?: ActionDataState[]
     timeout?: number
   }
-): EventDataState {
+): ServerEventDataState {
   return {
     $: 'event',
     handler: func,
@@ -51,11 +48,11 @@ export function action<T = any>(name: T): ActionDataState<T> {
 
 export function withState<T extends Record<string, any>>(
   state: { [K in keyof T]: StateDataState<T[K]> },
-  handler: HandlerFunction<T>
-) {
+  func: HandlerFunction<T>
+): ServerHandlerDataState {
   return {
     $: 'handler',
-    handler,
+    func,
     state,
   }
 }

@@ -12,25 +12,26 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
 }
 
 /** Data state */
-export type DataState =
+export type DataState<T = never> =
   | JSONValue
-  | ReferencedComponentDataState
-  | ComponentDataState
+  | ReferencedComponentDataState<T>
+  | ComponentDataState<T>
   | ReferencedDataState
   | ActionDataState
   | EventDataState
   | StateDataState
-  | { [key: string]: DataState; $?: never }
+  | { [key: string]: DataState<T>; $?: never }
   | DataState[]
+  | T
 
-export type ComponentDataState = {
+export type ComponentDataState<T = never> = {
   $: 'component'
   key?: string
   component: ComponentIdentifier
-  children?: DataState
-  props?: Record<string, DataState>
+  children?: DataState<T>
+  props?: Record<string, DataState<T>>
 }
-type ReferencedComponentDataState = ComponentDataState & {
+type ReferencedComponentDataState<T = never> = ComponentDataState<T> & {
   path: Path
 }
 export type StateDataState<T = JSONValue> = {
@@ -57,15 +58,20 @@ export type ResponseDataState = {
 export type HandlerDataState = {
   $: 'handler'
   state: Record<string, StateDataState>
-  func?: HandlerFunction
 }
 export type HandlerReturnType = ResponseDataState | JSONValue | void
 export type HandlerFunction<T = any> = (args: T) => Promise<HandlerReturnType> | HandlerReturnType
 export type EventDataState = {
   $: 'event'
-  handler?: HandlerDataState | HandlerFunction
+  handler?: HandlerDataState
   actions?: ActionDataState[]
   timeout?: number
+}
+export type ServerHandlerDataState = HandlerDataState & {
+  func: HandlerFunction
+}
+export type ServerEventDataState = Omit<EventDataState, 'handler'> & {
+  handler: ServerHandlerDataState | HandlerFunction
 }
 
 export type JSONValue =
@@ -99,7 +105,7 @@ export function isCompositeDataState(
     (obj.$ === 'component' || obj.$ === 'ref' || obj.$ === 'state')
   )
 }
-export function isComponentDataState(obj: any): obj is ComponentDataState {
+export function isComponentDataState(obj: any): obj is ComponentDataState<any> {
   return obj !== null && typeof obj === 'object' && obj.$ === 'component'
 }
 export function isReferencedComponentDataState(
@@ -237,7 +243,6 @@ export function BaseTemplate({
         if (payload?.nativeEvent) {
           payload = '[native code]'
         }
-        const dataState = isActionDataState(propValue) ? [propValue] : propValue
         if (isEventDataState(propValue) && isHandlerDataState(propValue.handler)) {
           payload = Object.fromEntries(
             Object.entries(propValue.handler.state).map(([key, value]) => {
@@ -245,6 +250,7 @@ export function BaseTemplate({
             })
           )
         }
+        const dataState = isActionDataState(propValue) ? [propValue] : propValue
         return onTemplateEvent?.({
           target: {
             key: parentNode.key,

@@ -12,6 +12,7 @@ it('should lookup value', () => {
 
 it('should throw on non-object', () => {
   expect(() => {
+    // @ts-ignore
     lookupValue('string', ['path'])
   }).toThrowError()
 })

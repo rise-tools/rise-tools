@@ -1,6 +1,5 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
-import { ServerResponseDataState } from './response'
 import { isStateUpdateAction, LocalState, useLocalState } from './state'
 import { Stream } from './streams'
 import {
@@ -16,6 +15,7 @@ import {
   isResponseDataState,
   Path,
   ReferencedDataState,
+  ResponseDataState,
   TemplateEvent,
 } from './template'
 import { lookupValue } from './utils'
@@ -24,7 +24,7 @@ export type Store<T = DataState> = Stream<T>
 
 export type DataSource = {
   get: (key: string) => Store
-  sendEvent: (event: HandlerEvent) => Promise<ServerResponseDataState>
+  sendEvent: (event: HandlerEvent) => Promise<ResponseDataState>
 }
 
 /** Refs */
@@ -180,7 +180,7 @@ export function Template({
   dataSource: DataSource
   components: ComponentRegistry
   onAction?: (action: ActionDataState) => void
-  onEvent?: (event: HandlerEvent) => Promise<ServerResponseDataState>
+  onEvent?: (event: HandlerEvent) => Promise<ResponseDataState>
 }) {
   if (typeof path === 'string') {
     path = [path]

@@ -1,7 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 import React, { PropsWithChildren, ReactNode } from 'react'
 
-import { event } from '../events'
 import { BaseTemplate } from '../template'
 
 const View = {
@@ -51,13 +50,17 @@ it('should assign correct path to an event target', () => {
               key: 'container',
               props: {
                 ['data-testid']: 'button',
-                onClick: event(jest.fn()),
+                onClick: {
+                  $: 'event',
+                },
                 header: {
                   $: 'component',
                   component: 'View',
                   props: {
                     ['data-testid']: 'button-prop',
-                    onClick: event(jest.fn()),
+                    onClick: {
+                      $: 'event',
+                    },
                   },
                 },
                 footer: [
@@ -67,7 +70,9 @@ it('should assign correct path to an event target', () => {
                     component: 'View',
                     props: {
                       ['data-testid']: 'button-prop-array',
-                      onClick: event(jest.fn()),
+                      onClick: {
+                        $: 'event',
+                      },
                     },
                   },
                   {
@@ -75,7 +80,9 @@ it('should assign correct path to an event target', () => {
                     component: 'View',
                     props: {
                       ['data-testid']: 'button-prop-array-idx',
-                      onClick: event(jest.fn()),
+                      onClick: {
+                        $: 'event',
+                      },
                     },
                   },
                 ],
