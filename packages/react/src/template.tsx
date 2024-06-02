@@ -263,6 +263,7 @@ export function BaseTemplate({
       )
     }
     if (isStateDataState(propValue)) {
+      // tbd: how to make this work?
       return render(localState.get(propValue).get(), path)
     }
     if (isCompositeDataState(propValue)) {

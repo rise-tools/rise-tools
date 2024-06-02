@@ -199,18 +199,14 @@ export function Template({
   const rootDataState = resolveRef(dataValues, path)
 
   /* state */
-  const localState = useLocalState()
+  const [localState, applyStateUpdateAction] = useLocalState()
 
   const onTemplateEvent = useCallback(
     async (event: TemplateEvent) => {
       const actions = isEventDataState(event.dataState) ? event.dataState.actions : event.dataState
       for (const action of actions || []) {
         if (isStateUpdateAction(action)) {
-          const [, state, stateUpdate] = action.name
-          localState.set(state, (currentValue) =>
-            applyStateUpdateAction(currentValue, stateUpdate, event.payload)
-          )
-          console.log(localState.get(state).get(), state, stateUpdate)
+          applyStateUpdateAction(action, event.payload)
         } else {
           onAction?.(action)
         }
@@ -221,7 +217,6 @@ export function Template({
       if (isEventDataState(event.dataState) && isHandlerDataState(event.dataState.handler)) {
         event.payload = Object.fromEntries(
           Object.entries(event.dataState.handler.state).map(([key, value]) => {
-            console.log('d', localState.get(value).get())
             return [key, localState.get(value).get()]
           })
         )
@@ -235,10 +230,7 @@ export function Template({
       if (res.actions) {
         for (const action of res.actions) {
           if (isStateUpdateAction(action)) {
-            const [, state, stateUpdate] = action.name
-            localState.set(state, (currentValue) =>
-              applyStateUpdateAction(currentValue, stateUpdate, event.payload)
-            )
+            applyStateUpdateAction(action, event.payload)
           } else {
             onAction?.(action)
           }

@@ -1,7 +1,7 @@
 import { createContext, useRef } from 'react'
 
 import { action } from './events'
-import { createWritableStream, Stream } from './streams'
+import { createWritableStream, Stream, WritableStream } from './streams'
 import { ActionDataState, JSONValue, StateDataState } from './template'
 
 type StateUpdate<T> = T | StateModifier
@@ -54,28 +54,36 @@ export function setStateAction<T>(
 
 export type LocalState = {
   get(state: StateDataState): Stream<JSONValue>
-  set(state: StateDataState, value: JSONValue | ((value: JSONValue) => JSONValue)): void
 }
-export const useLocalState = (): LocalState => {
-  const localState = useRef<Record<string, ReturnType<typeof createWritableStream>>>({})
-  return {
-    get(state) {
-      if (!localState.current[state.key]) {
-        localState.current[state.key] = createWritableStream(state.initialValue)
-      }
-      return localState.current[state.key]?.[1] as Stream<JSONValue>
-    },
-    set(state, value) {
-      localState.current[state.key]?.[0](value)
-    },
+
+export const useLocalState = (): [
+  LocalState,
+  (action: UpdateStateAction<JSONValue>, payload: JSONValue) => void,
+] => {
+  const localState = useRef<Record<string, WritableStream<JSONValue>>>({})
+  function getWritableStream(state: StateDataState) {
+    if (!localState.current[state.key]) {
+      localState.current[state.key] = createWritableStream(state.initialValue)
+    }
+    return localState.current[state.key] as WritableStream<JSONValue>
   }
+  return [
+    {
+      get(state) {
+        const [, stream] = getWritableStream(state)
+        return stream
+      },
+    },
+    (action, payload: JSONValue) => {
+      const [, state, stateUpdate] = action.name
+      const [write] = getWritableStream(state)
+      write((currentValue) => applyStateUpdateAction(currentValue, stateUpdate, payload))
+    },
+  ]
 }
 
 export const LocalState = createContext<LocalState>({
   get: () => {
-    throw new Error('LocalState context not initialized')
-  },
-  set: () => {
     throw new Error('LocalState context not initialized')
   },
 })

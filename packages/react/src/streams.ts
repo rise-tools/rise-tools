@@ -2,25 +2,17 @@ import { useSyncExternalStore } from 'react'
 
 import { JSONValue } from './template'
 
+type Updater<S> = (prevState: S) => S
+export type WritableStream<S> = [(newState: S | Updater<S>) => void, Stream<S>]
+
 export type Stream<V> = {
   get: () => V
   subscribe: (handler: (value: V) => void) => () => void
 }
 
-type Updater<S> = (prevState: S) => S
-
-export function createWritableStream<S extends JSONValue>(
-  initState: S
-): [(newState: S | Updater<S>) => void, Stream<S>] {
+export function createWritableStream<S extends JSONValue>(initState: S): WritableStream<S> {
   let state: S = initState
   const handlers = new Set<(state: S) => void>()
-  function writeState(updater: S | Updater<S>) {
-    const newState = typeof updater === 'function' ? updater(state) : updater
-
-    state = newState
-
-    handlers.forEach((handle) => handle(newState))
-  }
   const stream = {
     get() {
       return state
@@ -32,7 +24,16 @@ export function createWritableStream<S extends JSONValue>(
       }
     },
   }
-  return [writeState, stream]
+  return [
+    function writeState(updater) {
+      const newState = typeof updater === 'function' ? updater(state) : updater
+
+      state = newState
+
+      handlers.forEach((handle) => handle(newState))
+    },
+    stream,
+  ]
 }
 
 export function useStream<S>(stream?: Stream<S>) {
