@@ -214,17 +214,10 @@ export function Template({
       if (!isHandlerEvent(event)) {
         return
       }
-<<<<<<< feat/tmp-3
-      if (isEventDataState(event.dataState) && isHandlerDataState(event.dataState.handler)) {
-        event.payload = Object.fromEntries(
-          Object.entries(event.dataState.handler.state).map(([key, value]) => {
-            return [key, localState.getStream(value).get()]
-=======
       if (event.dataState.args) {
         event.payload = Object.fromEntries(
           Object.entries(event.dataState.args).map(([key, value]) => {
-            return [key, localState[value.key] || value.initialValue]
->>>>>>> feat/state-2
+            return [key, localState.getStream(value).get()]
           })
         )
       }
