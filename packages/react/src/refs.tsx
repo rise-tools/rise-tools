@@ -11,7 +11,6 @@ import {
   isComponentDataState,
   isCompositeDataState,
   isEventDataState,
-  isHandlerDataState,
   isHandlerEvent,
   isResponseDataState,
   Path,
