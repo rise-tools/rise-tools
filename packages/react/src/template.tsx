@@ -24,6 +24,8 @@ export type DataState<T = never> =
   | { [key: string]: DataState<T>; $?: never }
   | DataState[]
   | T
+/** Server data state */
+export type ServerDataState = DataState<ServerEventDataState>
 
 export type ComponentDataState<T = never> = {
   $: 'component'
@@ -56,23 +58,16 @@ export type ResponseDataState = {
   ok: boolean
   actions: ActionDataState[]
 }
-export type HandlerDataState = {
-  $: 'handler'
-  state: Record<string, StateDataState>
-}
 export type HandlerReturnType = ResponseDataState | JSONValue | void
 export type HandlerFunction<T = any> = (args: T) => Promise<HandlerReturnType> | HandlerReturnType
 export type EventDataState = {
   $: 'event'
-  handler?: HandlerDataState
   actions?: ActionDataState[]
   timeout?: number
+  args?: Record<string, StateDataState>
 }
-export type ServerHandlerDataState = HandlerDataState & {
-  func: HandlerFunction
-}
-export type ServerEventDataState = Omit<EventDataState, 'handler'> & {
-  handler: ServerHandlerDataState | HandlerFunction
+export type ServerEventDataState = EventDataState & {
+  handler: HandlerFunction
 }
 
 export type JSONValue =
@@ -128,9 +123,6 @@ export function isActionDataStateArray(obj: any): obj is ActionDataState[] {
 }
 export function isResponseDataState(obj: any): obj is ResponseDataState {
   return obj && typeof obj === 'object' && obj.$ === 'response'
-}
-export function isHandlerDataState(obj: any): obj is HandlerDataState {
-  return obj && typeof obj === 'object' && obj.$ === 'handler'
 }
 function isStateDataState(obj: any): obj is StateDataState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'state'

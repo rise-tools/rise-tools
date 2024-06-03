@@ -1,34 +1,21 @@
 import {
   ActionDataState,
-  DataState,
   HandlerFunction,
   isEventDataState,
-  isHandlerDataState,
   ServerEventDataState,
-  ServerHandlerDataState,
   StateDataState,
 } from './template'
 
-/** Server data state */
-export type ServerDataState = DataState<ServerEventDataState>
-
 export function isServerEventDataState(obj: any): obj is ServerEventDataState {
-  if (!isEventDataState(obj)) {
-    return false
-  }
-  return (
-    typeof obj.handler === 'function' ||
-    (isHandlerDataState(obj.handler) &&
-      'func' in obj.handler &&
-      typeof obj.handler.func === 'function')
-  )
+  return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
 }
 
-export function event(
-  func: HandlerFunction,
+export function event<T>(
+  func: HandlerFunction<T>,
   opts?: {
     actions?: ActionDataState[]
     timeout?: number
+    args?: { [K in keyof T]: StateDataState<T[K]> }
   }
 ): ServerEventDataState {
   return {
@@ -45,24 +32,3 @@ export function action<T = any>(name: T): ActionDataState<T> {
     name,
   }
 }
-
-export function withState<T extends Record<string, any>>(
-  state: { [K in keyof T]: StateDataState<T[K]> },
-  func: HandlerFunction<T>
-): ServerHandlerDataState {
-  return {
-    $: 'handler',
-    func,
-    state,
-  }
-}
-
-withState(
-  {
-    isOpen: { $: 'state', key: 'isOpen', initialValue: false },
-    isOpen2: { $: 'state', key: 'isOpen', initialValue: 5 },
-  },
-  (args) => {
-    console.log(args)
-  }
-)
