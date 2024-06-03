@@ -1,6 +1,6 @@
 import React, { useCallback, useContext } from 'react'
 
-import { LocalState } from './state'
+import { LocalState, useLocalStateValues } from './state'
 import { useStream } from './streams'
 
 /** Components */
@@ -165,12 +165,16 @@ export function BaseTemplate({
         throw new RenderError(`Invalid component: ${stateNode.component}`)
       }
 
-      const localState = useContext(LocalState)
+      const getLocalStateValue = useLocalStateValues()
       let componentProps = Object.fromEntries(
         Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
           return [
             propKey,
-            renderProp(propKey, propValue, stateNode, localState, [...path, 'props', propKey]),
+            renderProp(propKey, propValue, stateNode, getLocalStateValue, [
+              ...path,
+              'props',
+              propKey,
+            ]),
           ]
         })
       )
@@ -229,7 +233,7 @@ export function BaseTemplate({
     propKey: string,
     propValue: DataState,
     parentNode: ComponentDataState | ReferencedComponentDataState,
-    localState: LocalState,
+    getLocalStateValue: (state: StateDataState) => JSONValue,
     path: Path
   ): any {
     if (
@@ -259,12 +263,14 @@ export function BaseTemplate({
     }
     if (Array.isArray(propValue)) {
       return propValue.map((item, idx) =>
-        renderProp(propKey, item, parentNode, localState, [...path, itemKeyOrIndex(item, idx)])
+        renderProp(propKey, item, parentNode, getLocalStateValue, [
+          ...path,
+          itemKeyOrIndex(item, idx),
+        ])
       )
     }
     if (isStateDataState(propValue)) {
-      // tbd: how to make this work?
-      return render(localState.getStream(propValue).get(), path)
+      return render(getLocalStateValue(propValue), path)
     }
     if (isCompositeDataState(propValue)) {
       return render(propValue, path)
@@ -272,7 +278,7 @@ export function BaseTemplate({
     if (propValue && typeof propValue === 'object') {
       return Object.fromEntries(
         Object.entries(propValue).map(([key, value]) => {
-          return [key, renderProp(key, value, parentNode, localState, [...path, key])]
+          return [key, renderProp(key, value, parentNode, getLocalStateValue, [...path, key])]
         })
       )
     }

@@ -1,4 +1,4 @@
-import { createContext, useRef } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 import { action } from './events'
 import { createWritableStream, Stream, WritableStream } from './streams'
@@ -133,3 +133,33 @@ export const increment = (value: number): IncrementStateModifier => ({
   type: 'increment',
   value,
 })
+
+export const useLocalStateValues = () => {
+  const localState = useContext(LocalState)
+
+  const [, forceUpdate] = useState({})
+  const subscriptions = useRef(new Map())
+
+  function get(state: StateDataState) {
+    const stream = localState.getStream(state)
+
+    if (!subscriptions.current.has(state.key)) {
+      const subscription = stream.subscribe(() => {
+        forceUpdate({})
+      })
+      subscriptions.current.set(state.key, subscription)
+    }
+
+    return stream.get()
+  }
+
+  useEffect(() => {
+    return () => {
+      for (const unsubscribe of subscriptions.current.values()) {
+        unsubscribe()
+      }
+    }
+  }, [])
+
+  return get
+}
