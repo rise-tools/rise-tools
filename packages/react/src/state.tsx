@@ -138,24 +138,35 @@ export const useLocalStateValues = () => {
   const localState = useContext(LocalState)
 
   const [, forceUpdate] = useState({})
-  const subscriptions = useRef(new Map())
+
+  const streams = useRef(new Map<string, Stream<JSONValue>>())
+  const subs = useRef([] as (() => void)[])
 
   function get(state: StateDataState) {
     const stream = localState.getStream(state)
 
-    if (!subscriptions.current.has(state.key)) {
-      const subscription = stream.subscribe(() => {
-        forceUpdate({})
-      })
-      subscriptions.current.set(state.key, subscription)
+    if (!streams.current.has(state.key)) {
+      subs.current.push(
+        stream.subscribe(() => {
+          forceUpdate({})
+        })
+      )
+      streams.current.set(state.key, stream)
     }
 
     return stream.get()
   }
 
   useEffect(() => {
+    for (const stream of streams.current.values()) {
+      subs.current.push(
+        stream.subscribe(() => {
+          forceUpdate({})
+        })
+      )
+    }
     return () => {
-      for (const unsubscribe of subscriptions.current.values()) {
+      for (const unsubscribe of subs.current) {
         unsubscribe()
       }
     }
