@@ -62,15 +62,12 @@ export type HandlerReturnType = ResponseDataState | JSONValue | void
 export type HandlerFunction<T = any> = (args: T) => Promise<HandlerReturnType> | HandlerReturnType
 export type EventDataState = {
   $: 'event'
-  handler?: HandlerDataState
   actions?: ActionDataState[]
   timeout?: number
+  args?: Record<string, StateDataState>
 }
-export type ServerHandlerDataState = HandlerDataState & {
-  func: HandlerFunction
-}
-export type ServerEventDataState = Omit<EventDataState, 'handler'> & {
-  handler: ServerHandlerDataState | HandlerFunction
+export type ServerEventDataState = EventDataState & {
+  handler: HandlerFunction
 }
 
 export type JSONValue =

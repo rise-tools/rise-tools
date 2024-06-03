@@ -3,9 +3,7 @@ import {
   DataState,
   HandlerFunction,
   isEventDataState,
-  isServerHandlerDataState,
   ServerEventDataState,
-  ServerHandlerDataState,
   StateDataState,
 } from './template'
 
@@ -13,17 +11,15 @@ import {
 export type ServerDataState = DataState<ServerEventDataState>
 
 export function isServerEventDataState(obj: any): obj is ServerEventDataState {
-  if (!isEventDataState(obj)) {
-    return false
-  }
-  return typeof obj.handler === 'function' || isServerHandlerDataState(obj.handler)
+  return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
 }
 
-export function event(
-  func: HandlerFunction | ServerHandlerDataState,
+export function event<T>(
+  func: HandlerFunction<T>,
   opts?: {
     actions?: ActionDataState[]
     timeout?: number
+    args?: { [K in keyof T]: StateDataState<T[K]> }
   }
 ): ServerEventDataState {
   return {
@@ -38,16 +34,5 @@ export function action<T = any>(name: T): ActionDataState<T> {
   return {
     $: 'action',
     name,
-  }
-}
-
-export function withState<T extends Record<string, any>>(
-  state: { [K in keyof T]: StateDataState<T[K]> },
-  func: HandlerFunction<T>
-): ServerHandlerDataState {
-  return {
-    $: 'handler',
-    func,
-    state,
   }
 }
