@@ -23,6 +23,9 @@ export type DataState<T = never> =
   | { [key: string]: DataState<T>; $?: never }
   | DataState[]
   | T
+/** Server data state */
+export type ServerDataState = DataState<ServerEventDataState>
+
 export type ComponentDataState<T = never> = {
   $: 'component'
   key?: string

@@ -1,14 +1,10 @@
 import {
   ActionDataState,
-  DataState,
   HandlerFunction,
   isEventDataState,
   ServerEventDataState,
   StateDataState,
 } from './template'
-
-/** Server data state */
-export type ServerDataState = DataState<ServerEventDataState>
 
 export function isServerEventDataState(obj: any): obj is ServerEventDataState {
   return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'

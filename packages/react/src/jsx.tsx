@@ -1,6 +1,6 @@
 import type { JSXElementConstructor, ReactElement } from 'react'
 
-import { event, ServerDataState } from './events'
+import { event } from './events'
 import {
   ActionDataState,
   ComponentDataState,
@@ -8,6 +8,7 @@ import {
   isComponentDataState,
   JSONValue,
   ReferencedDataState,
+  ServerDataState,
   ServerEventDataState,
   StateDataState,
 } from './template'
