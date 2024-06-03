@@ -232,13 +232,6 @@ export function BaseTemplate({
         if (payload?.nativeEvent) {
           payload = '[native code]'
         }
-        if (isEventDataState(propValue) && propValue.args) {
-          payload = Object.fromEntries(
-            Object.entries(propValue.args).map(([key, value]) => {
-              return [key, localState[value.key] || value.initialValue]
-            })
-          )
-        }
         const dataState = isActionDataState(propValue) ? [propValue] : propValue
         return onTemplateEvent?.({
           target: {
