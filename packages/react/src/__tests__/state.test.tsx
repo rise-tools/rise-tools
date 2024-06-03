@@ -289,10 +289,7 @@ it('should inject state (initial value) into function handler', async () => {
               ['data-testid']: 'button',
               onClick: {
                 $: 'event',
-                handler: {
-                  $: 'handler',
-                  state: { isChecked },
-                },
+                args: { isChecked },
               },
             },
           },
@@ -324,10 +321,7 @@ it('should inject current state value into function handler', async () => {
               ['data-testid']: 'button',
               onClick: {
                 $: 'event',
-                handler: {
-                  $: 'handler',
-                  state: { isChecked },
-                },
+                args: { isChecked },
               },
             },
           },

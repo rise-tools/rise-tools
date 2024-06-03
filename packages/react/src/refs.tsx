@@ -216,13 +216,6 @@ export function Template({
       if (!isHandlerEvent(event)) {
         return
       }
-      if (event.dataState.args) {
-        event.payload = Object.fromEntries(
-          Object.entries(event.dataState.args).map(([key, value]) => {
-            return [key, localState[value.key] || value.initialValue]
-          })
-        )
-      }
       const res = await onEvent(event)
       if (!isResponseDataState(res)) {
         throw new Error(

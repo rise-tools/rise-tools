@@ -6,18 +6,15 @@ import {
   ComponentDataState,
   DataState,
   isComponentDataState,
-  isServerHandlerDataState,
   JSONValue,
   ReferencedDataState,
   ServerEventDataState,
-  ServerHandlerDataState,
   StateDataState,
 } from './template'
 
 // tbd: refactor and unify this
 type AllowedDataStates =
   | ServerEventDataState
-  | ServerHandlerDataState
   | ActionDataState
   | ReferencedDataState
   | StateDataState
@@ -45,7 +42,7 @@ export function jsx(
   }
   const serialisedProps = Object.fromEntries(
     Object.entries(el.props).map(([key, value]) => {
-      if (typeof value === 'function' || isServerHandlerDataState(value)) {
+      if (typeof value === 'function') {
         return [key, event(value)]
       }
       return [key, value]

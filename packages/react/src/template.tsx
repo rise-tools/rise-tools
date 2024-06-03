@@ -54,10 +54,6 @@ export type ResponseDataState = {
   ok: boolean
   actions: ActionDataState[]
 }
-export type HandlerDataState = {
-  $: 'handler'
-  state: Record<string, StateDataState>
-}
 export type HandlerReturnType = ResponseDataState | JSONValue | void
 export type HandlerFunction<T = any> = (args: T) => Promise<HandlerReturnType> | HandlerReturnType
 export type EventDataState = {
@@ -115,9 +111,6 @@ export function isEventDataState(obj: any): obj is EventDataState {
 export function isHandlerEvent(obj: TemplateEvent): obj is HandlerEvent {
   return isEventDataState(obj.dataState)
 }
-export function isServerHandlerDataState(obj: any): obj is ServerHandlerDataState {
-  return isHandlerDataState(obj) && 'func' in obj && obj.func === 'function'
-}
 export function isActionDataState(obj: any): obj is ActionDataState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'action'
 }
@@ -126,9 +119,6 @@ export function isActionDataStateArray(obj: any): obj is ActionDataState[] {
 }
 export function isResponseDataState(obj: any): obj is ResponseDataState {
   return obj && typeof obj === 'object' && obj.$ === 'response'
-}
-export function isHandlerDataState(obj: any): obj is HandlerDataState {
-  return obj && typeof obj === 'object' && obj.$ === 'handler'
 }
 function isStateDataState(obj: any): obj is StateDataState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'state'
@@ -242,9 +232,9 @@ export function BaseTemplate({
         if (payload?.nativeEvent) {
           payload = '[native code]'
         }
-        if (isEventDataState(propValue) && isHandlerDataState(propValue.handler)) {
+        if (isEventDataState(propValue) && propValue.args) {
           payload = Object.fromEntries(
-            Object.entries(propValue.handler.state).map(([key, value]) => {
+            Object.entries(propValue.args).map(([key, value]) => {
               return [key, localState[value.key] || value.initialValue]
             })
           )
