@@ -17,14 +17,36 @@ import defaultInventory, { Inventory, Item } from './inventory'
 
 // models
 const [inventoryItems, setInventoryState] = state(defaultInventory)
-const inventoryHome = view(({ get }) => <HomeScreen inventory={get(inventoryItems)} />)
+const inventoryHome = view((get) => <HomeScreen inventory={get(inventoryItems)} />)
 const inventoryItem = lookup((key) =>
-  view(({ get }) => {
+  view((get) => {
     const inventoryItem = get(inventoryItems).find((i) => i.key === key)
     if (!inventoryItem) return <NotFound />
-    return <ItemScreen item={get(inventoryItems).get(key)} onItemUpdate={setInventoryState} />
+    return <ItemScreen item={get(inventoryItems).get(key)} onUpdateInventory={setInventoryState} />
   })
 )
+
+// // user profile example
+// const userProfile = lookup((key) =>
+//   query(async () => {
+//     return await db.getUser(key)
+//   })
+// )
+// const userForms = lookup((key) =>
+//   view(({ get }) => {
+//     const user = get(userProfile, key)
+//     return (
+//       <UserForm
+//         user={user}
+//         onUpdate={async (payload) => {
+//           await db.writeUser(key, payload)
+//           userProfiles.get(key).invalidate()
+//         }}
+//       />
+//     )
+//   })
+// )
+
 export const models = {
   inventory: inventoryHome,
   item: inventoryItem,

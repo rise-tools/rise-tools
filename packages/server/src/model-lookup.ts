@@ -1,6 +1,6 @@
-import { LookupModel } from './types'
+import { AnyModels, LookupModel } from './types'
 
-export function lookup<T>(load: (key: string) => T): LookupModel<T> {
+export function lookup<T extends AnyModels>(load: (key: string) => T): LookupModel<T> {
   const cache: Record<string, T> = {}
   function get(key: string): T | undefined {
     if (cache[key]) return cache[key]

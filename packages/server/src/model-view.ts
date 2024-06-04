@@ -1,8 +1,9 @@
-import { ViewModel } from './types'
+import { AnyModel, AnyModels, ViewModel } from './types'
 
-export function view<T>(load: () => T): ViewModel<T> {
+export function view<T>(load: (get: (model: AnyModel) => any) => T): ViewModel<T> {
   function get(): T {
-    return load()
+    function getter(model: AnyModel) {}
+    return load(getter)
   }
   //   return getter()
   return {

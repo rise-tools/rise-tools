@@ -10,13 +10,14 @@ export type StateModel<State> = {
 }
 export type StateSetter<State> = (newState: State | ((state: State) => State)) => void
 
-export type LookupModel<T> = {
+export type LookupModel<Model extends AnyModels> = {
   type: 'lookup'
-  get: (key: string) => T | undefined
+  get: (key: string) => Model | undefined
 }
 
-export type QueryModel<V> = {
+export type QueryModel<Data> = {
   type: 'query'
+  get: () => Data | undefined
 }
 
 export type AnyModel = ViewModel<any> | StateModel<any> | LookupModel<any> | QueryModel<any>
