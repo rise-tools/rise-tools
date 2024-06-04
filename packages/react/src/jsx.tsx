@@ -5,7 +5,6 @@ import {
   ActionDataState,
   ComponentDataState,
   isComponentDataState,
-  JSONValue,
   ReferencedDataState,
   ServerDataState,
   ServerEventDataState,
