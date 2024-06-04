@@ -58,15 +58,24 @@ export function jsx(
   }
 }
 
-type Extend<P, K> = {
-  [Key in keyof P]: P[Key] extends infer T ? (T extends object ? K | Extend<T, K> : T | K) : never
-}
+export type Extend<T> = { [P in keyof T]?: _Extend<T[P]> }
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type _Extend<T> = T extends Function
+  ? T | ServerEventDataState | ActionDataState
+  : T extends Array<infer U>
+    ? _DeepPartialArray<U>
+    : T extends object
+      ? Extend<T>
+      : T | ReferencedDataState | StateDataState
+
+export interface _DeepPartialArray<T> extends Array<_Extend<T>> {}
 
 export function createComponentDefinition<
   T extends JSXElementConstructor<any> | keyof JSX.IntrinsicElements,
   P = React.ComponentProps<T>,
 >(type: string) {
-  return (props: Extend<P, AllowedDataStates>): ReactElement => ({
+  return (props: Extend<P>): ReactElement => ({
     type,
     props,
     key: null,
