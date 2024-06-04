@@ -34,7 +34,6 @@ export function jsx(
   { children, ...passedProps }: Props,
   key?: string
 ): ComponentDataState<ServerDataState> {
-  console.log(componentFactory)
   const el = componentFactory(passedProps)
   if (isComponentDataState(el)) {
     return el
