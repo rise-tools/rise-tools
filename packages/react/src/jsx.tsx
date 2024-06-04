@@ -4,7 +4,6 @@ import { event } from './events'
 import {
   ActionDataState,
   ComponentDataState,
-  DataState,
   isComponentDataState,
   JSONValue,
   ReferencedDataState,
@@ -13,19 +12,21 @@ import {
   StateDataState,
 } from './template'
 
-// tbd: refactor and unify this
-type AllowedDataStates =
+type Props = Record<
+  string,
+  | JSONValue
   | ServerEventDataState
   | ActionDataState
   | ReferencedDataState
   | StateDataState
   | ((args: any) => any)
-
-type Props = Record<string, JSONValue | AllowedDataStates> & {
-  children: DataState
+> & {
+  children: ServerDataState
 }
 
-export type UI = ReactElement<Props> | ComponentDataState<ServerEventDataState>
+type ServerComponent = ComponentDataState<ServerEventDataState>
+
+export type UI = ReactElement<Props> | ServerComponent
 
 export const jsxs = jsx
 
@@ -33,7 +34,7 @@ export function jsx(
   componentFactory: (props: any) => UI,
   { children, ...passedProps }: Props,
   key?: string
-): ComponentDataState<ServerDataState> {
+): ServerComponent {
   const el = componentFactory(passedProps)
   if (isComponentDataState(el)) {
     return el

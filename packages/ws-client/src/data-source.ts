@@ -3,8 +3,7 @@ import {
   type DataSource,
   DataState,
   HandlerEvent,
-  ServerDataState,
-  ServerResponseDataState,
+  ResponseDataState,
   Store,
   Stream,
 } from '@final-ui/react'
@@ -29,13 +28,13 @@ export type EventWebsocketMessage = {
 export type UpdateWebsocketMessage = {
   $: 'up'
   key: string
-  val: ServerDataState
+  val: DataState
 }
 
 export type EventResponseWebsocketMessage = {
   $: 'evt-res'
   key: string
-  res: ServerResponseDataState
+  res: ResponseDataState
 }
 
 export type ClientWebsocketMessage =
@@ -143,7 +142,7 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
     }
   }
 
-  const promises = new Map<string, (value: ServerResponseDataState) => void>()
+  const promises = new Map<string, (value: ResponseDataState) => void>()
 
   return {
     get: (key: string) => {
