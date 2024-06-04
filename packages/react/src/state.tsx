@@ -1,9 +1,8 @@
-import { createContext, useReducer } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 import { action } from './events'
+import { createWritableStream, Stream, WritableStream } from './streams'
 import { ActionDataState, JSONValue, StateDataState } from './template'
-
-export type LocalState = Record<string, JSONValue>
 
 type StateUpdate<T> = T | StateModifier
 type UpdateStateAction<T> = ActionDataState<['state-update', StateDataState<T>, StateUpdate<T>]>
@@ -53,27 +52,47 @@ export function setStateAction<T>(
   return action(['state-update', state, value])
 }
 
-export const useLocalState = () => {
-  return useReducer(stateReducer, {})
+export type LocalState = {
+  getStream(state: StateDataState): Stream<JSONValue>
 }
 
-const stateReducer = (
-  localState: LocalState,
-  { action, payload }: { action: UpdateStateAction<JSONValue>; payload: JSONValue }
-) => {
-  const [, stateDataState, stateUpdate] = action.name
-  const currentState = localState[stateDataState.key] || stateDataState.initialValue
-  return {
-    ...localState,
-    [stateDataState.key]: applyStateUpdateAction(currentState, stateUpdate, payload),
+export const useLocalState = (): [
+  LocalState,
+  (action: UpdateStateAction<JSONValue>, payload: JSONValue) => void,
+] => {
+  const localState = useRef<Record<string, WritableStream<JSONValue>>>({})
+  function getWritableStream(state: StateDataState) {
+    if (!localState.current[state.key]) {
+      localState.current[state.key] = createWritableStream(state.initialValue)
+    }
+    return localState.current[state.key] as WritableStream<JSONValue>
   }
+  return [
+    {
+      getStream(state) {
+        const [, stream] = getWritableStream(state)
+        return stream
+      },
+    },
+    (action, payload: JSONValue) => {
+      const [, state, stateUpdate] = action.name
+      const [write] = getWritableStream(state)
+      write((currentValue) => applyStateUpdateAction(currentValue, stateUpdate, payload))
+    },
+  ]
 }
+
+export const LocalState = createContext<LocalState>({
+  getStream: () => {
+    throw new Error('LocalState context not initialized')
+  },
+})
 
 function isStateModifier(obj: any): obj is StateModifier {
   return obj !== null && typeof obj === 'object' && obj.$ === 'state-modifier'
 }
 
-function applyStateUpdateAction<T extends JSONValue>(
+export function applyStateUpdateAction<T extends JSONValue>(
   state: T,
   stateUpdate: StateUpdate<T>,
   payload: JSONValue
@@ -115,4 +134,43 @@ export const increment = (value: number): IncrementStateModifier => ({
   value,
 })
 
-export const LocalState = createContext<LocalState>({})
+export const useLocalStateValues = () => {
+  const localState = useContext(LocalState)
+
+  const [, forceUpdate] = useState({})
+
+  const streams = useRef(new Map<string, Stream<JSONValue>>())
+  const subs = useRef([] as (() => void)[])
+
+  function get(state: StateDataState) {
+    const stream = localState.getStream(state)
+
+    if (!streams.current.has(state.key)) {
+      subs.current.push(
+        stream.subscribe(() => {
+          forceUpdate({})
+        })
+      )
+      streams.current.set(state.key, stream)
+    }
+
+    return stream.get()
+  }
+
+  useEffect(() => {
+    for (const stream of streams.current.values()) {
+      subs.current.push(
+        stream.subscribe(() => {
+          forceUpdate({})
+        })
+      )
+    }
+    return () => {
+      for (const unsubscribe of subs.current) {
+        unsubscribe()
+      }
+    }
+  }, [])
+
+  return get
+}

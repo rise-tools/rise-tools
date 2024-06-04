@@ -198,17 +198,14 @@ export function Template({
   const rootDataState = resolveRef(dataValues, path)
 
   /* state */
-  const [localState, dispatchStateUpdate] = useLocalState()
+  const [localState, applyStateUpdateAction] = useLocalState()
 
   const onTemplateEvent = useCallback(
     async (event: TemplateEvent) => {
       const actions = isEventDataState(event.dataState) ? event.dataState.actions : event.dataState
       for (const action of actions || []) {
         if (isStateUpdateAction(action)) {
-          dispatchStateUpdate({
-            action,
-            payload: event.payload,
-          })
+          applyStateUpdateAction(action, event.payload)
         } else {
           onAction?.(action)
         }
@@ -219,7 +216,7 @@ export function Template({
       if (event.dataState.args) {
         event.payload = Object.fromEntries(
           Object.entries(event.dataState.args).map(([key, value]) => {
-            return [key, localState[value.key] || value.initialValue]
+            return [key, localState.getStream(value).get()]
           })
         )
       }
@@ -232,10 +229,7 @@ export function Template({
       if (res.actions) {
         for (const action of res.actions) {
           if (isStateUpdateAction(action)) {
-            dispatchStateUpdate({
-              action,
-              payload: res.payload,
-            })
+            applyStateUpdateAction(action, event.payload)
           } else {
             onAction?.(action)
           }
