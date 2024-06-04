@@ -28,7 +28,6 @@ export const TextArea = createComponentDefinition<typeof t.TextArea>('TextArea')
 
 export const Label = createComponentDefinition<typeof t.Label>('Label')
 
-// @ts-ignore tamagui to export "ProgressExtraProps"
 export const Progress = createComponentDefinition<typeof t.Progress>('Progress')
 export const ProgressIndicator =
   createComponentDefinition<typeof t.ProgressIndicator>('ProgressIndicator')
@@ -41,13 +40,9 @@ export const Select = createComponentDefinition<typeof t.Select>('Select')
 export const SelectTrigger = createComponentDefinition<typeof t.Select.Trigger>('SelectTrigger')
 export const SelectScrollDownButton =
   createComponentDefinition<typeof t.Select.ScrollDownButton>('SelectScrollDownButton')
-
-// @ts-ignore tamagui to export "SelectViewportExtraProps"
 export const SelectViewport = createComponentDefinition<typeof t.Select.Viewport>('SelectViewport')
 export const SelectGroup = createComponentDefinition<typeof t.Select.Group>('SelectGroup')
 export const SelectLabel = createComponentDefinition<typeof t.Select.Label>('SelectLabel')
-
-// @ts-ignore tamagui to export "SelectItemExtraProps"
 export const SelectItem = createComponentDefinition<typeof t.Select.Item>('SelectItem')
 export const SelectItemText = createComponentDefinition<typeof t.Select.ItemText>('SelectItemText')
 export const SelectSheet = createComponentDefinition<typeof t.Select.Sheet>('SelectSheet')
