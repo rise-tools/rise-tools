@@ -1,3 +1,4 @@
+import { RiseDropdownButton } from '@final-ui/kit/server'
 import { action, ref } from '@final-ui/react'
 import {
   Button,
@@ -31,8 +32,12 @@ export function InventoryExample(ctx: UIContext) {
 function HomeScreen() {
   return (
     <YStack backgroundColor={'$background'}>
+      <RiseDropdownButton
+        button={<H2 children="Inventory" />}
+        options={inventory.map((item) => ({ key: item.key, label: item.title }))}
+      />
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-        {inventory.map((item, idx) => (
+        {inventory.slice(0, 1).map((item, idx) => (
           <Button
             unstyled
             onPress={action(['navigate', `inventory:${item.key}:details`])}

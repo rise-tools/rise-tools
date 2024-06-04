@@ -1,5 +1,3 @@
-import { DropdownButton } from './DropdownButton'
-import { Form, SubmitButton, TextField } from './Form'
 import { Icon } from './Icon'
 import { LongPressSheetButton } from './LongPressSheetButton'
 import { QRCode } from './QRCode'
@@ -22,10 +20,6 @@ export const RiseComponents = {
     component: SelectField,
     validator: SelectField.validate,
   },
-  RiseDropdownButton: {
-    component: DropdownButton,
-    validator: DropdownButton.validate,
-  },
   RiseSlider: {
     component: Slider,
     validator: Slider.validate,
@@ -41,18 +35,6 @@ export const RiseComponents = {
   RiseSwitchField: {
     component: SwitchField,
     validator: SwitchField.validate,
-  },
-  RiseForm: {
-    component: Form,
-    validator: Form.validate,
-  },
-  RiseTextField: {
-    component: TextField,
-    validator: TextField.validate,
-  },
-  RiseSubmitButton: {
-    component: SubmitButton,
-    validator: SubmitButton.validate,
   },
   RiseLongPressSheetButton: {
     component: LongPressSheetButton,

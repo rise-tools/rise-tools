@@ -1,70 +1,59 @@
-import React from 'react'
-import { Button, Sheet, YStack } from 'tamagui'
-import { z } from 'zod'
+import { event, setStateAction, state } from '@final-ui/react'
+import {
+  Button,
+  Sheet,
+  SheetFrame,
+  SheetHandle,
+  SheetOverlay,
+  YStack,
+} from '@final-ui/tamagui/server'
 
-const DropdownButtonProps = z.object({
-  id: z.string().optional(),
-  onSelect: z.function().args(z.string()).optional(),
-  buttonProps: z.any().optional(),
-  options: z
-    .array(
-      z.object({
-        key: z.string(),
-        label: z.string(),
-        icon: z.any().optional(),
-      })
-    )
-    .optional(),
-})
+type Props = {
+  onSelect?: (key: string) => void
+  button?: JSX.Element
+  options?: {
+    key: string
+    label: string
+  }[]
+}
 
-export function DropdownButton(props: z.infer<typeof DropdownButtonProps>) {
-  const { options } = props
-  const [open, setOpen] = React.useState(false)
+export function DropdownButton(props: Props) {
+  const isOpen = state(false)
   return (
     <>
-      <Button
-        {...props.buttonProps}
-        onPress={() => {
-          setOpen(true)
-        }}
-      />
+      <Button asChild={true} onPress={setStateAction(isOpen, true)}>
+        {props.button}
+      </Button>
       <Sheet
-        forceRemoveScrollEnabled={open}
+        forceRemoveScrollEnabled={isOpen}
         modal={true}
         open={open}
-        onOpenChange={setOpen}
-        // snapPoints={[50]}
-        // snapPointsMode={snapPointsMode}
+        onOpenChange={setStateAction(isOpen)}
         dismissOnSnapToBottom
-        // position={position}
-        // onPositionChange={setPosition}
         zIndex={100_000}
         animation="medium"
       >
-        <Sheet.Overlay animation="quick" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Sheet.Handle />
-        <Sheet.Frame padding="$4" justifyContent="center" space="$5">
+        <SheetOverlay animation="quick" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
+        <SheetHandle />
+        <SheetFrame padding="$4" justifyContent="center" space="$5">
           <YStack gap="$3">
-            {options?.map((item) => {
+            {props.options?.map((item) => {
               return (
                 <Button
                   key={item.key}
-                  onPress={() => {
-                    setOpen(false)
-                    props.onSelect?.(item.key)
-                  }}
+                  onPress={
+                    typeof props.onSelect === 'function'
+                      ? event(props.onSelect, { actions: [setStateAction(isOpen, false)] })
+                      : setStateAction(isOpen, false)
+                  }
                 >
                   {item.label}
                 </Button>
               )
             })}
           </YStack>
-        </Sheet.Frame>
+        </SheetFrame>
       </Sheet>
     </>
   )
-}
-
-DropdownButton.validate = (props: any) => {
-  return DropdownButtonProps.parse(props)
 }

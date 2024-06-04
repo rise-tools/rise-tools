@@ -34,6 +34,7 @@ export function jsx(
   { children, ...passedProps }: Props,
   key?: string
 ): ComponentDataState<ServerDataState> {
+  console.log(componentFactory)
   const el = componentFactory(passedProps)
   if (isComponentDataState(el)) {
     return el
@@ -58,8 +59,12 @@ export function jsx(
   }
 }
 
+// tbd: this should be smarter
+// only allow "ActionDataState" or "EventDataState" when prop extends function
+// if takes React.Element, allow "ComponentDataState" or "ReferencedDataState"
+// otherwise, allow "StateDataState"
 type Extend<P, K> = {
-  [Key in keyof P]: P[Key] extends infer T ? (T extends object ? K | Extend<T, K> : T | K) : never
+  [Key in keyof P]: P[Key] extends object ? K | Extend<P[Key], K> : P[Key] | K
 }
 
 export function createComponentDefinition<
