@@ -3,6 +3,7 @@ import {
   type DataSource,
   DataState,
   HandlerEvent,
+  ServerDataState,
   ServerResponseDataState,
   Store,
   Stream,
@@ -28,7 +29,7 @@ export type EventWebsocketMessage = {
 export type UpdateWebsocketMessage = {
   $: 'up'
   key: string
-  val: DataState
+  val: ServerDataState
 }
 
 export type EventResponseWebsocketMessage = {

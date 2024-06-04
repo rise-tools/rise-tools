@@ -25,7 +25,7 @@ type Props = Record<string, JSONValue | AllowedDataStates> & {
   children: DataState
 }
 
-export type UI = ReactElement<Props> | ComponentDataState<ServerDataState>
+export type UI = ReactElement<Props> | ComponentDataState<ServerEventDataState>
 
 export const jsxs = jsx
 
