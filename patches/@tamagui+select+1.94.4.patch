@@ -1,13 +1,3 @@
-diff --git a/node_modules/@tamagui/select/types/SelectItem.d.ts b/node_modules/@tamagui/select/types/SelectItem.d.ts
-index 102b163..f4d273d 100644
---- a/node_modules/@tamagui/select/types/SelectItem.d.ts
-+++ b/node_modules/@tamagui/select/types/SelectItem.d.ts
-@@ -72,5 +72,6 @@ export declare const SelectItem: import("@tamagui/web").TamaguiComponent<Omit<im
-     chromeless?: boolean | "all" | undefined;
-     active?: boolean | undefined;
- }, import("@tamagui/web").StaticConfigPublic>;
- export {};
- //# sourceMappingURL=SelectItem.d.ts.map
 diff --git a/node_modules/@tamagui/select/types/index.d.ts b/node_modules/@tamagui/select/types/index.d.ts
 index 4a09516..5d54e4f 100644
 --- a/node_modules/@tamagui/select/types/index.d.ts
