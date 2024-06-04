@@ -1,10 +1,4 @@
-import {
-  type DataSource,
-  DataState,
-  HandlerEvent,
-  ServerResponseDataState,
-  Store,
-} from '@final-ui/react'
+import { type DataSource, DataState, HandlerEvent, ResponseDataState, Store } from '@final-ui/react'
 
 type Handler = (value: DataState) => void
 
@@ -16,7 +10,7 @@ export type EventPayload = {
 
 export type EventResponse = {
   $: 'evt-res'
-  res: ServerResponseDataState
+  res: ResponseDataState
 }
 
 export function createHTTPDataSource(httpUrl: string): HTTPDataSource {

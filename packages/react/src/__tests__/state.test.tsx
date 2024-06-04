@@ -1,7 +1,6 @@
 import { act, fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { event } from '../events'
 import { DataSource, Template } from '../refs'
 import { response } from '../response'
 import { increment, setStateAction, state, toggle } from '../state'
@@ -240,7 +239,9 @@ it('should modify state after receiving response from the server', async () => {
           component: 'View',
           props: {
             ['data-testid']: 'button',
-            onClick: event(jest.fn()),
+            onClick: {
+              $: 'event',
+            },
           },
           children: value,
         }
@@ -270,4 +271,78 @@ it('should modify state after receiving response from the server', async () => {
       </div>
     </DocumentFragment>
   `)
+})
+
+it('should inject state (initial value) into function handler', async () => {
+  const onTemplateEvent = jest.fn().mockReturnValue(response(null))
+  const isChecked = state(false)
+  const dataSource: DataSource = {
+    get: () => ({
+      subscribe: () => jest.fn(),
+      get() {
+        return [
+          {
+            $: 'component',
+            key: 'button',
+            component: 'View',
+            props: {
+              ['data-testid']: 'button',
+              onClick: {
+                $: 'event',
+                args: { isChecked },
+              },
+            },
+          },
+        ]
+      },
+    }),
+    sendEvent: onTemplateEvent,
+  }
+  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  await act(async () => {
+    fireEvent.click(component.getByTestId('button'))
+  })
+  expect(onTemplateEvent.mock.lastCall[0].payload).toEqual({ isChecked: false })
+})
+
+it('should inject current state value into function handler', async () => {
+  const onTemplateEvent = jest.fn().mockReturnValue(response(null))
+  const isChecked = state(false)
+  const dataSource: DataSource = {
+    get: () => ({
+      subscribe: () => jest.fn(),
+      get() {
+        return [
+          {
+            $: 'component',
+            key: 'button',
+            component: 'View',
+            props: {
+              ['data-testid']: 'button',
+              onClick: {
+                $: 'event',
+                args: { isChecked },
+              },
+            },
+          },
+          {
+            $: 'component',
+            key: 'checkbox',
+            component: 'View',
+            props: {
+              ['data-testid']: 'checkbox',
+              onClick: setStateAction(isChecked, true),
+            },
+          },
+        ]
+      },
+    }),
+    sendEvent: onTemplateEvent,
+  }
+  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  await act(async () => {
+    fireEvent.click(component.getByTestId('checkbox'))
+    fireEvent.click(component.getByTestId('button'))
+  })
+  expect(onTemplateEvent.mock.lastCall[0].payload).toEqual({ isChecked: true })
 })

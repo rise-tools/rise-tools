@@ -1,6 +1,4 @@
-import { DataState } from './template'
-
-export function lookupValue(value: DataState, ref: (string | number)[]) {
+export function lookupValue(value: Record<string, any>, ref: (string | number)[]) {
   if (ref.length === 0) {
     return value
   }

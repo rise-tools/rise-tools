@@ -1,28 +1,21 @@
-import type { ReactElement } from 'react'
+import {
+  ActionDataState,
+  HandlerFunction,
+  isEventDataState,
+  ServerEventDataState,
+  StateDataState,
+} from './template'
 
-import { ServerResponseDataState } from './response'
-import { ActionDataState, DataState, EventDataState, isEventDataState, JSONValue } from './template'
-
-/** Server data state*/
-export type ServerDataState = DataState | ServerEventDataState
-export type RuntimeServerDataState = Exclude<ServerDataState, ReactElement>
-
-type ServerHandlerReturnType = ServerResponseDataState | JSONValue | void
-export type ServerHandlerFunction = (
-  args: any
-) => Promise<ServerHandlerReturnType> | ServerHandlerReturnType
-export type ServerEventDataState = EventDataState & {
-  handler: ServerHandlerFunction
-}
-export function isServerEventDataState(obj: RuntimeServerDataState): obj is ServerEventDataState {
+export function isServerEventDataState(obj: any): obj is ServerEventDataState {
   return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
 }
 
-export function event(
-  func: ServerHandlerFunction,
+export function event<T>(
+  func: HandlerFunction<T>,
   opts?: {
     actions?: ActionDataState[]
     timeout?: number
+    args?: { [K in keyof T]: StateDataState<T[K]> }
   }
 ): ServerEventDataState {
   return {

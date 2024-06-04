@@ -1,4 +1,4 @@
-import { ActionDataState, JSONValue } from './template'
+import { ActionDataState, JSONValue, ResponseDataState } from './template'
 
 export function response(payload: JSONValue): ServerResponseDataState {
   return {
@@ -20,19 +20,7 @@ export function response(payload: JSONValue): ServerResponseDataState {
   }
 }
 
-export type ResponseDataState = {
-  $: 'response'
-  payload: JSONValue
-  statusCode: number
-  ok: boolean
-  actions: ActionDataState[]
-}
-
 export type ServerResponseDataState = ResponseDataState & {
   action(action: ActionDataState): ServerResponseDataState
   status(code: number): ServerResponseDataState
-}
-
-export function isResponseDataState(obj: any): obj is ResponseDataState {
-  return obj && typeof obj === 'object' && '$' in obj && obj.$ === 'response'
 }

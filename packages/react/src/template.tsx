@@ -12,25 +12,28 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
 }
 
 /** Data state */
-export type DataState =
+export type DataState<T = never> =
   | JSONValue
-  | ReferencedComponentDataState
-  | ComponentDataState
+  | ReferencedComponentDataState<T>
+  | ComponentDataState<T>
   | ReferencedDataState
   | ActionDataState
   | EventDataState
   | StateDataState
-  | { [key: string]: DataState; $?: never }
+  | { [key: string]: DataState<T>; $?: never }
   | DataState[]
+  | T
+/** Server data state */
+export type ServerDataState = DataState<ServerEventDataState>
 
-export type ComponentDataState = {
+export type ComponentDataState<T = never> = {
   $: 'component'
   key?: string
   component: ComponentIdentifier
-  children?: DataState
-  props?: Record<string, DataState>
+  children?: DataState<T>
+  props?: Record<string, DataState<T>>
 }
-type ReferencedComponentDataState = ComponentDataState & {
+type ReferencedComponentDataState<T = never> = ComponentDataState<T> & {
   path: Path
 }
 export type StateDataState<T = JSONValue> = {
@@ -47,10 +50,23 @@ export type ActionDataState<T = any> = {
   $: 'action'
   name: T
 }
+export type ResponseDataState = {
+  $: 'response'
+  payload: JSONValue
+  statusCode: number
+  ok: boolean
+  actions: ActionDataState[]
+}
+export type HandlerReturnType = ResponseDataState | JSONValue | void
+export type HandlerFunction<T = any> = (args: T) => Promise<HandlerReturnType> | HandlerReturnType
 export type EventDataState = {
   $: 'event'
   actions?: ActionDataState[]
   timeout?: number
+  args?: Record<string, StateDataState>
+}
+export type ServerEventDataState = EventDataState & {
+  handler: HandlerFunction
 }
 
 export type JSONValue =
@@ -84,7 +100,7 @@ export function isCompositeDataState(
     (obj.$ === 'component' || obj.$ === 'ref' || obj.$ === 'state')
   )
 }
-export function isComponentDataState(obj: any): obj is ComponentDataState {
+export function isComponentDataState(obj: any): obj is ComponentDataState<any> {
   return obj !== null && typeof obj === 'object' && obj.$ === 'component'
 }
 export function isReferencedComponentDataState(
@@ -103,6 +119,9 @@ export function isActionDataState(obj: any): obj is ActionDataState {
 }
 export function isActionDataStateArray(obj: any): obj is ActionDataState[] {
   return Array.isArray(obj) && obj.every(isActionDataState)
+}
+export function isResponseDataState(obj: any): obj is ResponseDataState {
+  return obj && typeof obj === 'object' && obj.$ === 'response'
 }
 function isStateDataState(obj: any): obj is StateDataState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'state'
