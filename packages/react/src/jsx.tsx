@@ -12,21 +12,12 @@ import {
   StateDataState,
 } from './template'
 
-type Props = Record<
-  string,
-  | JSONValue
-  | ServerEventDataState
-  | ActionDataState
-  | ReferencedDataState
-  | StateDataState
-  | ((args: any) => any)
-> & {
-  children: ServerDataState
-}
+export type UI = ReactElement<Props> | ServerComponent
 
 type ServerComponent = ComponentDataState<ServerEventDataState>
-
-export type UI = ReactElement<Props> | ServerComponent
+type Props = ServerComponent['props'] & {
+  children: ServerDataState
+}
 
 export const jsxs = jsx
 
