@@ -49,15 +49,15 @@ export function jsx(
 }
 
 export type Extend<T> = { [P in keyof T]: _Extend<T[P]> }
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type _Extend<T> = T extends Function
-  ? ServerHandlerDataState
+export type _Extend<T> = T extends (...args: any) => any
+  ? T | ServerHandlerDataState
   : T extends Array<infer U>
     ? _DeepPartialArray<U>
     : T extends object
       ? Extend<T>
-      : T | ReferencedDataState | StateDataState
+      : T extends null | undefined
+        ? T
+        : T | ReferencedDataState | StateDataState
 
 export interface _DeepPartialArray<T> extends Array<_Extend<T>> {}
 

@@ -40,70 +40,68 @@ export function SelectField(props: Props) {
         onValueChange={props.onValueChange}
         disablePreventBodyScroll
       >
-        <YStack>
-          <Adapt platform="touch">
-            <Sheet modal dismissOnSnapToBottom animation="quick">
-              <SheetOverlay />
-              <SheetFrame>
-                <SheetScrollView>
-                  <AdaptContents />
-                </SheetScrollView>
-              </SheetFrame>
-            </Sheet>
-          </Adapt>
+        <Adapt platform="touch">
+          <Sheet modal dismissOnSnapToBottom animation="quick">
+            <SheetOverlay />
+            <SheetFrame>
+              <SheetScrollView>
+                <AdaptContents />
+              </SheetScrollView>
+            </SheetFrame>
+          </Sheet>
+        </Adapt>
 
-          <SelectContent zIndex={200000}>
-            <SelectScrollUpButton
-              alignItems="center"
-              justifyContent="center"
-              position="relative"
-              width="$3"
-              height="$3"
-            >
-              <YStack zIndex={10}>{/* <ChevronUp size={20} /> */}</YStack>
-              {/* <LinearGradient
+        <SelectContent zIndex={200000}>
+          <SelectScrollUpButton
+            alignItems="center"
+            justifyContent="center"
+            position="relative"
+            width="$3"
+            height="$3"
+          >
+            <YStack zIndex={10}>{/* <ChevronUp size={20} /> */}</YStack>
+            {/* <LinearGradient
               start={[0, 0]}
               end={[0, 1]}
               fullscreen
               colors={['$background', 'transparent']}
               borderRadius="$4"
             /> */}
-            </SelectScrollUpButton>
+          </SelectScrollUpButton>
 
-            <SelectViewport
-              animation="quick"
-              animateOnly={['transform', 'opacity']}
-              enterStyle={{ opacity: 0, y: -10 }}
-              exitStyle={{ opacity: 0, y: 10 }}
-              minWidth={200}
-            >
-              {props.options?.map((item, i) => {
-                return (
-                  <SelectItem index={i} key={item.key} value={item.key}>
-                    <SelectItemText>{item.label}</SelectItemText>
-                    <SelectItemIndicator>{/* <Check size={16} /> */}</SelectItemIndicator>
-                  </SelectItem>
-                )
-              })}
-            </SelectViewport>
-            <SelectScrollDownButton
-              alignItems="center"
-              justifyContent="center"
-              position="relative"
-              width="$3"
-              height="$3"
-            >
-              <YStack zIndex={10}>{/* <ChevronDown size={20} /> */}</YStack>
-              {/* <LinearGradient
+          <SelectViewport
+            animation="quick"
+            animateOnly={['transform', 'opacity']}
+            enterStyle={{ opacity: 0, y: -10 }}
+            exitStyle={{ opacity: 0, y: 10 }}
+            minWidth={200}
+          >
+            {props.options?.map((item, i) => {
+              return (
+                <SelectItem index={i} key={item.key} value={item.key}>
+                  <SelectItemText>{item.label}</SelectItemText>
+                  <SelectItemIndicator>{/* <Check size={16} /> */}</SelectItemIndicator>
+                </SelectItem>
+              )
+            })}
+          </SelectViewport>
+          <SelectScrollDownButton
+            alignItems="center"
+            justifyContent="center"
+            position="relative"
+            width="$3"
+            height="$3"
+          >
+            <YStack zIndex={10}>{/* <ChevronDown size={20} /> */}</YStack>
+            {/* <LinearGradient
               start={[0, 0]}
               end={[0, 1]}
               fullscreen
               colors={['transparent', '$background']}
               borderRadius="$4"
             /> */}
-            </SelectScrollDownButton>
-          </SelectContent>
-        </YStack>
+          </SelectScrollDownButton>
+        </SelectContent>
       </Select>
     </YStack>
   )
