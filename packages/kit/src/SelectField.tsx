@@ -12,6 +12,8 @@ import {
   SelectItemText,
   SelectScrollDownButton,
   SelectScrollUpButton,
+  SelectTrigger,
+  SelectValue,
   SelectViewport,
   Sheet,
   SheetFrame,
@@ -24,7 +26,6 @@ type Props = {
   value: string
   id?: string
   label?: string
-  hidden?: boolean
   unselectedLabel?: string
   onValueChange?: (value: string) => any
   options?: { key: Only<string>; label: string }[]
@@ -50,6 +51,10 @@ export function SelectField(props: WithServerProps<Props>) {
             </SheetFrame>
           </Sheet>
         </Adapt>
+
+        <SelectTrigger>
+          <SelectValue placeholder={props.unselectedLabel} />
+        </SelectTrigger>
 
         <SelectContent zIndex={200000}>
           <SelectScrollUpButton

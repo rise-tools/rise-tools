@@ -38,7 +38,12 @@ function HomeScreen() {
         options={inventory.map((item) => ({ key: item.key, label: item.title }))}
         onSelect={setStateAction(selectedValue)}
       />
-      <RiseSelectField value={selectedValue} onValueChange={setStateAction(selectedValue)} />
+      <RiseSelectField
+        value={selectedValue}
+        onValueChange={setStateAction(selectedValue)}
+        unselectedLabel={'Select an item'}
+        options={inventory.map((item) => ({ key: item.key, label: item.title }))}
+      />
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {inventory.slice(0, 1).map((item, idx) => (
           <Button
