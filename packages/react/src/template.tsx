@@ -33,7 +33,7 @@ export type ComponentDataState<T = EventDataState> = {
   children?: DataState<T>
   props?: Record<string, DataState<T>>
 }
-type ReferencedComponentDataState<T = undefined> = ComponentDataState<T> & {
+type ReferencedComponentDataState<T = EventDataState> = ComponentDataState<T> & {
   path: Path
 }
 export type StateDataState<T = JSONValue> = {
