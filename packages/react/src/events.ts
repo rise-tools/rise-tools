@@ -35,15 +35,18 @@ export function action<T = any>(name: T): ActionDataState<T> {
 }
 
 export function extend(
-  event: ServerHandlerDataState,
+  handler: ServerHandlerDataState | HandlerFunction,
   action: ActionDataState | ActionDataState[]
 ): ServerHandlerDataState {
-  if (isServerEventDataState(event)) {
-    if (!event.actions) {
-      event.actions = []
-    }
-    event.actions = event.actions.concat(action)
-    return event
+  if (typeof handler === 'function') {
+    handler = event(handler)
   }
-  return Array.isArray(event) ? event.concat(action) : [event].concat(action)
+  if (isServerEventDataState(handler)) {
+    if (!handler.actions) {
+      handler.actions = []
+    }
+    handler.actions = handler.actions.concat(action)
+    return handler
+  }
+  return Array.isArray(handler) ? handler.concat(action) : [handler].concat(action)
 }

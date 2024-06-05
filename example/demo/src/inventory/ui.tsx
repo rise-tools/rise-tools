@@ -36,6 +36,7 @@ function HomeScreen() {
       <RiseDropdownButton
         button={<H2>Inventory</H2>}
         options={inventory.map((item) => ({ key: item.key, label: item.title }))}
+        onSelect={setStateAction(selectedValue)}
       />
       <RiseSelectField value={selectedValue} onValueChange={setStateAction(selectedValue)} />
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>

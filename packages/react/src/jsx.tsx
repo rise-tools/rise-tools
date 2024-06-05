@@ -12,7 +12,7 @@ import {
 
 export type UI = ReactElement<Props> | ServerComponent
 
-type ServerComponent = ComponentDataState<ServerEventDataState | ((...args: any) => any)>
+type ServerComponent = ComponentDataState<ServerEventDataState>
 type Props = ServerComponent['props'] & {
   children?: ServerComponent['children']
 }
@@ -48,16 +48,23 @@ export function jsx(
   }
 }
 
-export type Extend<T> = { [P in keyof T]: _Extend<T[P]> }
-export type _Extend<T> = T extends (...args: any) => any
-  ? T | ServerHandlerDataState
-  : T extends Array<infer U>
-    ? _DeepPartialArray<U>
-    : T extends object
-      ? Extend<T>
-      : T extends null | undefined
-        ? T
-        : T | ReferencedDataState | StateDataState
+export type Only<T> = {
+  __only: T
+}
+export type WithServerProps<T> = { [P in keyof T]: _Extend<T[P]> }
+
+export type _Extend<T> =
+  T extends Only<infer U>
+    ? U
+    : T extends (...args: any) => any
+      ? T | ServerHandlerDataState
+      : T extends Array<infer U>
+        ? _DeepPartialArray<U>
+        : T extends object
+          ? WithServerProps<T>
+          : T extends null | undefined
+            ? T
+            : T | ReferencedDataState | StateDataState
 
 export interface _DeepPartialArray<T> extends Array<_Extend<T>> {}
 
@@ -65,7 +72,7 @@ export function createComponentDefinition<
   T extends JSXElementConstructor<any> | keyof JSX.IntrinsicElements,
   P = React.ComponentProps<T>,
 >(type: string) {
-  return (props: Extend<P>): ReactElement => ({
+  return (props: WithServerProps<P>): ReactElement => ({
     type,
     props,
     key: null,
