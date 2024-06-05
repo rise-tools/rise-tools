@@ -1,4 +1,4 @@
-export function lookupValue(value: Record<string, any>, ref: (string | number)[]) {
+export function lookupValue(value: unknown, ref: (string | number)[]) {
   if (ref.length === 0) {
     return value
   }

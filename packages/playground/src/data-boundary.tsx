@@ -1,4 +1,4 @@
-import { useStream } from '@final-ui/react'
+import { DataSource, useStream } from '@final-ui/react'
 import { WebSocketDataSource } from '@final-ui/ws-client'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import React, { PropsWithChildren } from 'react'
@@ -9,8 +9,8 @@ export function DataBoundary({
   dataSource,
   path,
   children,
-}: PropsWithChildren<{ dataSource: WebSocketDataSource; path: string }>) {
-  const state = useStream(dataSource.state)
+}: PropsWithChildren<{ dataSource: WebSocketDataSource | DataSource; path: string }>) {
+  const state = useStream('state' in dataSource ? dataSource.state : undefined)
   const data = useStream(dataSource.get(path))
 
   if (data !== undefined) {

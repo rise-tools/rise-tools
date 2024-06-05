@@ -1,0 +1,11 @@
+diff --git a/node_modules/@tamagui/progress/types/Progress.d.ts b/node_modules/@tamagui/progress/types/Progress.d.ts
+index 58f3db4..cbdfac4 100644
+--- a/node_modules/@tamagui/progress/types/Progress.d.ts
++++ b/node_modules/@tamagui/progress/types/Progress.d.ts
+@@ -254,5 +254,5 @@ declare const Progress: React.ForwardRefExoticComponent<Omit<import("@tamagui/co
+     }, import("@tamagui/core").StaticConfigPublic>;
+ };
+ export { createProgressScope, Progress, ProgressIndicator };
+-export type { ProgressProps, ProgressIndicatorProps };
++export type { ProgressProps, ProgressExtraProps, ProgressIndicatorProps };
+ //# sourceMappingURL=Progress.d.ts.map
