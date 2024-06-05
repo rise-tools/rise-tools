@@ -30,7 +30,9 @@ export function Slider(props: WithServerProps<Props>) {
       <SliderTrack>
         <SliderTrackActive />
       </SliderTrack>
-      <SliderThumb index={0} circular elevate />
+      {props.value.map((_, index) => (
+        <SliderThumb key={index} index={index} circular />
+      ))}
     </TSlider>
   )
 }

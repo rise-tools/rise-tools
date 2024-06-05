@@ -3,7 +3,6 @@ import {
   HandlerFunction,
   isEventDataState,
   ServerEventDataState,
-  ServerHandlerDataState,
   StateDataState,
 } from './template'
 
