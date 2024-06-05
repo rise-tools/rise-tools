@@ -53,8 +53,9 @@ export type Only<T> = {
 }
 export type WithServerProps<T> = { [P in keyof T]: _Extend<T[P]> }
 
-export type _Extend<T> =
-  T extends Only<infer U>
+export type _Extend<T> = T extends StateDataState
+  ? T
+  : T extends Only<infer U>
     ? U
     : T extends (...args: any) => any
       ? T | ServerHandlerDataState
@@ -77,8 +78,4 @@ export function createComponentDefinition<
     props,
     key: null,
   })
-}
-
-export function isReactElement(obj: any): obj is ReactElement {
-  return obj !== null && typeof obj === 'object' && 'type' in obj && 'props' in obj && 'key' in obj
 }

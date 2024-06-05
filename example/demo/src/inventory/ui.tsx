@@ -34,9 +34,9 @@ function HomeScreen() {
   return (
     <YStack backgroundColor={'$background'}>
       <RiseDropdownButton
+        value={selectedValue}
         button={<H2>Inventory</H2>}
         options={inventory.map((item) => ({ key: item.key, label: item.title }))}
-        onSelect={setStateAction(selectedValue)}
       />
       <RiseSelectField
         value={selectedValue}
