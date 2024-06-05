@@ -2,12 +2,17 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 import { action } from './events'
 import { createWritableStream, Stream, WritableStream } from './streams'
-import { ActionDataState, JSONValue, StateDataState } from './template'
+import { ActionDataState, JSONValue, Path, StateDataState } from './template'
+import { lookupValue } from './utils'
 
 type StateUpdate<T> = T | StateModifier
 type UpdateStateAction<T> = ActionDataState<['state-update', StateDataState<T>, StateUpdate<T>]>
 
-type StateModifier = PayloadStateModifier | ToggleStateModifier | IncrementStateModifier
+type StateModifier =
+  | PayloadStateModifier
+  | ToggleStateModifier
+  | IncrementStateModifier
+  | LookupStateModifier
 type PayloadStateModifier = {
   $: 'state-modifier'
   type: 'payload'
@@ -20,6 +25,11 @@ type IncrementStateModifier = {
   $: 'state-modifier'
   type: 'increment'
   value: number
+}
+type LookupStateModifier = {
+  $: 'state-modifier'
+  type: 'lookup'
+  path: (string | number)[]
 }
 
 export function isStateUpdateAction<T extends JSONValue>(
@@ -43,7 +53,7 @@ export function setStateAction(
 ): UpdateStateAction<boolean>
 export function setStateAction<T extends JSONValue>(
   state: StateDataState<T>,
-  value?: T | PayloadStateModifier
+  value?: T | PayloadStateModifier | LookupStateModifier
 ): UpdateStateAction<T>
 export function setStateAction<T>(
   state: StateDataState<T>,
@@ -107,6 +117,9 @@ export function applyStateUpdateAction<T extends JSONValue>(
     case 'toggle': {
       return !state
     }
+    case 'lookup': {
+      return lookupValue(payload, stateUpdate.path)
+    }
     case 'increment':
       if (typeof state !== 'number') {
         throw new Error('Cannot increment non-number state.')
@@ -132,6 +145,12 @@ export const increment = (value: number): IncrementStateModifier => ({
   $: 'state-modifier',
   type: 'increment',
   value,
+})
+
+export const lookup = (path: (string | number)[]): LookupStateModifier => ({
+  $: 'state-modifier',
+  type: 'lookup',
+  path,
 })
 
 export const useLocalStateValues = () => {

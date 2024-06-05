@@ -1,71 +1,36 @@
-import React from 'react'
-import { SizableText, Slider as TamaguiSlider, Spinner, YStack } from 'tamagui'
-import { z } from 'zod'
+/** @jsxImportSource @final-ui/react */
 
-const SliderProps = z.object({
-  value: z.number(),
-  min: z.number().optional().default(0),
-  max: z.number().optional().default(100),
-  step: z.number().optional().default(1),
-  longPressSheet: z.any().optional(),
-  onValueChange: z.function().args(z.array(z.number())).optional(),
-})
+import { WithServerProps } from '@final-ui/react/jsx-runtime'
+import {
+  Slider as TSlider,
+  SliderThumb,
+  SliderTrack,
+  SliderTrackActive,
+} from '@final-ui/tamagui/server'
 
-export function Slider(props: z.infer<typeof SliderProps>) {
+type Props = {
+  value: number[]
+  min?: number
+  max?: number
+  step?: number
+  onValueChange?: (value: number[]) => any
+  onSlideEnd?: (event: any, value: number) => any
+}
+
+export function Slider(props: WithServerProps<Props>) {
   return (
-    <TamaguiSlider
-      value={[props.value]}
+    <TSlider
+      value={props.value}
       max={props.max}
       min={props.min}
       step={props.step}
       onValueChange={props.onValueChange}
+      onSlideEnd={props.onSlideEnd}
     >
-      <TamaguiSlider.Track>
-        <TamaguiSlider.TrackActive />
-      </TamaguiSlider.Track>
-      <TamaguiSlider.Thumb index={0} circular elevate />
-    </TamaguiSlider>
+      <SliderTrack>
+        <SliderTrackActive />
+      </SliderTrack>
+      <SliderThumb index={0} circular elevate />
+    </TSlider>
   )
-}
-
-Slider.validate = (props: any) => {
-  return SliderProps.parse(props)
-}
-
-const SliderFieldProps = SliderProps.extend({
-  defaultValue: z.number().optional(),
-  onValueChange: z.function().args(z.array(z.number())).optional(),
-  label: z.string().optional(),
-})
-
-export function SliderField(props: z.infer<typeof SliderFieldProps>) {
-  let content = <Spinner />
-  // tbd: this is always number, isn't it? (we validate props)
-  if (typeof props.value === 'number') {
-    content = (
-      <TamaguiSlider
-        marginVertical={'$4'}
-        onValueChange={props.onValueChange}
-        value={[props.value]}
-        max={props.max}
-        min={props.min}
-        step={props.step}
-      >
-        <TamaguiSlider.Track>
-          <TamaguiSlider.TrackActive />
-        </TamaguiSlider.Track>
-        <TamaguiSlider.Thumb index={0} circular elevate />
-      </TamaguiSlider>
-    )
-  }
-  return (
-    <YStack>
-      <SizableText>{props.label}</SizableText>
-      {content}
-    </YStack>
-  )
-}
-
-SliderField.validate = (props: any) => {
-  return SliderFieldProps.parse(props)
 }

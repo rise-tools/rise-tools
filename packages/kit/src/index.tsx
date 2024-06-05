@@ -1,6 +1,5 @@
 import { Icon } from './Icon'
 import { QRCode } from './QRCode'
-import { Slider, SliderField } from './Slider'
 import { SortableList } from './SortableList'
 import { SwitchField } from './SwitchField'
 
@@ -13,14 +12,6 @@ export const RiseComponents = {
   RiseIcon: {
     component: Icon,
     validator: Icon.validate,
-  },
-  RiseSlider: {
-    component: Slider,
-    validator: Slider.validate,
-  },
-  RiseSliderField: {
-    component: SliderField,
-    validator: SliderField.validate,
   },
   RiseSortableList: {
     component: SortableList,

@@ -116,7 +116,7 @@ export function createWSServerDataSource() {
           `Missing event handler on the server for event: ${JSON.stringify(message.event)}`
         )
       }
-      let res = await value.handler(payload)
+      let res = await value.handler(...payload)
       if (!isResponseDataState(res)) {
         res = response(res ?? null)
       }

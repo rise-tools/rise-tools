@@ -1,5 +1,5 @@
-import { RiseDropdownButton, RiseSelectField } from '@final-ui/kit/server'
-import { action, ref, setStateAction, state } from '@final-ui/react'
+import { RiseDropdownButton, RiseSelectField, RiseSlider } from '@final-ui/kit/server'
+import { action, lookup, ref, setStateAction, state } from '@final-ui/react'
 import {
   Button,
   H2,
@@ -31,6 +31,7 @@ export function InventoryExample(ctx: UIContext) {
 
 function HomeScreen() {
   const selectedValue = state<string>('')
+  const sliderValue = state(0)
   return (
     <YStack backgroundColor={'$background'}>
       <RiseDropdownButton
@@ -43,6 +44,16 @@ function HomeScreen() {
         onValueChange={setStateAction(selectedValue)}
         unselectedLabel={'Select an item'}
         options={inventory.map((item) => ({ key: item.key, label: item.title }))}
+      />
+      <RiseSlider
+        value={[sliderValue]}
+        onValueChange={setStateAction(sliderValue, lookup([0, 0]))}
+        onSlideEnd={(_event, value) => {
+          console.log('value', _event, value)
+        }}
+        min={0}
+        max={100}
+        step={1}
       />
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {inventory.slice(0, 1).map((item, idx) => (
