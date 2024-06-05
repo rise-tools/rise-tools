@@ -2,8 +2,6 @@ import React from 'react'
 import { SizableText, Slider as TamaguiSlider, Spinner, YStack } from 'tamagui'
 import { z } from 'zod'
 
-import { LongPressSheetLabel } from './LongPressSheetLabel'
-
 const SliderProps = z.object({
   value: z.number(),
   min: z.number().optional().default(0),
@@ -60,17 +58,9 @@ export function SliderField(props: z.infer<typeof SliderFieldProps>) {
       </TamaguiSlider>
     )
   }
-  if (!props.longPressSheet) {
-    return (
-      <YStack>
-        <SizableText>{props.label}</SizableText>
-        {content}
-      </YStack>
-    )
-  }
   return (
     <YStack>
-      <LongPressSheetLabel sheet={props.longPressSheet}>{props.label}</LongPressSheetLabel>
+      <SizableText>{props.label}</SizableText>
       {content}
     </YStack>
   )

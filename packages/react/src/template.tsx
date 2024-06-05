@@ -18,13 +18,14 @@ export type DataState<T = EventDataState> =
   | ReferencedComponentDataState<T>
   | ComponentDataState<T>
   | ReferencedDataState
-  | ActionDataState
+  | HandlerDataState<T>
   | StateDataState
   | { [key: string]: DataState<T>; $?: never }
-  | DataState[]
+  | DataState<T>[]
   | T
 /** Server data state */
 export type ServerDataState = DataState<ServerEventDataState>
+export type ServerHandlerDataState = HandlerDataState<ServerEventDataState>
 
 export type ComponentDataState<T = EventDataState> = {
   $: 'component'
@@ -90,6 +91,7 @@ export type TemplateEvent<P = EventDataState | ActionDataState[], K = any> = {
 }
 
 export type HandlerEvent = TemplateEvent<EventDataState>
+export type HandlerDataState<T = EventDataState> = T | ActionDataState | ActionDataState[]
 
 export function isCompositeDataState(
   obj: any

@@ -1,163 +1,110 @@
-import { LinearGradient } from '@tamagui/linear-gradient'
-import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
-import React, { useMemo } from 'react'
-import { Adapt, Label, Select, Sheet, YStack } from 'tamagui'
-import { z } from 'zod'
+/** @jsxImportSource @final-ui/react */
 
-const SelectFieldProps = z.object({
-  value: z.string().nullable(),
-  id: z.string().optional(),
-  label: z.string().optional(),
-  hidden: z.boolean().optional(),
-  unselectedLabel: z.string().optional().default('...'),
-  onValueChange: z.function().args(z.string()).optional(),
-  options: z
-    .array(
-      z.object({
-        key: z.string(),
-        label: z.string(),
-      })
-    )
-    .optional(),
-})
+import { ServerHandlerDataState, StateDataState } from '@final-ui/react'
+import {
+  Adapt,
+  AdaptContents,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectItemIndicator,
+  SelectItemText,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectViewport,
+  Sheet,
+  SheetFrame,
+  SheetOverlay,
+  SheetScrollView,
+  YStack,
+} from '@final-ui/tamagui/server'
 
-export function SelectField(props: z.infer<typeof SelectFieldProps>) {
-  const { value, options, hidden } = props
+type Props = {
+  value: StateDataState
+  id?: string
+  label?: string
+  hidden?: boolean
+  unselectedLabel?: string
+  onValueChange?: ServerHandlerDataState
+  options?: { key: string; label: string }[]
+}
+
+export function SelectField(props: Props) {
   return (
     <YStack>
       <Label>{props.label}</Label>
       <Select
         id={props.id}
-        // @ts-ignore
-        value={value}
+        value={props.value}
         onValueChange={props.onValueChange}
         disablePreventBodyScroll
-        // native
       >
-        <Select.Trigger
-          opacity={hidden ? 0 : 1}
-          height={hidden ? 0 : undefined}
-          width={hidden ? 0 : undefined}
-          display={hidden ? 'none' : undefined}
-          iconAfter={ChevronDown}
-        >
-          <Select.Value placeholder={props.unselectedLabel} />
-        </Select.Trigger>
+        <YStack>
+          <Adapt platform="touch">
+            <Sheet modal dismissOnSnapToBottom animation="quick">
+              <SheetOverlay />
+              <SheetFrame>
+                <SheetScrollView>
+                  <AdaptContents />
+                </SheetScrollView>
+              </SheetFrame>
+            </Sheet>
+          </Adapt>
 
-        <Adapt
-          //when="sm"
-          platform="touch"
-        >
-          <Sheet
-            modal
-            dismissOnSnapToBottom
-            // animationConfig={{
-            //   type: 'spring',
-            //   damping: 20,
-            //   mass: 1.2,
-            //   stiffness: 250,
-            // }}
-            animation="quick"
-            // dismissOnOverlayPress
-          >
-            <Sheet.Overlay
-            // animation="quick"
-            // opacity={0.2}
-            // backgroundColor="red"
-            // enterStyle={{ opacity: 0.01 }}
-            // exitStyle={{ opacity: 0.01 }}
-            />
-            {/* <Sheet.Handle /> */}
-            <Sheet.Frame>
-              <Sheet.ScrollView>
-                <Adapt.Contents />
-              </Sheet.ScrollView>
-            </Sheet.Frame>
-          </Sheet>
-        </Adapt>
-
-        <Select.Content zIndex={200000}>
-          <Select.ScrollUpButton
-            alignItems="center"
-            justifyContent="center"
-            position="relative"
-            width="100%"
-            height="$3"
-          >
-            <YStack zIndex={10}>
-              <ChevronUp size={20} />
-            </YStack>
-            <LinearGradient
+          <SelectContent zIndex={200000}>
+            <SelectScrollUpButton
+              alignItems="center"
+              justifyContent="center"
+              position="relative"
+              width="$3"
+              height="$3"
+            >
+              <YStack zIndex={10}>{/* <ChevronUp size={20} /> */}</YStack>
+              {/* <LinearGradient
               start={[0, 0]}
               end={[0, 1]}
               fullscreen
               colors={['$background', 'transparent']}
               borderRadius="$4"
-            />
-          </Select.ScrollUpButton>
+            /> */}
+            </SelectScrollUpButton>
 
-          <Select.Viewport
-            animation="quick"
-            animateOnly={['transform', 'opacity']}
-            enterStyle={{ opacity: 0, y: -10 }}
-            exitStyle={{ opacity: 0, y: 10 }}
-            minWidth={200}
-          >
-            {useMemo(
-              () =>
-                options?.map((item, i) => {
-                  return (
-                    <Select.Item index={i} key={item.key} value={item.key}>
-                      <Select.ItemText>{item.label}</Select.ItemText>
-                      <Select.ItemIndicator marginLeft="auto">
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  )
-                }),
-              [options]
-            )}
-            {/* Native gets an extra icon */}
-            {/* {true && (
-              <YStack
-                position="absolute"
-                right={0}
-                top={0}
-                bottom={0}
-                alignItems="center"
-                justifyContent="center"
-                width={'$4'}
-                pointerEvents="none"
-              >
-                <ChevronDown size={getFontSize((props.size as FontSizeTokens) ?? '$true')} />
-              </YStack>
-            )} */}
-          </Select.Viewport>
-
-          <Select.ScrollDownButton
-            alignItems="center"
-            justifyContent="center"
-            position="relative"
-            width="100%"
-            height="$3"
-          >
-            <YStack zIndex={10}>
-              <ChevronDown size={20} />
-            </YStack>
-            <LinearGradient
+            <SelectViewport
+              animation="quick"
+              animateOnly={['transform', 'opacity']}
+              enterStyle={{ opacity: 0, y: -10 }}
+              exitStyle={{ opacity: 0, y: 10 }}
+              minWidth={200}
+            >
+              {props.options?.map((item, i) => {
+                return (
+                  <SelectItem index={i} key={item.key} value={item.key}>
+                    <SelectItemText>{item.label}</SelectItemText>
+                    <SelectItemIndicator>{/* <Check size={16} /> */}</SelectItemIndicator>
+                  </SelectItem>
+                )
+              })}
+            </SelectViewport>
+            <SelectScrollDownButton
+              alignItems="center"
+              justifyContent="center"
+              position="relative"
+              width="$3"
+              height="$3"
+            >
+              <YStack zIndex={10}>{/* <ChevronDown size={20} /> */}</YStack>
+              {/* <LinearGradient
               start={[0, 0]}
               end={[0, 1]}
               fullscreen
               colors={['transparent', '$background']}
               borderRadius="$4"
-            />
-          </Select.ScrollDownButton>
-        </Select.Content>
+            /> */}
+            </SelectScrollDownButton>
+          </SelectContent>
+        </YStack>
       </Select>
     </YStack>
   )
-}
-
-SelectField.validate = (props: any) => {
-  return SelectFieldProps.parse(props)
 }

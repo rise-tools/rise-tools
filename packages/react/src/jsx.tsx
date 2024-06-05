@@ -2,11 +2,11 @@ import type { JSXElementConstructor, ReactElement } from 'react'
 
 import { event } from './events'
 import {
-  ActionDataState,
   ComponentDataState,
   isComponentDataState,
   ReferencedDataState,
   ServerEventDataState,
+  ServerHandlerDataState,
   StateDataState,
 } from './template'
 
@@ -48,11 +48,11 @@ export function jsx(
   }
 }
 
-export type Extend<T> = { [P in keyof T]?: _Extend<T[P]> }
+export type Extend<T> = { [P in keyof T]: _Extend<T[P]> }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type _Extend<T> = T extends Function
-  ? T | ServerEventDataState | ActionDataState
+  ? ServerHandlerDataState
   : T extends Array<infer U>
     ? _DeepPartialArray<U>
     : T extends object

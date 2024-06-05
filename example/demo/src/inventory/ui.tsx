@@ -1,5 +1,5 @@
-import { RiseDropdownButton } from '@final-ui/kit/server'
-import { action, ref } from '@final-ui/react'
+import { RiseDropdownButton, RiseSelectField } from '@final-ui/kit/server'
+import { action, ref, setStateAction, state } from '@final-ui/react'
 import {
   Button,
   H2,
@@ -30,12 +30,14 @@ export function InventoryExample(ctx: UIContext) {
 }
 
 function HomeScreen() {
+  const selectedValue = state<string>('')
   return (
     <YStack backgroundColor={'$background'}>
       <RiseDropdownButton
         button={<H2>Inventory</H2>}
         options={inventory.map((item) => ({ key: item.key, label: item.title }))}
       />
+      <RiseSelectField value={selectedValue} onValueChange={setStateAction(selectedValue)} />
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {inventory.slice(0, 1).map((item, idx) => (
           <Button

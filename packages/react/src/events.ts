@@ -3,6 +3,7 @@ import {
   HandlerFunction,
   isEventDataState,
   ServerEventDataState,
+  ServerHandlerDataState,
   StateDataState,
 } from './template'
 
@@ -31,4 +32,18 @@ export function action<T = any>(name: T): ActionDataState<T> {
     $: 'action',
     name,
   }
+}
+
+export function extend(
+  event: ServerHandlerDataState,
+  action: ActionDataState | ActionDataState[]
+): ServerHandlerDataState {
+  if (isServerEventDataState(event)) {
+    if (!event.actions) {
+      event.actions = []
+    }
+    event.actions = event.actions.concat(action)
+    return event
+  }
+  return Array.isArray(event) ? event.concat(action) : [event].concat(action)
 }
