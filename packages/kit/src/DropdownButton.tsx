@@ -27,7 +27,7 @@ export function DropdownButton(props: Props) {
       <Sheet
         forceRemoveScrollEnabled={isOpen}
         modal={true}
-        open={open}
+        open={isOpen}
         onOpenChange={setStateAction(isOpen)}
         dismissOnSnapToBottom
         zIndex={100_000}
