@@ -1,5 +1,4 @@
 import { Icon } from './Icon'
-import { LongPressSheetButton } from './LongPressSheetButton'
 import { QRCode } from './QRCode'
 import { SelectField } from './SelectField'
 import { Slider, SliderField } from './Slider'
@@ -35,9 +34,5 @@ export const RiseComponents = {
   RiseSwitchField: {
     component: SwitchField,
     validator: SwitchField.validate,
-  },
-  RiseLongPressSheetButton: {
-    component: LongPressSheetButton,
-    validator: LongPressSheetButton.validate,
   },
 }

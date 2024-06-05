@@ -21,7 +21,7 @@ export const jsxs = jsx
 
 export function jsx(
   componentFactory: (props: any) => UI,
-  { children, ...passedProps }: Props = {},
+  { children, ...passedProps }: Props,
   key?: string
 ): ServerComponent {
   const el = componentFactory(passedProps)
