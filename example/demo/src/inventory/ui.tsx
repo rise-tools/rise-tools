@@ -1,5 +1,5 @@
 import { RiseDropdownButton, RiseSelectField, RiseSlider } from '@final-ui/kit/server'
-import { action, lookup, ref, setStateAction, state } from '@final-ui/react'
+import { action, lookup, ref, response, setStateAction, state } from '@final-ui/react'
 import {
   Button,
   H2,
@@ -32,6 +32,9 @@ export function InventoryExample(ctx: UIContext) {
 function HomeScreen() {
   const selectedValue = state<string>('')
   const sliderValue = state(0)
+  const sliderValueMultiFirst = state(25)
+  const sliderValueMultiEnd = state(75)
+  console.log('run')
   return (
     <YStack backgroundColor={'$background'}>
       <RiseDropdownButton
@@ -50,6 +53,25 @@ function HomeScreen() {
         onValueChange={setStateAction(sliderValue, lookup([0, 0]))}
         onSlideEnd={(_event, value) => {
           console.log('value', _event, value)
+        }}
+        min={0}
+        max={100}
+        step={1}
+      />
+      <YStack marginBottom="$3" />
+      <RiseSlider
+        value={[sliderValueMultiFirst, sliderValueMultiEnd]}
+        onValueChange={[
+          setStateAction(sliderValueMultiFirst, lookup([0, 0])),
+          setStateAction(sliderValueMultiEnd, lookup([0, 1])),
+        ]}
+        onSlideEnd={async (_event, value) => {
+          console.log('value', _event, value)
+          // artificial stop
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+          return response(null)
+            .action(setStateAction(sliderValueMultiFirst, 25))
+            .action(setStateAction(sliderValueMultiEnd, 60))
         }}
         min={0}
         max={100}
