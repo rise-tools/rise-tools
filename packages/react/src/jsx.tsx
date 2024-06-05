@@ -12,7 +12,7 @@ import {
 
 export type UI = ReactElement<Props> | ServerComponent
 
-type ServerComponent = ComponentDataState<ServerEventDataState>
+type ServerComponent = ComponentDataState<ServerEventDataState | ((...args: any) => any)>
 type Props = ServerComponent['props'] & {
   children?: ServerComponent['children']
 }
