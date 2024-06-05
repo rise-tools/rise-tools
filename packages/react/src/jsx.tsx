@@ -29,7 +29,6 @@ export function jsx(
     return el
   }
   if (typeof el.type !== 'string') {
-    console.log(componentFactory, passedProps, el)
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
   const serialisedProps = Object.fromEntries(
