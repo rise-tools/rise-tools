@@ -1,3 +1,5 @@
+/** @jsxImportSource @final-ui/react */
+
 import { event, setStateAction, state } from '@final-ui/react'
 import {
   Button,
@@ -20,10 +22,8 @@ type Props = {
 export function DropdownButton(props: Props) {
   const isOpen = state(false)
   return (
-    <>
-      <Button asChild={true} onPress={setStateAction(isOpen, true)}>
-        {props.button}
-      </Button>
+    <YStack>
+      <Button onPress={setStateAction(isOpen, true)}>{props.button}</Button>
       <Sheet
         forceRemoveScrollEnabled={isOpen}
         modal={true}
@@ -54,6 +54,6 @@ export function DropdownButton(props: Props) {
           </YStack>
         </SheetFrame>
       </Sheet>
-    </>
+    </YStack>
   )
 }

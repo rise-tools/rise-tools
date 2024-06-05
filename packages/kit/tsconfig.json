@@ -5,7 +5,7 @@
     "outDir": "./lib",
     "module": "preserve",
     "moduleResolution": "bundler",
-    "jsx": "preserve"
+    "jsx": "react-jsx"
   },
   "references": [{
     "path": "../react"

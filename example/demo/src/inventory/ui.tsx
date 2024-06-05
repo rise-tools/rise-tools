@@ -33,7 +33,7 @@ function HomeScreen() {
   return (
     <YStack backgroundColor={'$background'}>
       <RiseDropdownButton
-        button={<H2 children="Inventory" />}
+        button={<H2>Inventory</H2>}
         options={inventory.map((item) => ({ key: item.key, label: item.title }))}
       />
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>

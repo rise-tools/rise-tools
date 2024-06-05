@@ -6,7 +6,6 @@ import {
   ComponentDataState,
   isComponentDataState,
   ReferencedDataState,
-  ServerDataState,
   ServerEventDataState,
   StateDataState,
 } from './template'
@@ -15,14 +14,14 @@ export type UI = ReactElement<Props> | ServerComponent
 
 type ServerComponent = ComponentDataState<ServerEventDataState>
 type Props = ServerComponent['props'] & {
-  children: ServerDataState
+  children?: ServerComponent['children']
 }
 
 export const jsxs = jsx
 
 export function jsx(
   componentFactory: (props: any) => UI,
-  { children, ...passedProps }: Props,
+  { children, ...passedProps }: Props = {},
   key?: string
 ): ServerComponent {
   const el = componentFactory(passedProps)
@@ -30,6 +29,7 @@ export function jsx(
     return el
   }
   if (typeof el.type !== 'string') {
+    console.log(componentFactory, passedProps, el)
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
   const serialisedProps = Object.fromEntries(
