@@ -40,20 +40,3 @@ export function action<T = any>(name: T): ActionDataState<T> {
     name,
   }
 }
-
-export function extend(
-  handler: ServerHandlerDataState | HandlerFunction,
-  action: ActionDataState | ActionDataState[]
-): ServerHandlerDataState {
-  if (typeof handler === 'function') {
-    handler = event(handler)
-  }
-  if (isServerEventDataState(handler)) {
-    if (!handler.actions) {
-      handler.actions = []
-    }
-    handler.actions = handler.actions.concat(action)
-    return handler
-  }
-  return Array.isArray(handler) ? handler.concat(action) : [handler].concat(action)
-}

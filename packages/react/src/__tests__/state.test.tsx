@@ -302,7 +302,7 @@ it('should inject state (initial value) into function handler', async () => {
   await act(async () => {
     fireEvent.click(component.getByTestId('button'))
   })
-  expect(onTemplateEvent.mock.lastCall[0].payload).toEqual({ isChecked: false })
+  expect(onTemplateEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: false })
 })
 
 it('should inject current state value into function handler', async () => {
@@ -344,5 +344,5 @@ it('should inject current state value into function handler', async () => {
     fireEvent.click(component.getByTestId('checkbox'))
     fireEvent.click(component.getByTestId('button'))
   })
-  expect(onTemplateEvent.mock.lastCall[0].payload).toEqual({ isChecked: true })
+  expect(onTemplateEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: true })
 })

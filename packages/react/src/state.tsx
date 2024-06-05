@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 import { action } from './events'
 import { createWritableStream, Stream, WritableStream } from './streams'
-import { ActionDataState, JSONValue, Path, StateDataState } from './template'
+import { ActionDataState, JSONValue, StateDataState } from './template'
 import { lookupValue } from './utils'
 
 type StateUpdate<T> = T | StateModifier

@@ -299,7 +299,9 @@ it('should accept event handler as a prop', () => {
           "name": "foo-action",
         },
       ],
-      "payload": "[native code]",
+      "payload": Array [
+        "[native code]",
+      ],
       "target": Object {
         "component": "View",
         "key": "button",
