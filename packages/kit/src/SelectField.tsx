@@ -1,6 +1,6 @@
 /** @jsxImportSource @final-ui/react */
 
-import { ServerHandlerDataState, StateDataState } from '@final-ui/react'
+import { Only, WithServerProps } from '@final-ui/react'
 import {
   Adapt,
   AdaptContents,
@@ -21,16 +21,16 @@ import {
 } from '@final-ui/tamagui/server'
 
 type Props = {
-  value: StateDataState
+  value: string
   id?: string
   label?: string
   hidden?: boolean
   unselectedLabel?: string
-  onValueChange?: ServerHandlerDataState
-  options?: { key: string; label: string }[]
+  onValueChange?: (value: string) => any
+  options?: { key: Only<string>; label: string }[]
 }
 
-export function SelectField(props: Props) {
+export function SelectField(props: WithServerProps<Props>) {
   return (
     <YStack>
       <Label>{props.label}</Label>
