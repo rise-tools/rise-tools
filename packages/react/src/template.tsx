@@ -13,13 +13,12 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
 }
 
 /** Data state */
-export type DataState<T = never> =
+export type DataState<T = EventDataState> =
   | JSONValue
   | ReferencedComponentDataState<T>
   | ComponentDataState<T>
   | ReferencedDataState
   | ActionDataState
-  | EventDataState
   | StateDataState
   | { [key: string]: DataState<T>; $?: never }
   | DataState[]
@@ -27,14 +26,14 @@ export type DataState<T = never> =
 /** Server data state */
 export type ServerDataState = DataState<ServerEventDataState>
 
-export type ComponentDataState<T = never> = {
+export type ComponentDataState<T = EventDataState> = {
   $: 'component'
   key?: string
   component: ComponentIdentifier
   children?: DataState<T>
   props?: Record<string, DataState<T>>
 }
-type ReferencedComponentDataState<T = never> = ComponentDataState<T> & {
+type ReferencedComponentDataState<T = EventDataState> = ComponentDataState<T> & {
   path: Path
 }
 export type StateDataState<T = JSONValue> = {
@@ -104,9 +103,7 @@ export function isCompositeDataState(
 export function isComponentDataState(obj: any): obj is ComponentDataState<any> {
   return obj !== null && typeof obj === 'object' && obj.$ === 'component'
 }
-export function isReferencedComponentDataState(
-  obj: DataState
-): obj is ReferencedComponentDataState {
+export function isReferencedComponentDataState(obj: any): obj is ReferencedComponentDataState {
   return isComponentDataState(obj) && 'path' in obj
 }
 export function isEventDataState(obj: any): obj is EventDataState {
