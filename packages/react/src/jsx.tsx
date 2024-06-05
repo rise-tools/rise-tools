@@ -79,3 +79,7 @@ export function createComponentDefinition<
     key: null,
   })
 }
+
+export function isReactElement(obj: any): obj is ReactElement {
+  return obj !== null && typeof obj === 'object' && 'type' in obj && 'props' in obj && 'key' in obj
+}
