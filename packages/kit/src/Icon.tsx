@@ -1,5 +1,4 @@
 import * as LucideIcons from '@tamagui/lucide-icons'
-import React from 'react'
 import { SizableText } from 'tamagui'
 import { z } from 'zod'
 

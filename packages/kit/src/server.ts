@@ -1,14 +1,17 @@
 import { createComponentDefinition } from '@final-ui/react'
+import type RNDraggableFlatList from 'react-native-draggable-flatlist'
+import type { ScaleDecorator as RNSCaleDecorator } from 'react-native-draggable-flatlist'
+import type RNQRCode from 'react-native-qrcode-svg'
 
 import type { Icon } from './Icon'
-import type { QRCode } from './QRCode'
-import type { SortableList } from './SortableList'
-import type { SwitchField } from './SwitchField'
 
-export const RiseQRCode = createComponentDefinition<typeof QRCode>('RiseQRCode')
+/** bindings to client-side components */
+export const QRCode = createComponentDefinition<typeof RNQRCode>('RNQRCode')
+export const DraggableFlatList =
+  createComponentDefinition<typeof RNDraggableFlatList>('RNDraggableFlatList')
+export const ScaleDecorator = createComponentDefinition<typeof RNSCaleDecorator>('RNSCaleDecorator')
+
 export const RiseIcon = createComponentDefinition<typeof Icon>('RiseIcon')
-export const RiseSortableList = createComponentDefinition<typeof SortableList>('RiseSortableList')
-export const RiseSwitchField = createComponentDefinition<typeof SwitchField>('RiseSwitchField')
 
 /** fully server-side components */
 export { DropdownButton } from './DropdownButton'

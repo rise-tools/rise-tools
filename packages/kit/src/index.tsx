@@ -1,19 +1,20 @@
-import { Icon } from './Icon'
-import { QRCode } from './QRCode'
-import { SortableList } from './SortableList'
+import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
+import QRCode from 'react-native-qrcode-svg'
 
-// tbd: enforce same components are exported
+import { Icon } from './Icon'
+
 export const RiseComponents = {
-  RiseQRCode: {
+  RNDraggableFlatList: {
+    component: DraggableFlatList,
+  },
+  RNScaleDecorator: {
+    component: ScaleDecorator,
+  },
+  RNQRCode: {
     component: QRCode,
-    validator: QRCode.validate,
   },
   RiseIcon: {
     component: Icon,
     validator: Icon.validate,
-  },
-  RiseSortableList: {
-    component: SortableList,
-    validator: SortableList.validate,
   },
 }
