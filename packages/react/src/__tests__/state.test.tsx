@@ -3,7 +3,7 @@ import React from 'react'
 
 import { DataSource, Template } from '../refs'
 import { response } from '../response'
-import { increment, setStateAction, state, toggle } from '../state'
+import { increment, lookup, setStateAction, state, toggle } from '../state'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render initial state', () => {
@@ -345,4 +345,66 @@ it('should inject current state value into function handler', async () => {
     fireEvent.click(component.getByTestId('button'))
   })
   expect(onTemplateEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: true })
+})
+
+it('should lookup value from the arguments', async () => {
+  const userName = state('')
+  const dataSource: DataSource = {
+    get: () => ({
+      subscribe: () => jest.fn(),
+      get() {
+        return [
+          {
+            $: 'component',
+            key: 'header',
+            component: 'View',
+            children: userName,
+          },
+          {
+            $: 'component',
+            key: 'button',
+            component: 'View',
+            props: {
+              ['data-testid']: 'button',
+              onClick: setStateAction(userName, lookup([0, 'user', 'name'])),
+            },
+          },
+        ]
+      },
+    }),
+    sendEvent: jest.fn(),
+  }
+  const component = render(
+    <Template
+      components={{
+        View: {
+          component: (props) => (
+            <div {...props} onClick={() => props.onClick({ user: { name: 'Mike' } })} />
+          ),
+        },
+      }}
+      dataSource={dataSource}
+    />
+  )
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div />
+      <div
+        data-testid="button"
+      />
+    </DocumentFragment>
+  `)
+  await act(async () => {
+    fireEvent.click(component.getByTestId('button'))
+  })
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div>
+        Mike
+      </div>
+      <div
+        data-testid="button"
+      />
+    </DocumentFragment>
+  `)
 })
