@@ -2,13 +2,13 @@ import { createComponentDefinition } from '@final-ui/react'
 import type RNQRCode from 'react-native-qrcode-svg'
 
 import type { RNDraggableFlatList } from '../client/DraggableFlatList'
-import type { Icon } from '../client/Icon'
+import type { LucideIcon } from '../client/Icon'
 
 /** bindings to client-side components */
 export const QRCode = createComponentDefinition<typeof RNQRCode>('RNQRCode')
 export const DraggableFlatList =
   createComponentDefinition<typeof RNDraggableFlatList>('RNDraggableFlatList')
-export const RiseIcon = createComponentDefinition<typeof Icon>('RiseIcon')
+export const Icon = createComponentDefinition<typeof LucideIcon>('LucideIcon')
 
 /** fully server-side components */
 export { DropdownButton } from './DropdownButton'

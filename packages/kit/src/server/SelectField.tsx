@@ -22,6 +22,8 @@ import {
   YStack,
 } from '@final-ui/tamagui/server'
 
+import { Icon } from '../server'
+
 type Props = {
   value: string
   id?: string
@@ -64,7 +66,9 @@ export function SelectField(props: WithServerProps<Props>) {
             width="$3"
             height="$3"
           >
-            <YStack zIndex={10}>{/* <ChevronUp size={20} /> */}</YStack>
+            <YStack zIndex={10}>
+              <Icon icon="ChevronUp" size={20} />
+            </YStack>
             {/* <LinearGradient
               start={[0, 0]}
               end={[0, 1]}
@@ -85,7 +89,9 @@ export function SelectField(props: WithServerProps<Props>) {
               return (
                 <SelectItem index={i} key={item.key} value={item.key}>
                   <SelectItemText>{item.label}</SelectItemText>
-                  <SelectItemIndicator>{/* <Check size={16} /> */}</SelectItemIndicator>
+                  <SelectItemIndicator>
+                    <Icon icon="Check" size={16} />
+                  </SelectItemIndicator>
                 </SelectItem>
               )
             })}
@@ -97,7 +103,9 @@ export function SelectField(props: WithServerProps<Props>) {
             width="$3"
             height="$3"
           >
-            <YStack zIndex={10}>{/* <ChevronDown size={20} /> */}</YStack>
+            <YStack zIndex={10}>
+              <Icon icon="ChevronDown" size={20} />
+            </YStack>
             {/* <LinearGradient
               start={[0, 0]}
               end={[0, 1]}
