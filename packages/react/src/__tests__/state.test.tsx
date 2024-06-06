@@ -8,15 +8,27 @@ import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render initial state', () => {
   const value = state('foo')
+  const style = state({
+    opacity: 0,
+  })
   const dataSource: DataSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
-        return {
-          $: 'component',
-          component: 'View',
-          children: value,
-        }
+        return [
+          {
+            $: 'component',
+            component: 'View',
+            children: value,
+          },
+          {
+            $: 'component',
+            component: 'View',
+            props: {
+              style,
+            },
+          },
+        ]
       },
     }),
     sendEvent: jest.fn(),
@@ -27,6 +39,9 @@ it('should render initial state', () => {
       <div>
         foo
       </div>
+      <div
+        style="opacity: 0;"
+      />
     </DocumentFragment>
   `)
 })
