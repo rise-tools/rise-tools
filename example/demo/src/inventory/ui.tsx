@@ -1,5 +1,5 @@
-import { RiseDropdownButton, RiseSelectField, RiseSlider } from '@final-ui/kit/server'
-import { action, lookup, ref, response, setStateAction, state } from '@final-ui/react'
+import { DropdownButton, SelectField, Slider, SwitchField } from '@final-ui/kit/server'
+import { action, event, lookup, ref, response, setStateAction, state } from '@final-ui/react'
 import {
   Button,
   H2,
@@ -34,21 +34,22 @@ function HomeScreen() {
   const sliderValue = state(0)
   const sliderValueMultiFirst = state(25)
   const sliderValueMultiEnd = state(75)
-  console.log('run')
+  const isChecked = state(false)
+
   return (
     <YStack backgroundColor={'$background'}>
-      <RiseDropdownButton
+      <DropdownButton
         value={selectedValue}
         button={<H2>Inventory</H2>}
         options={inventory.map((item) => ({ key: item.key, label: item.title }))}
       />
-      <RiseSelectField
+      <SelectField
         value={selectedValue}
         onValueChange={setStateAction(selectedValue)}
         unselectedLabel={'Select an item'}
         options={inventory.map((item) => ({ key: item.key, label: item.title }))}
       />
-      <RiseSlider
+      <Slider
         value={[sliderValue]}
         onValueChange={setStateAction(sliderValue, lookup([0, 0]))}
         onSlideEnd={(_event, value) => {
@@ -59,7 +60,7 @@ function HomeScreen() {
         step={1}
       />
       <YStack marginBottom="$3" />
-      <RiseSlider
+      <Slider
         value={[sliderValueMultiFirst, sliderValueMultiEnd]}
         onValueChange={[
           setStateAction(sliderValueMultiFirst, lookup([0, 0])),
@@ -76,6 +77,16 @@ function HomeScreen() {
         min={0}
         max={100}
         step={1}
+      />
+      <SwitchField
+        value={isChecked}
+        onCheckedChange={event(
+          (...args) => {
+            console.log(args)
+          },
+          { actions: [setStateAction(isChecked)] }
+        )}
+        label="Switch me on"
       />
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {inventory.slice(0, 1).map((item, idx) => (

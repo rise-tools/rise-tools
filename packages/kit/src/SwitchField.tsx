@@ -1,35 +1,26 @@
-import React from 'react'
-import { Label, Spinner, Switch, XStack } from 'tamagui'
-import { z } from 'zod'
+/** @jsxImportSource @final-ui/react */
 
-const SwitchFieldProps = z.object({
-  value: z.boolean().nullable().optional(),
-  label: z.string().optional(),
-  onCheckedChange: z.function().optional(),
-})
+import { WithServerProps } from '@final-ui/react/jsx-runtime'
+import { Label, Switch, SwitchThumb, XStack } from '@final-ui/tamagui/server'
 
-export function SwitchField(props: z.infer<typeof SwitchFieldProps>) {
-  let content = <Spinner />
-  if (typeof props.value === 'boolean') {
-    content = (
+type Props = {
+  value: boolean
+  label: string
+  onCheckedChange: (value: boolean) => void
+}
+
+export function SwitchField(props: WithServerProps<Props>) {
+  return (
+    <XStack alignItems="center" justifyContent="space-between">
+      <Label>{props.label}</Label>
       <Switch
         backgroundColor="#ddd"
         marginVertical={'$4'}
         checked={props.value}
         onCheckedChange={props.onCheckedChange}
       >
-        <Switch.Thumb animation="quick" />
+        <SwitchThumb animation="quick" />
       </Switch>
-    )
-  }
-  return (
-    <XStack alignItems="center" justifyContent="space-between">
-      <Label>{props.label}</Label>
-      {content}
     </XStack>
   )
-}
-
-SwitchField.validate = (props: any) => {
-  return SwitchFieldProps.parse(props)
 }

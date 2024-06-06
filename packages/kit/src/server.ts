@@ -11,6 +11,7 @@ export const RiseSortableList = createComponentDefinition<typeof SortableList>('
 export const RiseSwitchField = createComponentDefinition<typeof SwitchField>('RiseSwitchField')
 
 /** fully server-side components */
-export { DropdownButton as RiseDropdownButton } from './DropdownButton'
-export { SelectField as RiseSelectField } from './SelectField'
-export { Slider as RiseSlider } from './Slider'
+export { DropdownButton } from './DropdownButton'
+export { SelectField } from './SelectField'
+export { Slider } from './Slider'
+export { SwitchField } from './SwitchField'
