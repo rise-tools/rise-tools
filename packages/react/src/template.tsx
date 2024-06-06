@@ -263,7 +263,13 @@ export function BaseTemplate({
       )
     }
     if (isStateDataState(propValue)) {
-      return render(getLocalStateValue(propValue), path)
+      return renderProp(
+        propKey,
+        getLocalStateValue(propValue),
+        parentNode,
+        getLocalStateValue,
+        path
+      )
     }
     if (isCompositeDataState(propValue)) {
       return render(propValue, path)
