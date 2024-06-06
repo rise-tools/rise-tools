@@ -1,16 +1,12 @@
-import { DropdownButton, SelectField, Slider, SwitchField } from '@final-ui/kit/server'
-import { action, event, lookup, ref, response, setStateAction, state } from '@final-ui/react'
 import {
-  Button,
-  H2,
-  H4,
-  Image,
-  Paragraph,
-  ScrollView,
-  SizableText,
-  XStack,
-  YStack,
-} from '@final-ui/tamagui/server'
+  DraggableFlatList,
+  DropdownButton,
+  SelectField,
+  Slider,
+  SwitchField,
+} from '@final-ui/kit/server'
+import { action, event, lookup, ref, response, setStateAction, state } from '@final-ui/react'
+import { Button, H2, Image, Paragraph, SizableText, XStack, YStack } from '@final-ui/tamagui/server'
 
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
@@ -36,18 +32,23 @@ function HomeScreen() {
   const sliderValueMultiEnd = state(75)
   const isChecked = state(false)
 
+  const inv = inventory.map((item) => ({
+    key: item.key,
+    label: item.title,
+    onPress: action(['navigate', `inventory:${item.key}:details`]),
+  }))
+
+  // @ts-ignore
+  const inventoryItems = state(inv)
+
   return (
     <YStack backgroundColor={'$background'}>
-      <DropdownButton
-        value={selectedValue}
-        button={<H2>Inventory</H2>}
-        options={inventory.map((item) => ({ key: item.key, label: item.title }))}
-      />
+      <DropdownButton value={selectedValue} button={<H2>Inventory</H2>} options={inv} />
       <SelectField
         value={selectedValue}
         onValueChange={setStateAction(selectedValue)}
         unselectedLabel={'Select an item'}
-        options={inventory.map((item) => ({ key: item.key, label: item.title }))}
+        options={inv}
       />
       <Slider
         value={[sliderValue]}
@@ -88,43 +89,13 @@ function HomeScreen() {
         )}
         label="Switch me on"
       />
-      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-        {inventory.slice(0, 1).map((item, idx) => (
-          <Button
-            unstyled
-            onPress={action(['navigate', `inventory:${item.key}:details`])}
-            pressStyle={{ opacity: 0.8 }}
-          >
-            <XStack
-              gap={10}
-              paddingHorizontal={20}
-              paddingVertical={10}
-              alignItems="center"
-              borderBottomWidth={idx === inventory.length - 1 ? 0 : 1}
-              borderBottomColor="$gray4"
-            >
-              <Image
-                source={{ uri: item.photo }}
-                style={{ width: 75, height: 75 }}
-                resizeMode="contain"
-              />
-              <YStack>
-                <H4 children={item.title} />
-                <XStack gap={10}>
-                  <XStack gap="$1">
-                    <SizableText size="$4">Quantity:</SizableText>
-                    <SizableText size="$4" children={item.quantity} />
-                  </XStack>
-                  <XStack gap="$1">
-                    <SizableText size="$4">Price:</SizableText>
-                    <SizableText size="$4" children={item.price} />
-                  </XStack>
-                </XStack>
-              </YStack>
-            </XStack>
-          </Button>
-        ))}
-      </ScrollView>
+      <DraggableFlatList
+        // @ts-ignore this error will go away once former ts-ignore is removed
+        items={inventoryItems}
+        onReorder={setStateAction(inventoryItems)}
+        header={<H2>Header</H2>}
+        footer={<H2>Footer</H2>}
+      />
     </YStack>
   )
 }

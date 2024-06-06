@@ -1,14 +1,11 @@
-import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
 import QRCode from 'react-native-qrcode-svg'
 
-import { Icon } from './Icon'
+import { RNDraggableFlatList } from './client/DraggableFlatList'
+import { Icon } from './client/Icon'
 
 export const RiseComponents = {
   RNDraggableFlatList: {
-    component: DraggableFlatList,
-  },
-  RNScaleDecorator: {
-    component: ScaleDecorator,
+    component: RNDraggableFlatList,
   },
   RNQRCode: {
     component: QRCode,
