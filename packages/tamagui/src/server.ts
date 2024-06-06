@@ -1,5 +1,6 @@
 import { createComponentDefinition } from '@final-ui/react'
 import * as t from 'tamagui'
+import { LinearGradient as TLinearGradient } from 'tamagui/linear-gradient'
 
 export const Adapt = createComponentDefinition<typeof t.Adapt>('Adapt')
 export const AdaptContents = createComponentDefinition<typeof t.Adapt.Contents>('AdaptContents')
@@ -176,3 +177,5 @@ export const Spinner = createComponentDefinition<typeof t.Spinner>('Spinner')
 export const Unspaced = createComponentDefinition<typeof t.Unspaced>('Unspaced')
 
 export const VisuallyHidden = createComponentDefinition<typeof t.VisuallyHidden>('VisuallyHidden')
+
+export const LinearGradient = createComponentDefinition<typeof TLinearGradient>('LinearGradient')

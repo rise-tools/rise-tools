@@ -1,5 +1,6 @@
 import { ComponentRegistry } from '@final-ui/react'
 import * as t from 'tamagui'
+import { LinearGradient } from 'tamagui/linear-gradient'
 
 // tbd: check all components and make sure all events are wrapped
 
@@ -397,5 +398,9 @@ export const TamaguiComponents: ComponentRegistry = {
   /* https://tamagui.dev/ui/visually-hidden */
   VisuallyHidden: {
     component: t.VisuallyHidden,
+  },
+  /* https://tamagui.dev/ui/linear-gradient */
+  LinearGradient: {
+    component: LinearGradient,
   },
 }

@@ -5,6 +5,7 @@ import {
   Adapt,
   AdaptContents,
   Label,
+  LinearGradient,
   Select,
   SelectContent,
   SelectItem,
@@ -22,7 +23,7 @@ import {
   YStack,
 } from '@final-ui/tamagui/server'
 
-import { Icon } from '../server'
+import { Icon } from './bindings'
 
 type Props = {
   value: string
@@ -69,13 +70,13 @@ export function SelectField(props: WithServerProps<Props>) {
             <YStack zIndex={10}>
               <Icon icon="ChevronUp" size={20} />
             </YStack>
-            {/* <LinearGradient
+            <LinearGradient
               start={[0, 0]}
               end={[0, 1]}
               fullscreen
               colors={['$background', 'transparent']}
               borderRadius="$4"
-            /> */}
+            />
           </SelectScrollUpButton>
 
           <SelectViewport
@@ -106,13 +107,13 @@ export function SelectField(props: WithServerProps<Props>) {
             <YStack zIndex={10}>
               <Icon icon="ChevronDown" size={20} />
             </YStack>
-            {/* <LinearGradient
+            <LinearGradient
               start={[0, 0]}
               end={[0, 1]}
               fullscreen
               colors={['transparent', '$background']}
               borderRadius="$4"
-            /> */}
+            />
           </SelectScrollDownButton>
         </SelectContent>
       </Select>
