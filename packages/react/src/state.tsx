@@ -68,7 +68,7 @@ export type LocalState = {
 
 export const useLocalState = (): [
   LocalState,
-  (action: UpdateStateAction<JSONValue>, payload: JSONValue) => void,
+  (action: UpdateStateAction<JSONValue>, payload: JSONValue[]) => void,
 ] => {
   const localState = useRef<Record<string, WritableStream<JSONValue>>>({})
   function getWritableStream(state: StateDataState) {
@@ -84,7 +84,7 @@ export const useLocalState = (): [
         return stream
       },
     },
-    (action, payload: JSONValue) => {
+    (action, payload: JSONValue[]) => {
       const [, state, stateUpdate] = action.name
       const [write] = getWritableStream(state)
       write((currentValue) => applyStateUpdateAction(currentValue, stateUpdate, payload))
@@ -105,14 +105,14 @@ function isStateModifier(obj: any): obj is StateModifier {
 export function applyStateUpdateAction<T extends JSONValue>(
   state: T,
   stateUpdate: StateUpdate<T>,
-  payload: JSONValue
+  payload: JSONValue[]
 ) {
   if (!isStateModifier(stateUpdate)) {
     return stateUpdate
   }
   switch (stateUpdate.type) {
     case 'payload': {
-      return payload
+      return payload[0]
     }
     case 'toggle': {
       return !state
