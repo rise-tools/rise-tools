@@ -1,6 +1,6 @@
 /** @jsxImportSource @final-ui/react */
 
-import { WithServerProps } from '@final-ui/react/jsx-runtime'
+import { LiteralArray, WithServerProps } from '@final-ui/react'
 import {
   SizableText,
   Slider as TSlider,
@@ -11,7 +11,7 @@ import {
 } from '@final-ui/tamagui/server'
 
 type Props = {
-  value: number[]
+  value: LiteralArray<number>
   min?: number
   max?: number
   step?: number

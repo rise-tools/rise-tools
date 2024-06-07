@@ -48,26 +48,30 @@ export function jsx(
   }
 }
 
-export type Only<T> = {
-  __only: T
+export type Literal<T> = {
+  __literal: T
 }
-export type WithServerProps<T> = { [P in keyof T]: _Extend<T[P]> }
+export type LiteralArray<T> = Array<T> & {
+  __literalArray: T[]
+}
 
+export type WithServerProps<T> = { [P in keyof T]: _Extend<T[P]> }
+interface _ExtendArray<T> extends Array<_Extend<T>> {}
+
+// Extend the type to include server-side props
 export type _Extend<T> = T extends StateDataState
   ? T
-  : T extends Only<infer U>
+  : T extends Literal<infer U>
     ? U
     : T extends (...args: any) => any
-      ? T | ServerHandlerDataState<Parameters<T>>
+      ? T | ServerHandlerDataState
       : T extends Array<infer U>
-        ? _ExtendArray<U>
+        ? _ExtendArray<U> | (T extends LiteralArray<U> ? never : StateDataState<Array<U>>)
         : T extends object
           ? WithServerProps<T>
           : T extends null | undefined
             ? T
             : T | ReferencedDataState | StateDataState<T>
-
-interface _ExtendArray<T> extends Array<_Extend<T>> {}
 
 export function createComponentDefinition<
   T extends JSXElementConstructor<any> | keyof JSX.IntrinsicElements,

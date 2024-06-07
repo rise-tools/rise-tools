@@ -163,7 +163,6 @@ function ListExample() {
   return (
     <YStack flex={1} padding="$4">
       <DraggableFlatList
-        // @ts-ignore update types to accept state of array, not just array of states
         items={inventoryItems}
         onReorder={setStateAction(inventoryItems)}
         header={<H4>Header</H4>}

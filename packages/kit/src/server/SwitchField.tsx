@@ -1,6 +1,6 @@
 /** @jsxImportSource @final-ui/react */
 
-import { WithServerProps } from '@final-ui/react/jsx-runtime'
+import { WithServerProps } from '@final-ui/react'
 import { Label, Switch, SwitchThumb, XStack } from '@final-ui/tamagui/server'
 
 type Props = {

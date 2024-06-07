@@ -1,6 +1,6 @@
 /** @jsxImportSource @final-ui/react */
 
-import { Only, WithServerProps } from '@final-ui/react'
+import { Literal, LiteralArray, WithServerProps } from '@final-ui/react'
 import {
   Adapt,
   AdaptContents,
@@ -31,7 +31,7 @@ type Props = {
   label?: string
   unselectedLabel?: string
   onValueChange?: (value: string) => any
-  options?: { key: Only<string>; label: string }[]
+  options?: LiteralArray<{ key: Literal<string>; label: string }>
 }
 
 export function SelectField(props: WithServerProps<Props>) {

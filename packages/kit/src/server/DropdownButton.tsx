@@ -1,6 +1,13 @@
 /** @jsxImportSource @final-ui/react */
 
-import { Only, setStateAction, state, StateDataState, WithServerProps } from '@final-ui/react'
+import {
+  Literal,
+  LiteralArray,
+  setStateAction,
+  state,
+  StateDataState,
+  WithServerProps,
+} from '@final-ui/react'
 import {
   Button,
   Sheet,
@@ -10,14 +17,14 @@ import {
   YStack,
 } from '@final-ui/tamagui/server'
 
-type Props<T = string> = {
-  value: StateDataState<T>
+type Props = {
+  value: StateDataState<string>
   onSelect?: (item: string) => void
   button?: JSX.Element
-  options?: {
-    key: Only<T>
+  options?: LiteralArray<{
+    key: Literal<string>
     label: string
-  }[]
+  }>
 }
 
 export function DropdownButton(props: WithServerProps<Props>) {
