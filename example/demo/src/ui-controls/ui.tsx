@@ -5,8 +5,8 @@ import {
   SliderField,
   SwitchField,
 } from '@final-ui/kit/server'
-import { action, lookup, response, setStateAction, state } from '@final-ui/react'
-import { Button, H4, Paragraph, Text, YStack } from '@final-ui/tamagui/server'
+import { action, event, lookup, response, setStateAction, state } from '@final-ui/react'
+import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@final-ui/tamagui/server'
 
 import { UIContext } from '../types'
 
@@ -35,7 +35,40 @@ function UI() {
 }
 
 function FormExample() {
-  return <YStack></YStack>
+  const userName = state('')
+  const notification = state('')
+  const onFormSubmit = event(
+    (state) => {
+      console.log(`Values: ${state}`)
+      return response(null)
+        .action(setStateAction(userName, ''))
+        .action(
+          setStateAction(
+            notification,
+            'Thank you for submitting the form! Check the logs on the backend to see the submitted values'
+          )
+        )
+    },
+    { args: { userName } }
+  )
+  return (
+    <YStack gap="$8" padding="$4">
+      <YStack gap="$4">
+        <H4>Simple form</H4>
+        <Form onSubmit={onFormSubmit}>
+          <YStack gap="$4">
+            <Text>User name</Text>
+            <Input
+              value={userName}
+              onChangeText={[setStateAction(userName), setStateAction(notification, '')]}
+            />
+          </YStack>
+          <Text>{notification}</Text>
+          <Button onPress={onFormSubmit}>Submit form</Button>
+        </Form>
+      </YStack>
+    </YStack>
+  )
 }
 
 function SliderExample() {
@@ -47,34 +80,37 @@ function SliderExample() {
   const sliderWithReset = state(0)
 
   return (
-    <YStack gap="$3">
-      <SliderField
-        label="Single slider"
-        value={[slider]}
-        onValueChange={setStateAction(slider, lookup([0, 0]))}
-      />
-      <SliderField
-        label="Range slider"
-        value={[sliderRangeStart, sliderRangeEnd]}
-        onValueChange={[
-          setStateAction(sliderRangeStart, lookup([0, 0])),
-          setStateAction(sliderRangeEnd, lookup([0, 1])),
-        ]}
-      />
-      <SliderField
-        label="Resettable slider"
-        value={[sliderWithReset]}
-        onValueChange={setStateAction(sliderWithReset, lookup([0, 0]))}
-        onSlideEnd={async () => {
-          await new Promise((resolve) => setTimeout(resolve, 2000))
-          return response(null).action(
-            setStateAction(sliderWithReset, sliderWithReset.initialValue)
-          )
-        }}
-      />
-      <Paragraph>
-        This slider will reset after 2 seconds to emulate backend validation with value overwrite.
-      </Paragraph>
+    <YStack gap="$8" padding="$4">
+      <YStack gap="$4">
+        <H4>Single slider</H4>
+        <SliderField value={[slider]} onValueChange={setStateAction(slider, lookup([0, 0]))} />
+      </YStack>
+      <YStack gap="$4">
+        <H4>Range slider</H4>
+        <SliderField
+          value={[sliderRangeStart, sliderRangeEnd]}
+          onValueChange={[
+            setStateAction(sliderRangeStart, lookup([0, 0])),
+            setStateAction(sliderRangeEnd, lookup([0, 1])),
+          ]}
+        />
+      </YStack>
+      <YStack gap="$4">
+        <H4>Resettable slider</H4>
+        <SliderField
+          value={[sliderWithReset]}
+          onValueChange={setStateAction(sliderWithReset, lookup([0, 0]))}
+          onSlideEnd={async () => {
+            await new Promise((resolve) => setTimeout(resolve, 2000))
+            return response(null).action(
+              setStateAction(sliderWithReset, sliderWithReset.initialValue)
+            )
+          }}
+        />
+        <Paragraph lineHeight="$3">
+          This slider will reset after 2 seconds to emulate backend validation with value overwrite.
+        </Paragraph>
+      </YStack>
     </YStack>
   )
 }
@@ -82,7 +118,7 @@ function SliderExample() {
 function SwitchExample() {
   const isChecked = state(false)
   return (
-    <YStack>
+    <YStack gap="$8" padding="$4">
       <SwitchField label="Toggle" value={isChecked} onCheckedChange={setStateAction(isChecked)} />
     </YStack>
   )
@@ -99,7 +135,7 @@ const frameworks = [
 function SelectExample() {
   const selectedItem = state('')
   return (
-    <YStack gap="$3">
+    <YStack gap="$8" padding="$4">
       <YStack>
         <H4>Select</H4>
         <SelectField
@@ -113,7 +149,7 @@ function SelectExample() {
         <H4>Bottom sheet</H4>
         <DropdownButton
           value={selectedItem}
-          button={<Text>You selected: {selectedItem}</Text>}
+          button={<Text>Select your favorite framework</Text>}
           options={frameworks}
         />
       </YStack>
@@ -125,7 +161,7 @@ function ListExample() {
   const inventoryItems = state(frameworks)
 
   return (
-    <YStack>
+    <YStack flex={1} padding="$4">
       <DraggableFlatList
         // @ts-ignore update types to accept state of array, not just array of states
         items={inventoryItems}

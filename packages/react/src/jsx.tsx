@@ -58,7 +58,7 @@ export type _Extend<T> = T extends StateDataState
   : T extends Only<infer U>
     ? U
     : T extends (...args: any) => any
-      ? T | ServerHandlerDataState<Parameters<T>>
+      ? T | ServerHandlerDataState
       : T extends Array<infer U>
         ? _DeepPartialArray<U>
         : T extends object
