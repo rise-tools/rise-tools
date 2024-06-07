@@ -23,6 +23,8 @@ export function event<T>(
     handler: func,
     actions: opts?.actions,
     timeout: opts?.timeout,
+    // @ts-ignore
+    args: opts?.args,
   }
 }
 
