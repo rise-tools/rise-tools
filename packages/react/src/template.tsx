@@ -68,7 +68,7 @@ export type EventDataState = {
   $: 'event'
   actions?: ActionDataState[]
   timeout?: number
-  args?: Record<string, StateDataState>
+  args?: Record<string, StateDataState<any>>
 }
 export type ServerEventDataState<T extends any[] = any[]> = EventDataState & {
   handler: HandlerFunction<T>
