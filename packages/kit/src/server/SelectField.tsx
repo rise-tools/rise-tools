@@ -56,7 +56,7 @@ export function SelectField(props: WithServerProps<Props>) {
         </Adapt>
 
         <SelectTrigger>
-          <SelectValue asChild placeholder={props.unselectedLabel} />
+          <SelectValue placeholder={props.unselectedLabel} />
         </SelectTrigger>
 
         <SelectContent zIndex={200000}>
