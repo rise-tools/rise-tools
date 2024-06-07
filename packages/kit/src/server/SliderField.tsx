@@ -20,7 +20,7 @@ type Props = {
   onSlideEnd?: (event: any, value: number) => any
 }
 
-export function Slider(props: WithServerProps<Props>) {
+export function SliderField(props: WithServerProps<Props>) {
   return (
     <YStack>
       <SizableText>{props.label}</SizableText>
