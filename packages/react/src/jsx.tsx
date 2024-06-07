@@ -58,7 +58,6 @@ export type LiteralArray<T> = Array<T> & {
 export type WithServerProps<T> = { [P in keyof T]: _Extend<T[P]> }
 interface _ExtendArray<T> extends Array<_Extend<T>> {}
 
-// Extend the type to include server-side props
 export type _Extend<T> = T extends StateDataState
   ? T
   : T extends Literal<infer U>
