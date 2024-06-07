@@ -3,7 +3,7 @@ import React from 'react'
 
 import { DataSource, Template } from '../refs'
 import { response } from '../response'
-import { increment, lookup, setStateAction, state, toggle } from '../state'
+import { eventPayload, increment, setStateAction, state, toggle } from '../state'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render initial state', () => {
@@ -18,12 +18,14 @@ it('should render initial state', () => {
         return [
           {
             $: 'component',
+            key: 'header',
             component: 'View',
             children: value,
           },
           {
             $: 'component',
             component: 'View',
+            key: 'footer',
             props: {
               style,
             },
@@ -381,7 +383,7 @@ it('should lookup value from the arguments', async () => {
             component: 'View',
             props: {
               ['data-testid']: 'button',
-              onClick: setStateAction(userName, lookup([0, 'user', 'name'])),
+              onClick: setStateAction(userName, eventPayload([0, 'user', 'name'])),
             },
           },
         ]

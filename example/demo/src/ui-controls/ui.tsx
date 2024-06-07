@@ -83,15 +83,18 @@ function SliderExample() {
     <YStack gap="$8" padding="$4">
       <YStack gap="$4">
         <H4>Single slider</H4>
-        <SliderField value={[slider]} onValueChange={setStateAction(slider, lookup([0, 0]))} />
+        <SliderField
+          value={[slider]}
+          onValueChange={setStateAction(slider, eventPayload([0, 0]))}
+        />
       </YStack>
       <YStack gap="$4">
         <H4>Range slider</H4>
         <SliderField
           value={[sliderRangeStart, sliderRangeEnd]}
           onValueChange={[
-            setStateAction(sliderRangeStart, lookup([0, 0])),
-            setStateAction(sliderRangeEnd, lookup([0, 1])),
+            setStateAction(sliderRangeStart, eventPayload([0, 0])),
+            setStateAction(sliderRangeEnd, eventPayload([0, 1])),
           ]}
         />
       </YStack>
@@ -99,7 +102,7 @@ function SliderExample() {
         <H4>Resettable slider</H4>
         <SliderField
           value={[sliderWithReset]}
-          onValueChange={setStateAction(sliderWithReset, lookup([0, 0]))}
+          onValueChange={setStateAction(sliderWithReset, eventPayload([0, 0]))}
           onSlideEnd={async () => {
             await new Promise((resolve) => setTimeout(resolve, 2000))
             return response(null).action(

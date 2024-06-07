@@ -8,14 +8,11 @@ import { lookupValue } from './utils'
 type StateUpdate<T> = T | StateModifier
 type UpdateStateAction<T> = ActionDataState<['state-update', StateDataState<T>, StateUpdate<T>]>
 
-type StateModifier =
-  | PayloadStateModifier
-  | ToggleStateModifier
-  | IncrementStateModifier
-  | LookupStateModifier
+type StateModifier = PayloadStateModifier | ToggleStateModifier | IncrementStateModifier
 type PayloadStateModifier = {
   $: 'state-modifier'
   type: 'payload'
+  path?: (string | number)[]
 }
 type ToggleStateModifier = {
   $: 'state-modifier'
@@ -25,11 +22,6 @@ type IncrementStateModifier = {
   $: 'state-modifier'
   type: 'increment'
   value: number
-}
-type LookupStateModifier = {
-  $: 'state-modifier'
-  type: 'lookup'
-  path: (string | number)[]
 }
 
 export function isStateUpdateAction<T extends JSONValue>(
@@ -53,11 +45,11 @@ export function setStateAction(
 ): UpdateStateAction<boolean>
 export function setStateAction<T extends JSONValue>(
   state: StateDataState<T>,
-  value?: T | PayloadStateModifier | LookupStateModifier
+  value?: T | PayloadStateModifier
 ): UpdateStateAction<T>
 export function setStateAction<T>(
   state: StateDataState<T>,
-  value: T | StateModifier = eventPayload
+  value: T | StateModifier = eventPayload()
 ): UpdateStateAction<T> {
   return action(['state-update', state, value])
 }
@@ -112,13 +104,13 @@ export function applyStateUpdateAction<T extends JSONValue>(
   }
   switch (stateUpdate.type) {
     case 'payload': {
+      if (stateUpdate.path) {
+        return lookupValue(payload, stateUpdate.path)
+      }
       return payload[0]
     }
     case 'toggle': {
       return !state
-    }
-    case 'lookup': {
-      return lookupValue(payload, stateUpdate.path)
     }
     case 'increment':
       if (typeof state !== 'number') {
@@ -131,10 +123,11 @@ export function applyStateUpdateAction<T extends JSONValue>(
   }
 }
 
-export const eventPayload: PayloadStateModifier = {
+export const eventPayload = (path?: PayloadStateModifier['path']): PayloadStateModifier => ({
   $: 'state-modifier',
   type: 'payload',
-}
+  path,
+})
 
 export const toggle: ToggleStateModifier = {
   $: 'state-modifier',
@@ -145,12 +138,6 @@ export const increment = (value: number): IncrementStateModifier => ({
   $: 'state-modifier',
   type: 'increment',
   value,
-})
-
-export const lookup = (path: (string | number)[]): LookupStateModifier => ({
-  $: 'state-modifier',
-  type: 'lookup',
-  path,
 })
 
 export const useLocalStateValues = () => {
