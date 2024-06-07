@@ -1,9 +1,16 @@
 import { ComponentRegistry } from '@final-ui/react'
 import * as t from 'tamagui'
+import { LinearGradient } from 'tamagui/linear-gradient'
 
 // tbd: check all components and make sure all events are wrapped
 
 export const TamaguiComponents: ComponentRegistry = {
+  Adapt: {
+    component: t.Adapt,
+  },
+  AdaptContents: {
+    component: t.Adapt.Contents,
+  },
   /* https://tamagui.dev/ui/stacks#xstack-ystack-zstack */
   View: {
     component: t.View,
@@ -105,6 +112,9 @@ export const TamaguiComponents: ComponentRegistry = {
   SelectScrollDownButton: {
     component: t.Select.ScrollDownButton,
   },
+  SelectScrollUpButton: {
+    component: t.Select.ScrollUpButton,
+  },
   SelectViewport: {
     component: t.Select.Viewport,
   },
@@ -120,8 +130,17 @@ export const TamaguiComponents: ComponentRegistry = {
   SelectItemText: {
     component: t.Select.ItemText,
   },
+  SelectItemIndicator: {
+    component: t.Select.ItemIndicator,
+  },
   SelectSheet: {
     component: t.Select.Sheet,
+  },
+  SelectContent: {
+    component: t.Select.Content,
+  },
+  SelectValue: {
+    component: t.Select.Value,
   },
   /* https://tamagui.dev/ui/slider */
   Slider: {
@@ -379,5 +398,9 @@ export const TamaguiComponents: ComponentRegistry = {
   /* https://tamagui.dev/ui/visually-hidden */
   VisuallyHidden: {
     component: t.VisuallyHidden,
+  },
+  /* https://tamagui.dev/ui/linear-gradient */
+  LinearGradient: {
+    component: LinearGradient,
   },
 }

@@ -1,5 +1,4 @@
 import * as LucideIcons from '@tamagui/lucide-icons'
-import React from 'react'
 import { SizableText } from 'tamagui'
 import { z } from 'zod'
 
@@ -8,7 +7,7 @@ const IconProps = z.object({
   size: z.number().optional(),
 })
 
-export function Icon({
+export function LucideIcon({
   icon,
   size = 20,
   ...rest
@@ -20,6 +19,6 @@ export function Icon({
   return <SizableText>Icon not found</SizableText>
 }
 
-Icon.validate = (props: any) => {
+LucideIcon.validate = (props: any) => {
   return IconProps.parse(props)
 }

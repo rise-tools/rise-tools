@@ -18,13 +18,16 @@ export type DataState<T = EventDataState> =
   | ReferencedComponentDataState<T>
   | ComponentDataState<T>
   | ReferencedDataState
-  | ActionDataState
+  | HandlerDataState<T>
   | StateDataState
   | { [key: string]: DataState<T>; $?: never }
-  | DataState[]
+  | DataState<T>[]
   | T
 /** Server data state */
 export type ServerDataState = DataState<ServerEventDataState>
+export type ServerHandlerDataState<T extends any[] = any[]> = HandlerDataState<
+  ServerEventDataState<T>
+>
 
 export type ComponentDataState<T = EventDataState> = {
   $: 'component'
@@ -58,15 +61,17 @@ export type ResponseDataState = {
   actions: ActionDataState[]
 }
 export type HandlerReturnType = ResponseDataState | JSONValue | void
-export type HandlerFunction<T = any> = (args: T) => Promise<HandlerReturnType> | HandlerReturnType
+export type HandlerFunction<T extends any[] = any[]> = (
+  ...args: T
+) => Promise<HandlerReturnType> | HandlerReturnType
 export type EventDataState = {
   $: 'event'
   actions?: ActionDataState[]
   timeout?: number
-  args?: Record<string, StateDataState>
+  args?: Record<string, StateDataState<any>>
 }
-export type ServerEventDataState = EventDataState & {
-  handler: HandlerFunction
+export type ServerEventDataState<T extends any[] = any[]> = EventDataState & {
+  handler: HandlerFunction<T>
 }
 
 export type JSONValue =
@@ -78,7 +83,7 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent<P = EventDataState | ActionDataState[], K = any> = {
+export type TemplateEvent<P = EventDataState | ActionDataState[], K = any[]> = {
   target: {
     key?: string
     component: string
@@ -90,6 +95,7 @@ export type TemplateEvent<P = EventDataState | ActionDataState[], K = any> = {
 }
 
 export type HandlerEvent = TemplateEvent<EventDataState>
+export type HandlerDataState<T = EventDataState> = T | ActionDataState | ActionDataState[]
 
 export function isCompositeDataState(
   obj: any
@@ -230,13 +236,11 @@ export function BaseTemplate({
       isActionDataState(propValue) ||
       isActionDataStateArray(propValue)
     ) {
-      return async (payload: any) => {
+      return async (...payload: any[]) => {
         // React events (e.g. from onPress) contain cyclic structures that can't be serialized
         // with JSON.stringify and also provide little to no value for the server.
         // tbd: figure a better way to handle this in a cross-platform way
-        if (payload?.nativeEvent) {
-          payload = '[native code]'
-        }
+        payload = payload.map((arg) => (arg?.nativeEvent ? '[native code]' : arg))
         const dataState = isActionDataState(propValue) ? [propValue] : propValue
         return onTemplateEvent?.({
           target: {
@@ -259,7 +263,13 @@ export function BaseTemplate({
       )
     }
     if (isStateDataState(propValue)) {
-      return render(getLocalStateValue(propValue), path)
+      return renderProp(
+        propKey,
+        getLocalStateValue(propValue),
+        parentNode,
+        getLocalStateValue,
+        path
+      )
     }
     if (isCompositeDataState(propValue)) {
       return render(propValue, path)

@@ -1,5 +1,9 @@
 import { createComponentDefinition } from '@final-ui/react'
 import * as t from 'tamagui'
+import { LinearGradient as TLinearGradient } from 'tamagui/linear-gradient'
+
+export const Adapt = createComponentDefinition<typeof t.Adapt>('Adapt')
+export const AdaptContents = createComponentDefinition<typeof t.Adapt.Contents>('AdaptContents')
 
 export const View = createComponentDefinition<typeof t.View>('View')
 export const XStack = createComponentDefinition<typeof t.XStack>('XStack')
@@ -40,12 +44,18 @@ export const Select = createComponentDefinition<typeof t.Select>('Select')
 export const SelectTrigger = createComponentDefinition<typeof t.Select.Trigger>('SelectTrigger')
 export const SelectScrollDownButton =
   createComponentDefinition<typeof t.Select.ScrollDownButton>('SelectScrollDownButton')
+export const SelectScrollUpButton =
+  createComponentDefinition<typeof t.Select.ScrollUpButton>('SelectScrollUpButton')
 export const SelectViewport = createComponentDefinition<typeof t.Select.Viewport>('SelectViewport')
 export const SelectGroup = createComponentDefinition<typeof t.Select.Group>('SelectGroup')
+export const SelectContent = createComponentDefinition<typeof t.Select.Group>('SelectContent')
 export const SelectLabel = createComponentDefinition<typeof t.Select.Label>('SelectLabel')
 export const SelectItem = createComponentDefinition<typeof t.Select.Item>('SelectItem')
+export const SelectItemIndicator =
+  createComponentDefinition<typeof t.Select.ItemIndicator>('SelectItemIndicator')
 export const SelectItemText = createComponentDefinition<typeof t.Select.ItemText>('SelectItemText')
 export const SelectSheet = createComponentDefinition<typeof t.Select.Sheet>('SelectSheet')
+export const SelectValue = createComponentDefinition<typeof t.Select.Value>('SelectValue')
 
 export const Slider = createComponentDefinition<typeof t.Slider>('Slider')
 export const SliderTrack = createComponentDefinition<typeof t.Slider.Track>('SliderTrack')
@@ -167,3 +177,5 @@ export const Spinner = createComponentDefinition<typeof t.Spinner>('Spinner')
 export const Unspaced = createComponentDefinition<typeof t.Unspaced>('Unspaced')
 
 export const VisuallyHidden = createComponentDefinition<typeof t.VisuallyHidden>('VisuallyHidden')
+
+export const LinearGradient = createComponentDefinition<typeof TLinearGradient>('LinearGradient')

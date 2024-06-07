@@ -3,20 +3,34 @@ import React from 'react'
 
 import { DataSource, Template } from '../refs'
 import { response } from '../response'
-import { increment, setStateAction, state, toggle } from '../state'
+import { eventPayload, increment, setStateAction, state, toggle } from '../state'
 import { BUILT_IN_COMPONENTS } from './template.test'
 
 it('should render initial state', () => {
   const value = state('foo')
+  const style = state({
+    opacity: 0,
+  })
   const dataSource: DataSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
-        return {
-          $: 'component',
-          component: 'View',
-          children: value,
-        }
+        return [
+          {
+            $: 'component',
+            key: 'header',
+            component: 'View',
+            children: value,
+          },
+          {
+            $: 'component',
+            component: 'View',
+            key: 'footer',
+            props: {
+              style,
+            },
+          },
+        ]
       },
     }),
     sendEvent: jest.fn(),
@@ -27,6 +41,9 @@ it('should render initial state', () => {
       <div>
         foo
       </div>
+      <div
+        style="opacity: 0;"
+      />
     </DocumentFragment>
   `)
 })
@@ -302,7 +319,7 @@ it('should inject state (initial value) into function handler', async () => {
   await act(async () => {
     fireEvent.click(component.getByTestId('button'))
   })
-  expect(onTemplateEvent.mock.lastCall[0].payload).toEqual({ isChecked: false })
+  expect(onTemplateEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: false })
 })
 
 it('should inject current state value into function handler', async () => {
@@ -344,5 +361,67 @@ it('should inject current state value into function handler', async () => {
     fireEvent.click(component.getByTestId('checkbox'))
     fireEvent.click(component.getByTestId('button'))
   })
-  expect(onTemplateEvent.mock.lastCall[0].payload).toEqual({ isChecked: true })
+  expect(onTemplateEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: true })
+})
+
+it('should lookup value from the arguments', async () => {
+  const userName = state('')
+  const dataSource: DataSource = {
+    get: () => ({
+      subscribe: () => jest.fn(),
+      get() {
+        return [
+          {
+            $: 'component',
+            key: 'header',
+            component: 'View',
+            children: userName,
+          },
+          {
+            $: 'component',
+            key: 'button',
+            component: 'View',
+            props: {
+              ['data-testid']: 'button',
+              onClick: setStateAction(userName, eventPayload([0, 'user', 'name'])),
+            },
+          },
+        ]
+      },
+    }),
+    sendEvent: jest.fn(),
+  }
+  const component = render(
+    <Template
+      components={{
+        View: {
+          component: (props) => (
+            <div {...props} onClick={() => props.onClick({ user: { name: 'Mike' } })} />
+          ),
+        },
+      }}
+      dataSource={dataSource}
+    />
+  )
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div />
+      <div
+        data-testid="button"
+      />
+    </DocumentFragment>
+  `)
+  await act(async () => {
+    fireEvent.click(component.getByTestId('button'))
+  })
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div>
+        Mike
+      </div>
+      <div
+        data-testid="button"
+      />
+    </DocumentFragment>
+  `)
 })
