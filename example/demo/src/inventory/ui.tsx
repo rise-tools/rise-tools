@@ -1,12 +1,15 @@
+import { action, ref } from '@final-ui/react'
 import {
-  DraggableFlatList,
-  DropdownButton,
-  SelectField,
-  Slider,
-  SwitchField,
-} from '@final-ui/kit/server'
-import { action, event, lookup, ref, response, setStateAction, state } from '@final-ui/react'
-import { Button, H2, Image, Paragraph, SizableText, XStack, YStack } from '@final-ui/tamagui/server'
+  Button,
+  H2,
+  H4,
+  Image,
+  Paragraph,
+  ScrollView,
+  SizableText,
+  XStack,
+  YStack,
+} from '@final-ui/tamagui/server'
 
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'
@@ -23,6 +26,50 @@ export function InventoryExample(ctx: UIContext) {
       ])
     ),
   }
+}
+
+function HomeScreen() {
+  return (
+    <YStack backgroundColor={'$background'}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+        {inventory.map((item, idx) => (
+          <Button
+            unstyled
+            onPress={action(['navigate', `inventory:${item.key}:details`])}
+            pressStyle={{ opacity: 0.8 }}
+          >
+            <XStack
+              gap={10}
+              paddingHorizontal={20}
+              paddingVertical={10}
+              alignItems="center"
+              borderBottomWidth={idx === inventory.length - 1 ? 0 : 1}
+              borderBottomColor="$gray4"
+            >
+              <Image
+                source={{ uri: item.photo }}
+                style={{ width: 75, height: 75 }}
+                resizeMode="contain"
+              />
+              <YStack>
+                <H4 children={item.title} />
+                <XStack gap={10}>
+                  <XStack gap="$1">
+                    <SizableText size="$4">Quantity:</SizableText>
+                    <SizableText size="$4" children={item.quantity} />
+                  </XStack>
+                  <XStack gap="$1">
+                    <SizableText size="$4">Price:</SizableText>
+                    <SizableText size="$4" children={item.price} />
+                  </XStack>
+                </XStack>
+              </YStack>
+            </XStack>
+          </Button>
+        ))}
+      </ScrollView>
+    </YStack>
+  )
 }
 
 export function Item({ item, ctx }: { item: Item; ctx: UIContext }) {
