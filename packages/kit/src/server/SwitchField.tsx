@@ -13,12 +13,7 @@ export function SwitchField(props: WithServerProps<Props>) {
   return (
     <XStack alignItems="center" justifyContent="space-between">
       <Label>{props.label}</Label>
-      <Switch
-        backgroundColor="#ddd"
-        marginVertical={'$4'}
-        checked={props.value}
-        onCheckedChange={props.onCheckedChange}
-      >
+      <Switch checked={props.value} onCheckedChange={props.onCheckedChange}>
         <SwitchThumb animation="quick" />
       </Switch>
     </XStack>
