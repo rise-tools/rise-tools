@@ -34,12 +34,11 @@ export function createWritableStream<S extends JSONValue>(initState: S): Writabl
   }
 }
 
-export function useStream<T>(stream: Stream<T>): T
-export function useStream<T>(stream: Stream<T> | undefined): T | undefined {
+export function useStream<T>(stream: Stream<T>): T {
   return useSyncExternalStore(
     (onStoreChange) => {
       return stream ? stream.subscribe(onStoreChange) : () => {}
     },
-    () => stream?.get()
+    () => stream.get()
   )
 }
