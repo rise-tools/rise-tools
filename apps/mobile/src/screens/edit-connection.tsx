@@ -7,7 +7,7 @@ import React from 'react'
 import { useLink } from 'solito/link'
 import { Button, Separator, YStack } from 'tamagui'
 
-import { remove, update, useConnection } from '../connection'
+import { removeConnection, updateConnection, useConnection } from '../connection'
 import { ConnectionForm } from '../connection-form'
 import { NotFoundScreen } from './not-found'
 
@@ -26,7 +26,7 @@ export function EditConnectionScreen() {
     <YStack flex={1} padding="$4">
       <ConnectionForm
         onSubmit={(values) => {
-          update(connection.id, { ...connection, ...values })
+          updateConnection(connection.id, { ...connection, ...values })
           goHomeLink.onPress()
         }}
         defaultValues={connection}
@@ -47,7 +47,7 @@ export function EditConnectionScreen() {
         theme="red"
         color="$red10"
         onPress={() => {
-          remove(connection.id)
+          removeConnection(connection.id)
           goHomeLink.onPress()
         }}
         chromeless

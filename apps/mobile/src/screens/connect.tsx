@@ -6,7 +6,7 @@ import React from 'react'
 import { useRouter } from 'solito/router'
 import { Button, SizableText, YStack } from 'tamagui'
 
-import { add, Connection, connections } from '../connection'
+import { addConnection, Connection, connections } from '../connection'
 
 export function ConnectScreen({ connectInfo }: { connectInfo?: string }) {
   const { replace } = useRouter()
@@ -60,7 +60,7 @@ export function ConnectScreen({ connectInfo }: { connectInfo?: string }) {
             if (existingConnection) {
               replace(`/connection/${existingConnection.id}`)
             } else {
-              const newConnId = add(importedConnection)
+              const newConnId = addConnection(importedConnection)
               replace(`/connection/${newConnId}`)
             }
           }}
