@@ -9,29 +9,29 @@ export type Stream<V> = {
   subscribe: (handler: (value: V) => void) => () => void
 }
 
-export type WritableStream<S> = Stream<S> & {
-  write: (updater: S | Updater<S>) => void
-}
+export type WritableStream<S> = [Stream<S>, (updater: S | Updater<S>) => void]
 
 export function createWritableStream<S extends JSONValue>(initState: S): WritableStream<S> {
   let state: S = initState
   const handlers = new Set<(state: S) => void>()
-  return {
-    get() {
-      return state
+  return [
+    {
+      get() {
+        return state
+      },
+      subscribe(handler: (state: S) => void) {
+        handlers.add(handler)
+        return () => {
+          handlers.delete(handler)
+        }
+      },
     },
-    write(updater) {
+    function write(updater) {
       const newState = typeof updater === 'function' ? updater(state) : updater
       state = newState
       handlers.forEach((handle) => handle(newState))
     },
-    subscribe(handler: (state: S) => void) {
-      handlers.add(handler)
-      return () => {
-        handlers.delete(handler)
-      }
-    },
-  }
+  ]
 }
 
 export function useStream<T>(stream: Stream<T>): T {

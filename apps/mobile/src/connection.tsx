@@ -13,7 +13,7 @@ export type Connection = ConnectionPayload & {
   id: string
 }
 
-export const connections = createMMKVStream('connections-v2', [] as Connection[])
+export const [connections, write] = createMMKVStream('connections-v2', [] as Connection[])
 
 export function useConnection(id?: string) {
   const state = useStream(connections)
@@ -27,19 +27,19 @@ export function useConnection(id?: string) {
 }
 
 export function add(connection: ConnectionPayload) {
-  connections.write((connections) => {
+  write((connections) => {
     return [...connections, { ...connection, id: Math.random().toString() }]
   })
 }
 
 export function remove(id: string) {
-  connections.write((connections) => {
+  write((connections) => {
     return connections.filter((connection) => connection.id !== id)
   })
 }
 
 export function update(id: string, connection: ConnectionPayload) {
-  connections.write((connections) => {
+  write((connections) => {
     return connections.map((c) => (c.id === id ? { ...c, ...connection } : c))
   })
 }

@@ -14,14 +14,15 @@ export function createMMKVStream<T extends JSONValue>(
   initialState: T
 ): WritableStream<T> {
   const storedString = storage.getString(storageKey)
+  const [stream, write] = createWritableStream<T>(
+    storedString ? JSON.parse(storedString) : initialState
+  )
 
-  const stream = createWritableStream<T>(storedString ? JSON.parse(storedString) : initialState)
-
-  return {
-    ...stream,
-    write(updater) {
-      stream.write(updater)
+  return [
+    stream,
+    function writeMMKVStream(updater) {
+      write(updater)
       storage.set(storageKey, JSON.stringify(stream.get()))
     },
-  }
+  ]
 }
