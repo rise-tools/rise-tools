@@ -50,6 +50,7 @@ const inventoryItem = lookup((key) =>
 export const models = {
   inventory: inventoryHome,
   inventoryItem,
+  inventoryItems,
 }
 
 function HomeScreen({ inventory }: { inventory?: Inventory }) {
@@ -108,7 +109,7 @@ export function ItemScreen({
       <Image
         key="photo"
         source={{
-          uri: ref([`inventory-items`, item.key, 'photo']),
+          uri: ref([`inventoryItems`, item.key, 'photo']),
         }}
         style={{
           width: '100%',
@@ -118,12 +119,12 @@ export function ItemScreen({
         resizeMode="contain"
       />
       <YStack key="info" paddingHorizontal="$4" gap="$3">
-        <H2 key="title" children={ref([`inventory-items`, item.key, 'title'])} />
-        <Paragraph key="description" children={ref([`inventory-items`, item.key, 'description'])} />
+        <H2 key="title" children={ref([`inventoryItems`, item.key, 'title'])} />
+        <Paragraph key="description" children={ref([`inventoryItems`, item.key, 'description'])} />
         <XStack key="adjustments" gap="$3" alignItems="center">
           <XStack key="quantity" gap="$2">
             <SizableText size="$5">Quantity:</SizableText>
-            <SizableText size="$5" children={ref([`inventory-items`, item.key, 'quantity'])} />
+            <SizableText size="$5" children={ref([`inventoryItems`, item.key, 'quantity'])} />
           </XStack>
           <Button
             key="dec"
