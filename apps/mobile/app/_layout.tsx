@@ -1,8 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import { Stack, usePathname, useRouter } from 'expo-router'
+import { Stack } from 'expo-router'
 import React from 'react'
-import { useEffect } from 'react'
 import { useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
