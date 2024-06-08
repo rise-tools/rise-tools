@@ -6,9 +6,9 @@ import React, { useCallback, useEffect } from 'react'
 import { createParam } from 'solito'
 import { useRouter } from 'solito/router'
 
+import { Connection, useConnection } from '../connection'
 import { DataBoundary } from '../data-boundary'
 import { useDataSource } from '../data-sources'
-import { Connection, useConnection } from '../provider/storage'
 import { NotFoundScreen } from './not-found'
 
 export function Screen(props: { title: string }) {
@@ -28,12 +28,15 @@ const { useParam, useParams } = createParam<{ id: string; path: string }>()
 
 export function ConnectionScreen() {
   const [id] = useParam('id')
-  // const router = useRouter()
-  const [connection] = useConnection(id)
-  if (!connection) return <NotFoundScreen />
+
+  const connection = useConnection(id)
+  if (!connection) {
+    return <NotFoundScreen />
+  }
+
   return <ActiveConnectionScreen connection={connection} />
-  // return <SizableText>Hellow</SizableText>
 }
+
 function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   const router = useRouter()
   const { params } = useParams()

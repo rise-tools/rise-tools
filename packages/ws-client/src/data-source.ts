@@ -172,11 +172,11 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
 }
 
 const createStateStream = (ws: ReconnectingWebSocket) => {
-  const [setState, state] = createWritableStream<WebSocketState>({ status: undefined })
+  const state = createWritableStream<WebSocketState>({ status: undefined })
 
-  ws.addEventListener('open', () => setState({ status: 'connected' }))
-  ws.addEventListener('close', () => setState({ status: 'disconnected' }))
-  ws.addEventListener('error', () => setState({ status: 'disconnected' }))
+  ws.addEventListener('open', () => state.write({ status: 'connected' }))
+  ws.addEventListener('close', () => state.write({ status: 'disconnected' }))
+  ws.addEventListener('error', () => state.write({ status: 'disconnected' }))
 
   return state
 }

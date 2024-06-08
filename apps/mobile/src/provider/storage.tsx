@@ -17,23 +17,7 @@ export type ConnectionsState = {
   connections: Connection[]
 }
 
-type StorageContext = {
-  connections: Store<ConnectionsState>
-  uuid: () => string
-}
-
-const StorageContext = createContext<null | StorageContext>(null)
-
-function useStorage() {
-  const context = useContext(StorageContext)
-  if (!context) throw new Error('useStorage must be used within a StorageProvider')
-  return context
-}
-
-export const StorageContextProvider = StorageContext.Provider
-
 export function useConnections() {
-  const storage = useStorage()
   const state = useSyncExternalStore<ConnectionsState>(
     storage.connections.subscribe,
     storage.connections.get

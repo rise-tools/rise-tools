@@ -1,3 +1,4 @@
+import { useStream } from '@final-ui/react'
 import { PlusCircle, Settings } from '@tamagui/lucide-icons'
 import { useAssets } from 'expo-asset'
 import React from 'react'
@@ -5,23 +6,24 @@ import { ImageURISource, ScrollView } from 'react-native'
 import { useLink } from 'solito/link'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
-import { BUILTIN_CONNECTIONS, Connection, useConnections } from '../provider/storage'
+import { BUILTIN_CONNECTIONS, Connection, connections } from '../connection'
 
 export function HomeScreen() {
-  const [state] = useConnections()
+  const state = useStream(connections)
+
   return (
     <ScrollView>
       <YStack padding="$4" gap="$4">
         <HeroImage />
         <YStack gap="$2">
           <YGroup separator={<Separator />}>
-            {state.connections.map((connection) => (
+            {state.map((connection) => (
               <ConnectionItem key={connection.id} connection={connection} />
             ))}
           </YGroup>
           <NewConnectionButton />
         </YStack>
-        {state.connections.length === 0 && (
+        {state.length === 0 && (
           <YStack gap="$2">
             <Text textAlign="center">or try some of the examples below:</Text>
             <YGroup separator={<Separator />}>

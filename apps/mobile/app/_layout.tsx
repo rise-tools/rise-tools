@@ -6,26 +6,25 @@ import { useEffect } from 'react'
 import { useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
-import { ExpoStorageProvider, navigationStore } from '../src/expo-storage'
 import { Provider } from '../src/provider'
 import { tamaguiConfig } from '../src/tamagui/config'
 
 export default function HomeLayout() {
-  const pathname = usePathname()
-  const router = useRouter()
+  // const pathname = usePathname()
+  // const router = useRouter()
 
-  useEffect(() => {
-    const route = navigationStore.getRoute()
-    if (route && route !== '/') {
-      setTimeout(() => {
-        router.push(route)
-      }, 500)
-    }
-  }, [])
+  // useEffect(() => {
+  //   const route = navigationStore.getRoute()
+  //   if (route && route !== '/') {
+  //     setTimeout(() => {
+  //       router.push(route)
+  //     }, 500)
+  //   }
+  // }, [])
 
-  useEffect(() => {
-    navigationStore.setRoute(pathname)
-  }, [pathname])
+  // useEffect(() => {
+  //   navigationStore.setRoute(pathname)
+  // }, [pathname])
 
   const [loaded] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
@@ -41,9 +40,7 @@ export default function HomeLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider config={tamaguiConfig}>
         <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <ExpoStorageProvider>
-            <Stack />
-          </ExpoStorageProvider>
+          <Stack />
         </ThemeProvider>
       </Provider>
     </GestureHandlerRootView>
