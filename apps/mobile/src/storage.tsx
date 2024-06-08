@@ -1,7 +1,7 @@
 import { createWritableStream, JSONValue, WritableStream } from '@final-ui/react'
 import { MMKV } from 'react-native-mmkv'
 
-const storage = new MMKV()
+export const storage = new MMKV()
 
 export type Store<T> = {
   get: () => T

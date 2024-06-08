@@ -15,12 +15,8 @@ export type Connection = ConnectionPayload & {
 
 export const connections = createMMKVStream('connections-v2', [] as Connection[])
 
-export function useConnections() {
-  return useStream(connections)
-}
-
 export function useConnection(id?: string) {
-  const state = useConnections()
+  const state = useStream(connections)
   if (!id) {
     return
   }
@@ -59,6 +55,6 @@ export const BUILTIN_CONNECTIONS: Record<string, Connection> = {
     id: 'ui',
     label: '🏭 UI Controls',
     host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
-    path: 'inventory',
+    path: 'ui',
   },
 }
