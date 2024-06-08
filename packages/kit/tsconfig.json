@@ -4,9 +4,12 @@
     "rootDir": "./src",
     "outDir": "./lib",
     "module": "preserve",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx"
   },
   "references": [{
     "path": "../react"
+  }, {
+    "path": "../tamagui"
   }]
 }

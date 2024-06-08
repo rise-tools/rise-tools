@@ -20,6 +20,7 @@
   "dependencies": {
     "@final-ui/tamagui": "0.2.0",
     "@final-ui/server": "0.2.0"
+    "@final-ui/kit": "0.2.0"
   },
   "devDependencies": {
     "tsx": "^4.11.0",

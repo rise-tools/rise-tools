@@ -10,5 +10,7 @@
     "path": "../../packages/tamagui"
   }, {
     "path": "../../packages/server"
+  }, {
+    "path": "../../packages/kit"
   }]
 }

@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { action } from './events'
 import { createWritableStream, Stream, WritableStream } from './streams'
 import { ActionDataState, JSONValue, StateDataState } from './template'
+import { lookupValue } from './utils'
 
 type StateUpdate<T> = T | StateModifier
 type UpdateStateAction<T> = ActionDataState<['state-update', StateDataState<T>, StateUpdate<T>]>
@@ -11,6 +12,7 @@ type StateModifier = PayloadStateModifier | ToggleStateModifier | IncrementState
 type PayloadStateModifier = {
   $: 'state-modifier'
   type: 'payload'
+  path?: (string | number)[]
 }
 type ToggleStateModifier = {
   $: 'state-modifier'
@@ -47,7 +49,7 @@ export function setStateAction<T extends JSONValue>(
 ): UpdateStateAction<T>
 export function setStateAction<T>(
   state: StateDataState<T>,
-  value: T | StateModifier = eventPayload
+  value: T | StateModifier = eventPayload()
 ): UpdateStateAction<T> {
   return action(['state-update', state, value])
 }
@@ -58,7 +60,7 @@ export type LocalState = {
 
 export const useLocalState = (): [
   LocalState,
-  (action: UpdateStateAction<JSONValue>, payload: JSONValue) => void,
+  (action: UpdateStateAction<JSONValue>, payload: JSONValue[]) => void,
 ] => {
   const localState = useRef<Record<string, WritableStream<JSONValue>>>({})
   function getWritableStream(state: StateDataState) {
@@ -74,7 +76,7 @@ export const useLocalState = (): [
         return stream
       },
     },
-    (action, payload: JSONValue) => {
+    (action, payload: JSONValue[]) => {
       const [, state, stateUpdate] = action.name
       const [write] = getWritableStream(state)
       write((currentValue) => applyStateUpdateAction(currentValue, stateUpdate, payload))
@@ -95,14 +97,17 @@ function isStateModifier(obj: any): obj is StateModifier {
 export function applyStateUpdateAction<T extends JSONValue>(
   state: T,
   stateUpdate: StateUpdate<T>,
-  payload: JSONValue
+  payload: JSONValue[]
 ) {
   if (!isStateModifier(stateUpdate)) {
     return stateUpdate
   }
   switch (stateUpdate.type) {
     case 'payload': {
-      return payload
+      if (stateUpdate.path) {
+        return lookupValue(payload, stateUpdate.path)
+      }
+      return payload[0]
     }
     case 'toggle': {
       return !state
@@ -118,10 +123,11 @@ export function applyStateUpdateAction<T extends JSONValue>(
   }
 }
 
-export const eventPayload: PayloadStateModifier = {
+export const eventPayload = (path?: PayloadStateModifier['path']): PayloadStateModifier => ({
   $: 'state-modifier',
   type: 'payload',
-}
+  path,
+})
 
 export const toggle: ToggleStateModifier = {
   $: 'state-modifier',

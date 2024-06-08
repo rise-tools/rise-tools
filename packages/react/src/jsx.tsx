@@ -2,12 +2,11 @@ import type { JSXElementConstructor, ReactElement } from 'react'
 
 import { event } from './events'
 import {
-  ActionDataState,
   ComponentDataState,
   isComponentDataState,
   ReferencedDataState,
-  ServerDataState,
   ServerEventDataState,
+  ServerHandlerDataState,
   StateDataState,
 } from './template'
 
@@ -15,7 +14,7 @@ export type UI = ReactElement<Props> | ServerComponent
 
 type ServerComponent = ComponentDataState<ServerEventDataState>
 type Props = ServerComponent['props'] & {
-  children: ServerDataState
+  children?: ServerComponent['children']
 }
 
 export const jsxs = jsx
@@ -49,24 +48,35 @@ export function jsx(
   }
 }
 
-export type Extend<T> = { [P in keyof T]?: _Extend<T[P]> }
+export type Literal<T> = {
+  __literal: T
+}
+export type LiteralArray<T> = Array<T> & {
+  __literalArray: T[]
+}
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type _Extend<T> = T extends Function
-  ? T | ServerEventDataState | ActionDataState
-  : T extends Array<infer U>
-    ? _DeepPartialArray<U>
-    : T extends object
-      ? Extend<T>
-      : T | ReferencedDataState | StateDataState
+export type WithServerProps<T> = { [P in keyof T]: _Extend<T[P]> }
+interface _ExtendArray<T> extends Array<_Extend<T>> {}
 
-export interface _DeepPartialArray<T> extends Array<_Extend<T>> {}
+export type _Extend<T> = T extends StateDataState
+  ? T
+  : T extends Literal<infer U>
+    ? U
+    : T extends (...args: any) => any
+      ? T | ServerHandlerDataState
+      : T extends Array<infer U>
+        ? _ExtendArray<U> | (T extends LiteralArray<U> ? never : StateDataState<Array<U>>)
+        : T extends object
+          ? WithServerProps<T>
+          : T extends null | undefined
+            ? T
+            : T | ReferencedDataState | StateDataState<T>
 
 export function createComponentDefinition<
   T extends JSXElementConstructor<any> | keyof JSX.IntrinsicElements,
   P = React.ComponentProps<T>,
 >(type: string) {
-  return (props: Extend<P>): ReactElement => ({
+  return (props: WithServerProps<P>): ReactElement => ({
     type,
     props,
     key: null,

@@ -214,11 +214,13 @@ export function Template({
         return
       }
       if (event.dataState.args) {
-        event.payload = Object.fromEntries(
-          Object.entries(event.dataState.args).map(([key, value]) => {
-            return [key, localState.getStream(value).get()]
-          })
-        )
+        event.payload = [
+          Object.fromEntries(
+            Object.entries(event.dataState.args).map(([key, value]) => {
+              return [key, localState.getStream(value).get()]
+            })
+          ),
+        ]
       }
       const res = await onEvent(event)
       if (!isResponseDataState(res)) {
