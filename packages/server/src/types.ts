@@ -27,7 +27,7 @@ export type QueryModel<Data> = {
   subscribe(listener: (newData: Data) => void): () => void
 }
 
-export type ValueModel<T> = ViewModel<T> | StateModel<T> | QueryModel<T>
+export type ValueModel<T> = ViewModel<T> | StateModel<T> | QueryModel<T> | (() => T)
 
 export type AnyModels =
   | Record<string, ValueModel<any> | LookupModel<any>>

@@ -70,10 +70,12 @@ export function createWSServer(models: AnyModels, port: number) {
           return
         }
         const model = getModel(key) as ValueModel<unknown> | undefined
+        const val = typeof model === 'function' ? model() : model?.get()
+        // console.log('sending', model, key, val)
         sender({
           $: 'up',
           key,
-          val: model?.get(),
+          val,
         })
       }
       const handlers =
@@ -82,7 +84,7 @@ export function createWSServer(models: AnyModels, port: number) {
           const handlers = new Map<string, () => void>()
           clientSubscribers.set(key, handlers)
           const model = getModel(key)
-          if (model) {
+          if (model && typeof model === 'object') {
             model.subscribe(() => {
               handlers.forEach((handler) => handler())
             })

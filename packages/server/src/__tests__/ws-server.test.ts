@@ -16,8 +16,6 @@ type TestServerClient = {
   clientSend: (data: any) => void
 }
 
-let testA: TestServerClient
-
 const createWaitableMock = () => {
   let resolve
   let times
@@ -55,20 +53,25 @@ async function testServer(models: AnyModels, port: number): Promise<TestServerCl
   return { client, clientSend, close: server.close, clientMessages, waitForClientMessages }
 }
 
-describe('model server', () => {
-  test('basic ws server', async () => {
-    const [a, setA] = state('a')
-    const [b] = state('b')
-    testA = await testServer({ a, b }, 4106)
-    testA?.clientSend({ $: 'sub', keys: ['a'] })
-    await testA.waitForClientMessages(1)
-    expect(testA.clientMessages).toHaveBeenLastCalledWith({ $: 'up', key: 'a', val: 'a' })
-    setA('newA')
-    await testA.waitForClientMessages(2)
-    expect(testA.clientMessages).toHaveBeenLastCalledWith({ $: 'up', key: 'a', val: 'newA' })
-  })
-})
+let testA: TestServerClient
 
 afterAll(() => {
   testA?.close()
+})
+
+describe('model server', () => {
+  test('basic ws server', async () => {
+    const [aState, setA] = state('a')
+    const bFunc = () => 'b'
+    testA = await testServer({ aState, bFunc }, 4106)
+    testA?.clientSend({ $: 'sub', keys: ['aState'] })
+    await testA.waitForClientMessages(1)
+    expect(testA.clientMessages).toHaveBeenLastCalledWith({ $: 'up', key: 'aState', val: 'a' })
+    setA('newA')
+    await testA.waitForClientMessages(2)
+    expect(testA.clientMessages).toHaveBeenLastCalledWith({ $: 'up', key: 'aState', val: 'newA' })
+    testA?.clientSend({ $: 'sub', keys: ['bFunc'] })
+    await testA.waitForClientMessages(3)
+    expect(testA.clientMessages).toHaveBeenLastCalledWith({ $: 'up', key: 'bFunc', val: 'b' })
+  })
 })

@@ -10,7 +10,7 @@ import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@final-ui/tama
 
 // eslint-disable-next-line
 export const models = {
-  ui: UI,
+  controls: UI,
   form: FormExample,
   slider: SliderExample,
   switch: SwitchExample,

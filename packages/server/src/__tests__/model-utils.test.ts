@@ -11,6 +11,11 @@ describe('findModel', () => {
     const [stateModel] = state(0)
     expect(findModel({ foo: stateModel }, ['foo'])).toBe(stateModel)
   })
+  test('find fn in object', () => {
+    const fnModel = () => 'hello'
+    const foundModel = findModel({ fnModel }, ['fnModel'])
+    expect(typeof foundModel === 'function' ? foundModel() : null).toBe('hello')
+  })
   test('find in nested lookup', () => {
     const [stateModel] = state(0)
     expect(
