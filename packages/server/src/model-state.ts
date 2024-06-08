@@ -1,3 +1,5 @@
+import { StateModel, StateSetter } from './types'
+
 export function state<T>(initial: T): [StateModel<T>, StateSetter<T>] {
   let value = initial
   const listeners = new Set<(newState: T) => void>()
@@ -14,9 +16,10 @@ export function state<T>(initial: T): [StateModel<T>, StateSetter<T>] {
   }
   function subscribe(listener: (newState: T) => void) {
     listeners.add(listener)
+    listener(value)
     return () => {
       listeners.delete(listener)
     }
   }
-  return [{ get, subscribe }, set] as const
+  return [{ get, subscribe, type: 'state' }, set] as const
 }

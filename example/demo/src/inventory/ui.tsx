@@ -20,9 +20,9 @@ const [inventoryItems, setInventoryState] = state(defaultInventory)
 const inventoryHome = view((get) => <HomeScreen inventory={get(inventoryItems)} />)
 const inventoryItem = lookup((key) =>
   view((get) => {
-    const inventoryItem = get(inventoryItems).find((i) => i.key === key)
+    const inventoryItem = get(inventoryItems)?.find((i) => i.key === key)
     if (!inventoryItem) return <NotFound />
-    return <ItemScreen item={get(inventoryItems).get(key)} onUpdateInventory={setInventoryState} />
+    return <ItemScreen item={inventoryItem} onUpdateInventory={setInventoryState} />
   })
 )
 
@@ -49,17 +49,17 @@ const inventoryItem = lookup((key) =>
 
 export const models = {
   inventory: inventoryHome,
-  item: inventoryItem,
+  inventoryItem,
 }
 
-function HomeScreen({ inventory }: { inventory: Inventory }) {
+function HomeScreen({ inventory }: { inventory?: Inventory }) {
   return (
     <YStack backgroundColor={'$background'}>
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-        {inventory.map((item, idx) => (
+        {inventory?.map((item, idx) => (
           <Button
             unstyled
-            onPress={action(['navigate', `inventory:${item.key}:details`])}
+            onPress={action(['navigate', `inventoryItem/${item.key}`])}
             pressStyle={{ opacity: 0.8 }}
           >
             <XStack

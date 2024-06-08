@@ -65,7 +65,7 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
 
   rws.addEventListener('open', () => {
     const keys = [...subscriptions.entries()]
-      .filter(([, handlers]) => handlers.size > 0)
+      .filter(([key, handlers]) => !!key && handlers.size > 0)
       .map(([key]) => key)
     if (keys.length === 0) {
       return
@@ -122,19 +122,21 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
       subscribe: (handler) => {
         const shouldSubscribeRemotely = handlers.size === 0
         handlers.add(handler)
-        if (shouldSubscribeRemotely) {
+        if (shouldSubscribeRemotely && key) {
+          console.log('client sub', key)
           send({
             $: 'sub',
             keys: [key],
           })
         }
         return () => {
+          console.log('client unsub', key)
           handlers.delete(handler)
           const shouldUnsubscribeRemotely = handlers.size === 0
           if (shouldUnsubscribeRemotely) {
             send({
               $: 'unsub',
-              keys: [key],
+              keys: [key].filter((key) => key != null),
             })
           }
         }
