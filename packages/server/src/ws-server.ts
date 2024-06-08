@@ -51,7 +51,7 @@ export function createWSServer(models: AnyModels, port: number) {
   wss.on('connection', (ws) => {
     const clientId = `c${clientIdIndex}`
     clientIdIndex += 1
-    console.log(`Client ${clientId} connected`)
+    // console.log(`Client ${clientId} connected`)
 
     clientSenders.set(clientId, function sendClient(value: any) {
       ws.send(JSON.stringify(value))
@@ -59,11 +59,11 @@ export function createWSServer(models: AnyModels, port: number) {
 
     ws.addEventListener('close', function close() {
       clientSenders.delete(clientId)
-      console.log(`Client ${clientId} disconnected`)
+      // console.log(`Client ${clientId} disconnected`)
     })
 
     function handleSubKey(key: string) {
-      console.log(`${clientId} sub to key ${key}`)
+      // console.log(`${clientId} sub to key ${key}`)
       async function send() {
         const sender = clientSenders.get(clientId)
         if (!sender) {
@@ -81,6 +81,13 @@ export function createWSServer(models: AnyModels, port: number) {
         (() => {
           const handlers = new Map<string, () => void>()
           clientSubscribers.set(key, handlers)
+          const model = getModel(key)
+          if (model) {
+            model.subscribe(() => {
+              handlers.forEach((handler) => handler())
+            })
+          }
+
           return handlers
         })()
       handlers.set(clientId, send)
@@ -88,7 +95,7 @@ export function createWSServer(models: AnyModels, port: number) {
     }
 
     function handleUnsubKey(key: string) {
-      console.log(`${clientId} unsub from key ${key}`)
+      // console.log(`${clientId} unsub from key ${key}`)
       const handlers = clientSubscribers.get(key)
       handlers?.delete(clientId)
     }
@@ -102,10 +109,10 @@ export function createWSServer(models: AnyModels, port: number) {
     }
 
     function handleEvt({ key, event }: z.infer<typeof serverEventMessageSchema>) {
-      console.log('client event', key, event.target.path)
+      // console.log('client event', key, event.target.path)
     }
 
-    console.log('connected client', clientId)
+    // console.log('connected client', clientId)
     ws.on('message', (messageData) => {
       let messageUnvalidated, message
       try {
@@ -118,6 +125,7 @@ export function createWSServer(models: AnyModels, port: number) {
         message = serverMessageSchema.parse(messageUnvalidated)
       } catch (e) {
         throw new Error(
+          // @ts-ignore
           `Failed to validate message "${messageUnvalidated['$']}" from client ${clientId}: ${JSON.stringify(e.message)}`
         )
       }
@@ -126,4 +134,10 @@ export function createWSServer(models: AnyModels, port: number) {
       if (message.$ === 'evt') return handleEvt(message)
     })
   })
+
+  return {
+    close() {
+      wss.close()
+    },
+  }
 }
