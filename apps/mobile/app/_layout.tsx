@@ -15,9 +15,7 @@ export default function HomeLayout() {
 
   useEffect(() => {
     const route = storage.getString('navRoute')
-    console.log(pathname, route)
     if (route && route !== '/') {
-      console.log('push')
       setTimeout(() => {
         router.push(route)
       }, 500)
