@@ -1,5 +1,3 @@
-import { ConnectionForm } from '@final-ui/playground/src/connection-form'
-import { useConnection } from '@final-ui/playground/src/provider/storage'
 import { Copy, Trash } from '@tamagui/lucide-icons'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
@@ -9,6 +7,8 @@ import { createParam } from 'solito'
 import { useLink } from 'solito/link'
 import { Button, Separator, YStack } from 'tamagui'
 
+import { ConnectionForm } from '../connection-form'
+import { useConnection } from '../provider/storage'
 import { NotFoundScreen } from './not-found'
 
 const { useParam } = createParam<{ id: string }>()

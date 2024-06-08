@@ -20,9 +20,6 @@
     },
     {
       "path": "./packages/ws-server"
-    },
-    {
-      "path": "./packages/playground"
     }
   ]
 }

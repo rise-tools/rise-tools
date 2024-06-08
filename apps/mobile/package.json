@@ -13,9 +13,15 @@
   "dependencies": {
     "@babel/runtime": "^7.18.9",
     "@expo/config-plugins": "7.8.0",
-    "@final-ui/playground": "0.2.0",
     "@react-navigation/native": "^6.1.6",
     "@shopify/react-native-skia": "0.1.221",
+    "@tamagui/font-inter": "^1.100.3",
+    "@tamagui/react-native-media-driver": "^1.100.3",
+    "@tamagui/shorthands": "^1.100.3",
+    "@tamagui/themes": "^1.100.3",
+    "@tamagui/toast": "^1.100.3",
+    "@ts-react/form": "^1.8.3",
+    "bs58": "^5.0.0",
     "burnt": "^0.12.1",
     "expo": "50",
     "expo-asset": "~9.0.2",
@@ -43,12 +49,13 @@
     "react-native-svg": "14.1.0",
     "react-native-web": "~0.19.6",
     "solito": "4.0.1",
+    "tamagui": "^1.100.3",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
     "@expo/metro-config": "~0.17.1",
-    "@tamagui/babel-plugin": "^1.94.4",
+    "@tamagui/babel-plugin": "^1.100.3",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "metro-minify-terser": "^0.74.1",
     "typescript": "^5.1.3"

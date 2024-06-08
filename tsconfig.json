@@ -2,7 +2,6 @@
   "extends": "@tsconfig/node18",
   "compilerOptions": {
     "paths": {
-      "@final-ui/playground": ["./packages/playground/src"],
       "@final-ui/react": ["./packages/react/src"],
       "@final-ui/react/jsx-runtime": ["./packages/react/src/jsx"],
       "@final-ui/ws-client": ["./packages/ws-client/src"],

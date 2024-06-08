@@ -1,4 +1,3 @@
-// @ts-ignore
 import { useStringFieldInfo, useTsController } from '@ts-react/form'
 import React, { useId } from 'react'
 import { Fieldset, Input, InputProps, Label, Theme, useThemeName } from 'tamagui'

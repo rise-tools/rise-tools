@@ -1,4 +1,3 @@
-import { Provider, tamaguiConfig } from '@final-ui/playground'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
 import { Stack, usePathname, useRouter } from 'expo-router'
@@ -8,11 +7,8 @@ import { useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import { ExpoStorageProvider, navigationStore } from '../src/expo-storage'
-
-export const unstable_settings = {
-  // https://docs.expo.dev/router/advanced/router-settings/
-  initialRouteName: 'index',
-}
+import { Provider } from '../src/provider'
+import { tamaguiConfig } from '../src/tamagui/config'
 
 export default function HomeLayout() {
   const pathname = usePathname()
@@ -26,31 +22,27 @@ export default function HomeLayout() {
       }, 500)
     }
   }, [])
+
   useEffect(() => {
     navigationStore.setRoute(pathname)
   }, [pathname])
+
   const [loaded] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
     InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
   })
+
   const scheme = useColorScheme()
   if (!loaded) {
     return null
   }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider config={tamaguiConfig}>
         <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
           <ExpoStorageProvider>
-            <Stack>
-              <Stack.Screen
-                name="connection/[id]"
-                // @ts-ignore
-                getId={({ params }: { params: { id: string; path: string } }) => {
-                  return `${params.id}-${params.path}`
-                }}
-              />
-            </Stack>
+            <Stack />
           </ExpoStorageProvider>
         </ThemeProvider>
       </Provider>

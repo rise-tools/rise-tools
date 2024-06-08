@@ -1,7 +1,8 @@
-import { StorageContextProvider, Store } from '@final-ui/playground/src/provider/storage'
 import { randomUUID } from 'expo-crypto'
 import React from 'react'
 import { MMKV } from 'react-native-mmkv'
+
+import { StorageContextProvider, Store } from './provider/storage'
 
 const storage = new MMKV()
 
