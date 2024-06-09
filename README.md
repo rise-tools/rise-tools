@@ -1,4 +1,4 @@
-![React Native Templates](assets/BannerReame.png)
+![RRise Tools](assets/BannerReame.png)
 
 Your UI, defined with any data source
 
@@ -15,8 +15,8 @@ Your UI, defined with any data source
 
 This repo contains the following packages:
 
-- `packages/react` - React Native Templates core library
-- `packages/tamagui` - Component library based on Tamagui to use with React Native Templates
+- `packages/react` - RRise Tools core library
+- `packages/tamagui` - Component library based on Tamagui to use with RRise Tools
 - `packages/kit` - Component library used by the Playground 
 - `packages/ws-client` - Websocket client to use with the Websocket server
 - `packages/ws-server` - Websocket server 
@@ -29,7 +29,7 @@ As well as the following applications:
 
 ## Overview
 
-React Native Templates (RNT) can be described with 3 core primitives:
+RRise Tools (RNT) can be described with 3 core primitives:
 
 - Component Library of UI your client can render
 - Data Source where your templates will load+subscribe to data
@@ -242,7 +242,7 @@ Then, in the `onEvent` handler, you may want to do as follows:
 
 ### Tamagui Component library
 
-Contains all Tamagui components to be used immediately with React Native Templates. 
+Contains all Tamagui components to be used immediately with Rise Tools. 
 
 ### Rise Component Library
 

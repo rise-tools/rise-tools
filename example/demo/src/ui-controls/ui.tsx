@@ -130,7 +130,7 @@ function SwitchExample() {
 const frameworks = [
   { label: 'Laravel', key: 'laravel' },
   { label: 'Remix', key: 'remix' },
-  { label: 'Final UI', key: 'final-ui' },
+  { label: 'Rise Tools', key: 'rise-tools' },
   { label: 'Next.js', key: 'next' },
   { label: 'Prefer not say', key: 'unknown' },
 ]
