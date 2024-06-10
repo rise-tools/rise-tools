@@ -72,13 +72,13 @@ export const useLocalState = (): [
   return [
     {
       getStream(state) {
-        const [, stream] = getWritableStream(state)
+        const [stream] = getWritableStream(state)
         return stream
       },
     },
     (action, payload: JSONValue[]) => {
       const [, state, stateUpdate] = action.name
-      const [write] = getWritableStream(state)
+      const [, write] = getWritableStream(state)
       write((currentValue) => applyStateUpdateAction(currentValue, stateUpdate, payload))
     },
   ]

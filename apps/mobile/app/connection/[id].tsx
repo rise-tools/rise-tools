@@ -1,15 +1,12 @@
-import { useConnection } from '@final-ui/playground'
-import { ConnectionScreen } from '@final-ui/playground'
-import { Stack } from 'expo-router'
+import { Stack, useLocalSearchParams } from 'expo-router'
 import React from 'react'
-import { createParam } from 'solito'
 
-const { useParam } = createParam<{ id: string; path: string }>()
+import { useConnection } from '../../src/connection'
+import { ConnectionScreen } from '../../src/screens/connection'
 
 export default function Screen() {
-  const [id] = useParam('id')
-  const [path] = useParam('path')
-  const [connection] = useConnection(id)
+  const { id, path } = useLocalSearchParams<{ id: string; path: string }>()
+  const connection = useConnection(id)
 
   return (
     <>

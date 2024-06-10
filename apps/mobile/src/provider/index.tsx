@@ -10,16 +10,7 @@ export function Provider({ children, ...rest }: TamaguiProviderProps) {
   const scheme = useColorScheme()
   return (
     <TamaguiProvider disableInjectCSS defaultTheme={scheme === 'dark' ? 'dark' : 'light'} {...rest}>
-      <ToastProvider
-        swipeDirection="horizontal"
-        duration={6000}
-        native={
-          [
-            /* uncomment the next line to do native toasts on mobile. NOTE: it'll require you making a dev build and won't work with Expo Go */
-            // 'mobile'
-          ]
-        }
-      >
+      <ToastProvider swipeDirection="horizontal" duration={6000}>
         {children}
         <Toast />
         <ToastViewport />

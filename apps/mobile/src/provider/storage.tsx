@@ -17,23 +17,7 @@ export type ConnectionsState = {
   connections: Connection[]
 }
 
-type StorageContext = {
-  connections: Store<ConnectionsState>
-  uuid: () => string
-}
-
-const StorageContext = createContext<null | StorageContext>(null)
-
-function useStorage() {
-  const context = useContext(StorageContext)
-  if (!context) throw new Error('useStorage must be used within a StorageProvider')
-  return context
-}
-
-export const StorageContextProvider = StorageContext.Provider
-
 export function useConnections() {
-  const storage = useStorage()
   const state = useSyncExternalStore<ConnectionsState>(
     storage.connections.subscribe,
     storage.connections.get
@@ -96,6 +80,12 @@ export const BUILTIN_CONNECTIONS: Record<string, Connection> = {
   inventory: {
     id: 'inventory',
     label: '🏭 Car Parts Inventory',
+    host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
+    path: 'inventory',
+  },
+  ui: {
+    id: 'ui',
+    label: '🏭 UI Controls',
     host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
     path: 'inventory',
   },

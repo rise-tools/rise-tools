@@ -1,3 +1,4 @@
+import { useStream } from '@final-ui/react'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
 import { useEffect } from 'react'
@@ -5,12 +6,12 @@ import React from 'react'
 import { useRouter } from 'solito/router'
 import { Button, SizableText, YStack } from 'tamagui'
 
-import { Connection, useConnections } from '../provider/storage'
+import { addConnection, Connection, connections } from '../connection'
 
 export function ConnectScreen({ connectInfo }: { connectInfo?: string }) {
   const { replace } = useRouter()
 
-  let importedConnection: null | Connection = null
+  let importedConnection: Connection | null = null
   if (connectInfo) {
     try {
       importedConnection = JSON.parse(Buffer.from(bs58.decode(connectInfo)).toString('utf-8'))
@@ -19,7 +20,7 @@ export function ConnectScreen({ connectInfo }: { connectInfo?: string }) {
     }
   }
 
-  const [connState, { addConnection }] = useConnections()
+  const state = useStream(connections)
 
   if (!importedConnection) {
     return (
@@ -28,9 +29,10 @@ export function ConnectScreen({ connectInfo }: { connectInfo?: string }) {
       </YStack>
     )
   }
+
   useEffect(() => {
     // check if connection exists in connections, redirect if it does
-    const existingConnection = connState.connections.find(
+    const existingConnection = state.find(
       (connection) =>
         connection.label === importedConnection?.label &&
         connection.host === importedConnection?.host &&
@@ -40,7 +42,8 @@ export function ConnectScreen({ connectInfo }: { connectInfo?: string }) {
       replace(`/connection/${existingConnection.id}`)
     }
     console.log('existingConnection', existingConnection)
-  }, [importedConnection, connState])
+  }, [importedConnection, state])
+
   return (
     <YStack>
       <SizableText>Confirm Connection to "{importedConnection.label}"?</SizableText>
@@ -48,7 +51,7 @@ export function ConnectScreen({ connectInfo }: { connectInfo?: string }) {
         <Button
           onPress={() => {
             if (!importedConnection) return
-            const existingConnection = connState.connections.find(
+            const existingConnection = state.find(
               (connection) =>
                 connection.label === importedConnection?.label &&
                 connection.host === importedConnection?.host &&
