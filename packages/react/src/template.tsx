@@ -50,7 +50,7 @@ export type ReferencedDataState = {
   ref: Path
 }
 export type ActionDataState<
-  T extends string = any,
+  T extends string = string,
   K extends Record<string, any> = Record<string, any>,
 > = {
   $: 'action'
