@@ -1,6 +1,7 @@
 import { RiseComponents } from '@rise-tools/kit'
 import { ActionDataState, Template } from '@rise-tools/react'
 import { TamaguiComponents } from '@rise-tools/tamagui'
+import { useToastController } from '@tamagui/toast'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import React, { useCallback } from 'react'
 import { useRouter } from 'solito/router'
@@ -34,8 +35,15 @@ export function ConnectionScreen() {
   return <ActiveConnectionScreen connection={connection} />
 }
 
+type NavigationAction = ActionDataState<['navigate', string]>
+type NavigationBackAction = ActionDataState<'navigate-back'>
+type ShowToastAction = ActionDataState<['toast', { title: string; message?: string }]>
+
+type RiseAction = NavigationAction | NavigationBackAction | ShowToastAction
+
 function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   const params = useLocalSearchParams<{ path: string }>()
+  const toast = useToastController()
   const router = useRouter()
 
   const dataSource = useDataSource(connection.id, connection.host)
@@ -44,14 +52,19 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   }
 
   const onAction = useCallback(
-    (action: ActionDataState<string | string[]>) => {
-      const [name, path] = Array.isArray(action.name) ? action.name : [action.name, '']
+    (action: RiseAction) => {
+      const [name, payload] = Array.isArray(action.name) ? action.name : [action.name, '']
       if (name === 'navigate') {
-        router.push(`/connection/${connection.id}?path=${path}`)
+        router.push(`/connection/${connection.id}?path=${payload}`)
         return true
       }
       if (name === 'navigate-back') {
         router.back()
+        return true
+      }
+      if (action.name[0] === 'toast') {
+        const { title, message } = (action as ShowToastAction).name[1]
+        toast.show(title, { message })
         return true
       }
     },

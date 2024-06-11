@@ -19,6 +19,7 @@ export function UIControlsExample(ctx: UIContext) {
     switch: SwitchExample,
     select: SelectExample,
     list: ListExample,
+    toast: ShowToastExample,
   }
 }
 
@@ -30,6 +31,7 @@ function UI() {
       <Button onPress={action(['navigate', 'switch'])}>Switch</Button>
       <Button onPress={action(['navigate', 'select'])}>Select</Button>
       <Button onPress={action(['navigate', 'list'])}>List</Button>
+      <Button onPress={action(['navigate', 'toast'])}>Toast</Button>
     </YStack>
   )
 }
@@ -171,6 +173,18 @@ function ListExample() {
         header={<H4>Header</H4>}
         footer={<H4>Footer</H4>}
       />
+    </YStack>
+  )
+}
+
+function ShowToastExample() {
+  return (
+    <YStack>
+      <Button
+        onPress={action(['toast', { title: 'Hello World!', message: 'This is toast action!' }])}
+      >
+        <Text>Show toast</Text>
+      </Button>
     </YStack>
   )
 }
