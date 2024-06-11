@@ -1,2 +1,2 @@
-@final-ui/react
+@rise-tools/react
 =====

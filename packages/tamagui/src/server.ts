@@ -1,4 +1,4 @@
-import { createComponentDefinition } from '@final-ui/react'
+import { createComponentDefinition } from '@rise-tools/react'
 import * as t from 'tamagui'
 import { LinearGradient as TLinearGradient } from 'tamagui/linear-gradient'
 

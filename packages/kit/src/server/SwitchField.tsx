@@ -1,7 +1,7 @@
-/** @jsxImportSource @final-ui/react */
+/** @jsxImportSource @rise-tools/react */
 
-import { WithServerProps } from '@final-ui/react'
-import { Label, Switch, SwitchThumb, XStack } from '@final-ui/tamagui/server'
+import { WithServerProps } from '@rise-tools/react'
+import { Label, Switch, SwitchThumb, XStack } from '@rise-tools/tamagui/server'
 
 type Props = {
   value: boolean

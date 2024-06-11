@@ -2,7 +2,7 @@
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"jsx": "react-jsx",
-    "jsxImportSource": "@final-ui/react"
+    "jsxImportSource": "@rise-tools/react"
 	},
 	"references": [{
     "path": "../../packages/react"

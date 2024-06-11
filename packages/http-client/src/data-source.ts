@@ -1,4 +1,4 @@
-import { type DataSource, DataState, HandlerEvent, ResponseDataState, Store } from '@final-ui/react'
+import { type DataSource, DataState, HandlerEvent, ResponseDataState, Store } from '@rise-tools/react'
 
 type Handler = (value: DataState) => void
 

@@ -1,2 +1,2 @@
-@final-ui/kit
+@rise-tools/kit
 =====

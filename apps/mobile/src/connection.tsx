@@ -1,4 +1,4 @@
-import { useStream } from '@final-ui/react'
+import { useStream } from '@rise-tools/react'
 
 import { createMMKVStream } from './storage'
 

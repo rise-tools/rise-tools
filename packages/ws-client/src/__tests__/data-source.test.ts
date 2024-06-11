@@ -1,4 +1,4 @@
-import { event, HandlerEvent, response } from '@final-ui/react'
+import { event, HandlerEvent, response } from '@rise-tools/react'
 import WS from 'jest-websocket-mock'
 
 import {

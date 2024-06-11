@@ -1,5 +1,5 @@
-import { createHTTPDataSource } from '@final-ui/http-client'
-import { createWSDataSource } from '@final-ui/ws-client'
+import { createHTTPDataSource } from '@rise-tools/http-client'
+import { createWSDataSource } from '@rise-tools/ws-client'
 
 const dataSources = new Map<string, ReturnType<typeof createDataSource>>()
 

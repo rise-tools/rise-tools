@@ -1,4 +1,4 @@
-import { createWSServer } from '@final-ui/ws-server'
+import { createWSServer } from '@rise-tools/ws-server'
 
 import { InventoryExample } from './inventory/ui'
 import { UIContext } from './types'

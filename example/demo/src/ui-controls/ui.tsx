@@ -4,9 +4,9 @@ import {
   SelectField,
   SliderField,
   SwitchField,
-} from '@final-ui/kit/server'
-import { action, event, eventPayload, response, setStateAction, state } from '@final-ui/react'
-import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@final-ui/tamagui/server'
+} from '@rise-tools/kit/server'
+import { action, event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
+import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@rise-tools/tamagui/server'
 
 import { UIContext } from '../types'
 

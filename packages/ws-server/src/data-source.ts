@@ -8,14 +8,14 @@ import {
   response,
   ServerDataState,
   UI,
-} from '@final-ui/react'
+} from '@rise-tools/react'
 import type {
   ClientWebsocketMessage,
   EventWebsocketMessage,
   ServerWebsocketMessage,
   SubscribeWebsocketMessage,
   UnsubscribeWebsocketMessage,
-} from '@final-ui/ws-client'
+} from '@rise-tools/ws-client'
 
 type EventSubscriber = (
   event: HandlerEvent,
@@ -42,7 +42,7 @@ export function createWSServerDataSource() {
   function update(key: string, value: Initializer) {
     if (isReactElement(value)) {
       throw new Error(
-        'Rise JSX not configured. You must set "jsx" to "react-jsx" and "jsxImportSource" to "@final-ui/react" in your tsconfig.json.'
+        'Rise JSX not configured. You must set "jsx" to "react-jsx" and "jsxImportSource" to "@rise-tools/react" in your tsconfig.json.'
       )
     }
     values.set(key, value)
@@ -61,7 +61,7 @@ export function createWSServerDataSource() {
       }
       if (isReactElement(value)) {
         throw new Error(
-          'Rise JSX not configured. You must set "jsx" to "react-jsx" and "jsxImportSource" to "@final-ui/react" in your tsconfig.json.'
+          'Rise JSX not configured. You must set "jsx" to "react-jsx" and "jsxImportSource" to "@rise-tools/react" in your tsconfig.json.'
         )
       }
       cache.set(key, value)

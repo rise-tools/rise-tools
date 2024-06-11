@@ -1,5 +1,5 @@
 {
-  "name": "final-ui",
+  "name": "rise-tools",
   "license": "Apache-2.0",
   "private": true,
   "workspaces": [
@@ -54,7 +54,7 @@
     "testEnvironment": "jsdom",
     "prettierPath": null,
     "moduleNameMapper": {
-      "@final-ui/(.*)": "<rootDir>/packages/$1/src",
+      "@rise-tools/(.*)": "<rootDir>/packages/$1/src",
       "^react-native$": "react-native-web"
     },
     "setupFiles": [

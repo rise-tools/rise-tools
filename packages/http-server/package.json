@@ -1,5 +1,5 @@
 {
-  "name": "@final-ui/http-server",
+  "name": "@rise-tools/http-server",
   "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/final-ui/final.git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
     "directory": "packages/http-server"
   },
   "publishConfig": {
@@ -26,13 +26,13 @@
     "Eric Vicenti <ericvicenti@gmail.com> (https://github.com/ericvicenti)"
   ],
   "bugs": {
-    "url": "https://github.com/final-ui/final/issues"
+    "url": "https://github.com/rise-tools/rise-tools/issues"
   },
-  "homepage": "https://github.com/final-ui/final#readme",
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "dependencies": {
-    "@final-ui/react": "0.2.0"
+    "@rise-tools/react": "0.2.0"
   }, 
   "devDependencies": {
-    "@final-ui/http-client": "0.2.0"
+    "@rise-tools/http-client": "0.2.0"
   }
 }

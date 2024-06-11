@@ -1,4 +1,4 @@
-import { action, ref } from '@final-ui/react'
+import { action, ref } from '@rise-tools/react'
 import {
   Button,
   H2,
@@ -9,7 +9,7 @@ import {
   SizableText,
   XStack,
   YStack,
-} from '@final-ui/tamagui/server'
+} from '@rise-tools/tamagui/server'
 
 import { UIContext } from '../types'
 import inventory, { Item } from './inventory'

@@ -1,5 +1,5 @@
 {
-  "name": "@final-ui/kit",
+  "name": "@rise-tools/kit",
   "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
@@ -17,7 +17,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/final-ui/final.git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
     "directory": "packages/kit"
   },
   "publishConfig": {
@@ -25,11 +25,11 @@
   },
   "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "bugs": {
-    "url": "https://github.com/final-ui/final/issues"
+    "url": "https://github.com/rise-tools/rise-tools/issues"
   },
-  "homepage": "https://github.com/final-ui/final#readme",
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "devDependencies": {
-    "@final-ui/react": "0.2.0",
+    "@rise-tools/react": "0.2.0",
     "@tamagui/config": "^1.100.3",
     "@types/react": "^18.0.27",
     "react": "^18.2.0",

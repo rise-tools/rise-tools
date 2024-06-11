@@ -1,6 +1,6 @@
-/** @jsxImportSource @final-ui/react */
+/** @jsxImportSource @rise-tools/react */
 
-import { Literal, LiteralArray, WithServerProps } from '@final-ui/react'
+import { Literal, LiteralArray, WithServerProps } from '@rise-tools/react'
 import {
   Adapt,
   AdaptContents,
@@ -21,7 +21,7 @@ import {
   SheetOverlay,
   SheetScrollView,
   YStack,
-} from '@final-ui/tamagui/server'
+} from '@rise-tools/tamagui/server'
 
 import { Icon } from './bindings'
 

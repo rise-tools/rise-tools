@@ -1,5 +1,5 @@
-import { DataSource, useStream } from '@final-ui/react'
-import { WebSocketDataSource } from '@final-ui/ws-client'
+import { DataSource, useStream } from '@rise-tools/react'
+import { WebSocketDataSource } from '@rise-tools/ws-client'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import React, { PropsWithChildren } from 'react'
 import { H4, SizableText, Text, YStack } from 'tamagui'
