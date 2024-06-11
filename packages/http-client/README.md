@@ -1,2 +1,2 @@
-@final-ui/http-client
+@rise-tools/http-client
 =====

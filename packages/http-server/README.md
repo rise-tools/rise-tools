@@ -1,2 +1,2 @@
-@final-ui/http-server
+@rise-tools/http-server
 =====

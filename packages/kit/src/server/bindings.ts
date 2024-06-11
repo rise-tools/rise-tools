@@ -1,4 +1,4 @@
-import { createComponentDefinition } from '@final-ui/react'
+import { createComponentDefinition } from '@rise-tools/react'
 import type RNQRCode from 'react-native-qrcode-svg'
 
 import type { RNDraggableFlatList } from '../client/DraggableFlatList'

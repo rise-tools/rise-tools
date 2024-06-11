@@ -1,5 +1,5 @@
 {
-  "name": "@final-ui/http-client",
+  "name": "@rise-tools/http-client",
   "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/final-ui/final.git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
     "directory": "packages/http-client"
   },
   "publishConfig": {
@@ -26,13 +26,13 @@
     "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
   ],
   "bugs": {
-    "url": "https://github.com/final-ui/final/issues"
+    "url": "https://github.com/rise-tools/rise-tools/issues"
   },
-  "homepage": "https://github.com/final-ui/final#readme",
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "dependencies": {
   },
   "devDependencies": {
-    "@final-ui/react": "0.2.0",
+    "@rise-tools/react": "0.2.0",
     "@types/react": "^18.0.27",
     "jest-websocket-mock": "^2.5.0",
     "metro-react-native-babel-preset": "^0.77.0",

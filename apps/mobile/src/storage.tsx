@@ -1,4 +1,4 @@
-import { createWritableStream, JSONValue, WritableStream } from '@final-ui/react'
+import { createWritableStream, JSONValue, WritableStream } from '@rise-tools/react'
 import { MMKV } from 'react-native-mmkv'
 
 export const storage = new MMKV()

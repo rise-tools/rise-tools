@@ -1,4 +1,4 @@
-import type { EventPayload } from '@final-ui/http-client'
+import type { EventPayload } from '@rise-tools/http-client'
 import {
   isReactElement,
   isResponseDataState,
@@ -7,7 +7,7 @@ import {
   response,
   ServerDataState,
   UI,
-} from '@final-ui/react'
+} from '@rise-tools/react'
 
 type Initializer = ServerDataState | UI | (() => Promise<ServerDataState | UI>)
 
@@ -25,7 +25,7 @@ export function createHTTPDataSource() {
     }
     if (isReactElement(value)) {
       throw new Error(
-        'Rise JSX not configured. You must set "jsx" to "react-jsx" and "jsxImportSource" to "@final-ui/react" in your tsconfig.json.'
+        'Rise JSX not configured. You must set "jsx" to "react-jsx" and "jsxImportSource" to "@rise-tools/react" in your tsconfig.json.'
       )
     }
     return value

@@ -2,16 +2,16 @@
   "extends": "@tsconfig/node18",
   "compilerOptions": {
     "paths": {
-      "@final-ui/react": ["./packages/react/src"],
-      "@final-ui/react/jsx-runtime": ["./packages/react/src/jsx"],
-      "@final-ui/ws-client": ["./packages/ws-client/src"],
-      "@final-ui/http-client": ["./packages/http-client/src"],
-      "@final-ui/http-server": ["./packages/http-server/src"],
-      "@final-ui/ws-server": ["./packages/ws-server/src"],
-      "@final-ui/tamagui": ["./packages/tamagui/src"],
-      "@final-ui/tamagui/server": ["./packages/tamagui/src/server"],
-      "@final-ui/kit": ["./packages/kit/src"],
-      "@final-ui/kit/server": ["./packages/react/src/server"]
+      "@rise-tools/react": ["./packages/react/src"],
+      "@rise-tools/react/jsx-runtime": ["./packages/react/src/jsx"],
+      "@rise-tools/ws-client": ["./packages/ws-client/src"],
+      "@rise-tools/http-client": ["./packages/http-client/src"],
+      "@rise-tools/http-server": ["./packages/http-server/src"],
+      "@rise-tools/ws-server": ["./packages/ws-server/src"],
+      "@rise-tools/tamagui": ["./packages/tamagui/src"],
+      "@rise-tools/tamagui/server": ["./packages/tamagui/src/server"],
+      "@rise-tools/kit": ["./packages/kit/src"],
+      "@rise-tools/kit/server": ["./packages/react/src/server"]
     },
     "composite": true,
     "strictNullChecks": true,

@@ -6,7 +6,7 @@ import {
   ResponseDataState,
   Store,
   Stream,
-} from '@final-ui/react'
+} from '@rise-tools/react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
 export type SubscribeWebsocketMessage = {

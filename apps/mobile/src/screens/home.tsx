@@ -1,4 +1,4 @@
-import { useStream } from '@final-ui/react'
+import { useStream } from '@rise-tools/react'
 import { PlusCircle, Settings } from '@tamagui/lucide-icons'
 import { useAssets } from 'expo-asset'
 import React from 'react'

@@ -1,4 +1,4 @@
-import { useStream } from '@final-ui/react'
+import { useStream } from '@rise-tools/react'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
 import { useEffect } from 'react'

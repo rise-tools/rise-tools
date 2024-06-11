@@ -1,4 +1,4 @@
-import { BaseTemplate } from '@final-ui/react'
+import { BaseTemplate } from '@rise-tools/react'
 import { config } from '@tamagui/config/v3'
 import { render } from '@testing-library/react'
 import React from 'react'

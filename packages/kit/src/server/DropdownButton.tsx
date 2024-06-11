@@ -1,4 +1,4 @@
-/** @jsxImportSource @final-ui/react */
+/** @jsxImportSource @rise-tools/react */
 
 import {
   Literal,
@@ -7,7 +7,7 @@ import {
   state,
   StateDataState,
   WithServerProps,
-} from '@final-ui/react'
+} from '@rise-tools/react'
 import {
   Button,
   Sheet,
@@ -15,7 +15,7 @@ import {
   SheetHandle,
   SheetOverlay,
   YStack,
-} from '@final-ui/tamagui/server'
+} from '@rise-tools/tamagui/server'
 
 type Props = {
   value: StateDataState<string>

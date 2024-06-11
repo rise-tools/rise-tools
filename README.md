@@ -37,10 +37,10 @@ RRise Tools (RNT) can be described with 3 core primitives:
 
 ## Template Component
 
-This will be published from `@final-ui/react`
+This will be published from `@rise-tools/react`
 
 ```ts
-import { Template } from '@final-ui/react`
+import { Template } from '@rise-tools/react`
 
 // then, render it:
 
@@ -276,7 +276,7 @@ Finally, open up the mobile app and create new connection that points to the Web
 ## Big TODOs:
 
 - Publish the Playground to the iOS and Android app stores
-- Publish packages to NPM under the `@final-ui` org
+- Publish packages to NPM under the `@rise-tools` org
 - Documentation
 - Landing page
 - API Reference
