@@ -35,9 +35,9 @@ export function ConnectionScreen() {
   return <ActiveConnectionScreen connection={connection} />
 }
 
-type NavigationAction = ActionDataState<['navigate', string]>
+type NavigationAction = ActionDataState<'navigate', { path: string }>
 type NavigationBackAction = ActionDataState<'navigate-back'>
-type ShowToastAction = ActionDataState<['toast', { title: string; message?: string }]>
+type ShowToastAction = ActionDataState<'toast', { title: string; message?: string }>
 
 type RiseAction = NavigationAction | NavigationBackAction | ShowToastAction
 
@@ -53,18 +53,16 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
 
   const onAction = useCallback(
     (action: RiseAction) => {
-      const [name, payload] = Array.isArray(action.name) ? action.name : [action.name, '']
-      if (name === 'navigate') {
-        router.push(`/connection/${connection.id}?path=${payload}`)
+      if (action.name === 'navigate') {
+        router.push(`/connection/${connection.id}?path=${action.path}`)
         return true
       }
-      if (name === 'navigate-back') {
+      if (action.name === 'navigate-back') {
         router.back()
         return true
       }
-      if (action.name[0] === 'toast') {
-        const { title, message } = (action as ShowToastAction).name[1]
-        toast.show(title, { message })
+      if (action.name === 'toast') {
+        toast.show(action.title, { message: action.message })
         return true
       }
     },

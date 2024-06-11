@@ -49,10 +49,13 @@ export type ReferencedDataState = {
   $: 'ref'
   ref: Path
 }
-export type ActionDataState<T = any> = {
+export type ActionDataState<
+  T extends string = any,
+  K extends Record<string, any> = Record<string, any>,
+> = {
   $: 'action'
   name: T
-}
+} & K
 export type ResponseDataState = {
   $: 'response'
   payload: JSONValue

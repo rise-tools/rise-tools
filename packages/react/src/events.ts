@@ -27,8 +27,12 @@ export function event<T>(
   }
 }
 
-export function action<T = any>(name: T): ActionDataState<T> {
+export function action<T extends string, K extends Record<string, any>>(
+  name: T,
+  options: K = {} as K
+): ActionDataState<T, K> {
   return {
+    ...options,
     $: 'action',
     name,
   }
