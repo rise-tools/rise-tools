@@ -35,14 +35,13 @@ export function ConnectionScreen() {
   return <ActiveConnectionScreen connection={connection} />
 }
 
-type NavigationAction = ActionDataState<'rise-navigate', { path: string }>
-type NavigationBackAction = ActionDataState<'rise-navigate-back'>
-type ShowToastAction = ActionDataState<'rise-toast', { title: string; message?: string }>
-
-type RiseAction = NavigationAction | NavigationBackAction | ShowToastAction
+type RiseAction =
+  | ActionDataState<'navigate', { path: string }>
+  | ActionDataState<'navigate-back'>
+  | ActionDataState<'toast', { title: string; message?: string }>
 
 function isRiseAction(action: ActionDataState): action is RiseAction {
-  return action.name.startsWith('rise-')
+  return ['navigate', 'navigate-back', 'toast'].includes(action.name)
 }
 
 function ActiveConnectionScreen({ connection }: { connection: Connection }) {
@@ -60,15 +59,15 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
       if (!isRiseAction(action)) {
         return
       }
-      if (action.name === 'rise-navigate') {
+      if (action.name === 'navigate') {
         router.push(`/connection/${connection.id}?path=${action.path}`)
         return
       }
-      if (action.name === 'rise-navigate-back') {
+      if (action.name === 'navigate-back') {
         router.back()
         return
       }
-      if (action.name === 'rise-toast') {
+      if (action.name === 'toast') {
         toast.show(action.title, { message: action.message })
         return
       }
