@@ -35,11 +35,15 @@ export function ConnectionScreen() {
   return <ActiveConnectionScreen connection={connection} />
 }
 
-type NavigationAction = ActionDataState<'navigate', { path: string }>
-type NavigationBackAction = ActionDataState<'navigate-back'>
-type ShowToastAction = ActionDataState<'toast', { title: string; message?: string }>
+type NavigationAction = ActionDataState<'rise-navigate', { path: string }>
+type NavigationBackAction = ActionDataState<'rise-navigate-back'>
+type ShowToastAction = ActionDataState<'rise-toast', { title: string; message?: string }>
 
 type RiseAction = NavigationAction | NavigationBackAction | ShowToastAction
+
+function isRiseAction(action: ActionDataState): action is RiseAction {
+  return action.name.startsWith('rise-')
+}
 
 function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   const params = useLocalSearchParams<{ path: string }>()
@@ -52,18 +56,21 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   }
 
   const onAction = useCallback(
-    (action: RiseAction) => {
-      if (action.name === 'navigate') {
+    (action: RiseAction | ActionDataState) => {
+      if (!isRiseAction(action)) {
+        return
+      }
+      if (action.name === 'rise-navigate') {
         router.push(`/connection/${connection.id}?path=${action.path}`)
-        return true
+        return
       }
-      if (action.name === 'navigate-back') {
+      if (action.name === 'rise-navigate-back') {
         router.back()
-        return true
+        return
       }
-      if (action.name === 'toast') {
+      if (action.name === 'rise-toast') {
         toast.show(action.title, { message: action.message })
-        return true
+        return
       }
     },
     [router]
