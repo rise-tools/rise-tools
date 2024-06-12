@@ -1,5 +1,5 @@
+import { useRouter } from 'expo-router'
 import React from 'react'
-import { useLink } from 'solito/link'
 import { Button, YStack } from 'tamagui'
 import { z } from 'zod'
 
@@ -14,15 +14,13 @@ const defaultNewConnection = {
 }
 
 export function NewConnectionScreen() {
-  const goHomeLink = useLink({
-    href: '/',
-  })
+  const router = useRouter()
   return (
     <YStack flex={1} space padding="$4">
       <ConnectionForm
         onSubmit={(values) => {
           addConnection(values)
-          goHomeLink.onPress()
+          router.back()
         }}
         defaultValues={defaultNewConnection}
         submitButton={({ submit }) => <Button onPress={() => submit()}>Add Connection</Button>}

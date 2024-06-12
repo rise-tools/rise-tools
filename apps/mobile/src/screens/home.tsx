@@ -1,9 +1,9 @@
 import { useStream } from '@rise-tools/react'
 import { PlusCircle, Settings } from '@tamagui/lucide-icons'
 import { useAssets } from 'expo-asset'
+import { useRouter } from 'expo-router'
 import React from 'react'
 import { ImageURISource, ScrollView } from 'react-native'
-import { useLink } from 'solito/link'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
 import { BUILTIN_CONNECTIONS, Connection, connections } from '../connection'
@@ -58,19 +58,14 @@ function ConnectionItem({
   connection: Connection
   readonly?: boolean
 }) {
-  const editLink = useLink({
-    href: `/edit-connection/${connection.id}`,
-  })
-  const link = useLink({
-    href: `/connection/${connection.id}?path=${connection.path}`,
-  })
+  const router = useRouter()
   return (
     <YGroup.Item>
       <Button
         paddingHorizontal={0}
         backgroundColor="$color1"
-        {...link}
-        onLongPress={() => editLink.onPress()}
+        onPress={() => router.push(`/connection/${connection.id}?path=${connection.path}`)}
+        onLongPress={() => router.push(`/edit-connection/${connection.id}`)}
       >
         <XStack>
           <View flex={1} alignItems="center" justifyContent="center" paddingLeft="$4">
@@ -81,7 +76,11 @@ function ConnectionItem({
           {readonly ? (
             <Button disabled backgroundColor="transparent" />
           ) : (
-            <Button backgroundColor="transparent" icon={Settings} {...editLink} />
+            <Button
+              backgroundColor="transparent"
+              icon={Settings}
+              onPress={() => router.push(`/edit-connection/${connection.id}`)}
+            />
           )}
         </XStack>
       </Button>
@@ -90,11 +89,10 @@ function ConnectionItem({
 }
 
 function NewConnectionButton() {
-  const link = useLink({
-    href: '/new-connection',
-  })
+  const router = useRouter()
+
   return (
-    <Button {...link} icon={PlusCircle} chromeless>
+    <Button onPress={() => router.push('/new-connection')} icon={PlusCircle} chromeless>
       Add new connection
     </Button>
   )
