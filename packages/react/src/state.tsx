@@ -6,7 +6,10 @@ import { ActionDataState, JSONValue, StateDataState } from './template'
 import { lookupValue } from './utils'
 
 type StateUpdate<T> = T | StateModifier
-type UpdateStateAction<T> = ActionDataState<['state-update', StateDataState<T>, StateUpdate<T>]>
+type UpdateStateAction<T> = ActionDataState<
+  'state-update',
+  { state: StateDataState<T>; update: StateUpdate<T> }
+>
 
 type StateModifier = PayloadStateModifier | ToggleStateModifier | IncrementStateModifier
 type PayloadStateModifier = {
@@ -27,7 +30,7 @@ type IncrementStateModifier = {
 export function isStateUpdateAction<T extends JSONValue>(
   action: ActionDataState
 ): action is UpdateStateAction<T> {
-  return action.name[0] === 'state-update'
+  return action.name === 'state-update'
 }
 
 export function state<T extends JSONValue>(initialValue: T): StateDataState<T> {
@@ -49,9 +52,9 @@ export function setStateAction<T extends JSONValue>(
 ): UpdateStateAction<T>
 export function setStateAction<T>(
   state: StateDataState<T>,
-  value: T | StateModifier = eventPayload()
+  update: T | StateModifier = eventPayload()
 ): UpdateStateAction<T> {
-  return action(['state-update', state, value])
+  return action('state-update', { state, update })
 }
 
 export type LocalState = {
@@ -77,9 +80,8 @@ export const useLocalState = (): [
       },
     },
     (action, payload: JSONValue[]) => {
-      const [, state, stateUpdate] = action.name
-      const [, write] = getWritableStream(state)
-      write((currentValue) => applyStateUpdateAction(currentValue, stateUpdate, payload))
+      const [, write] = getWritableStream(action.state)
+      write((currentValue) => applyStateUpdateAction(currentValue, action.update, payload))
     },
   ]
 }

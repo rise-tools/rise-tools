@@ -19,17 +19,19 @@ export function UIControlsExample(ctx: UIContext) {
     switch: SwitchExample,
     select: SelectExample,
     list: ListExample,
+    toast: ShowToastExample,
   }
 }
 
 function UI() {
   return (
     <YStack>
-      <Button onPress={action(['navigate', 'form'])}>Form</Button>
-      <Button onPress={action(['navigate', 'slider'])}>Slider</Button>
-      <Button onPress={action(['navigate', 'switch'])}>Switch</Button>
-      <Button onPress={action(['navigate', 'select'])}>Select</Button>
-      <Button onPress={action(['navigate', 'list'])}>List</Button>
+      <Button onPress={action('navigate', { path: 'form' })}>Form</Button>
+      <Button onPress={action('navigate', { path: 'slider' })}>Slider</Button>
+      <Button onPress={action('navigate', { path: 'switch' })}>Switch</Button>
+      <Button onPress={action('navigate', { path: 'navigate' })}>Select</Button>
+      <Button onPress={action('navigate', { path: 'list' })}>List</Button>
+      <Button onPress={action('navigate', { path: 'toast' })}>Toast</Button>
     </YStack>
   )
 }
@@ -171,6 +173,18 @@ function ListExample() {
         header={<H4>Header</H4>}
         footer={<H4>Footer</H4>}
       />
+    </YStack>
+  )
+}
+
+function ShowToastExample() {
+  return (
+    <YStack>
+      <Button
+        onPress={action('toast', { title: 'Hello World!', message: 'This is toast action!' })}
+      >
+        <Text>Show toast</Text>
+      </Button>
     </YStack>
   )
 }

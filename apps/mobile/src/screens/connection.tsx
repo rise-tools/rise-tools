@@ -1,6 +1,7 @@
 import { RiseComponents } from '@rise-tools/kit'
 import { ActionDataState, Template } from '@rise-tools/react'
 import { TamaguiComponents } from '@rise-tools/tamagui'
+import { useToastController } from '@tamagui/toast'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import React, { useCallback } from 'react'
 import { useRouter } from 'solito/router'
@@ -34,8 +35,18 @@ export function ConnectionScreen() {
   return <ActiveConnectionScreen connection={connection} />
 }
 
+type RiseAction =
+  | ActionDataState<'navigate', { path: string }>
+  | ActionDataState<'navigate-back'>
+  | ActionDataState<'toast', { title: string; message?: string }>
+
+function isRiseAction(action: ActionDataState): action is RiseAction {
+  return ['navigate', 'navigate-back', 'toast'].includes(action.name)
+}
+
 function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   const params = useLocalSearchParams<{ path: string }>()
+  const toast = useToastController()
   const router = useRouter()
 
   const dataSource = useDataSource(connection.id, connection.host)
@@ -44,15 +55,21 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   }
 
   const onAction = useCallback(
-    (action: ActionDataState<string | string[]>) => {
-      const [name, path] = Array.isArray(action.name) ? action.name : [action.name, '']
-      if (name === 'navigate') {
-        router.push(`/connection/${connection.id}?path=${path}`)
-        return true
+    (action: ActionDataState) => {
+      if (!isRiseAction(action)) {
+        return
       }
-      if (name === 'navigate-back') {
+      if (action.name === 'navigate') {
+        router.push(`/connection/${connection.id}?path=${action.path}`)
+        return
+      }
+      if (action.name === 'navigate-back') {
         router.back()
-        return true
+        return
+      }
+      if (action.name === 'toast') {
+        toast.show(action.title, { message: action.message })
+        return
       }
     },
     [router]
