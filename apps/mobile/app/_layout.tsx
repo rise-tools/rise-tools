@@ -9,6 +9,11 @@ import { Provider } from '../src/provider'
 import { storage } from '../src/storage'
 import { tamaguiConfig } from '../src/tamagui/config'
 
+export const unstable_settings = {
+  // https://docs.expo.dev/router/advanced/router-settings/
+  initialRouteName: 'index',
+}
+
 export default function HomeLayout() {
   const pathname = usePathname()
   const router = useRouter()
@@ -40,7 +45,15 @@ export default function HomeLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider config={tamaguiConfig}>
         <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack />
+          <Stack>
+            <Stack.Screen
+              name="connection/[id]"
+              // @ts-ignore
+              getId={({ params }: { params: { id: string; path: string } }) => {
+                return `${params.id}-${params.path}`
+              }}
+            />
+          </Stack>
         </ThemeProvider>
       </Provider>
     </GestureHandlerRootView>
