@@ -56,7 +56,7 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
   }
 
   const onAction = useCallback(
-    (action: RiseAction | ActionDataState) => {
+    (action: ActionDataState) => {
       if (!isRiseAction(action)) {
         return
       }
