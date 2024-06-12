@@ -21,7 +21,7 @@ export function InventoryExample(ctx: UIContext) {
     ['inventory-items']: inventoryItems,
     ...Object.fromEntries(
       inventory.map((item) => [
-        `inventory:${item.key}:details`,
+        `inventory/${item.key}/details`,
         () => <Item item={item} ctx={ctx} />,
       ])
     ),
@@ -35,7 +35,7 @@ function HomeScreen() {
         {inventory.map((item, idx) => (
           <Button
             unstyled
-            onPress={action('navigate', { path: `inventory:${item.key}:details` })}
+            onPress={action('navigate', { path: `inventory/${item.key}/details` })}
             pressStyle={{ opacity: 0.8 }}
           >
             <XStack

@@ -6,20 +6,24 @@ import { ConnectionScreen } from '../../src/screens/connection'
 
 export default function Screen() {
   const { slug } = useLocalSearchParams<{ slug: string[] }>()
-  const connection = useConnection(slug?.[0])
 
+  const [id, ...segments] = slug || []
+
+  const connection = useConnection(id)
   if (!connection) {
     return <Redirect href="/connection/not-found" />
   }
+
+  const path = segments.join('/')
 
   return (
     <>
       <Stack.Screen
         options={{
-          title: slug?.[1] || connection.label,
+          title: path || connection.label,
         }}
       />
-      <ConnectionScreen connection={connection} path={slug?.[1]} />
+      <ConnectionScreen connection={connection} path={path} />
     </>
   )
 }
