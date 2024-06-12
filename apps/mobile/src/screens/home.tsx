@@ -64,7 +64,13 @@ function ConnectionItem({
       <Button
         paddingHorizontal={0}
         backgroundColor="$color1"
-        onPress={() => router.push(`/connection/${connection.id}?path=${connection.path}`)}
+        onPress={() => {
+          if (connection.path) {
+            router.push(`/connection/${connection.id}/${connection.path}`)
+          } else {
+            router.push(`/connection/${connection.id}`)
+          }
+        }}
         onLongPress={() => router.push(`/edit-connection/${connection.id}`)}
       >
         <XStack>

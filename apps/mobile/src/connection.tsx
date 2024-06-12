@@ -6,7 +6,7 @@ export type ConnectionPayload = {
   id?: string
   label: string
   host: string
-  path: string
+  path?: string
 }
 
 export type Connection = ConnectionPayload & {
@@ -53,10 +53,10 @@ export const BUILTIN_CONNECTIONS: Record<string, Connection> = {
     host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
     path: 'inventory',
   },
-  ui: {
-    id: 'ui',
-    label: '🏭 UI Controls',
-    host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
-    path: 'ui',
-  },
+  // ui: {
+  //   id: 'ui',
+  //   label: '🏭 UI Controls',
+  //   host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
+  //   path: 'ui',
+  // },
 }
