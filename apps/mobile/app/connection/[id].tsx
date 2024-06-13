@@ -7,7 +7,7 @@ import { ConnectionScreen } from '../../src/screens/connection'
 export default function Screen() {
   const { id, path } = useLocalSearchParams<{ id: string; path: string }>()
   const connection = useConnection(id)
-
+  console.log(id, path)
   return (
     <>
       <Stack.Screen

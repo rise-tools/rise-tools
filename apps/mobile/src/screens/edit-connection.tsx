@@ -2,9 +2,8 @@ import { Copy, Trash } from '@tamagui/lucide-icons'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
 import { setStringAsync } from 'expo-clipboard'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import React from 'react'
-import { useLink } from 'solito/link'
 import { Button, Separator, YStack } from 'tamagui'
 
 import { removeConnection, updateConnection, useConnection } from '../connection'
@@ -14,9 +13,7 @@ import { NotFoundScreen } from './not-found'
 export function EditConnectionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const connection = useConnection(id)
-  const goHomeLink = useLink({
-    href: '/',
-  })
+  const router = useRouter()
 
   if (!connection) {
     return <NotFoundScreen />
@@ -27,7 +24,7 @@ export function EditConnectionScreen() {
       <ConnectionForm
         onSubmit={(values) => {
           updateConnection(connection.id, { ...connection, ...values })
-          goHomeLink.onPress()
+          router.navigate('/')
         }}
         defaultValues={connection}
         submitButton={({ submit }) => <Button onPress={() => submit()}>Save Connection</Button>}
@@ -48,7 +45,7 @@ export function EditConnectionScreen() {
         color="$red10"
         onPress={() => {
           removeConnection(connection.id)
-          goHomeLink.onPress()
+          router.navigate('/')
         }}
         chromeless
         icon={Trash}
