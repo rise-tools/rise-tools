@@ -2,11 +2,13 @@
  * @jest-environment node
  */
 
+import { event } from '@final-ui/react'
 import WS, { WebSocket } from 'ws'
 
 import { state } from '../model-state'
 import { AnyModels } from '../types'
 import { createWSServer } from '../ws-server'
+import { createWaitableMock } from './test-utils'
 
 type TestServerClient = {
   client: WebSocket
@@ -14,29 +16,6 @@ type TestServerClient = {
   clientMessages: jest.Mock
   waitForClientMessages: (t: number) => Promise<void>
   clientSend: (data: any) => void
-}
-
-const createWaitableMock = () => {
-  let resolve
-  let times
-  let calledCount = 0
-  const mock = jest.fn()
-  mock.mockImplementation(() => {
-    calledCount += 1
-    if (resolve && calledCount >= times) {
-      resolve()
-    }
-  })
-  const waitToHaveBeenCalled = (t: number): Promise<void> => {
-    times = t
-    if (calledCount >= times) {
-      return Promise.resolve()
-    }
-    return new Promise((r) => {
-      resolve = r
-    })
-  }
-  return [mock, waitToHaveBeenCalled] as const
 }
 
 async function testServer(models: AnyModels, port: number): Promise<TestServerClient> {
@@ -63,9 +42,11 @@ async function testServer(models: AnyModels, port: number): Promise<TestServerCl
 }
 
 let testA: TestServerClient
+let testB: TestServerClient
 
 afterAll(() => {
   testA?.close()
+  testB?.close()
 })
 
 describe('model server', () => {
@@ -82,5 +63,48 @@ describe('model server', () => {
     testA?.clientSend({ $: 'sub', keys: ['bFunc'] })
     await testA.waitForClientMessages(3)
     expect(testA.clientMessages).toHaveBeenLastCalledWith({ $: 'up', key: 'bFunc', val: 'b' })
+  })
+  test('events', async () => {
+    const [eventHandler, waitForHandlers] = createWaitableMock()
+    testB = await testServer(
+      {
+        EventButton: () => ({
+          $: 'component',
+          component: 'Button',
+          key: 'a',
+          props: { onPress: { $: 'event', handler: eventHandler } },
+        }),
+      },
+      4107
+    )
+    testB?.clientSend({ $: 'sub', keys: ['EventButton'] })
+    await testB.waitForClientMessages(1)
+    expect(testB.clientMessages).toHaveBeenLastCalledWith({
+      $: 'up',
+      key: 'EventButton',
+      val: {
+        $: 'component',
+        component: 'Button',
+        key: 'a',
+        props: { onPress: { $: 'event' } },
+      },
+    })
+    const waitForHandled = waitForHandlers(1)
+    testB?.clientSend({
+      $: 'evt',
+      key: 'eventKey0',
+      event: {
+        target: {
+          key: 'a',
+          component: 'Button',
+          propKey: 'onPress',
+          path: ['EventButton', 'props', 'onPress'],
+        },
+        dataState: { $: 'event' },
+        payload: ['[native code]'],
+      },
+    })
+    await waitForHandled
+    expect(eventHandler).toHaveBeenLastCalledWith('[native code]')
   })
 })

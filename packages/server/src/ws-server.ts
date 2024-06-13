@@ -34,8 +34,6 @@ const serverMessageSchema = z.discriminatedUnion('$', [
   serverEventMessageSchema,
 ])
 
-// type ServerMessage = z.infer<typeof serverMessageSchema>
-
 export function createWSServer(models: AnyModels, port: number) {
   let clientIdIndex = 0
   const clientSenders = new Map<string, (value: any) => void>()
@@ -98,7 +96,6 @@ export function createWSServer(models: AnyModels, port: number) {
     }
 
     function handleUnsubKey(key: string) {
-      // console.log(`${clientId} unsub from key ${key}`)
       const handlers = clientSubscribers.get(key)
       handlers?.delete(clientId)
     }
@@ -112,6 +109,7 @@ export function createWSServer(models: AnyModels, port: number) {
     }
 
     async function handleEvt({ key, event }: z.infer<typeof serverEventMessageSchema>) {
+      // console.log('handleEvt', key, event)
       const { target, payload } = event
       const { path } = target
       try {
