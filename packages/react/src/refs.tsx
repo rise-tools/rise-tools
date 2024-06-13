@@ -91,11 +91,12 @@ function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> 
 }
 
 function createRefStateManager(
-  dataValues: DataValues,
+  initialDataValues: DataValues,
   setDataValues: Dispatch<SetStateAction<DataValues>>,
   dataSource: DataSource,
   rootKey: string
 ) {
+  let dataValues = initialDataValues
   let refSubscriptions: Record<string, () => void> = {}
   function setRefValue(refKey: string, value: DataState) {
     if (dataValues[refKey] !== value) {
