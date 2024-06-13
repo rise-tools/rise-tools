@@ -1,7 +1,8 @@
+import { isResponseDataState, isServerEventDataState, lookupValue, response } from '@final-ui/react'
 import { WebSocketServer } from 'ws'
 import { z } from 'zod'
 
-import { findModel } from './model-utils'
+import { findModel, getModelState } from './model-utils'
 import { AnyModels, ValueModel } from './types'
 
 const serverSubscribeMessageSchema = z.object({
@@ -110,8 +111,37 @@ export function createWSServer(models: AnyModels, port: number) {
       keys.forEach(handleUnsubKey)
     }
 
-    function handleEvt({ key, event }: z.infer<typeof serverEventMessageSchema>) {
-      // console.log('client event', key, event.target.path)
+    async function handleEvt({ key, event }: z.infer<typeof serverEventMessageSchema>) {
+      const { target, payload } = event
+      const { path } = target
+      try {
+        const [storeName, ...lookupPath] = path
+        if (!storeName) throw new Error('Missing store name in event path')
+        const model = findModel(models, storeName.split('/'))
+        if (!model) throw new Error(`Model not found for store name: ${storeName}`)
+        const modelState = getModelState(model)
+        const value = lookupValue(modelState, lookupPath)
+
+        if (!isServerEventDataState(value)) {
+          throw new Error(`Missing event handler on the server for event: ${JSON.stringify(event)}`)
+        }
+        let res = await value.handler(...payload)
+        if (!isResponseDataState(res)) {
+          res = response(res ?? null)
+        }
+        clientSenders.get(clientId)?.({
+          $: 'evt-res',
+          key,
+          res,
+        })
+      } catch (error: any) {
+        clientSenders.get(clientId)?.({
+          $: 'evt-res',
+          key,
+          res: response(error).status(500),
+        })
+        return
+      }
     }
 
     // console.log('connected client', clientId)

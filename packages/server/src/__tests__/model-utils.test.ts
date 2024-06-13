@@ -1,6 +1,6 @@
 import { lookup } from '../model-lookup'
 import { state } from '../model-state'
-import { findModel } from '../model-utils'
+import { findModel, getModelState } from '../model-utils'
 
 describe('findModel', () => {
   test('root find', () => {
@@ -31,5 +31,16 @@ describe('findModel', () => {
         ['foo', 'bar']
       )
     ).toBe(stateModel)
+  })
+})
+
+describe('getModelState', () => {
+  test('get state', () => {
+    const [stateModel] = state(0)
+    expect(getModelState(stateModel)).toBe(0)
+  })
+  test('get callback model', () => {
+    const fnModel = () => 'hello'
+    expect(getModelState(fnModel)).toBe('hello')
   })
 })

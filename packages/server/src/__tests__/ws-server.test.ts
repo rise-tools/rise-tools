@@ -50,7 +50,16 @@ async function testServer(models: AnyModels, port: number): Promise<TestServerCl
   function clientSend(data: any) {
     client.send(JSON.stringify(data))
   }
-  return { client, clientSend, close: server.close, clientMessages, waitForClientMessages }
+  return {
+    client,
+    clientSend,
+    close: () => {
+      server.close()
+      client.close()
+    },
+    clientMessages,
+    waitForClientMessages,
+  }
 }
 
 let testA: TestServerClient

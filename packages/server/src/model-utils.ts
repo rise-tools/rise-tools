@@ -37,3 +37,10 @@ export function findModel<V>(
     return walkModel
   return undefined
 }
+
+export function getModelState<V>(model: ValueModel<V> | (() => V)) {
+  if (typeof model === 'function') {
+    return model()
+  }
+  return model.get()
+}
