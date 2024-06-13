@@ -140,6 +140,7 @@ function createRefStateManager(
   return {
     activate() {
       performSubscriptions()
+      setDataValues(dataValues)
       return releaseSubscriptions
     },
   }
