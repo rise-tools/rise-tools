@@ -1,6 +1,6 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
+import { CommonActions, DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import { Stack, usePathname, useRouter } from 'expo-router'
+import { Stack, useNavigationContainerRef } from 'expo-router'
 import React, { useEffect } from 'react'
 import { useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -15,21 +15,21 @@ export const unstable_settings = {
 }
 
 export default function HomeLayout() {
-  const pathname = usePathname()
-  const router = useRouter()
-
+  const navigation = useNavigationContainerRef()
   useEffect(() => {
-    const route = storage.getString('navRoute')
-    if (route && route !== '/') {
-      setTimeout(() => {
-        router.push(route)
-      }, 500)
+    const state = storage.getString('navRoute-state')
+    if (state) {
+      const [, ...routes] = JSON.parse(state)
+      requestAnimationFrame(() => {
+        for (const route of routes) {
+          navigation.dispatch(CommonActions.navigate(route))
+        }
+      })
     }
+    return navigation.addListener('state', (e) => {
+      storage.set('navRoute-state', JSON.stringify(e.data.state?.routes || []))
+    })
   }, [])
-
-  useEffect(() => {
-    storage.set('navRoute', pathname)
-  }, [pathname])
 
   const [loaded] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
@@ -45,15 +45,7 @@ export default function HomeLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider config={tamaguiConfig}>
         <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen
-              name="connection/[id]"
-              // @ts-ignore
-              getId={({ params }: { params: { id: string; path: string } }) => {
-                return `${params.id}-${params.path}`
-              }}
-            />
-          </Stack>
+          <Stack />
         </ThemeProvider>
       </Provider>
     </GestureHandlerRootView>
