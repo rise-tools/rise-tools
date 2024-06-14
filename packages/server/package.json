@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/final-ui/final#readme",
   "dependencies": {
+    "@fastify/websocket": "^10.0.1",
     "fastify": "^4.27.0",
     "ws": "^8.16.0",
     "zod": "^3.22.4"
@@ -34,6 +35,7 @@
   "devDependencies": {
     "@final-ui/react": "0.2.0",
     "@final-ui/ws-client": "0.2.0",
+    "@types/ws": "^8.5.10",
     "metro-react-native-babel-preset": "^0.77.0",
     "node-fetch": "^3.3.2"
   }

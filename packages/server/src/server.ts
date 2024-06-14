@@ -1,34 +1,29 @@
+import fastifyWebsocket from '@fastify/websocket'
 import Fastify from 'fastify'
 
-import { findModel } from './model-utils'
+import { handleGetRequest } from './http-server'
 import { AnyModels } from './types'
+import { connectWebSocket, createWSServerContext } from './ws-connection'
 
-export async function createHTTPServer(models: AnyModels, port: number) {
+export async function createServer(models: AnyModels, port: number) {
   const server = Fastify({
     // logger: true,
   })
+  server.register(fastifyWebsocket)
   server.get('*', async function handler(request, reply) {
     const path = request.url.split('/').filter(Boolean)
     const resp = await handleGetRequest(models, { path })
     if (!resp) return reply.code(404).send({ error: 'not found' })
     return resp
   })
+  const wsContext = createWSServerContext(models)
   await server.listen({ port })
+  server.get('/', { websocket: true }, (connection) => {
+    connectWebSocket(wsContext, connection)
+  })
   return {
     close() {
       server.close()
     },
   }
-}
-
-export function handlePostRequest() {
-  // todo, handle events
-}
-
-export async function handleGetRequest(models: AnyModels, req: { path: string[] }) {
-  const model = findModel(models, req.path)
-  if (!model) return undefined
-  if (typeof model === 'function') return model()
-  if (model.type === 'state') return model.get()
-  return await model.load()
 }
