@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/RiseSplash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#260162"
     },
     "updates": {
       "fallbackToCacheTimeout": 0,
