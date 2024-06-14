@@ -1,6 +1,6 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
+import { CommonActions, DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import { Stack, usePathname, useRouter } from 'expo-router'
+import { Stack, useNavigationContainerRef, usePathname, useRouter } from 'expo-router'
 import React, { useEffect } from 'react'
 import { useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -16,14 +16,23 @@ export const unstable_settings = {
 
 export default function HomeLayout() {
   const pathname = usePathname()
-  const router = useRouter()
+  const navigation = useNavigationContainerRef()
 
+  // todo: this should be dev-only
   useEffect(() => {
-    const route = storage.getString('navRoute')
-    if (route && route !== '/') {
-      setTimeout(() => {
-        router.push(route)
-      }, 500)
+    if (__DEV__) {
+      const state = storage.getString('navRoute-state')
+      if (state) {
+        const [, ...routes] = JSON.parse(state)
+        setTimeout(() => {
+          for (const route of routes) {
+            navigation.dispatch(CommonActions.navigate(route))
+          }
+        }, 500)
+      }
+      return navigation.addListener('state', (e) => {
+        storage.set('navRoute-state', JSON.stringify(e.data.state?.routes || []))
+      })
     }
   }, [])
 
@@ -45,15 +54,7 @@ export default function HomeLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider config={tamaguiConfig}>
         <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen
-              name="connection/[id]"
-              // @ts-ignore
-              getId={({ params }: { params: { id: string; path: string } }) => {
-                return `${params.id}-${params.path}`
-              }}
-            />
-          </Stack>
+          <Stack />
         </ThemeProvider>
       </Provider>
     </GestureHandlerRootView>

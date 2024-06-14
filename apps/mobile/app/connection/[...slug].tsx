@@ -3,10 +3,17 @@ import React from 'react'
 
 import { useConnection } from '../../src/connection'
 import { ConnectionScreen } from '../../src/screens/connection'
+import { NotFoundScreen } from '../../src/screens/not-found'
 
 export default function Screen() {
-  const { id, path } = useLocalSearchParams<{ id: string; path: string }>()
+  const [id, ...segments] = useLocalSearchParams<{ slug: string[] }>().slug || []
+
   const connection = useConnection(id)
+  const path = segments.join('/')
+
+  if (!connection) {
+    return <NotFoundScreen />
+  }
 
   return (
     <>
@@ -15,7 +22,7 @@ export default function Screen() {
           title: path || connection?.label,
         }}
       />
-      <ConnectionScreen />
+      <ConnectionScreen connection={connection} path={path} />
     </>
   )
 }
