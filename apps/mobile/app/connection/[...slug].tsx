@@ -19,7 +19,7 @@ export default function Screen() {
     <>
       <Stack.Screen
         options={{
-          title: path || connection?.label,
+          title: path || connection.label,
         }}
       />
       <ConnectionScreen connection={connection} path={path} />
