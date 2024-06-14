@@ -1,6 +1,6 @@
 import { CommonActions, DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import { Stack, useNavigationContainerRef, usePathname, useRouter } from 'expo-router'
+import { Stack, useNavigationContainerRef } from 'expo-router'
 import React, { useEffect } from 'react'
 import { useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -15,10 +15,8 @@ export const unstable_settings = {
 }
 
 export default function HomeLayout() {
-  const pathname = usePathname()
   const navigation = useNavigationContainerRef()
 
-  // todo: this should be dev-only
   useEffect(() => {
     if (__DEV__) {
       const state = storage.getString('navRoute-state')
@@ -35,10 +33,6 @@ export default function HomeLayout() {
       })
     }
   }, [])
-
-  useEffect(() => {
-    storage.set('navRoute', pathname)
-  }, [pathname])
 
   const [loaded] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
