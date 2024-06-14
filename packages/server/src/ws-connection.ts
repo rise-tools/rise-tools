@@ -17,10 +17,10 @@ const serverEventMessageSchema = z.object({
   $: z.literal('evt'),
   event: z.object({
     target: z.object({
-      key: z.string(),
+      key: z.string().optional(),
       component: z.string(),
       propKey: z.string(),
-      path: z.array(z.string()),
+      path: z.array(z.string().or(z.number())),
     }),
     dataState: z.any(),
     payload: z.any(),
@@ -127,6 +127,7 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
     try {
       const [storeName, ...lookupPath] = path
       if (!storeName) throw new Error('Missing store name in event path')
+      if (typeof storeName !== 'string') throw new Error('Store name must be a string')
       const model = findModel(models, storeName.split('/'))
       if (!model) throw new Error(`Model not found for store name: ${storeName}`)
       const modelState = getModelState(model)
