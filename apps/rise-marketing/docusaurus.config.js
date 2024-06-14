@@ -8,7 +8,7 @@ import { themes as prismThemes } from 'prism-react-renderer'
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Rise Remote',
+  title: 'Rise Playground',
   tagline: 'Customizable Remote Controls',
   favicon: 'img/favicon.ico',
 
@@ -59,9 +59,9 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'Rise Remote',
+        title: 'Rise Playground',
         logo: {
-          alt: 'Rise Remote Logo',
+          alt: 'Rise Playground Logo',
           src: 'img/favicon-96x96.png',
         },
         items: [

@@ -11,4 +11,4 @@ hire us...
 
 ### Privacy Policy
 
-We take your privacy seriously. To learn more about privacy in Rise Remote, please read our [Privacy Policy](./privacy).
+We take your privacy seriously. To learn more about privacy in Rise Playground, please read our [Privacy Policy](./privacy).

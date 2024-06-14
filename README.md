@@ -1,4 +1,4 @@
-![RRise Tools](assets/BannerReame.png)
+![RRise Tools](assets/RiseToolsBanner.png)
 
 Your UI, defined with any data source
 
@@ -6,7 +6,7 @@ Your UI, defined with any data source
 - Custom Component Suites - use the Rise components based on Tamagui, or build your own
 - References - Components can refer to other data keys
 - Safety - components validate their own props. Avoid crashes, even with bad data
-- Rise Remote - Out-of-the box client app for you to build custom experiences quickly
+- Rise Playground - Out-of-the box client app for you to build custom experiences quickly
 - Extensible Events
 - WS Server - Build custom apps entirely on the server
 
