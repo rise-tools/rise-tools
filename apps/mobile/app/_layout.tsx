@@ -16,17 +16,16 @@ export const unstable_settings = {
 
 export default function HomeLayout() {
   const navigation = useNavigationContainerRef()
-
   useEffect(() => {
     if (__DEV__) {
       const state = storage.getString('navRoute-state')
       if (state) {
         const [, ...routes] = JSON.parse(state)
-        setTimeout(() => {
+        requestAnimationFrame(() => {
           for (const route of routes) {
             navigation.dispatch(CommonActions.navigate(route))
           }
-        }, 500)
+        })
       }
       return navigation.addListener('state', (e) => {
         storage.set('navRoute-state', JSON.stringify(e.data.state?.routes || []))
