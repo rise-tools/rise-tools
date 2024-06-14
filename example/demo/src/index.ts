@@ -1,4 +1,4 @@
-import { createHTTPServer, createWSServer } from '@final-ui/server'
+import { createHTTPServer, createWSServer } from '@rise-tools/server'
 
 import { models as inventory } from './inventory/ui'
 import { models as controls } from './ui-controls/ui'

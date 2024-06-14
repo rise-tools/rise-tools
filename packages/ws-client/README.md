@@ -1,2 +1,2 @@
-@final-ui/ws-client
+@rise-tools/ws-client
 =====

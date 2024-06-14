@@ -8,20 +8,20 @@ import { themes as prismThemes } from 'prism-react-renderer'
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'React Native Templates',
-  tagline: 'Your UI, defined with any data source',
+  title: 'Rise Tools',
+  tagline: 'Any UI, Remotely Defined',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://react-native-templates.verse.link',
+  url: 'https://rise.tools',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'ericvicenti', // Usually your GitHub org/user name.
-  projectName: 'react-native-templates', // Usually your repo name.
+  organizationName: 'rise-tools', // Usually your GitHub org/user name.
+  projectName: 'rise-tools', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -41,11 +41,11 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          editUrl: 'https://github.com/final-ui/final/tree/main/docs',
+          editUrl: 'https://github.com/rise-tools/rise-tools/tree/main/docs',
         },
         blog: {
           showReadingTime: false,
-          editUrl: 'https://github.com/final-ui/final/tree/main/docs',
+          editUrl: 'https://github.com/rise-tools/rise-tools/tree/main/docs',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -60,9 +60,9 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'React Native Templates',
+        title: 'Rise Tools',
         logo: {
-          alt: 'React Native Templates Logo',
+          alt: 'Rise Tools Logo',
           src: 'img/logo.svg',
         },
         items: [
@@ -74,7 +74,7 @@ const config = {
           },
           { to: '/blog', label: 'Blog', position: 'left' },
           {
-            href: 'https://github.com/ericvicenti/react-native-templates',
+            href: 'https://github.com/rise-tools/rise-tools',
             label: 'GitHub',
             position: 'right',
           },
@@ -95,17 +95,13 @@ const config = {
           {
             title: 'Community',
             items: [
-              // {
-              //   label: 'Stack Overflow',
-              //   href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              // },
-              // {
-              //   label: 'Discord',
-              //   href: 'https://discordapp.com/invite/docusaurus',
-              // },
+              {
+                label: 'Discord',
+                href: 'https://discord.gg/vK3tBdA2nZ',
+              },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/RN_Templates',
+                href: 'https://twitter.com/rise_tools',
               },
             ],
           },
@@ -118,12 +114,12 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/ericvicenti/react-native-templates',
+                href: 'https://github.com/rise-tools/rise-tools',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} React Native Templates Core Team.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Rise Tools Core Team.`,
       },
       prism: {
         theme: prismThemes.github,

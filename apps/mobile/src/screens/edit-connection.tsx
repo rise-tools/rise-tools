@@ -1,31 +1,32 @@
-import { ConnectionForm } from '@final-ui/playground/src/connection-form'
-import { useConnection } from '@final-ui/playground/src/provider/storage'
 import { Copy, Trash } from '@tamagui/lucide-icons'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
 import { setStringAsync } from 'expo-clipboard'
+import { useLocalSearchParams } from 'expo-router'
 import React from 'react'
-import { createParam } from 'solito'
 import { useLink } from 'solito/link'
 import { Button, Separator, YStack } from 'tamagui'
 
+import { removeConnection, updateConnection, useConnection } from '../connection'
+import { ConnectionForm } from '../connection-form'
 import { NotFoundScreen } from './not-found'
 
-const { useParam } = createParam<{ id: string }>()
-
 export function EditConnectionScreen() {
-  const [id] = useParam('id')
-  const [connection, operations] = useConnection(id)
+  const { id } = useLocalSearchParams<{ id: string }>()
+  const connection = useConnection(id)
   const goHomeLink = useLink({
     href: '/',
   })
-  if (!connection || !operations) return <NotFoundScreen />
-  const { remove, update } = operations
+
+  if (!connection) {
+    return <NotFoundScreen />
+  }
+
   return (
-    <YStack flex={1} space padding="$4">
+    <YStack flex={1} padding="$4">
       <ConnectionForm
         onSubmit={(values) => {
-          update((conn) => ({ ...conn, ...values }))
+          updateConnection(connection.id, { ...connection, ...values })
           goHomeLink.onPress()
         }}
         defaultValues={connection}
@@ -42,22 +43,11 @@ export function EditConnectionScreen() {
       >
         Copy Connection Link
       </Button>
-      {/* <Button
-        onPress={() => {
-          const connectionString = bs58.encode(Buffer.from(JSON.stringify(connection)))
-          router.navigate(`/connect/${connectionString}`)
-          // setStringAsync(`rise://connect/${connectionString}`)
-        }}
-        theme="green"
-      >
-        DEV - Navigate to Connect
-      </Button> */}
-
       <Button
         theme="red"
         color="$red10"
         onPress={() => {
-          remove()
+          removeConnection(connection.id)
           goHomeLink.onPress()
         }}
         chromeless

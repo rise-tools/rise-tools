@@ -1,4 +1,4 @@
-import { Text, View } from '@final-ui/tamagui/server'
+import { Text, View } from '@rise-tools/tamagui/server'
 
 import { db } from './db'
 

@@ -2,7 +2,6 @@
  * @jest-environment node
  */
 
-import { event } from '@final-ui/react'
 import WS, { WebSocket } from 'ws'
 
 import { state } from '../model-state'

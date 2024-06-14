@@ -1,4 +1,4 @@
-import { createHTTPDataSource } from '@final-ui/server'
+import { createHTTPDataSource } from '@rise-tools/server'
 import Fastify from 'fastify'
 
 import { models } from './ui'

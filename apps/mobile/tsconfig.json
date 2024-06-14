@@ -1,11 +1,31 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
-    "baseUrl": "../.."
+    "baseUrl": "../..",
+    "jsx": "react-native",
+    "lib": ["DOM", "ESNext"],
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "target": "ESNext"
   },
   "references": [
     {
-      "path": "../../packages/playground"
+      "path": "../../packages/react"
+    },
+    {
+      "path": "../../packages/kit"
+    },
+    {
+      "path": "../../packages/http-client"
+    },
+    {
+      "path": "../../packages/ws-client"
+    },
+    {
+      "path": "../../packages/tamagui"
     }
   ]
 }

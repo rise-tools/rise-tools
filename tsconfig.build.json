@@ -20,9 +20,6 @@
     },
     {
       "path": "./packages/server"
-    },
-    {
-      "path": "./packages/playground"
     }
   ]
 }

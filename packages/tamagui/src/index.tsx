@@ -1,4 +1,4 @@
-import { ComponentRegistry } from '@final-ui/react'
+import { ComponentRegistry } from '@rise-tools/react'
 import * as t from 'tamagui'
 import { LinearGradient } from 'tamagui/linear-gradient'
 

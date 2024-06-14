@@ -1,6 +1,6 @@
-/** @jsxImportSource @final-ui/react */
+/** @jsxImportSource @rise-tools/react */
 
-import { LiteralArray, WithServerProps } from '@final-ui/react'
+import { LiteralArray, WithServerProps } from '@rise-tools/react'
 import {
   SizableText,
   Slider as TSlider,
@@ -8,7 +8,7 @@ import {
   SliderTrack,
   SliderTrackActive,
   YStack,
-} from '@final-ui/tamagui/server'
+} from '@rise-tools/tamagui/server'
 
 type Props = {
   value: LiteralArray<number>

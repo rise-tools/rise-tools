@@ -1,26 +1,26 @@
 {
-  "name": "@final-ui/demo-server",
+  "name": "@rise-tools/demo-server",
   "private": true,
   "version": "0.1.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/final-ui/final.git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
     "directory": "example/demo"
   },
   "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "bugs": {
-    "url": "https://github.com/final-ui/final/issues"
+    "url": "https://github.com/rise-tools/rise-tools/issues"
   },
-  "homepage": "https://github.com/final-ui/final#readme",
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "scripts": {
     "dev": "tsx watch ./src",
     "start": "tsx ./src"
   },
   "dependencies": {
-    "@final-ui/tamagui": "0.2.0",
-    "@final-ui/server": "0.2.0",
-    "@final-ui/kit": "0.2.0"
+    "@rise-tools/tamagui": "0.2.0",
+    "@rise-tools/kit": "0.2.0",
+    "@rise-tools/server": "0.2.0"
   },
   "devDependencies": {
     "tsx": "^4.11.0",

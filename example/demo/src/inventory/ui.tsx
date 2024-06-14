@@ -1,6 +1,5 @@
-import { action, ref } from '@final-ui/react'
-import { StateSetter } from '@final-ui/server'
-import { lookup, state, view } from '@final-ui/server'
+import { action, ref } from '@rise-tools/react'
+import { lookup, state, StateSetter, view } from '@rise-tools/server'
 import {
   Button,
   H2,
@@ -11,7 +10,7 @@ import {
   SizableText,
   XStack,
   YStack,
-} from '@final-ui/tamagui/server'
+} from '@rise-tools/tamagui/server'
 
 import defaultInventory, { Inventory, Item } from './inventory'
 
@@ -60,7 +59,7 @@ function HomeScreen({ inventory }: { inventory?: Inventory }) {
         {inventory?.map((item, idx) => (
           <Button
             unstyled
-            onPress={action(['navigate', `inventoryItem/${item.key}`])}
+            onPress={action('navigate', { path: `inventoryItem/${item.key}` })}
             pressStyle={{ opacity: 0.8 }}
           >
             <XStack

@@ -91,13 +91,12 @@ function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> 
 }
 
 function createRefStateManager(
+  initialDataValues: DataValues,
   setDataValues: Dispatch<SetStateAction<DataValues>>,
   dataSource: DataSource,
   rootKey: string
 ) {
-  let dataValues: DataValues = {
-    [rootKey]: dataSource.get(rootKey).get(),
-  }
+  let dataValues = initialDataValues
   let refSubscriptions: Record<string, () => void> = {}
   function setRefValue(refKey: string, value: DataState) {
     if (dataValues[refKey] !== value) {
@@ -187,9 +186,12 @@ export function Template({
   }
 
   /* refs */
-  const [dataValues, setDataValues] = useState<DataValues>({})
+  const rootKey = extractRefKey(path)
+  const [dataValues, setDataValues] = useState<DataValues>({
+    [rootKey]: dataSource.get(rootKey).get(),
+  })
   const refStateManager = useRef(
-    createRefStateManager(setDataValues, dataSource, extractRefKey(path))
+    createRefStateManager(dataValues, setDataValues, dataSource, rootKey)
   )
   useEffect(() => {
     const release = refStateManager.current.activate()

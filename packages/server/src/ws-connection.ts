@@ -1,4 +1,9 @@
-import { isResponseDataState, isServerEventDataState, lookupValue, response } from '@final-ui/react'
+import {
+  isResponseDataState,
+  isServerEventDataState,
+  lookupValue,
+  response,
+} from '@rise-tools/react'
 import { WebSocket } from 'ws'
 import { z } from 'zod'
 

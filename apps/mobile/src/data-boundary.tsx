@@ -1,22 +1,43 @@
-import { DataSource, useStream } from '@final-ui/react'
-import { WebSocketDataSource } from '@final-ui/ws-client'
+import { DataSource, useStream } from '@rise-tools/react'
+import { WebSocketDataSource } from '@rise-tools/ws-client'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import React, { PropsWithChildren } from 'react'
 import { H4, SizableText, Text, YStack } from 'tamagui'
 
-// tbd: convert `WebSocketDataSource` to `NetworkDataSource`
 export function DataBoundary({
   dataSource,
   path,
   children,
 }: PropsWithChildren<{ dataSource: WebSocketDataSource | DataSource; path: string }>) {
-  const state = useStream('state' in dataSource ? dataSource.state : undefined)
+  const data = useStream(dataSource.get(path))
+
+  if ('state' in dataSource) {
+    return (
+      <WebSocketDataBoundary dataSource={dataSource} path={path}>
+        {children}
+      </WebSocketDataBoundary>
+    )
+  }
+
+  if (data !== undefined) {
+    return <YStack flex={1}>{children}</YStack>
+  }
+
+  return null
+}
+
+function WebSocketDataBoundary({
+  dataSource,
+  path,
+  children,
+}: PropsWithChildren<{ dataSource: WebSocketDataSource; path: string }>) {
+  const state = useStream(dataSource.state)
   const data = useStream(dataSource.get(path))
 
   if (data !== undefined) {
     return (
       <YStack flex={1}>
-        {state?.status === 'disconnected' && (
+        {state.status === 'disconnected' && (
           <YStack padding="$3" backgroundColor="$red5">
             <Text textAlign="center" color="$red9">
               You are disconnected. Please check your network connection.
@@ -28,7 +49,7 @@ export function DataBoundary({
     )
   }
 
-  if (state?.status === 'disconnected') {
+  if (state.status === 'disconnected') {
     return (
       <YStack flex={1} alignItems="center" justifyContent="center" padding="$3" gap="$2">
         <AlertCircle size="$5" color="$red9" />

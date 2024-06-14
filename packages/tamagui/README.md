@@ -1,2 +1,2 @@
-@final-ui/tamagui
+@rise-tools/tamagui
 =====

@@ -6,7 +6,7 @@ import {
   ResponseDataState,
   Store,
   Stream,
-} from '@final-ui/react'
+} from '@rise-tools/react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
 export type SubscribeWebsocketMessage = {
@@ -174,11 +174,11 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
 }
 
 const createStateStream = (ws: ReconnectingWebSocket) => {
-  const [setState, state] = createWritableStream<WebSocketState>({ status: undefined })
+  const [state, write] = createWritableStream<WebSocketState>({ status: undefined })
 
-  ws.addEventListener('open', () => setState({ status: 'connected' }))
-  ws.addEventListener('close', () => setState({ status: 'disconnected' }))
-  ws.addEventListener('error', () => setState({ status: 'disconnected' }))
+  ws.addEventListener('open', () => write({ status: 'connected' }))
+  ws.addEventListener('close', () => write({ status: 'disconnected' }))
+  ws.addEventListener('error', () => write({ status: 'disconnected' }))
 
   return state
 }

@@ -4,9 +4,9 @@ import {
   SelectField,
   SliderField,
   SwitchField,
-} from '@final-ui/kit/server'
-import { action, event, eventPayload, response, setStateAction, state } from '@final-ui/react'
-import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@final-ui/tamagui/server'
+} from '@rise-tools/kit/server'
+import { action, event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
+import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@rise-tools/tamagui/server'
 
 // eslint-disable-next-line
 export const models = {
@@ -16,16 +16,18 @@ export const models = {
   switch: SwitchExample,
   select: SelectExample,
   list: ListExample,
+  toast: ShowToastExample,
 }
 
 function UI() {
   return (
     <YStack>
-      <Button onPress={action(['navigate', 'form'])}>Form</Button>
-      <Button onPress={action(['navigate', 'slider'])}>Slider</Button>
-      <Button onPress={action(['navigate', 'switch'])}>Switch</Button>
-      <Button onPress={action(['navigate', 'select'])}>Select</Button>
-      <Button onPress={action(['navigate', 'list'])}>List</Button>
+      <Button onPress={action('navigate', { path: 'form' })}>Form</Button>
+      <Button onPress={action('navigate', { path: 'slider' })}>Slider</Button>
+      <Button onPress={action('navigate', { path: 'switch' })}>Switch</Button>
+      <Button onPress={action('navigate', { path: 'navigate' })}>Select</Button>
+      <Button onPress={action('navigate', { path: 'list' })}>List</Button>
+      <Button onPress={action('navigate', { path: 'toast' })}>Toast</Button>
     </YStack>
   )
 }
@@ -126,7 +128,7 @@ function SwitchExample() {
 const frameworks = [
   { label: 'Laravel', key: 'laravel' },
   { label: 'Remix', key: 'remix' },
-  { label: 'Final UI', key: 'final-ui' },
+  { label: 'Rise Tools', key: 'rise-tools' },
   { label: 'Next.js', key: 'next' },
   { label: 'Prefer not say', key: 'unknown' },
 ]
@@ -167,6 +169,18 @@ function ListExample() {
         header={<H4>Header</H4>}
         footer={<H4>Footer</H4>}
       />
+    </YStack>
+  )
+}
+
+function ShowToastExample() {
+  return (
+    <YStack>
+      <Button
+        onPress={action('toast', { title: 'Hello World!', message: 'This is toast action!' })}
+      >
+        <Text>Show toast</Text>
+      </Button>
     </YStack>
   )
 }
