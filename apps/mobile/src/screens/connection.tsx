@@ -32,7 +32,13 @@ function isRiseAction(action: ActionDataState): action is RiseAction {
   return ['navigate', 'navigate-back', 'toast'].includes(action.name)
 }
 
-export function ConnectionScreen({ connection, path }: { connection: Connection; path?: string }) {
+export function ConnectionScreen({
+  connection,
+  path = (connection.path = ''),
+}: {
+  connection: Connection
+  path?: string
+}) {
   const toast = useToastController()
   const router = useRouter()
 
@@ -62,16 +68,9 @@ export function ConnectionScreen({ connection, path }: { connection: Connection;
     [router]
   )
 
-  const resolvedPath = path || connection.path || ''
-
   return (
-    <DataBoundary dataSource={dataSource} path={resolvedPath}>
-      <Template
-        components={components}
-        dataSource={dataSource}
-        path={resolvedPath}
-        onAction={onAction}
-      />
+    <DataBoundary dataSource={dataSource} path={path}>
+      <Template components={components} dataSource={dataSource} path={path} onAction={onAction} />
     </DataBoundary>
   )
 }
