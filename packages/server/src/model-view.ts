@@ -14,6 +14,7 @@ export function view<T>(
     deps = new Set<ValueModel<any>>()
     depSubs = new Map<ValueModel<any>, () => void>()
     function getter<V>(model: ValueModel<V>): V | undefined {
+      if (typeof model === 'function') return model()
       deps.add(model)
       depSubs.set(
         model,
