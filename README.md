@@ -46,7 +46,7 @@ import { Rise } from '@rise-tools/react`
 
 <Rise
   components={myComponents}
-  model={model}
+  modelSource={model}
 />
 ```
 
@@ -90,8 +90,9 @@ The template uses "stores" of data to decide what UI to render. RNT is entirely 
 The `model` is an object with one mandatory function to returns a store for a given path. If no `path` prop was provided to the `<Rise>`, the root path of "" (empty string) will be used to query for the UI data.
 
 ```ts
-type model = {
+type ModelSource = {
   get: (key: string) => Store
+  sendEvent: (event: HandlerEvent) => Promise<ResponseModelState>
 }
 ```
 
