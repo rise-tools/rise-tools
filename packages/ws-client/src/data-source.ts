@@ -1,9 +1,9 @@
 import {
   createWritableStream,
-  type DataSource,
-  DataState,
   HandlerEvent,
-  ResponseDataState,
+  type ModelSource,
+  ModelState,
+  ResponseModelState,
   Store,
   Stream,
 } from '@rise-tools/react'
@@ -28,13 +28,13 @@ export type EventWebsocketMessage = {
 export type UpdateWebsocketMessage = {
   $: 'up'
   key: string
-  val: DataState
+  val: ModelState
 }
 
 export type EventResponseWebsocketMessage = {
   $: 'evt-res'
   key: string
-  res: ResponseDataState
+  res: ResponseModelState
 }
 
 export type ClientWebsocketMessage =
@@ -44,17 +44,17 @@ export type ClientWebsocketMessage =
 
 export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponseWebsocketMessage
 
-type Handler = (value: DataState) => void
+type Handler = (value: ModelState) => void
 
 type WebSocketState = {
   status?: 'connected' | 'disconnected'
 }
 
-export type WebSocketDataSource = DataSource & {
+export type WebSocketModelSource = ModelSource & {
   state: Stream<WebSocketState>
 }
 
-export function createWSDataSource(wsUrl: string): WebSocketDataSource {
+export function createWSModelSource(wsUrl: string): WebSocketModelSource {
   const rws = new ReconnectingWebSocket(wsUrl)
   function send(payload: ClientWebsocketMessage) {
     rws.send(JSON.stringify(payload))
@@ -144,7 +144,7 @@ export function createWSDataSource(wsUrl: string): WebSocketDataSource {
     }
   }
 
-  const promises = new Map<string, (value: ResponseDataState) => void>()
+  const promises = new Map<string, (value: ResponseModelState) => void>()
 
   return {
     get: (key: string) => {

@@ -1,14 +1,14 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 import { action } from './events'
+import { ActionModelState, JSONValue, StateModelState } from './rise'
 import { createWritableStream, Stream, WritableStream } from './streams'
-import { ActionDataState, JSONValue, StateDataState } from './template'
 import { lookupValue } from './utils'
 
 type StateUpdate<T> = T | StateModifier
-type UpdateStateAction<T> = ActionDataState<
+type UpdateStateAction<T> = ActionModelState<
   'state-update',
-  { state: StateDataState<T>; update: StateUpdate<T> }
+  { state: StateModelState<T>; update: StateUpdate<T> }
 >
 
 type StateModifier = PayloadStateModifier | ToggleStateModifier | IncrementStateModifier
@@ -28,37 +28,37 @@ type IncrementStateModifier = {
 }
 
 export function isStateUpdateAction<T extends JSONValue>(
-  action: ActionDataState
+  action: ActionModelState
 ): action is UpdateStateAction<T> {
   return action.name === 'state-update'
 }
 
-export function state<T extends JSONValue>(initialValue: T): StateDataState<T> {
+export function state<T extends JSONValue>(initialValue: T): StateModelState<T> {
   const key = (Date.now() * Math.random()).toString(16)
   return { $: 'state', key, initialValue }
 }
 
 export function setStateAction(
-  state: StateDataState<number>,
+  state: StateModelState<number>,
   value?: number | IncrementStateModifier
 ): UpdateStateAction<number>
 export function setStateAction(
-  state: StateDataState<boolean>,
+  state: StateModelState<boolean>,
   value?: boolean | ToggleStateModifier
 ): UpdateStateAction<boolean>
 export function setStateAction<T extends JSONValue>(
-  state: StateDataState<T>,
+  state: StateModelState<T>,
   value?: T | PayloadStateModifier
 ): UpdateStateAction<T>
 export function setStateAction<T>(
-  state: StateDataState<T>,
+  state: StateModelState<T>,
   update: T | StateModifier = eventPayload()
 ): UpdateStateAction<T> {
   return action('state-update', { state, update })
 }
 
 export type LocalState = {
-  getStream(state: StateDataState): Stream<JSONValue>
+  getStream(state: StateModelState): Stream<JSONValue>
 }
 
 export const useLocalState = (): [
@@ -66,7 +66,7 @@ export const useLocalState = (): [
   (action: UpdateStateAction<JSONValue>, payload: JSONValue[]) => void,
 ] => {
   const localState = useRef<Record<string, WritableStream<JSONValue>>>({})
-  function getWritableStream(state: StateDataState) {
+  function getWritableStream(state: StateModelState) {
     if (!localState.current[state.key]) {
       localState.current[state.key] = createWritableStream(state.initialValue)
     }
@@ -150,7 +150,7 @@ export const useLocalStateValues = () => {
   const streams = useRef(new Map<string, Stream<JSONValue>>())
   const subs = useRef([] as (() => void)[])
 
-  function get(state: StateDataState) {
+  function get(state: StateModelState) {
     const stream = localState.getStream(state)
 
     if (!streams.current.has(state.key)) {

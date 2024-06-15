@@ -1,39 +1,39 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
+import {
+  ActionModelState,
+  BaseRise,
+  ComponentRegistry,
+  HandlerEvent,
+  isComponentModelState,
+  isCompositeModelState,
+  isEventModelState,
+  isHandlerEvent,
+  isResponseModelState,
+  ModelState,
+  Path,
+  ReferencedModelState,
+  ResponseModelState,
+  RiseEvent,
+} from './rise'
 import { isStateUpdateAction, LocalState, useLocalState } from './state'
 import { Stream } from './streams'
-import {
-  ActionDataState,
-  BaseTemplate,
-  ComponentRegistry,
-  DataState,
-  HandlerEvent,
-  isComponentDataState,
-  isCompositeDataState,
-  isEventDataState,
-  isHandlerEvent,
-  isResponseDataState,
-  Path,
-  ReferencedDataState,
-  ResponseDataState,
-  TemplateEvent,
-} from './template'
 import { lookupValue } from './utils'
 
-export type Store<T = DataState> = Stream<T>
+export type Store<T = ModelState> = Stream<T>
 
-export type DataSource = {
+export type ModelSource = {
   get: (key: string) => Store
-  sendEvent: (event: HandlerEvent) => Promise<ResponseDataState>
+  sendEvent: (event: HandlerEvent) => Promise<ResponseModelState>
 }
 
 /** Refs */
-type DataValues = Record<string, DataState>
+type DataValues = Record<string, ModelState>
 
-function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']) {
+function extractRefValue(dataValues: DataValues, ref: ReferencedModelState['ref']) {
   const value = lookupValue(dataValues, ref)
 
-  if (isComponentDataState(value)) {
+  if (isComponentModelState(value)) {
     return {
       ...value,
       path: ref,
@@ -43,7 +43,7 @@ function extractRefValue(dataValues: DataValues, ref: ReferencedDataState['ref']
   return value
 }
 
-export function ref(ref: string | Path): ReferencedDataState {
+export function ref(ref: string | Path): ReferencedModelState {
   return {
     $: 'ref',
     ref: Array.isArray(ref) ? ref : [ref],
@@ -57,9 +57,9 @@ export function extractRefKey(ref: string | Path) {
   return ref[0]
 }
 
-function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> {
+function findAllRefs(stateNode: ModelState, dataValues: DataValues): Set<string> {
   const currentRefKeys = new Set<string>()
-  function searchRefs(stateNode: DataState | object) {
+  function searchRefs(stateNode: ModelState | object) {
     if (!stateNode || typeof stateNode !== 'object') {
       return
     }
@@ -67,7 +67,7 @@ function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> 
       stateNode.forEach(searchRefs)
       return
     }
-    if (!isCompositeDataState(stateNode)) {
+    if (!isCompositeModelState(stateNode)) {
       Object.values(stateNode).forEach(searchRefs)
       return
     }
@@ -93,12 +93,12 @@ function findAllRefs(stateNode: DataState, dataValues: DataValues): Set<string> 
 function createRefStateManager(
   initialDataValues: DataValues,
   setDataValues: Dispatch<SetStateAction<DataValues>>,
-  dataSource: DataSource,
+  dataSource: ModelSource,
   rootKey: string
 ) {
   let dataValues = initialDataValues
   let refSubscriptions: Record<string, () => void> = {}
-  function setRefValue(refKey: string, value: DataState) {
+  function setRefValue(refKey: string, value: ModelState) {
     if (dataValues[refKey] !== value) {
       dataValues = { ...dataValues, [refKey]: value }
       setDataValues(dataValues)
@@ -144,7 +144,7 @@ function createRefStateManager(
   }
 }
 
-function resolveValueRefs(dataValues: DataValues, value: DataState): DataState {
+function resolveValueRefs(dataValues: DataValues, value: ModelState): ModelState {
   if (!value || typeof value !== 'object') {
     return value
   }
@@ -152,7 +152,7 @@ function resolveValueRefs(dataValues: DataValues, value: DataState): DataState {
     return value.map((item) => resolveValueRefs(dataValues, item))
   }
   if (typeof value === 'object') {
-    if (isCompositeDataState(value) && value.$ === 'ref') {
+    if (isCompositeModelState(value) && value.$ === 'ref') {
       return resolveRef(dataValues, value.ref)
     }
     return Object.fromEntries(
@@ -163,23 +163,23 @@ function resolveValueRefs(dataValues: DataValues, value: DataState): DataState {
   }
 }
 
-function resolveRef(dataValues: DataValues, lookup: ReferencedDataState['ref']): DataState {
+function resolveRef(dataValues: DataValues, lookup: ReferencedModelState['ref']): ModelState {
   const value = extractRefValue(dataValues, lookup)
   return resolveValueRefs(dataValues, value)
 }
 
-export function Template({
+export function Rise({
   components,
-  dataSource,
+  modelSource,
   path = [''],
   onAction,
-  onEvent = dataSource.sendEvent,
+  onEvent = modelSource.sendEvent,
 }: {
   path?: string | Path
-  dataSource: DataSource
+  modelSource: ModelSource
   components: ComponentRegistry
-  onAction?: (action: ActionDataState) => void
-  onEvent?: (event: HandlerEvent) => Promise<ResponseDataState>
+  onAction?: (action: ActionModelState) => void
+  onEvent?: (event: HandlerEvent) => Promise<ResponseModelState>
 }) {
   if (typeof path === 'string') {
     path = [path]
@@ -188,23 +188,23 @@ export function Template({
   /* refs */
   const rootKey = extractRefKey(path)
   const [dataValues, setDataValues] = useState<DataValues>({
-    [rootKey]: dataSource.get(rootKey).get(),
+    [rootKey]: modelSource.get(rootKey).get(),
   })
   const refStateManager = useRef(
-    createRefStateManager(dataValues, setDataValues, dataSource, rootKey)
+    createRefStateManager(dataValues, setDataValues, modelSource, rootKey)
   )
   useEffect(() => {
     const release = refStateManager.current.activate()
     return () => release()
   }, [])
-  const rootDataState = resolveRef(dataValues, path)
+  const rootModelState = resolveRef(dataValues, path)
 
   /* state */
   const [localState, applyStateUpdateAction] = useLocalState()
 
-  const onTemplateEvent = useCallback(
-    async (event: TemplateEvent) => {
-      const actions = isEventDataState(event.dataState) ? event.dataState.actions : event.dataState
+  const handleEvent = useCallback(
+    async (event: RiseEvent) => {
+      const actions = isEventModelState(event.dataState) ? event.dataState.actions : event.dataState
       for (const action of actions || []) {
         if (isStateUpdateAction(action)) {
           applyStateUpdateAction(action, event.payload)
@@ -225,9 +225,9 @@ export function Template({
         ]
       }
       const res = await onEvent(event)
-      if (!isResponseDataState(res)) {
+      if (!isResponseModelState(res)) {
         throw new Error(
-          `Invalid response from "onEvent" handler. Expected ServerResponseDataState. Received: ${JSON.stringify(res)}`
+          `Invalid response from "onEvent" handler. Expected ServerResponseModelState. Received: ${JSON.stringify(res)}`
         )
       }
       if (res.actions) {
@@ -249,12 +249,7 @@ export function Template({
 
   return (
     <LocalState.Provider value={localState}>
-      <BaseTemplate
-        components={components}
-        path={path}
-        dataState={rootDataState}
-        onTemplateEvent={onTemplateEvent}
-      />
+      <BaseRise components={components} path={path} model={rootModelState} onEvent={handleEvent} />
     </LocalState.Provider>
   )
 }

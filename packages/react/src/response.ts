@@ -1,6 +1,6 @@
-import { ActionDataState, JSONValue, ResponseDataState } from './template'
+import { ActionModelState, JSONValue, ResponseModelState } from './rise'
 
-export function response(payload: JSONValue): ServerResponseDataState {
+export function response(payload: JSONValue): ServerResponseModelState {
   return {
     $: 'response',
     payload,
@@ -20,7 +20,7 @@ export function response(payload: JSONValue): ServerResponseDataState {
   }
 }
 
-export type ServerResponseDataState = ResponseDataState & {
-  action(action: ActionDataState): ServerResponseDataState
-  status(code: number): ServerResponseDataState
+export type ServerResponseModelState = ResponseModelState & {
+  action(action: ActionModelState): ServerResponseModelState
+  status(code: number): ServerResponseModelState
 }

@@ -1,12 +1,12 @@
 import {
   HandlerEvent,
   isReactElement,
-  isResponseDataState,
-  isServerEventDataState,
+  isResponseModelState,
+  isServerEventModelState,
   lookupValue,
   MaybeAsync,
   response,
-  ServerDataState,
+  ServerModelState,
   UI,
 } from '@rise-tools/react'
 import type {
@@ -25,15 +25,15 @@ type EventSubscriber = (
   }
 ) => void
 
-type Initializer = ServerDataState | UI | (() => MaybeAsync<ServerDataState | UI>)
+type Initializer = ServerModelState | UI | (() => MaybeAsync<ServerModelState | UI>)
 
-export function createWSServerDataSource() {
+export function createWSServerModelSource() {
   const values = new Map<string, Initializer>()
-  const cache = new Map<string, ServerDataState>()
+  const cache = new Map<string, ServerModelState>()
 
   const clientSubscribers = new Map<string, Map<string, () => void>>()
   const eventSubscribers = new Set<EventSubscriber>()
-  const subscribers = new Map<string, Set<(value: ServerDataState) => void>>()
+  const subscribers = new Map<string, Set<(value: ServerModelState) => void>>()
 
   let clientIdIndex = 0
 
@@ -116,13 +116,13 @@ export function createWSServerDataSource() {
       const [storeName, ...lookupPath] = path
       const store = await get(storeName)
       const value = lookupValue(store, lookupPath)
-      if (!isServerEventDataState(value)) {
+      if (!isServerEventModelState(value)) {
         throw new Error(
           `Missing event handler on the server for event: ${JSON.stringify(message.event)}`
         )
       }
       let res = await value.handler(...payload)
-      if (!isResponseDataState(res)) {
+      if (!isResponseModelState(res)) {
         res = response(res ?? null)
       }
       clientSenders.get(clientId)?.({
@@ -176,11 +176,11 @@ export function createWSServerDataSource() {
   }
 
   // dead code - do we find this useful?
-  async function subscribe(key: string, handler: (value?: ServerDataState) => void) {
+  async function subscribe(key: string, handler: (value?: ServerModelState) => void) {
     const handlers =
       subscribers.get(key) ||
       (() => {
-        const handlers = new Set<(value: ServerDataState) => void>()
+        const handlers = new Set<(value: ServerModelState) => void>()
         subscribers.set(key, handlers)
         return handlers
       })()

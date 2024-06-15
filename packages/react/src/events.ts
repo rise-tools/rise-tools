@@ -1,23 +1,23 @@
 import {
-  ActionDataState,
+  ActionModelState,
   HandlerFunction,
-  isEventDataState,
-  ServerEventDataState,
-  StateDataState,
-} from './template'
+  isEventModelState,
+  ServerEventModelState,
+  StateModelState,
+} from './rise'
 
-export function isServerEventDataState(obj: any): obj is ServerEventDataState {
-  return isEventDataState(obj) && 'handler' in obj && typeof obj.handler === 'function'
+export function isServerEventModelState(obj: any): obj is ServerEventModelState {
+  return isEventModelState(obj) && 'handler' in obj && typeof obj.handler === 'function'
 }
 
 export function event<T>(
   func: HandlerFunction<[T]>,
   opts?: {
-    actions?: ActionDataState[]
+    actions?: ActionModelState[]
     timeout?: number
-    args?: { [K in keyof T]: StateDataState<T[K]> }
+    args?: { [K in keyof T]: StateModelState<T[K]> }
   }
-): ServerEventDataState<[T]> {
+): ServerEventModelState<[T]> {
   return {
     $: 'event',
     handler: func,
@@ -30,7 +30,7 @@ export function event<T>(
 export function action<T extends string, K extends Record<string, any>>(
   name: T,
   options: K = {} as K
-): ActionDataState<T, K> {
+): ActionModelState<T, K> {
   return {
     ...options,
     $: 'action',

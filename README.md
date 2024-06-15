@@ -33,20 +33,20 @@ RRise Tools (RNT) can be described with 3 core primitives:
 
 - Component Library of UI your client can render
 - Data Source where your templates will load+subscribe to data
-- Template component to render in the app, using the data source and component library
+- Rise component to render in the app, using the data source and component library
 
-## Template Component
+## Rise Component
 
 This will be published from `@rise-tools/react`
 
 ```ts
-import { Template } from '@rise-tools/react`
+import { Rise } from '@rise-tools/react`
 
 // then, render it:
 
-<Template
+<Rise
   components={myComponents}
-  dataSource={dataSource}
+  model={model}
 />
 ```
 
@@ -56,7 +56,7 @@ The Template component accepts the following props:
 
 The component library object, with all the component that the data can request to be displayed
 
-### `dataSource`
+### `model`
 
 The store of data that will define the views for rendering
 
@@ -66,7 +66,7 @@ To handle events that come from your rendered components
 
 ### `path`
 
-Specify the path within the dataSource to render. Useful if you share one data source with several `<Template>`s
+Specify the path within the model to render. Useful if you share one data source with several `<Rise>`s
 
 ## Component Library
 
@@ -81,16 +81,16 @@ const components = {
 }
 ```
 
-Each component definition may also have a `validator` which is a function that accepts the props from the dataSource and returns the props if they are valid. If they are invalid, an error is thrown. This is in place to prevent crashes in situations where invalid props are passed into your components.
+Each component definition may also have a `validator` which is a function that accepts the props from the model and returns the props if they are valid. If they are invalid, an error is thrown. This is in place to prevent crashes in situations where invalid props are passed into your components.
 
 ## Data Sources
 
 The template uses "stores" of data to decide what UI to render. RNT is entirely network-agnostic, but it is designed for realtime scenarios where your server can push updates to the UI.
 
-The `DataSource` is an object with one mandatory function to returns a store for a given path. If no `path` prop was provided to the `<Template>`, the root path of "" (empty string) will be used to query for the UI data.
+The `model` is an object with one mandatory function to returns a store for a given path. If no `path` prop was provided to the `<Rise>`, the root path of "" (empty string) will be used to query for the UI data.
 
 ```ts
-type DataSource = {
+type model = {
   get: (key: string) => Store
 }
 ```
@@ -110,7 +110,7 @@ This is a reference implementation of the data source, built with websockets. Th
 
 ## Component Data
 
-This is the base functionality of RNT, to specify which components will be rendered in your `<Template>`
+This is the base functionality of RNT, to specify which components will be rendered in your `<Rise>`
 
 ```ts
 {
@@ -174,12 +174,12 @@ In order to listen to events trigerred by given components, you have to pass a s
   },
 ```
 
-You can then listen to the events with the `onEvent` prop on `<Template>`.
+You can then listen to the events with the `onEvent` prop on `<Rise>`.
 
 ```tsx
-<Template
+<Rise
   components={components}
-  dataSource={dataSource} 
+  model={model} 
   onEvent={(event) => {
     // this will be : "TouchableOpacity"
     console.log(event.target.component)
@@ -190,7 +190,7 @@ You can then listen to the events with the `onEvent` prop on `<Template>`.
 The event object contains a bunch of helpful properties to let you handle events more efficiently:
 
 ```ts
-type TemplateEvent<T = any, K = any> = {
+type RiseEvent<T = any, K = any> = {
   target: {
     key?: string
     path: string
@@ -225,9 +225,9 @@ For example, it can be a string, e.g. `navigation:goBack` or an array: `['naviga
 
 Then, in the `onEvent` handler, you may want to do as follows:
 ```tsx
-<Template
+<Rise
   components={components}
-  dataSource={dataSource} 
+  model={model} 
   onEvent={(event) => {
     // assumes event.dataState.action is an array
     if (event.dataState.action?.includes('navigation')) {

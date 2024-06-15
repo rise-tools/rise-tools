@@ -2,7 +2,7 @@ import { act, fireEvent, render } from '@testing-library/react'
 import React, { useState } from 'react'
 
 import { action } from '../events'
-import { BaseTemplate, ComponentDefinition, ComponentRegistry, TemplateEvent } from '../template'
+import { BaseRise, ComponentDefinition, ComponentRegistry, RiseEvent } from '../rise'
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
   View: {
@@ -12,16 +12,16 @@ export const BUILT_IN_COMPONENTS: ComponentRegistry = {
 
 it('should render a component', () => {
   const component = render(
-    <BaseTemplate
+    <BaseRise
       components={BUILT_IN_COMPONENTS}
-      dataState={{
+      model={{
         $: 'component',
         component: 'View',
         props: {
           height: 50,
         },
       }}
-      onTemplateEvent={jest.fn()}
+      onEvent={jest.fn()}
     />
   )
 
@@ -36,9 +36,9 @@ it('should render a component', () => {
 
 it('should render an array of components', () => {
   const component = render(
-    <BaseTemplate
+    <BaseRise
       components={BUILT_IN_COMPONENTS}
-      dataState={[
+      model={[
         {
           $: 'component',
           key: 'HeadingComponent',
@@ -52,7 +52,7 @@ it('should render an array of components', () => {
           children: 'Hello, world!',
         },
       ]}
-      onTemplateEvent={jest.fn()}
+      onEvent={jest.fn()}
     />
   )
 
@@ -70,9 +70,9 @@ it('should render an array of components', () => {
 
 it('should use component key when provided', () => {
   const component = render(
-    <BaseTemplate
+    <BaseRise
       components={BUILT_IN_COMPONENTS}
-      dataState={{
+      model={{
         $: 'component',
         component: 'View',
         children: {
@@ -95,7 +95,7 @@ it('should use component key when provided', () => {
           ],
         },
       }}
-      onTemplateEvent={jest.fn()}
+      onEvent={jest.fn()}
     />
   )
 
@@ -117,9 +117,9 @@ it('should use component key when provided', () => {
 
 it('should render a component with single children', () => {
   const component = render(
-    <BaseTemplate
+    <BaseRise
       components={BUILT_IN_COMPONENTS}
-      dataState={{
+      model={{
         $: 'component',
         component: 'View',
         children: {
@@ -128,7 +128,7 @@ it('should render a component with single children', () => {
           children: 'Hello, world!',
         },
       }}
-      onTemplateEvent={jest.fn()}
+      onEvent={jest.fn()}
     />
   )
 
@@ -145,9 +145,9 @@ it('should render a component with single children', () => {
 
 it('should render a component with children of different types', () => {
   const component = render(
-    <BaseTemplate
+    <BaseRise
       components={BUILT_IN_COMPONENTS}
-      dataState={{
+      model={{
         $: 'component',
         component: 'View',
         children: [
@@ -160,7 +160,7 @@ it('should render a component with children of different types', () => {
           },
         ],
       }}
-      onTemplateEvent={jest.fn()}
+      onEvent={jest.fn()}
     />
   )
 
@@ -187,12 +187,12 @@ it('should accept component as a prop', () => {
   }
 
   const component = render(
-    <BaseTemplate
+    <BaseRise
       components={{
         ...BUILT_IN_COMPONENTS,
         Header,
       }}
-      dataState={{
+      model={{
         $: 'component',
         component: 'Header',
         props: {
@@ -208,7 +208,7 @@ it('should accept component as a prop', () => {
           },
         },
       }}
-      onTemplateEvent={jest.fn()}
+      onEvent={jest.fn()}
     />
   )
 
@@ -240,11 +240,11 @@ it('should accept object as a prop', () => {
   }
 
   const component = render(
-    <BaseTemplate
+    <BaseRise
       components={{
         Header,
       }}
-      dataState={{
+      model={{
         $: 'component',
         component: 'Header',
         props: {
@@ -253,7 +253,7 @@ it('should accept object as a prop', () => {
           },
         },
       }}
-      onTemplateEvent={jest.fn()}
+      onEvent={jest.fn()}
     />
   )
 
@@ -271,9 +271,9 @@ it('should accept object as a prop', () => {
 it('should accept event handler as a prop', () => {
   const onEvent = jest.fn()
   const component = render(
-    <BaseTemplate
+    <BaseRise
       components={BUILT_IN_COMPONENTS}
-      dataState={{
+      model={{
         $: 'component',
         key: 'button',
         component: 'View',
@@ -282,7 +282,7 @@ it('should accept event handler as a prop', () => {
           onClick: action('foo-action'),
         },
       }}
-      onTemplateEvent={onEvent}
+      onEvent={onEvent}
     />
   )
 
@@ -290,7 +290,7 @@ it('should accept event handler as a prop', () => {
 
   expect(onEvent).toHaveBeenCalledTimes(1)
 
-  const firedEvent = onEvent.mock.lastCall[0] as TemplateEvent
+  const firedEvent = onEvent.mock.lastCall[0] as RiseEvent
   expect(firedEvent).toMatchInlineSnapshot(`
     Object {
       "dataState": Array [
@@ -324,7 +324,7 @@ it('should validate props with a validator', () => {
   }
 
   render(
-    <BaseTemplate
+    <BaseRise
       components={{
         View: {
           component: () => <div />,
@@ -332,24 +332,24 @@ it('should validate props with a validator', () => {
         },
       }}
       path={['mainState']}
-      dataState={{
+      model={{
         $: 'component',
         key: 'button',
         component: 'View',
         props,
       }}
-      onTemplateEvent={jest.fn()}
+      onEvent={jest.fn()}
     />
   )
 
   expect(validator).toHaveBeenCalledWith(props)
 })
 
-it('should pass return type from onTemplateEvent back to component', async () => {
+it('should pass return type from onEvent back to component', async () => {
   const onEvent = jest.fn().mockReturnValue('Mike')
 
   const component = render(
-    <BaseTemplate
+    <BaseRise
       components={{
         Profile: {
           component: ({ onClick }) => {
@@ -372,7 +372,7 @@ it('should pass return type from onTemplateEvent back to component', async () =>
         },
       }}
       path={['mainState']}
-      dataState={{
+      model={{
         $: 'component',
         key: 'button',
         component: 'Profile',
@@ -380,7 +380,7 @@ it('should pass return type from onTemplateEvent back to component', async () =>
           onClick: action('go-back'),
         },
       }}
-      onTemplateEvent={onEvent}
+      onEvent={onEvent}
     />
   )
   await act(async () => {
@@ -398,10 +398,10 @@ it('should pass return type from onTemplateEvent back to component', async () =>
 it('should fire multiple template events for an array of actions', () => {
   const onEvent = jest.fn()
   const component = render(
-    <BaseTemplate
+    <BaseRise
       components={BUILT_IN_COMPONENTS}
       path={['mainState']}
-      dataState={{
+      model={{
         $: 'component',
         key: 'button',
         component: 'View',
@@ -410,7 +410,7 @@ it('should fire multiple template events for an array of actions', () => {
           onClick: [action('go-back'), action('go-back-again')],
         },
       }}
-      onTemplateEvent={onEvent}
+      onEvent={onEvent}
     />
   )
   fireEvent.click(component.getByTestId('button'))
