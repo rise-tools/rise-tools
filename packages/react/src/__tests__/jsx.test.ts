@@ -1,17 +1,17 @@
 import { createComponentDefinition, jsx } from '../jsx'
-import { isComponentDataState, isEventDataState } from '../template'
+import { isComponentModelState, isEventModelState } from '../rise'
 
 const DummyComponent = createComponentDefinition('DummyComponent')
 
-it('should create ComponentDataState', () => {
+it('should create ComponentModelState', () => {
   const el = jsx(DummyComponent, { children: null })
-  expect(isComponentDataState(el)).toBe(true)
+  expect(isComponentModelState(el)).toBe(true)
 })
 
 it('should compose higher-order functions together', () => {
   const Screen = () => jsx(DummyComponent, { children: null })
   const el = jsx(Screen, { children: null })
-  expect(isComponentDataState(el)).toBe(true)
+  expect(isComponentModelState(el)).toBe(true)
 })
 
 it('should turn function into event', () => {
@@ -19,5 +19,5 @@ it('should turn function into event', () => {
     onPress: jest.fn(),
     children: null,
   })
-  expect(isEventDataState(el.props!.onPress)).toBe(true)
+  expect(isEventModelState(el.props!.onPress)).toBe(true)
 })

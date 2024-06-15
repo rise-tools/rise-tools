@@ -1,11 +1,11 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { action, ActionDataState, DataSource, ref, response, Template } from '..'
-import { BUILT_IN_COMPONENTS } from './template.test'
+import { action, ActionModelState, ModelSource, ref, response, Rise } from '..'
+import { BUILT_IN_COMPONENTS } from './rise.test'
 
 it('should render a component', () => {
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
@@ -21,10 +21,10 @@ it('should render a component', () => {
     sendEvent: jest.fn(),
   }
   const component = render(
-    <Template
+    <Rise
       components={BUILT_IN_COMPONENTS}
-      dataSource={dataSource}
-      onEvent={dataSource.sendEvent}
+      modelSource={modelSource}
+      onEvent={modelSource.sendEvent}
     />
   )
 
@@ -52,15 +52,15 @@ it('should render component at a path', () => {
       }
     },
   })
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: getStore,
     sendEvent: jest.fn(),
   }
   const component = render(
-    <Template
+    <Rise
       components={BUILT_IN_COMPONENTS}
-      dataSource={dataSource}
-      onEvent={dataSource.sendEvent}
+      modelSource={modelSource}
+      onEvent={modelSource.sendEvent}
       path={['mainStore', 'children']}
     />
   )
@@ -76,7 +76,7 @@ it('should render component at a path', () => {
 })
 
 it('should resolve a ref', () => {
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: (store: string) => {
       if (store === 'secondStore') {
         return {
@@ -113,10 +113,10 @@ it('should resolve a ref', () => {
     sendEvent: jest.fn(),
   }
   const component = render(
-    <Template
+    <Rise
       components={BUILT_IN_COMPONENTS}
-      dataSource={dataSource}
-      onEvent={dataSource.sendEvent}
+      modelSource={modelSource}
+      onEvent={modelSource.sendEvent}
       path="mainStore"
     />
   )
@@ -136,7 +136,7 @@ it('should resolve a ref', () => {
 })
 
 it('should send an action with ref as a path when trigerred by referenced component', () => {
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: (store: string) => {
       if (store === 'secondStore') {
         return {
@@ -181,24 +181,24 @@ it('should send an action with ref as a path when trigerred by referenced compon
 
   const onAction = jest.fn()
   const component = render(
-    <Template
+    <Rise
       components={BUILT_IN_COMPONENTS}
       path="mainStore"
-      dataSource={dataSource}
+      modelSource={modelSource}
       onAction={onAction}
     />
   )
   fireEvent.click(component.getByTestId('button-local'))
-  expect((onAction.mock.lastCall[0] as ActionDataState).name).toEqual('go-back-local')
+  expect((onAction.mock.lastCall[0] as ActionModelState).name).toEqual('go-back-local')
 
   fireEvent.click(component.getByTestId('button-referenced'))
-  expect((onAction.mock.lastCall[0] as ActionDataState).name).toEqual('go-back-referenced')
+  expect((onAction.mock.lastCall[0] as ActionModelState).name).toEqual('go-back-referenced')
 })
 
 it('should subscribe to the root store', () => {
   const mainStoreUnsubscribeFunction = jest.fn()
   const mainStoreSubscribeFunction = jest.fn().mockReturnValue(mainStoreUnsubscribeFunction)
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: mainStoreSubscribeFunction,
       get() {
@@ -211,10 +211,10 @@ it('should subscribe to the root store', () => {
     sendEvent: jest.fn(),
   }
   const element = render(
-    <Template
+    <Rise
       components={BUILT_IN_COMPONENTS}
-      dataSource={dataSource}
-      onEvent={dataSource.sendEvent}
+      modelSource={modelSource}
+      onEvent={modelSource.sendEvent}
       path="mainStore"
     />
   )
@@ -232,7 +232,7 @@ it('should manage subscription to stores referenced by refs', () => {
   const secondStoreUnsubscribeFunction = jest.fn()
   const secondStoreSubscribeFunction = jest.fn().mockReturnValue(secondStoreUnsubscribeFunction)
 
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: (name: string) => {
       if (name === 'mainStore') {
         return {
@@ -264,10 +264,10 @@ it('should manage subscription to stores referenced by refs', () => {
   }
 
   const element = render(
-    <Template
+    <Rise
       components={BUILT_IN_COMPONENTS}
-      dataSource={dataSource}
-      onEvent={dataSource.sendEvent}
+      modelSource={modelSource}
+      onEvent={modelSource.sendEvent}
       path="mainStore"
     />
   )
@@ -290,7 +290,7 @@ it('should manage subscription to stores referenced by refs', () => {
 })
 
 it('should dispatch all actions associated with an event', () => {
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: jest.fn().mockReturnValue(jest.fn()),
       get() {
@@ -308,7 +308,7 @@ it('should dispatch all actions associated with an event', () => {
   }
   const onAction = jest.fn()
   const component = render(
-    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} onAction={onAction} />
+    <Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} onAction={onAction} />
   )
   fireEvent.click(component.getByTestId('button'))
   expect(onAction).toHaveBeenCalledTimes(2)

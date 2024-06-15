@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React, { PropsWithChildren, ReactNode } from 'react'
 
-import { BaseTemplate } from '../template'
+import { BaseRise } from '../rise'
 
 const View = {
   component: ({
@@ -30,14 +30,14 @@ beforeEach(() => {
 })
 
 it('should assign correct path to an event target', () => {
-  const onTemplateEvent = jest.fn()
+  const onEvent = jest.fn()
 
   const component = render(
-    <BaseTemplate
+    <BaseRise
       components={{
         View,
       }}
-      dataState={{
+      model={{
         $: 'component',
         component: 'View',
         children: {
@@ -91,13 +91,13 @@ it('should assign correct path to an event target', () => {
           ],
         },
       }}
-      onTemplateEvent={onTemplateEvent}
+      onEvent={onEvent}
     />
   )
 
   // nested children
   fireEvent.click(component.getByTestId('button'))
-  expect(onTemplateEvent.mock.lastCall[0].target.path).toMatchInlineSnapshot(`
+  expect(onEvent.mock.lastCall[0].target.path).toMatchInlineSnapshot(`
     Array [
       "",
       "children",
@@ -110,7 +110,7 @@ it('should assign correct path to an event target', () => {
 
   // prop is a single child
   fireEvent.click(component.getByTestId('button-prop'))
-  expect(onTemplateEvent.mock.lastCall[0].target.path).toMatchInlineSnapshot(`
+  expect(onEvent.mock.lastCall[0].target.path).toMatchInlineSnapshot(`
     Array [
       "",
       "children",
@@ -125,7 +125,7 @@ it('should assign correct path to an event target', () => {
 
   // prop has elements as an array
   fireEvent.click(component.getByTestId('button-prop-array'))
-  expect(onTemplateEvent.mock.lastCall[0].target.path).toMatchInlineSnapshot(`
+  expect(onEvent.mock.lastCall[0].target.path).toMatchInlineSnapshot(`
     Array [
       "",
       "children",
@@ -141,7 +141,7 @@ it('should assign correct path to an event target', () => {
 
   // prop has elements as an array without keys
   fireEvent.click(component.getByTestId('button-prop-array-idx'))
-  expect(onTemplateEvent.mock.lastCall[0].target.path).toMatchInlineSnapshot(`
+  expect(onEvent.mock.lastCall[0].target.path).toMatchInlineSnapshot(`
     Array [
       "",
       "children",
@@ -155,5 +155,5 @@ it('should assign correct path to an event target', () => {
     ]
   `)
 
-  expect(onTemplateEvent).toHaveBeenCalledTimes(4)
+  expect(onEvent).toHaveBeenCalledTimes(4)
 })

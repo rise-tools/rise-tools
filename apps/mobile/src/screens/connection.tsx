@@ -1,5 +1,5 @@
 import { RiseComponents } from '@rise-tools/kit'
-import { ActionDataState, Template } from '@rise-tools/react'
+import { ActionModelState, Rise } from '@rise-tools/react'
 import { TamaguiComponents } from '@rise-tools/tamagui'
 import { useToastController } from '@tamagui/toast'
 import { Stack } from 'expo-router'
@@ -8,7 +8,7 @@ import { useRouter } from 'solito/router'
 
 import { Connection } from '../connection'
 import { DataBoundary } from '../data-boundary'
-import { useDataSource } from '../data-sources'
+import { useModelSource } from '../model-sources'
 
 export function Screen(props: { title: string }) {
   return <Stack.Screen options={{ title: props.title }} />
@@ -24,11 +24,11 @@ const components = {
 }
 
 type RiseAction =
-  | ActionDataState<'navigate', { path: string }>
-  | ActionDataState<'navigate-back'>
-  | ActionDataState<'toast', { title: string; message?: string }>
+  | ActionModelState<'navigate', { path: string }>
+  | ActionModelState<'navigate-back'>
+  | ActionModelState<'toast', { title: string; message?: string }>
 
-function isRiseAction(action: ActionDataState): action is RiseAction {
+function isRiseAction(action: ActionModelState): action is RiseAction {
   return ['navigate', 'navigate-back', 'toast'].includes(action.name)
 }
 
@@ -36,13 +36,13 @@ export function ConnectionScreen({ connection, path }: { connection: Connection;
   const toast = useToastController()
   const router = useRouter()
 
-  const dataSource = useDataSource(connection.id, connection.host)
-  if (!dataSource) {
+  const modelSource = useModelSource(connection.id, connection.host)
+  if (!modelSource) {
     return null
   }
 
   const onAction = useCallback(
-    (action: ActionDataState) => {
+    (action: ActionModelState) => {
       if (!isRiseAction(action)) {
         return
       }
@@ -65,10 +65,10 @@ export function ConnectionScreen({ connection, path }: { connection: Connection;
   const resolvedPath = path || connection.path || ''
 
   return (
-    <DataBoundary dataSource={dataSource} path={resolvedPath}>
-      <Template
+    <DataBoundary modelSource={modelSource} path={resolvedPath}>
+      <Rise
         components={components}
-        dataSource={dataSource}
+        modelSource={modelSource}
         path={resolvedPath}
         onAction={onAction}
       />

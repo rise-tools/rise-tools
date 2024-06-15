@@ -12,68 +12,68 @@ export type ComponentDefinition<T extends Record<string, JSONValue>> = {
   validator?: (input?: T) => T
 }
 
-/** Data state */
-export type DataState<T = EventDataState> =
+/** Model state */
+export type ModelState<T = EventModelState> =
   | JSONValue
-  | ReferencedComponentDataState<T>
-  | ComponentDataState<T>
-  | ReferencedDataState
-  | HandlerDataState<T>
-  | StateDataState
-  | { [key: string]: DataState<T>; $?: never }
-  | DataState<T>[]
+  | ReferencedComponentModelState<T>
+  | ComponentModelState<T>
+  | ReferencedModelState
+  | HandlerModelState<T>
+  | StateModelState
+  | { [key: string]: ModelState<T>; $?: never }
+  | ModelState<T>[]
   | T
 /** Server data state */
-export type ServerDataState = DataState<ServerEventDataState>
-export type ServerHandlerDataState<T extends any[] = any[]> = HandlerDataState<
-  ServerEventDataState<T>
+export type ServerModelState = ModelState<ServerEventModelState>
+export type ServerHandlerModelState<T extends any[] = any[]> = HandlerModelState<
+  ServerEventModelState<T>
 >
 
-export type ComponentDataState<T = EventDataState> = {
+export type ComponentModelState<T = EventModelState> = {
   $: 'component'
   key?: string
   component: ComponentIdentifier
-  children?: DataState<T>
-  props?: Record<string, DataState<T>>
+  children?: ModelState<T>
+  props?: Record<string, ModelState<T>>
 }
-type ReferencedComponentDataState<T = EventDataState> = ComponentDataState<T> & {
+type ReferencedComponentModelState<T = EventModelState> = ComponentModelState<T> & {
   path: Path
 }
-export type StateDataState<T = JSONValue> = {
+export type StateModelState<T = JSONValue> = {
   $: 'state'
   key: string
   initialValue: T
 }
 export type Path = [string, ...(string | number)[]]
-export type ReferencedDataState = {
+export type ReferencedModelState = {
   $: 'ref'
   ref: Path
 }
-export type ActionDataState<
+export type ActionModelState<
   T extends string = string,
   K extends Record<string, any> = Record<string, any>,
 > = {
   $: 'action'
   name: T
 } & K
-export type ResponseDataState = {
+export type ResponseModelState = {
   $: 'response'
   payload: JSONValue
   statusCode: number
   ok: boolean
-  actions: ActionDataState[]
+  actions: ActionModelState[]
 }
-export type HandlerReturnType = ResponseDataState | JSONValue | void
+export type HandlerReturnType = ResponseModelState | JSONValue | void
 export type HandlerFunction<T extends any[] = any[]> = (
   ...args: T
 ) => Promise<HandlerReturnType> | HandlerReturnType
-export type EventDataState = {
+export type EventModelState = {
   $: 'event'
-  actions?: ActionDataState[]
+  actions?: ActionModelState[]
   timeout?: number
-  args?: Record<string, StateDataState<any>>
+  args?: Record<string, StateModelState<any>>
 }
-export type ServerEventDataState<T extends any[] = any[]> = EventDataState & {
+export type ServerEventModelState<T extends any[] = any[]> = EventModelState & {
   handler: HandlerFunction<T>
 }
 
@@ -86,7 +86,7 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type TemplateEvent<P = EventDataState | ActionDataState[], K = any[]> = {
+export type RiseEvent<P = EventModelState | ActionModelState[], K = any[]> = {
   target: {
     key?: string
     component: string
@@ -97,62 +97,62 @@ export type TemplateEvent<P = EventDataState | ActionDataState[], K = any[]> = {
   payload: K
 }
 
-export type HandlerEvent = TemplateEvent<EventDataState>
-export type HandlerDataState<T = EventDataState> = T | ActionDataState | ActionDataState[]
+export type HandlerEvent = RiseEvent<EventModelState>
+export type HandlerModelState<T = EventModelState> = T | ActionModelState | ActionModelState[]
 
-export function isCompositeDataState(
+export function isCompositeModelState(
   obj: any
-): obj is ComponentDataState | ReferencedDataState | StateDataState {
+): obj is ComponentModelState | ReferencedModelState | StateModelState {
   return (
     obj !== null &&
     typeof obj === 'object' &&
     (obj.$ === 'component' || obj.$ === 'ref' || obj.$ === 'state')
   )
 }
-export function isComponentDataState(obj: any): obj is ComponentDataState<any> {
+export function isComponentModelState(obj: any): obj is ComponentModelState<any> {
   return obj !== null && typeof obj === 'object' && obj.$ === 'component'
 }
-export function isReferencedComponentDataState(obj: any): obj is ReferencedComponentDataState {
-  return isComponentDataState(obj) && 'path' in obj
+export function isReferencedComponentModelState(obj: any): obj is ReferencedComponentModelState {
+  return isComponentModelState(obj) && 'path' in obj
 }
-export function isEventDataState(obj: any): obj is EventDataState {
+export function isEventModelState(obj: any): obj is EventModelState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'event'
 }
-export function isHandlerEvent(obj: TemplateEvent): obj is HandlerEvent {
-  return isEventDataState(obj.dataState)
+export function isHandlerEvent(obj: RiseEvent): obj is HandlerEvent {
+  return isEventModelState(obj.dataState)
 }
-export function isActionDataState(obj: any): obj is ActionDataState {
+export function isActionModelState(obj: any): obj is ActionModelState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'action'
 }
-export function isActionDataStateArray(obj: any): obj is ActionDataState[] {
-  return Array.isArray(obj) && obj.every(isActionDataState)
+export function isActionModelStateArray(obj: any): obj is ActionModelState[] {
+  return Array.isArray(obj) && obj.every(isActionModelState)
 }
-export function isResponseDataState(obj: any): obj is ResponseDataState {
+export function isResponseModelState(obj: any): obj is ResponseModelState {
   return obj && typeof obj === 'object' && obj.$ === 'response'
 }
-function isStateDataState(obj: any): obj is StateDataState {
+function isStateModelState(obj: any): obj is StateModelState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'state'
 }
-function itemKeyOrIndex(item: DataState, idx: number): string | number {
-  if (isComponentDataState(item)) {
+function itemKeyOrIndex(item: ModelState, idx: number): string | number {
+  if (isComponentModelState(item)) {
     return item.key || idx
   }
   return idx
 }
 
-export function BaseTemplate({
+export function BaseRise({
   path = [''],
   components,
-  dataState,
-  onTemplateEvent,
+  model,
+  onEvent,
 }: {
   path?: Path
   components: ComponentRegistry
-  dataState: DataState
-  onTemplateEvent?: (event: TemplateEvent) => any
+  model: ModelState
+  onEvent?: (event: RiseEvent) => any
 }) {
   const RenderComponent = useCallback(
-    function ({ stateNode, path }: { stateNode: ComponentDataState; path: Path }) {
+    function ({ stateNode, path }: { stateNode: ComponentModelState; path: Path }) {
       const componentDefinition = components[stateNode.component]
       if (!componentDefinition) {
         throw new RenderError(`Unknown component: ${stateNode.component}`)
@@ -194,20 +194,20 @@ export function BaseTemplate({
     [components]
   )
 
-  function RenderState({ stateNode, path }: { stateNode: StateDataState; path: Path }) {
+  function RenderState({ stateNode, path }: { stateNode: StateModelState; path: Path }) {
     const localState = useContext(LocalState)
     const value = useStream(localState.getStream(stateNode))
     return render(value, path)
   }
 
-  function render(stateNode: DataState, path: Path): React.ReactNode {
+  function render(stateNode: ModelState, path: Path): React.ReactNode {
     if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
     if (Array.isArray(stateNode)) {
       return stateNode.map((item, idx) => render(item, [...path, itemKeyOrIndex(item, idx)]))
     }
-    if (!isCompositeDataState(stateNode)) {
+    if (!isCompositeModelState(stateNode)) {
       throw new Error('Objects are not valid as a React child.')
     }
     if (stateNode.$ === 'component') {
@@ -215,7 +215,7 @@ export function BaseTemplate({
         <RenderComponent
           key={stateNode.key}
           stateNode={stateNode}
-          path={isReferencedComponentDataState(stateNode) ? stateNode.path : path}
+          path={isReferencedComponentModelState(stateNode) ? stateNode.path : path}
         />
       )
     }
@@ -223,29 +223,29 @@ export function BaseTemplate({
       return <RenderState stateNode={stateNode} path={path} />
     }
     if (stateNode.$ === 'ref') {
-      throw new Error('Your data includes refs. You must use a <Template /> component instead.')
+      throw new Error('Your data includes refs. You must use a <Rise /> component instead.')
     }
   }
 
   function renderProp(
     propKey: string,
-    propValue: DataState,
-    parentNode: ComponentDataState | ReferencedComponentDataState,
-    getLocalStateValue: (state: StateDataState) => JSONValue,
+    propValue: ModelState,
+    parentNode: ComponentModelState | ReferencedComponentModelState,
+    getLocalStateValue: (state: StateModelState) => JSONValue,
     path: Path
   ): any {
     if (
-      isEventDataState(propValue) ||
-      isActionDataState(propValue) ||
-      isActionDataStateArray(propValue)
+      isEventModelState(propValue) ||
+      isActionModelState(propValue) ||
+      isActionModelStateArray(propValue)
     ) {
       return async (...payload: any[]) => {
         // React events (e.g. from onPress) contain cyclic structures that can't be serialized
         // with JSON.stringify and also provide little to no value for the server.
         // tbd: figure a better way to handle this in a cross-platform way
         payload = payload.map((arg) => (arg?.nativeEvent ? '[native code]' : arg))
-        const dataState = isActionDataState(propValue) ? [propValue] : propValue
-        return onTemplateEvent?.({
+        const dataState = isActionModelState(propValue) ? [propValue] : propValue
+        return onEvent?.({
           target: {
             key: parentNode.key,
             component: parentNode.component,
@@ -265,7 +265,7 @@ export function BaseTemplate({
         ])
       )
     }
-    if (isStateDataState(propValue)) {
+    if (isStateModelState(propValue)) {
       return renderProp(
         propKey,
         getLocalStateValue(propValue),
@@ -274,7 +274,7 @@ export function BaseTemplate({
         path
       )
     }
-    if (isCompositeDataState(propValue)) {
+    if (isCompositeModelState(propValue)) {
       return render(propValue, path)
     }
     if (propValue && typeof propValue === 'object') {
@@ -287,7 +287,7 @@ export function BaseTemplate({
     return propValue
   }
 
-  return <>{render(dataState, path)}</>
+  return <>{render(model, path)}</>
 }
 
 export class RenderError extends Error {}

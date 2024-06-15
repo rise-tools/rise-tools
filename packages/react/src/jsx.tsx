@@ -2,17 +2,17 @@ import type { JSXElementConstructor, ReactElement } from 'react'
 
 import { event } from './events'
 import {
-  ComponentDataState,
-  isComponentDataState,
-  ReferencedDataState,
-  ServerEventDataState,
-  ServerHandlerDataState,
-  StateDataState,
-} from './template'
+  ComponentModelState,
+  isComponentModelState,
+  ReferencedModelState,
+  ServerEventModelState,
+  ServerHandlerModelState,
+  StateModelState,
+} from './rise'
 
 export type UI = ReactElement<Props> | ServerComponent
 
-type ServerComponent = ComponentDataState<ServerEventDataState>
+type ServerComponent = ComponentModelState<ServerEventModelState>
 type Props = ServerComponent['props'] & {
   children?: ServerComponent['children']
 }
@@ -25,7 +25,7 @@ export function jsx(
   key?: string
 ): ServerComponent {
   const el = componentFactory(passedProps)
-  if (isComponentDataState(el)) {
+  if (isComponentModelState(el)) {
     return el
   }
   if (typeof el.type !== 'string') {
@@ -58,19 +58,19 @@ export type LiteralArray<T> = Array<T> & {
 export type WithServerProps<T> = { [P in keyof T]: _Extend<T[P]> }
 interface _ExtendArray<T> extends Array<_Extend<T>> {}
 
-export type _Extend<T> = T extends StateDataState
+export type _Extend<T> = T extends StateModelState
   ? T
   : T extends Literal<infer U>
     ? U
     : T extends (...args: any) => any
-      ? T | ServerHandlerDataState
+      ? T | ServerHandlerModelState
       : T extends Array<infer U>
-        ? _ExtendArray<U> | (T extends LiteralArray<U> ? never : StateDataState<Array<U>>)
+        ? _ExtendArray<U> | (T extends LiteralArray<U> ? never : StateModelState<Array<U>>)
         : T extends object
           ? WithServerProps<T>
           : T extends null | undefined
             ? T
-            : T | ReferencedDataState | StateDataState<T>
+            : T | ReferencedModelState | StateModelState<T>
 
 export function createComponentDefinition<
   T extends JSXElementConstructor<any> | keyof JSX.IntrinsicElements,

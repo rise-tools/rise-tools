@@ -1,17 +1,17 @@
 import { act, fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { DataSource, Template } from '../refs'
+import { ModelSource, Rise } from '../refs'
 import { response } from '../response'
 import { eventPayload, increment, setStateAction, state, toggle } from '../state'
-import { BUILT_IN_COMPONENTS } from './template.test'
+import { BUILT_IN_COMPONENTS } from './rise.test'
 
 it('should render initial state', () => {
   const value = state('foo')
   const style = state({
     opacity: 0,
   })
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
@@ -35,7 +35,7 @@ it('should render initial state', () => {
     }),
     sendEvent: jest.fn(),
   }
-  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       <div>
@@ -50,7 +50,7 @@ it('should render initial state', () => {
 
 it('should set state with default payload', async () => {
   const value = state('foo')
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
@@ -77,7 +77,7 @@ it('should set state with default payload', async () => {
   }
   const onAction = jest.fn()
   const component = render(
-    <Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} onAction={onAction} />
+    <Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} onAction={onAction} />
   )
   await act(async () => {
     fireEvent.click(component.getByTestId('button'))
@@ -97,7 +97,7 @@ it('should set state with default payload', async () => {
 
 it('should set state with custom value', async () => {
   const value = state('foo')
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
@@ -122,7 +122,7 @@ it('should set state with custom value', async () => {
     }),
     sendEvent: jest.fn(),
   }
-  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   await act(async () => {
     fireEvent.click(component.getByTestId('button'))
   })
@@ -140,7 +140,7 @@ it('should set state with custom value', async () => {
 
 it('should toggle state', async () => {
   const isDisabled = state(false)
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
@@ -167,7 +167,7 @@ it('should toggle state', async () => {
     }),
     sendEvent: jest.fn(),
   }
-  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       <div />
@@ -193,7 +193,7 @@ it('should toggle state', async () => {
 
 it('should increment state', async () => {
   const counter = state(1)
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
@@ -218,7 +218,7 @@ it('should increment state', async () => {
     }),
     sendEvent: jest.fn(),
   }
-  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       <div>
@@ -247,7 +247,7 @@ it('should increment state', async () => {
 
 it('should modify state after receiving response from the server', async () => {
   const value = state('foo')
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: jest.fn().mockReturnValue(jest.fn()),
       get() {
@@ -266,7 +266,7 @@ it('should modify state after receiving response from the server', async () => {
     }),
     sendEvent: jest.fn().mockReturnValue(response(null).action(setStateAction(value, 'bar'))),
   }
-  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   expect(component.asFragment()).toMatchInlineSnapshot(`
     <DocumentFragment>
       <div
@@ -291,9 +291,9 @@ it('should modify state after receiving response from the server', async () => {
 })
 
 it('should inject state (initial value) into function handler', async () => {
-  const onTemplateEvent = jest.fn().mockReturnValue(response(null))
+  const onEvent = jest.fn().mockReturnValue(response(null))
   const isChecked = state(false)
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
@@ -313,19 +313,19 @@ it('should inject state (initial value) into function handler', async () => {
         ]
       },
     }),
-    sendEvent: onTemplateEvent,
+    sendEvent: onEvent,
   }
-  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   await act(async () => {
     fireEvent.click(component.getByTestId('button'))
   })
-  expect(onTemplateEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: false })
+  expect(onEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: false })
 })
 
 it('should inject current state value into function handler', async () => {
-  const onTemplateEvent = jest.fn().mockReturnValue(response(null))
+  const onEvent = jest.fn().mockReturnValue(response(null))
   const isChecked = state(false)
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
@@ -354,19 +354,19 @@ it('should inject current state value into function handler', async () => {
         ]
       },
     }),
-    sendEvent: onTemplateEvent,
+    sendEvent: onEvent,
   }
-  const component = render(<Template components={BUILT_IN_COMPONENTS} dataSource={dataSource} />)
+  const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   await act(async () => {
     fireEvent.click(component.getByTestId('checkbox'))
     fireEvent.click(component.getByTestId('button'))
   })
-  expect(onTemplateEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: true })
+  expect(onEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: true })
 })
 
 it('should lookup value from the arguments', async () => {
   const userName = state('')
-  const dataSource: DataSource = {
+  const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
       get() {
@@ -392,7 +392,7 @@ it('should lookup value from the arguments', async () => {
     sendEvent: jest.fn(),
   }
   const component = render(
-    <Template
+    <Rise
       components={{
         View: {
           component: (props) => (
@@ -400,7 +400,7 @@ it('should lookup value from the arguments', async () => {
           ),
         },
       }}
-      dataSource={dataSource}
+      modelSource={modelSource}
     />
   )
   expect(component.asFragment()).toMatchInlineSnapshot(`

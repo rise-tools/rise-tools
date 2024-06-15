@@ -1,6 +1,6 @@
 import {
-  isResponseDataState,
-  isServerEventDataState,
+  isResponseModelState,
+  isServerEventModelState,
   lookupValue,
   response,
 } from '@rise-tools/react'
@@ -134,11 +134,11 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
       const modelState = getModelState(model)
       const value = lookupValue(modelState, lookupPath)
 
-      if (!isServerEventDataState(value)) {
+      if (!isServerEventModelState(value)) {
         throw new Error(`Missing event handler on the server for event: ${JSON.stringify(event)}`)
       }
       let res = await value.handler(...payload)
-      if (!isResponseDataState(res)) {
+      if (!isResponseModelState(res)) {
         res = response(res ?? null)
       }
       clientSenders.get(clientId)?.({

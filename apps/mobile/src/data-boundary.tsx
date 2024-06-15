@@ -1,19 +1,19 @@
-import { DataSource, useStream } from '@rise-tools/react'
-import { WebSocketDataSource } from '@rise-tools/ws-client'
+import { ModelSource, useStream } from '@rise-tools/react'
+import { WebSocketModelSource } from '@rise-tools/ws-client'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import React, { PropsWithChildren } from 'react'
 import { H4, SizableText, Text, YStack } from 'tamagui'
 
 export function DataBoundary({
-  dataSource,
+  modelSource,
   path,
   children,
-}: PropsWithChildren<{ dataSource: WebSocketDataSource | DataSource; path: string }>) {
-  const data = useStream(dataSource.get(path))
+}: PropsWithChildren<{ modelSource: WebSocketModelSource | ModelSource; path: string }>) {
+  const data = useStream(modelSource.get(path))
 
-  if ('state' in dataSource) {
+  if ('state' in modelSource) {
     return (
-      <WebSocketDataBoundary dataSource={dataSource} path={path}>
+      <WebSocketDataBoundary modelSource={modelSource} path={path}>
         {children}
       </WebSocketDataBoundary>
     )
@@ -27,12 +27,12 @@ export function DataBoundary({
 }
 
 function WebSocketDataBoundary({
-  dataSource,
+  modelSource,
   path,
   children,
-}: PropsWithChildren<{ dataSource: WebSocketDataSource; path: string }>) {
-  const state = useStream(dataSource.state)
-  const data = useStream(dataSource.get(path))
+}: PropsWithChildren<{ modelSource: WebSocketModelSource; path: string }>) {
+  const state = useStream(modelSource.state)
+  const data = useStream(modelSource.get(path))
 
   if (data !== undefined) {
     return (

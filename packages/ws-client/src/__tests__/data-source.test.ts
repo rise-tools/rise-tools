@@ -2,7 +2,7 @@ import { event, HandlerEvent, response } from '@rise-tools/react'
 import WS from 'jest-websocket-mock'
 
 import {
-  createWSDataSource,
+  createWSModelSource,
   EventResponseWebsocketMessage,
   EventWebsocketMessage,
 } from '../data-source'
@@ -17,10 +17,10 @@ afterEach(() => {
 })
 
 it('should resolve a promise once response comes in', async () => {
-  const dataSource = createWSDataSource('ws://localhost:8080')
+  const dataSource = createWSModelSource('ws://localhost:8080')
   await ws.connected
 
-  const templateEvent: HandlerEvent = {
+  const riseEvent: HandlerEvent = {
     target: {
       key: 'key',
       path: ['mainStore'],
@@ -31,7 +31,7 @@ it('should resolve a promise once response comes in', async () => {
     payload: null,
   }
 
-  const promise = dataSource.sendEvent(templateEvent)
+  const promise = dataSource.sendEvent(riseEvent)
 
   const message = (await ws.nextMessage) as EventWebsocketMessage
   ws.send({
@@ -52,10 +52,10 @@ it('should resolve a promise once response comes in', async () => {
 })
 
 it('should timeout if response comes later than timeout specified', async () => {
-  const dataSource = createWSDataSource('ws://localhost:8080')
+  const dataSource = createWSModelSource('ws://localhost:8080')
   await ws.connected
 
-  const templateEvent: HandlerEvent = {
+  const riseEvent: HandlerEvent = {
     target: {
       key: 'key',
       path: ['mainStore'],
@@ -66,7 +66,7 @@ it('should timeout if response comes later than timeout specified', async () => 
     payload: null,
   }
 
-  const promise = dataSource.sendEvent(templateEvent)
+  const promise = dataSource.sendEvent(riseEvent)
   const message = (await ws.nextMessage) as EventWebsocketMessage
 
   setTimeout(() => {

@@ -5,7 +5,7 @@ import {
   LiteralArray,
   setStateAction,
   state,
-  StateDataState,
+  StateModelState,
   WithServerProps,
 } from '@rise-tools/react'
 import {
@@ -18,7 +18,7 @@ import {
 } from '@rise-tools/tamagui/server'
 
 type Props = {
-  value: StateDataState<string>
+  value: StateModelState<string>
   onSelect?: (item: string) => void
   button?: JSX.Element
   options?: LiteralArray<{

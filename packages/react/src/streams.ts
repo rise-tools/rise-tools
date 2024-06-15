@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
 
-import { JSONValue } from './template'
+import { JSONValue } from './rise'
 
 type Updater<S> = (prevState: S) => S
 
