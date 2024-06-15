@@ -52,6 +52,7 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
+    "testMatch": [ "**/?(*.)+(spec|test).[jt]s?(x)" ],
     "prettierPath": null,
     "moduleNameMapper": {
       "@rise-tools/(.*)": "<rootDir>/packages/$1/src",

@@ -1,17 +1,17 @@
-import { createHTTPDataSource } from '@rise-tools/http-server'
+import { createHTTPModelSource } from '@rise-tools/server'
 import Fastify from 'fastify'
 
 import { models } from './ui'
 
-function setupDataSource() {
-  const dataSource = createHTTPDataSource()
+function setupModelSource() {
+  const dataSource = createHTTPModelSource()
   for (const [key, model] of Object.entries(models)) {
     dataSource.update(key, model)
   }
   return dataSource
 }
 
-const dataSource = setupDataSource()
+const dataSource = setupModelSource()
 const fastify = Fastify({
   logger: true,
 })

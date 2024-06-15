@@ -19,7 +19,7 @@
       "path": "./packages/ws-client"
     },
     {
-      "path": "./packages/ws-server"
+      "path": "./packages/server"
     }
   ]
 }

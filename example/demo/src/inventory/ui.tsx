@@ -1,4 +1,5 @@
 import { action, ref } from '@rise-tools/react'
+import { lookup, state, StateSetter, view } from '@rise-tools/server'
 import {
   Button,
   H2,
@@ -11,31 +12,54 @@ import {
   YStack,
 } from '@rise-tools/tamagui/server'
 
-import { UIContext } from '../types'
-import inventory, { Item } from './inventory'
+import defaultInventory, { Inventory, Item } from './inventory'
 
-export function InventoryExample(ctx: UIContext) {
-  const inventoryItems = Object.fromEntries(inventory.map((item) => [item.key, item]))
-  return {
-    inventory: HomeScreen,
-    ['inventory-items']: inventoryItems,
-    ...Object.fromEntries(
-      inventory.map((item) => [
-        `inventory:${item.key}:details`,
-        () => <Item item={item} ctx={ctx} />,
-      ])
-    ),
-  }
+// models
+const [inventoryItems, setInventoryState] = state(defaultInventory)
+const inventoryHome = view((get) => <HomeScreen inventory={get(inventoryItems)} />)
+const inventoryItem = lookup((key) =>
+  view((get) => {
+    const inventoryItem = get(inventoryItems)?.find((i) => i.key === key)
+    if (!inventoryItem) return <NotFound />
+    return <ItemScreen item={inventoryItem} onUpdateInventory={setInventoryState} />
+  })
+)
+
+// // user profile example
+// const userProfile = lookup((key) =>
+//   query(async () => {
+//     return await db.getUser(key)
+//   })
+// )
+// const userForms = lookup((key) =>
+//   view(({ get }) => {
+//     const user = get(userProfile, key)
+//     return (
+//       <UserForm
+//         user={user}
+//         onUpdate={async (payload) => {
+//           await db.writeUser(key, payload)
+//           userProfiles.get(key).invalidate()
+//         }}
+//       />
+//     )
+//   })
+// )
+
+export const models = {
+  inventory: inventoryHome,
+  inventoryItem,
+  inventoryItems,
 }
 
-function HomeScreen() {
+function HomeScreen({ inventory }: { inventory?: Inventory }) {
   return (
     <YStack backgroundColor={'$background'}>
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-        {inventory.map((item, idx) => (
+        {inventory?.map((item, idx) => (
           <Button
             unstyled
-            onPress={action('navigate', { path: `inventory:${item.key}:details` })}
+            onPress={action('navigate', { path: `inventoryItem/${item.key}` })}
             pressStyle={{ opacity: 0.8 }}
           >
             <XStack
@@ -72,13 +96,19 @@ function HomeScreen() {
   )
 }
 
-export function Item({ item, ctx }: { item: Item; ctx: UIContext }) {
+export function ItemScreen({
+  item,
+  onUpdateInventory,
+}: {
+  item: Item
+  onUpdateInventory: StateSetter<Item[]>
+}) {
   return (
     <YStack flex={1} backgroundColor={'$background'} gap="$3">
       <Image
         key="photo"
         source={{
-          uri: ref([`inventory-items`, item.key, 'photo']),
+          uri: ref([`inventoryItems`, item.key, 'photo']),
         }}
         style={{
           width: '100%',
@@ -88,24 +118,28 @@ export function Item({ item, ctx }: { item: Item; ctx: UIContext }) {
         resizeMode="contain"
       />
       <YStack key="info" paddingHorizontal="$4" gap="$3">
-        <H2 key="title" children={ref([`inventory-items`, item.key, 'title'])} />
-        <Paragraph key="description" children={ref([`inventory-items`, item.key, 'description'])} />
+        <H2 key="title" children={ref([`inventoryItems`, item.key, 'title'])} />
+        <Paragraph key="description" children={ref([`inventoryItems`, item.key, 'description'])} />
         <XStack key="adjustments" gap="$3" alignItems="center">
           <XStack key="quantity" gap="$2">
             <SizableText size="$5">Quantity:</SizableText>
-            <SizableText size="$5" children={ref([`inventory-items`, item.key, 'quantity'])} />
+            <SizableText size="$5" children={ref([`inventoryItems`, item.key, 'quantity'])} />
           </XStack>
           <Button
             key="dec"
             theme="red"
             onPress={() => {
-              ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
-                ...data,
-                [item.key]: {
-                  ...data[item.key],
-                  quantity: data[item.key]!.quantity - 1,
-                },
-              }))
+              onUpdateInventory((inventory: Inventory) =>
+                inventory.map((item) => {
+                  if (item.key === item.key) {
+                    return {
+                      ...item,
+                      quantity: item.quantity - 1,
+                    }
+                  }
+                  return item
+                })
+              )
             }}
             children="-"
           />
@@ -113,18 +147,30 @@ export function Item({ item, ctx }: { item: Item; ctx: UIContext }) {
             key="inc"
             theme="blue"
             onPress={() => {
-              ctx.update(`inventory-items`, (data: Record<string, Item>) => ({
-                ...data,
-                [item.key]: {
-                  ...data[item.key],
-                  quantity: data[item.key]!.quantity + 1,
-                },
-              }))
+              onUpdateInventory((inventory: Inventory) =>
+                inventory.map((item) => {
+                  if (item.key === item.key) {
+                    return {
+                      ...item,
+                      quantity: item.quantity + 1,
+                    }
+                  }
+                  return item
+                })
+              )
             }}
             children="+"
           />
         </XStack>
       </YStack>
+    </YStack>
+  )
+}
+
+function NotFound() {
+  return (
+    <YStack backgroundColor={'$background'}>
+      <SizableText size="$5">Not Found</SizableText>
     </YStack>
   )
 }

@@ -1,17 +1,17 @@
 import type { EventPayload } from '@rise-tools/http-client'
 import {
   isReactElement,
-  isResponseDataState,
-  isServerEventDataState,
+  isResponseModelState,
+  isServerEventModelState,
   lookupValue,
   response,
-  ServerDataState,
+  ServerModelState,
   UI,
 } from '@rise-tools/react'
 
-type Initializer = ServerDataState | UI | (() => Promise<ServerDataState | UI>)
+type Initializer = ServerModelState | UI | (() => Promise<ServerModelState | UI>)
 
-export function createHTTPDataSource() {
+export function createHTTPModelSource() {
   const values = new Map<string, Initializer>()
 
   function update(path: string, value: Initializer) {
@@ -57,13 +57,13 @@ export function createHTTPDataSource() {
           const [storeName, ...lookupPath] = path
           const store = await get(storeName)
           const value = lookupValue(store, lookupPath)
-          if (!isServerEventDataState(value)) {
+          if (!isServerEventModelState(value)) {
             throw new Error(
               `Missing event handler on the server for event: ${JSON.stringify(message.event)}`
             )
           }
           let res = await value.handler(...payload)
-          if (!isResponseDataState(res)) {
+          if (!isResponseModelState(res)) {
             res = response(res ?? null)
           }
           return {

@@ -1,4 +1,4 @@
-import { BaseTemplate } from '@rise-tools/react'
+import { BaseRise } from '@rise-tools/react'
 import { config } from '@tamagui/config/v3'
 import { render } from '@testing-library/react'
 import React from 'react'
@@ -11,9 +11,9 @@ const testAppConfig = createTamagui(config)
 it('should render a Tamagui component', () => {
   const element = render(
     <TamaguiProvider config={testAppConfig}>
-      <BaseTemplate
+      <BaseRise
         components={TamaguiComponents}
-        dataState={{
+        model={{
           $: 'component',
           component: 'XStack',
           children: [

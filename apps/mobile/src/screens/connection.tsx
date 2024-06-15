@@ -1,14 +1,13 @@
 import { RiseComponents } from '@rise-tools/kit'
-import { ActionDataState, Template } from '@rise-tools/react'
+import { ActionModelState, Rise } from '@rise-tools/react'
 import { TamaguiComponents } from '@rise-tools/tamagui'
 import { useToastController } from '@tamagui/toast'
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Stack, useRouter } from 'expo-router'
 import React, { useCallback } from 'react'
 
-import { Connection, useConnection } from '../connection'
+import { Connection } from '../connection'
 import { DataBoundary } from '../data-boundary'
-import { useDataSource } from '../data-sources'
-import { NotFoundScreen } from './not-found'
+import { useModelSource } from '../model-sources'
 
 export function Screen(props: { title: string }) {
   return <Stack.Screen options={{ title: props.title }} />
@@ -23,43 +22,31 @@ const components = {
   },
 }
 
-export function ConnectionScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>()
-
-  const connection = useConnection(id)
-  if (!connection) {
-    return <NotFoundScreen />
-  }
-
-  return <ActiveConnectionScreen connection={connection} />
-}
-
 type RiseAction =
-  | ActionDataState<'navigate', { path: string }>
-  | ActionDataState<'navigate-back'>
-  | ActionDataState<'toast', { title: string; message?: string }>
+  | ActionModelState<'navigate', { path: string }>
+  | ActionModelState<'navigate-back'>
+  | ActionModelState<'toast', { title: string; message?: string }>
 
-function isRiseAction(action: ActionDataState): action is RiseAction {
+function isRiseAction(action: ActionModelState): action is RiseAction {
   return ['navigate', 'navigate-back', 'toast'].includes(action.name)
 }
 
-function ActiveConnectionScreen({ connection }: { connection: Connection }) {
-  const params = useLocalSearchParams<{ path: string }>()
+export function ConnectionScreen({ connection, path }: { connection: Connection; path?: string }) {
   const toast = useToastController()
   const router = useRouter()
 
-  const dataSource = useDataSource(connection.id, connection.host)
-  if (!dataSource) {
+  const modelSource = useModelSource(connection.id, connection.host)
+  if (!modelSource) {
     return null
   }
 
   const onAction = useCallback(
-    (action: ActionDataState) => {
+    (action: ActionModelState) => {
       if (!isRiseAction(action)) {
         return
       }
       if (action.name === 'navigate') {
-        router.push(`/connection/${connection.id}?path=${action.path}`)
+        router.push(`/connection/${connection.id}/${action.path}`)
         return
       }
       if (action.name === 'navigate-back') {
@@ -74,11 +61,16 @@ function ActiveConnectionScreen({ connection }: { connection: Connection }) {
     [router]
   )
 
-  const path = params.path || connection.path || ''
+  const resolvedPath = path || connection.path || ''
 
   return (
-    <DataBoundary dataSource={dataSource} path={path}>
-      <Template components={components} dataSource={dataSource} path={path} onAction={onAction} />
+    <DataBoundary modelSource={modelSource} path={resolvedPath}>
+      <Rise
+        components={components}
+        modelSource={modelSource}
+        path={resolvedPath}
+        onAction={onAction}
+      />
     </DataBoundary>
   )
 }

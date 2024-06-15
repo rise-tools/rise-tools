@@ -20,7 +20,7 @@
   "dependencies": {
     "@rise-tools/tamagui": "0.2.0",
     "@rise-tools/kit": "0.2.0",
-    "@rise-tools/ws-server": "0.2.0"
+    "@rise-tools/server": "0.2.0"
   },
   "devDependencies": {
     "tsx": "^4.11.0",
