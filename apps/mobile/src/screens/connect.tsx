@@ -1,9 +1,9 @@
 import { useStream } from '@rise-tools/react'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
+import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
 import React from 'react'
-import { useRouter } from 'solito/router'
 import { Button, SizableText, YStack } from 'tamagui'
 
 import { addConnection, Connection, connections } from '../connection'

@@ -11,9 +11,7 @@ export default function Screen() {
   const connection = useConnection(id)
   const path = segments.join('/')
 
-  if (!connection) {
-    return <NotFoundScreen />
-  }
+  if (!connection) return <NotFoundScreen />
 
   return (
     <>

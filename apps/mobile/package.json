@@ -48,7 +48,6 @@
     "react-native-screens": "3.31.1",
     "react-native-svg": "15.2.0",
     "react-native-web": "~0.19.6",
-    "solito": "4.0.1",
     "tamagui": "^1.100.3",
     "uuid": "^9.0.1"
   },
