@@ -1,5 +1,5 @@
 {
-  "name": "@rise-tools/http-server",
+  "name": "@rise-tools/server",
   "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
@@ -16,23 +16,27 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rise-tools/rise-tools.git",
-    "directory": "packages/http-server"
+    "directory": "packages/server"
   },
   "publishConfig": {
     "access": "public"
   },
-  "author":  "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
-  "contributors": [
-    "Eric Vicenti <ericvicenti@gmail.com> (https://github.com/ericvicenti)"
-  ],
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "bugs": {
     "url": "https://github.com/rise-tools/rise-tools/issues"
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "dependencies": {
-    "@rise-tools/react": "0.2.0"
-  }, 
+    "@fastify/websocket": "^10.0.1",
+    "fastify": "^4.27.0",
+    "ws": "^8.16.0",
+    "zod": "^3.22.4"
+  },
   "devDependencies": {
-    "@rise-tools/http-client": "0.2.0"
+    "@rise-tools/react": "0.2.0",
+    "@rise-tools/ws-client": "0.2.0",
+    "@types/ws": "^8.5.10",
+    "metro-react-native-babel-preset": "^0.77.0",
+    "node-fetch": "^3.3.2"
   }
 }

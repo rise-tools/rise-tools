@@ -19,7 +19,7 @@ This repo contains the following packages:
 - `packages/tamagui` - Component library based on Tamagui to use with RRise Tools
 - `packages/kit` - Component library used by the Playground 
 - `packages/ws-client` - Websocket client to use with the Websocket server
-- `packages/ws-server` - Websocket server 
+- `packages/server` - Server 
 
 As well as the following applications:
 - `apps/mobile` - Mobile application to display UI from any remote data source or QR code

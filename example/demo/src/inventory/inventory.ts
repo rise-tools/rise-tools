@@ -6,6 +6,7 @@ export type Item = {
   price: number
   description: string
 }
+export type Inventory = Item[]
 
 export default [
   {

@@ -8,19 +8,15 @@ import {
 import { action, event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
 import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@rise-tools/tamagui/server'
 
-import { UIContext } from '../types'
-
 // eslint-disable-next-line
-export function UIControlsExample(ctx: UIContext) {
-  return {
-    ui: UI,
-    form: FormExample,
-    slider: SliderExample,
-    switch: SwitchExample,
-    select: SelectExample,
-    list: ListExample,
-    toast: ShowToastExample,
-  }
+export const models = {
+  controls: UI,
+  form: FormExample,
+  slider: SliderExample,
+  switch: SwitchExample,
+  select: SelectExample,
+  list: ListExample,
+  toast: ShowToastExample,
 }
 
 function UI() {

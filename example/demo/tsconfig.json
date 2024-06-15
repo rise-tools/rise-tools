@@ -9,8 +9,8 @@
   }, {
     "path": "../../packages/tamagui"
   }, {
-    "path": "../../packages/kit"
+    "path": "../../packages/server"
   }, {
-    "path": "../../packages/ws-server"
+    "path": "../../packages/kit"
   }]
 }
