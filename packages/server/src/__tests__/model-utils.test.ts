@@ -16,6 +16,18 @@ describe('findModel', () => {
     const foundModel = findModel({ fnModel }, ['fnModel'])
     expect(typeof foundModel === 'function' ? foundModel() : null).toBe('hello')
   })
+  test('find fails', () => {
+    const [a] = state(0)
+    expect(findModel({ a }, ['b'])).toBe(undefined)
+    expect(findModel({ a }, ['a', 'b'])).toBe(undefined)
+  })
+  test('find lookup results in empty string', () => {
+    const indexModel = () => ['a']
+    const l = lookup((key) => {
+      if (key === '') return indexModel
+    })
+    expect(findModel(l, [])).toBe(indexModel)
+  })
   test('find in nested lookup', () => {
     const [stateModel] = state(0)
     expect(

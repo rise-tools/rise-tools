@@ -1,3 +1,4 @@
+import { getModelState } from './model-utils'
 import { ValueModel, ViewModel } from './types'
 
 export function view<T>(
@@ -14,22 +15,16 @@ export function view<T>(
     deps = new Set<ValueModel<any>>()
     depSubs = new Map<ValueModel<any>, () => void>()
     function getter<V>(model: ValueModel<V>): V | undefined {
-      if (typeof model === 'function') return model()
-      deps.add(model)
-      depSubs.set(
-        model,
-        model.subscribe(() => {
-          isInvalid = true
-        })
-      )
-      if (model.type === 'query') {
-        return model.get()
-      } else if (model.type === 'state') {
-        return model.get()
-      } else if (model.type === 'view') {
-        return model.get()
+      if (typeof model !== 'function') {
+        deps.add(model)
+        depSubs.set(
+          model,
+          model.subscribe(() => {
+            isInvalid = true
+          })
+        )
       }
-      throw new Error('Unrecognized model')
+      return getModelState(model)
     }
     const newState = loadInput(getter)
     state = newState
