@@ -65,7 +65,6 @@ export function createWSServerContext(models: AnyModels): WSServerContext {
 export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
   const clientId = `c${context.clientIdIndex}`
   context.clientIdIndex += 1
-  // console.log(`Client ${clientId} connected`)
 
   const { clientSenders, clientSubscribers, models, getModel } = context
 
@@ -75,19 +74,17 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
 
   ws.addEventListener('close', function close() {
     clientSenders.delete(clientId)
-    // console.log(`Client ${clientId} disconnected`)
   })
 
   function handleSubKey(key: string) {
-    // console.log(`${clientId} sub to key ${key}`)
     async function send() {
       const sender = clientSenders.get(clientId)
       if (!sender) {
         return
       }
-      const model = getModel(key) as ValueModel<unknown> | undefined
-      const val = typeof model === 'function' ? model() : model?.get()
-      // console.log('sending', model, key, val)
+      const model = getModel(key)
+      if (!model) return
+      const val = getModelState(model)
       sender({
         $: 'up',
         key,
@@ -126,14 +123,13 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
   }
 
   async function handleEvt({ key, event }: z.infer<typeof serverEventMessageSchema>) {
-    // console.log('handleEvt', key, event)
     const { target, payload } = event
     const { path } = target
     try {
       const [storeName, ...lookupPath] = path
       if (!storeName) throw new Error('Missing store name in event path')
       if (typeof storeName !== 'string') throw new Error('Store name must be a string')
-      const model = findModel(models, storeName.split('/'))
+      const model = getModel(storeName)
       if (!model) throw new Error(`Model not found for store name: ${storeName}`)
       const modelState = getModelState(model)
       const value = lookupValue(modelState, lookupPath)
@@ -160,12 +156,10 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
     }
   }
 
-  // console.log('connected client', clientId)
   ws.on('message', (messageData) => {
     let messageUnvalidated, message
     try {
       messageUnvalidated = JSON.parse(messageData.toString())
-      // console.log(messageUnvalidated)
     } catch (e) {
       throw new Error('Failed to parse JSON from client ' + clientId)
     }

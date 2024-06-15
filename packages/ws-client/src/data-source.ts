@@ -123,7 +123,6 @@ export function createWSModelSource(wsUrl: string): WebSocketModelSource {
         const shouldSubscribeRemotely = handlers.size === 0
         handlers.add(handler)
         if (shouldSubscribeRemotely && key) {
-          console.log('client sub', key)
           send({
             $: 'sub',
             keys: [key],

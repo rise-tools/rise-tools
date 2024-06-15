@@ -3,9 +3,9 @@ import { AnyModels, ValueModel } from './types'
 export function findModel<V>(
   models: AnyModels,
   path: string[]
-): undefined | ValueModel<V> | (() => V) {
+): ValueModel<V> | (() => V) | undefined {
   let walkModel: AnyModels | undefined = models
-  path.forEach((term) => {
+  for (const term of path) {
     if (!walkModel) return
     if (typeof walkModel === 'function') {
       return
@@ -24,7 +24,7 @@ export function findModel<V>(
     } else {
       walkModel = walkModel[term]
     }
-  })
+  }
   while (walkModel && typeof walkModel !== 'function' && walkModel?.type === 'lookup') {
     walkModel = walkModel.get('')
   }
