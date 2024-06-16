@@ -3,7 +3,10 @@
   "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
-  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./server": "./lib/server.js"
+  },
   "files": [
     "src",
     "lib",

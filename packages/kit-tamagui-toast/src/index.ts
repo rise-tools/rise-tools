@@ -1,11 +1,11 @@
-import type { ActionDefinition, ActionModelState } from '@rise-tools/react'
+import type { ActionDefinition } from '@rise-tools/react'
 import { useToastController } from '@tamagui/toast'
 
-type TamaguiToastActions = {
-  toast: ActionDefinition<ToastAction>
-}
+import type { toast } from './actions'
 
-export type ToastAction = ActionModelState<'toast', { title: string; message?: string }>
+type TamaguiToastActions = {
+  toast: ActionDefinition<ReturnType<typeof toast>>
+}
 
 export const useToastActions = (): TamaguiToastActions => {
   const toast = useToastController()

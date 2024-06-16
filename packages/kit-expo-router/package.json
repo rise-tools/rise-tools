@@ -3,7 +3,10 @@
   "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
-  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./server": "./lib/server.js"
+  },
   "files": [
     "src",
     "lib",
@@ -25,8 +28,10 @@
     "url": "https://github.com/rise-tools/rise-tools/issues"
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
+  "dependencies": {
+    "@rise-tools/react": "0.2.0"
+  },
   "devDependencies": {
-    "@rise-tools/react": "0.2.0",
     "expo-router": "~3.5.16"
   },
   "peerDependencies": {

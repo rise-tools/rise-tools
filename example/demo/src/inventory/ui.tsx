@@ -1,4 +1,5 @@
-import { action, ref } from '@rise-tools/react'
+import { navigate } from '@rise-tools/kit-expo-router/server'
+import { ref } from '@rise-tools/react'
 import { lookup, state, StateSetter, view } from '@rise-tools/server'
 import {
   Button,
@@ -59,7 +60,7 @@ function HomeScreen({ inventory }: { inventory?: Inventory }) {
         {inventory?.map((item, idx) => (
           <Button
             unstyled
-            onPress={action('navigate', { path: `inventoryItem/${item.key}` })}
+            onPress={navigate(`inventoryItem/${item.key}`)}
             pressStyle={{ opacity: 0.8 }}
           >
             <XStack

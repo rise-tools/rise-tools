@@ -5,6 +5,7 @@ import {
   SliderField,
   SwitchField,
 } from '@rise-tools/kit/server'
+import { navigate } from '@rise-tools/kit-expo-router/server'
 import { action, event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
 import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@rise-tools/tamagui/server'
 
@@ -22,12 +23,12 @@ export const models = {
 function UI() {
   return (
     <YStack>
-      <Button onPress={action('navigate', { path: 'form' })}>Form</Button>
-      <Button onPress={action('navigate', { path: 'slider' })}>Slider</Button>
-      <Button onPress={action('navigate', { path: 'switch' })}>Switch</Button>
-      <Button onPress={action('navigate', { path: 'navigate' })}>Select</Button>
-      <Button onPress={action('navigate', { path: 'list' })}>List</Button>
-      <Button onPress={action('navigate', { path: 'toast' })}>Toast</Button>
+      <Button onPress={navigate('form')}>Form</Button>
+      <Button onPress={navigate('slider')}>Slider</Button>
+      <Button onPress={navigate('switch')}>Switch</Button>
+      <Button onPress={navigate('select')}>Select</Button>
+      <Button onPress={navigate('list')}>List</Button>
+      <Button onPress={navigate('toast')}>Toast</Button>
     </YStack>
   )
 }

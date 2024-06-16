@@ -1,13 +1,12 @@
-import type { ActionDefinition, ActionModelState } from '@rise-tools/react'
+import type { ActionDefinition } from '@rise-tools/react'
 import { useRouter } from 'expo-router'
 
-type ExpoRouterActions = {
-  navigate: ActionDefinition<NavigateAction>
-  goBack: ActionDefinition<GoBackAction>
-}
+import type { goBack, navigate } from './actions'
 
-export type NavigateAction = ActionModelState<'navigate', { path: string }>
-export type GoBackAction = ActionModelState<'goBack'>
+type ExpoRouterActions = {
+  navigate: ActionDefinition<ReturnType<typeof navigate>>
+  goBack: ActionDefinition<ReturnType<typeof goBack>>
+}
 
 export const useExpoRouterActions = (opts?: { prefix?: string }): ExpoRouterActions => {
   const router = useRouter()
