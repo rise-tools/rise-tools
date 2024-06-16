@@ -3,11 +3,11 @@ import { useToastController } from '@tamagui/toast'
 
 import type { toast } from './server'
 
-type TamaguiToastActions = {
+type ToastActions = {
   toast: ActionDefinition<ReturnType<typeof toast>>
 }
 
-export const useToastActions = (): TamaguiToastActions => {
+export const useToastActions = (): ToastActions => {
   const toast = useToastController()
 
   return {
