@@ -1,7 +1,7 @@
 import type { ActionDefinition } from '@rise-tools/react'
 import { useToastController } from '@tamagui/toast'
 
-import type { toast } from './actions'
+import type { toast } from './server'
 
 type TamaguiToastActions = {
   toast: ActionDefinition<ReturnType<typeof toast>>
@@ -12,9 +12,11 @@ export const useToastActions = (): TamaguiToastActions => {
 
   return {
     toast: {
-      action: ({ title, message }) => {
-        toast.show(title, { message })
+      action: ({ title, ...options }) => {
+        toast.show(title, options)
       },
     },
   }
 }
+
+export * from './provider'

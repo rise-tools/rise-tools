@@ -28,11 +28,11 @@
     "url": "https://github.com/rise-tools/rise-tools/issues"
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
-  "devDependencies": {
-    "@rise-tools/react": "0.2.0",
-    "@tamagui/toast": "^1.100.3"
+  "dependencies": {
+    "@rise-tools/react": "0.2.0"
   },
   "peerDependencies": {
-    "@tamagui/toast": "^1.100.3"
+    "@tamagui/toast": "*",
+    "react-native-safe-area-context": "*"
   }
 }
