@@ -31,10 +31,7 @@
   "dependencies": {
     "@rise-tools/react": "0.2.0"
   },
-  "devDependencies": {
-    "expo-router": "~3.5.16"
-  },
   "peerDependencies": {
-    "expo-router": "^3"
+    "expo-router": "~3.5.16"
   }
 }
