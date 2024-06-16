@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
 
-import { action, ActionModelState, ModelSource, ref, response, Rise } from '..'
+import { action, ModelSource, ref, response, Rise } from '..'
 import { BUILT_IN_COMPONENTS } from './rise.test'
 
 it('should render a component', () => {
