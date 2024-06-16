@@ -9,7 +9,7 @@ import { themes as prismThemes } from 'prism-react-renderer'
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Rise Tools',
-  tagline: 'Any UI, Remotely Defined',
+  tagline: 'Server Defined Rendering for React Native',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -68,9 +68,9 @@ const config = {
         items: [
           {
             type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
+            sidebarId: 'mainSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Docs',
           },
           { to: '/blog', label: 'Blog', position: 'left' },
           {
@@ -87,8 +87,12 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
-                to: '/docs/intro',
+                label: 'Get Started',
+                to: '/docs/getting-started',
+              },
+              {
+                label: 'Guides',
+                to: '/docs/category/guides',
               },
             ],
           },
@@ -96,12 +100,16 @@ const config = {
             title: 'Community',
             items: [
               {
+                label: 'GitHub Discussions',
+                href: 'https://github.com/rise-tools/rise-tools/discussions',
+              },
+              {
                 label: 'Discord',
                 href: 'https://discord.gg/vK3tBdA2nZ',
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/rise_tools',
+                href: 'https://twitter.com/risetools_',
               },
             ],
           },

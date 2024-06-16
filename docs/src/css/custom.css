@@ -2,22 +2,22 @@
  * Use color editor in https://docusaurus.io/docs/styling-layout
  */
 
-:root {
-  --ifm-color-primary: #9f0ca1;
-  --ifm-color-primary-dark: #8f0b91;
-  --ifm-color-primary-darker: #870a89;
-  --ifm-color-primary-darkest: #6f0871;
-  --ifm-color-primary-light: #af0db1;
-  --ifm-color-primary-lighter: #b70eb9;
-  --ifm-color-primary-lightest: #cf10d1;
+ :root {
+  --ifm-color-primary: #a81100;
+  --ifm-color-primary-dark: #970f00;
+  --ifm-color-primary-darker: #8f0e00;
+  --ifm-color-primary-darkest: #760c00;
+  --ifm-color-primary-light: #b91300;
+  --ifm-color-primary-lighter: #c11400;
+  --ifm-color-primary-lightest: #da1600;
 }
 
 [data-theme='dark'] {
-  --ifm-color-primary: #fc4dff;
-  --ifm-color-primary-dark: #fb2cff;
-  --ifm-color-primary-darker: #fb1bff;
-  --ifm-color-primary-darkest: #e400e8;
-  --ifm-color-primary-light: #fd6eff;
-  --ifm-color-primary-lighter: #fd7fff;
-  --ifm-color-primary-lightest: #feb1ff;
+  --ifm-color-primary: #ff5e4d;
+  --ifm-color-primary-dark: #ff402c;
+  --ifm-color-primary-darker: #ff311b;
+  --ifm-color-primary-darkest: #e81600;
+  --ifm-color-primary-light: #ff7c6e;
+  --ifm-color-primary-lighter: #ff8b7f;
+  --ifm-color-primary-lightest: #ffb8b1;
 }

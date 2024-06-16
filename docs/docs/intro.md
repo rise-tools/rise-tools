@@ -4,6 +4,15 @@ sidebar_position: 1
 
 # Intro to Rise Tools
 
-- Core
-- Data Source
-- Component Library
+- Get Started CTA
+
+- Why SDR?
+    - Components
+        - Models
+        - Actions and Events
+
+- Playground App
+
+- Server Spec
+
+- JS Server
