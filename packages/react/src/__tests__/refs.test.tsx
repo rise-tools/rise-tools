@@ -148,7 +148,7 @@ it('should send an action with ref as a path when trigerred by referenced compon
               component: 'View',
               props: {
                 ['data-testid']: 'button-referenced',
-                onClick: action('go-back-referenced'),
+                onClick: action('test', { path: 'referenced' }),
               },
             }
           },
@@ -167,7 +167,7 @@ it('should send an action with ref as a path when trigerred by referenced compon
                 component: 'View',
                 props: {
                   ['data-testid']: 'button-local',
-                  onClick: action('go-back-local'),
+                  onClick: action('test', { path: 'local' }),
                 },
               },
               ref('secondStore'),
@@ -179,20 +179,24 @@ it('should send an action with ref as a path when trigerred by referenced compon
     sendEvent: jest.fn().mockResolvedValue(response(null)),
   }
 
-  const onAction = jest.fn()
+  const actionHandler = jest.fn()
   const component = render(
     <Rise
       components={BUILT_IN_COMPONENTS}
       path="mainStore"
       modelSource={modelSource}
-      onAction={onAction}
+      actions={{
+        test: {
+          action: actionHandler,
+        },
+      }}
     />
   )
   fireEvent.click(component.getByTestId('button-local'))
-  expect((onAction.mock.lastCall[0] as ActionModelState).name).toEqual('go-back-local')
+  expect(actionHandler).toHaveBeenLastCalledWith({ path: 'local' })
 
   fireEvent.click(component.getByTestId('button-referenced'))
-  expect((onAction.mock.lastCall[0] as ActionModelState).name).toEqual('go-back-referenced')
+  expect(actionHandler).toHaveBeenLastCalledWith({ path: 'referenced' })
 })
 
 it('should subscribe to the root store', () => {
@@ -299,20 +303,26 @@ it('should dispatch all actions associated with an event', () => {
           component: 'View',
           props: {
             ['data-testid']: 'button',
-            onClick: [action('go-back'), action('go-back')],
+            onClick: [action('navigate', { path: 'foo' }), action('navigate', { path: 'bar' })],
           },
         }
       },
     }),
     sendEvent: jest.fn().mockReturnValue(response(null)),
   }
-  const onAction = jest.fn()
+  const actionHandler = jest.fn()
   const component = render(
-    <Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} onAction={onAction} />
+    <Rise
+      components={BUILT_IN_COMPONENTS}
+      modelSource={modelSource}
+      actions={{
+        navigate: { action: actionHandler },
+      }}
+    />
   )
   fireEvent.click(component.getByTestId('button'))
-  expect(onAction).toHaveBeenCalledTimes(2)
-  expect(onAction).toHaveBeenLastCalledWith(action('go-back'))
+  expect(actionHandler).toHaveBeenCalledTimes(2)
+  expect(actionHandler).toHaveBeenLastCalledWith({ path: 'bar' })
 })
 
 it.skip('should remove subscription to refs no longer in use', () => {

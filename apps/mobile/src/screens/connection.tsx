@@ -24,8 +24,10 @@ const components = {
 }
 
 export function ConnectionScreen({ connection, path }: { connection: Connection; path?: string }) {
-  const expoRouterActions = useExpoRouterActions({ prefix: `/connection/${connection.id}` })
-  const toastActions = useToastActions()
+  const actions = {
+    ...useExpoRouterActions({ prefix: `/connection/${connection.id}` }),
+    ...useToastActions(),
+  }
 
   const modelSource = useModelSource(connection.id, connection.host)
   if (!modelSource) {
@@ -40,7 +42,7 @@ export function ConnectionScreen({ connection, path }: { connection: Connection;
         components={components}
         modelSource={modelSource}
         path={resolvedPath}
-        actions={{ ...expoRouterActions, ...toastActions }}
+        actions={actions}
       />
     </DataBoundary>
   )

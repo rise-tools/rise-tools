@@ -9,10 +9,11 @@ npm install @rise-tools/kit
 ```
 
 ```tsx
-import haptics from '@rise-tools/kit-haptics'
-import expoRouter from '@rise-tools/kit-expo-router'
 import tamagui from '@rise-tools/kit-tamagui'
-import toast from '@rise-tools/kit-toast'
+
+import useHapticsActions from '@rise-tools/kit-haptics'
+import useExpoRouterActions from '@rise-tools/kit-expo-router'
+import useToastActions from '@rise-tools/kit-toast'
 
 <Rise
     components={{
@@ -20,9 +21,9 @@ import toast from '@rise-tools/kit-toast'
         ...expoRouter.components,
     }}
     actions={{
-        ...haptics.actions,
-        ...expoRouter.actions,
-        ...toast.actions,
+        ....useExpoRouterActions(),
+        ...useToastActions(),
+        ...useHapticsActions(),
     }}
 />
 ```
