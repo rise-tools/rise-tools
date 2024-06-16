@@ -21,7 +21,7 @@ import useToastActions from '@rise-tools/kit-toast'
         ...expoRouter.components,
     }}
     actions={{
-        ....useExpoRouterActions(),
+        ...useExpoRouterActions(),
         ...useToastActions(),
         ...useHapticsActions(),
     }}
