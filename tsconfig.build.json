@@ -20,6 +20,9 @@
     },
     {
       "path": "./packages/server"
+    },
+    {
+      "path": "./packages/kit-expo-router"
     }
   ]
 }

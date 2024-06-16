@@ -75,10 +75,7 @@ it('should set state with default payload', async () => {
     }),
     sendEvent: jest.fn(),
   }
-  const onAction = jest.fn()
-  const component = render(
-    <Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} onAction={onAction} />
-  )
+  const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   await act(async () => {
     fireEvent.click(component.getByTestId('button'))
   })
@@ -92,7 +89,6 @@ it('should set state with default payload', async () => {
       />
     </DocumentFragment>
   `)
-  expect(onAction).not.toBeCalled()
 })
 
 it('should set state with custom value', async () => {

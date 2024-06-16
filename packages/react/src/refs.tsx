@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import {
+  ActionDefinition,
   ActionModelState,
   BaseRise,
   ComponentRegistry,
@@ -172,13 +173,13 @@ export function Rise({
   components,
   modelSource,
   path = [''],
-  onAction,
+  actions = {},
   onEvent = modelSource.sendEvent,
 }: {
   path?: string | Path
   modelSource: ModelSource
   components: ComponentRegistry
-  onAction?: (action: ActionModelState) => void
+  actions?: Record<string, ActionDefinition<any>>
   onEvent?: (event: HandlerEvent) => Promise<ResponseModelState>
 }) {
   if (typeof path === 'string') {
@@ -202,14 +203,33 @@ export function Rise({
   /* state */
   const [localState, applyStateUpdateAction] = useLocalState()
 
+  /* actions */
+  const handleAction = useCallback(
+    (action: ActionModelState) => {
+      const actionDefinition = actions[action.name]
+      if (!actionDefinition) {
+        throw new Error(`Unknown action: ${action.name}`)
+      }
+      // eslint-disable-next-line
+      let { $, name, ...payload } = action
+      if (actionDefinition.validate) {
+        payload = actionDefinition.validate(action.payload)
+      }
+      actionDefinition.action(payload)
+    },
+    [actions]
+  )
+
   const handleEvent = useCallback(
     async (event: RiseEvent) => {
-      const actions = isEventModelState(event.dataState) ? event.dataState.actions : event.dataState
-      for (const action of actions || []) {
+      const eventActions = isEventModelState(event.dataState)
+        ? event.dataState.actions
+        : event.dataState
+      for (const action of eventActions || []) {
         if (isStateUpdateAction(action)) {
           applyStateUpdateAction(action, event.payload)
         } else {
-          onAction?.(action)
+          handleAction(action)
         }
       }
       if (!isHandlerEvent(event)) {
@@ -235,7 +255,7 @@ export function Rise({
           if (isStateUpdateAction(action)) {
             applyStateUpdateAction(action, event.payload)
           } else {
-            onAction?.(action)
+            handleAction(action)
           }
         }
       }
@@ -244,7 +264,7 @@ export function Rise({
       }
       return res.payload
     },
-    [onAction, onEvent]
+    [handleAction, onEvent]
   )
 
   return (
