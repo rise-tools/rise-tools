@@ -8,11 +8,30 @@
   text-align: center;
   position: relative;
   overflow: hidden;
+  height: 390px;
+  background-color: #190142;
+  background-image: url(/img/web-banner.jpg);
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-@media screen and (max-width: 996px) {
+.heroCta {
+  background: rgb(36, 37, 38);
+  padding: 20px;
+  justify-content: center;
+  display: flex;
+  gap: 20px;
+}
+@media screen and (max-width: 1120px) {
   .heroBanner {
-    padding: 2rem;
+    background-size: 1605px 190px;
+    height: 190px;
+  }
+}
+@media screen and (max-width: 570px) {
+  .heroBanner {
+    background-size: 1340px 150px;
+    height: 150px;
   }
 }
 
@@ -20,4 +39,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+
+.main {
+  background-color: #150235;
 }
