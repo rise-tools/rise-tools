@@ -25,7 +25,7 @@ const components = {
 
 export function ConnectionScreen({ connection, path }: { connection: Connection; path?: string }) {
   const actions = {
-    ...useExpoRouterActions({ prefix: `/connection/${connection.id}` }),
+    ...useExpoRouterActions({ basePath: `/connection/${connection.id}` }),
     ...useToastActions(),
   }
 
