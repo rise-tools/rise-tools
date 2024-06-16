@@ -29,6 +29,9 @@
     },
     {
       "path": "../../packages/tamagui"
+    },
+    {
+      "path": "../../packages/kit-tamagui-toast"
     }
   ]
 }

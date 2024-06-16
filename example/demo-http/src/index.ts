@@ -1,4 +1,4 @@
-import { createHTTPModelSource } from '@rise-tools/server'
+import { createHTTPModelSource } from '@rise-tools/http-server'
 import Fastify from 'fastify'
 
 import { models } from './ui'

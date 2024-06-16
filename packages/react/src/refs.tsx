@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import {
+  ActionDefinition,
   ActionModelState,
   BaseRise,
   ComponentRegistry,
@@ -25,13 +26,6 @@ export type Store<T = ModelState> = Stream<T>
 export type ModelSource = {
   get: (key: string) => Store
   sendEvent: (event: HandlerEvent) => Promise<ResponseModelState>
-}
-
-type ActionPayload<T> = T extends ActionModelState<any, infer S> ? S : never
-
-export type ActionDefinition<T extends ActionModelState<any, any>, K = ActionPayload<T>> = {
-  action: (payload: K) => void
-  validate?: (args: K) => K
 }
 
 /** Refs */
