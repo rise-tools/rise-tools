@@ -10,6 +10,7 @@
       "@rise-tools/tamagui": ["./packages/tamagui/src"],
       "@rise-tools/tamagui/server": ["./packages/tamagui/src/server"],
       "@rise-tools/kit": ["./packages/kit/src"],
+      "@rise-tools/kit-expo-router": ["./packages/kit-expo-router/src"],
       "@rise-tools/kit/server": ["./packages/react/src/server"]
     },
     "composite": true,

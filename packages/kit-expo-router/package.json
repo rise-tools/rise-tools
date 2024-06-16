@@ -1,0 +1,35 @@
+{
+  "name": "@rise-tools/kit-expo-router",
+  "version": "0.2.0",
+  "license": "Apache-2.0",
+  "description": "",
+  "main": "./lib/index.js",
+  "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
+    "directory": "packages/kit-expo-router"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "bugs": {
+    "url": "https://github.com/rise-tools/rise-tools/issues"
+  },
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
+  "devDependencies": {
+    "@rise-tools/react": "0.2.0",
+    "expo-router": "~3.5.16"
+  },
+  "peerDependencies": {
+    "expo-router": "^3"
+  }
+}

@@ -19,6 +19,9 @@
       "path": "../../packages/kit"
     },
     {
+      "path": "../../packages/kit-expo-router"
+    },
+    {
       "path": "../../packages/http-client"
     },
     {
