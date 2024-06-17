@@ -6,7 +6,7 @@ npm install @rise-tools/kit-haptics expo-haptics
 
 ## Actions
 
-- `haptics`
+- `haptics()`
 - `haptics('impact', type)`
 - `haptics('notification', type)`
-- `haptics('selection', type)`
+- `haptics('selection')`
