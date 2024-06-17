@@ -10,11 +10,11 @@ npm install @rise-tools/kit-haptics expo-haptics
 
 Shorthand for `haptics('impact')`
 
-- `haptics('impact', type?: 'heavy' | 'light' | 'medium' | 'rigid' | 'soft' = 'medium')`
+- `haptics('impact', type: 'heavy' | 'light' | 'medium' | 'rigid' | 'soft' = 'medium')`
 
 Use this action to provide haptic feedback for physical impact. Type is optional and defaults to `medium`.
 
-- `haptics('notification', type?: 'success' | 'failure' | 'error' = 'success')`
+- `haptics('notification', type: 'success' | 'failure' | 'error' = 'success')`
 
 Use this action to provide haptic feedback for success, failure, and warning. Type is optional and defaults to `success`.
 
