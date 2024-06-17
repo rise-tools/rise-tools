@@ -1,8 +1,6 @@
 import { action, ActionModelState, ActionsDefinition } from '@rise-tools/react'
 
-export type ToastActions = ActionsDefinition<{
-  '@rise-tools/kit-tamagui-toast/toast': ToastAction
-}>
+export type ToastActions = ActionsDefinition<[ToastAction]>
 
 type ToastAction = ActionModelState<
   '@rise-tools/kit-tamagui-toast/toast',
