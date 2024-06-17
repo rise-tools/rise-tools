@@ -179,7 +179,7 @@ export function Rise({
   path?: string | Path
   modelSource: ModelSource
   components: ComponentRegistry
-  actions?: ActionsDefinition<any>
+  actions?: ActionsDefinition<any[]>
   onEvent?: (event: HandlerEvent) => Promise<ResponseModelState>
 }) {
   if (typeof path === 'string') {
