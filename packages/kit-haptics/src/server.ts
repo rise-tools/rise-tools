@@ -2,13 +2,10 @@ import { action, ActionModelState } from '@rise-tools/react'
 import type { ImpactFeedbackStyle, NotificationFeedbackType } from 'expo-haptics'
 
 export type SelectionAction = ActionModelState<'haptics/selection'>
-export type ImpactAction = ActionModelState<
-  'haptics/impact',
-  { style: ImpactFeedbackStyle | undefined }
->
+export type ImpactAction = ActionModelState<'haptics/impact', { style?: ImpactFeedbackStyle }>
 export type NotificationAction = ActionModelState<
   'haptics/notification',
-  { type: NotificationFeedbackType | undefined }
+  { type?: NotificationFeedbackType }
 >
 
 export function haptics(): ImpactAction
@@ -25,9 +22,9 @@ export function haptics(
 ) {
   switch (type) {
     case 'impact':
-      return action('haptics/impact', { style })
+      return action('haptics/impact', style ? { style } : {})
     case 'notification':
-      return action('haptics/notification', { type: style })
+      return action('haptics/notification', style ? { type: style } : {})
     case 'selection':
       return action('haptics/selection')
     default:

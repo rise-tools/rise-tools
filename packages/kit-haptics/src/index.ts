@@ -5,17 +5,16 @@ import z from 'zod'
 import type { ImpactAction, NotificationAction, SelectionAction } from './server'
 
 const ImpactActionPayload = z.object({
-  style: z.nativeEnum(Haptics.ImpactFeedbackStyle).or(z.undefined()),
+  style: z.nativeEnum(Haptics.ImpactFeedbackStyle).optional(),
 })
 
 const NotificationActionPayload = z.object({
-  type: z.nativeEnum(Haptics.NotificationFeedbackType).or(z.undefined()),
+  type: z.nativeEnum(Haptics.NotificationFeedbackType).optional(),
 })
 
 type HapticsActions = ActionsDefinition<ImpactAction | NotificationAction | SelectionAction>
 
 export const useHapticsActions = (): HapticsActions => {
-  // @ts-ignore https://github.com/colinhacks/zod/issues/635
   return {
     'haptics/impact': {
       action: ({ style }) => {
