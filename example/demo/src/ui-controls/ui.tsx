@@ -241,7 +241,7 @@ function HapticsExample() {
         </YStack>
       </YStack>
       <YStack>
-        <H4>Notification</H4>
+        <H4>Selection</H4>
         <YStack gap="$2">
           <Button onPress={haptics('selection')}>
             <Text>Default</Text>
