@@ -10,15 +10,18 @@ import {
   StateModelState,
 } from './rise'
 
-export type UI = ReactElement<ServerComponent['props']> | ServerComponent
+export type UI = ReactElement<Props> | ServerComponent
 
 type ServerComponent = ComponentModelState<ServerEventModelState>
+type Props = ServerComponent['props'] & {
+  children?: ServerComponent['children']
+}
 
 export const jsxs = jsx
 
 export function jsx(
   componentFactory: (props: any) => UI,
-  passedProps: ServerComponent['props'] = {},
+  passedProps: Props = {},
   key?: string
 ): ServerComponent {
   const el = componentFactory(passedProps)
