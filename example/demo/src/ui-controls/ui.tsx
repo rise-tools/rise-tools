@@ -195,6 +195,12 @@ function HapticsExample() {
       <Button onPress={haptics()}>
         <Text>Impact</Text>
       </Button>
+      <Button onPress={haptics('notification')}>
+        <Text>Notification</Text>
+      </Button>
+      <Button onPress={haptics('selection')}>
+        <Text>Selection</Text>
+      </Button>
     </YStack>
   )
 }
