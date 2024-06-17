@@ -2,6 +2,7 @@ import React, { useCallback, useContext } from 'react'
 
 import { LocalState, useLocalStateValues } from './state'
 import { useStream } from './streams'
+import { UnionToIntersection } from './utils'
 
 /** Components */
 type ComponentIdentifier = string
@@ -57,8 +58,8 @@ export type ActionModelState<
   name: T
 } & K
 export type ActionModelStatePayload<T> = Omit<T, 'name' | '$'>
-export type ActionsDefinition<ActionsMap extends object> =
-  ActionsMap extends ActionModelState<infer Name, infer Action>
+export type ActionsDefinition<ActionDefinition> = UnionToIntersection<
+  ActionDefinition extends ActionModelState<infer Name, infer Action>
     ? {
         [key in Name]: {
           action: (payload: ActionModelStatePayload<Action>) => void
@@ -66,7 +67,7 @@ export type ActionsDefinition<ActionsMap extends object> =
         }
       }
     : never
-
+>
 export type ResponseModelState = {
   $: 'response'
   payload: JSONValue

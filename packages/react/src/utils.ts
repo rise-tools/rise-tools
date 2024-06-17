@@ -24,3 +24,10 @@ export function lookupValue(value: unknown, ref: (string | number)[]) {
 }
 
 export type MaybeAsync<T> = Promise<T> | T
+
+// Utility type to convert a union to an intersection
+export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I
+) => void
+  ? I
+  : never
