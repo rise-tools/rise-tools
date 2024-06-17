@@ -8,5 +8,9 @@ To install Expo Router, follow [this guide](https://docs.expo.dev/router/install
 
 ## Actions
 
-- `navigate`
+- `navigate(path: string)`
 - `goBack`
+
+## Components
+
+- `StackScreen`
