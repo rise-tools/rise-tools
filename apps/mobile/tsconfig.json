@@ -31,7 +31,10 @@
       "path": "../../packages/tamagui"
     },
     {
+      "path": "../../packages/kit-haptics"
+    },
+    {
       "path": "../../packages/kit-tamagui-toast"
-    }
+    },
   ]
 }

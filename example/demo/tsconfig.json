@@ -11,6 +11,8 @@
   }, {
     "path": "../../packages/kit-expo-router"
   }, {
+    "path": "../../packages/kit-haptics"
+  }, {
     "path": "../../packages/server"
   }, {
     "path": "../../packages/kit"

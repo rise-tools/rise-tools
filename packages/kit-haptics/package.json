@@ -18,7 +18,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rise-tools/rise-tools.git",
-    "directory": "packages/kit-expo-router"
+    "directory": "packages/kit-haptics"
   },
   "publishConfig": {
     "access": "public"
@@ -30,7 +30,7 @@
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "dependencies": {
     "@rise-tools/react": "0.2.0",
-    "zod": "^3.23.8"
+    "zod": "^3.22.4"
   },
   "peerDependencies": {
     "expo-haptics": "~13.0.1"

@@ -1,5 +1,6 @@
 import { RiseComponents } from '@rise-tools/kit'
 import { useExpoRouterActions } from '@rise-tools/kit-expo-router'
+import { useHapticsActions } from '@rise-tools/kit-haptics'
 import { useToastActions } from '@rise-tools/kit-tamagui-toast'
 import { Rise } from '@rise-tools/react'
 import { TamaguiComponents } from '@rise-tools/tamagui'
@@ -27,6 +28,7 @@ export function ConnectionScreen({ connection, path }: { connection: Connection;
   const actions = {
     ...useExpoRouterActions({ basePath: `/connection/${connection.id}` }),
     ...useToastActions(),
+    ...useHapticsActions(),
   }
 
   const modelSource = useModelSource(connection.id, connection.host)

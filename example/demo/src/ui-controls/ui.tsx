@@ -6,6 +6,7 @@ import {
   SwitchField,
 } from '@rise-tools/kit/server'
 import { navigate } from '@rise-tools/kit-expo-router/server'
+import { haptics } from '@rise-tools/kit-haptics/server'
 import { action, event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
 import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@rise-tools/tamagui/server'
 
@@ -18,6 +19,7 @@ export const models = {
   select: SelectExample,
   list: ListExample,
   toast: ShowToastExample,
+  haptics: HapticsExample,
 }
 
 function UI() {
@@ -29,6 +31,7 @@ function UI() {
       <Button onPress={navigate('select')}>Select</Button>
       <Button onPress={navigate('list')}>List</Button>
       <Button onPress={navigate('toast')}>Toast</Button>
+      <Button onPress={navigate('haptics')}>Haptics</Button>
     </YStack>
   )
 }
@@ -181,6 +184,16 @@ function ShowToastExample() {
         onPress={action('toast', { title: 'Hello World!', message: 'This is toast action!' })}
       >
         <Text>Show toast</Text>
+      </Button>
+    </YStack>
+  )
+}
+
+function HapticsExample() {
+  return (
+    <YStack>
+      <Button onPress={haptics()}>
+        <Text>Impact</Text>
       </Button>
     </YStack>
   )
