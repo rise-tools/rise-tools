@@ -165,7 +165,8 @@ export function BaseRise({
 }) {
   const RenderComponent = useCallback(
     function ({ stateNode, path }: { stateNode: ComponentModelState; path: Path }) {
-      const componentDefinition = components[stateNode.component]
+      const componentDefinition =
+        stateNode.component === 'Fragment' ? FragmentDefinition : components[stateNode.component]
       if (!componentDefinition) {
         throw new RenderError(`Unknown component: ${stateNode.component}`)
       }
@@ -303,3 +304,7 @@ export function BaseRise({
 }
 
 export class RenderError extends Error {}
+
+const FragmentDefinition: ComponentDefinition<any> = {
+  component: React.Fragment,
+}

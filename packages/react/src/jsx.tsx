@@ -20,10 +20,17 @@ type Props = ServerComponent['props'] & {
 export const jsxs = jsx
 
 export function jsx(
-  componentFactory: (props: any) => UI,
+  componentFactory: ((props: any) => UI) | undefined,
   { children, ...passedProps }: Props,
   key?: string
 ): ServerComponent {
+  if (typeof componentFactory === 'undefined') {
+    return {
+      $: 'component',
+      component: 'Fragment',
+      children,
+    }
+  }
   const el = componentFactory(passedProps)
   if (isComponentModelState(el)) {
     return el
