@@ -57,8 +57,8 @@ export type ActionModelState<
   name: T
 } & K
 export type ActionModelStatePayload<T> = Omit<T, 'name' | '$'>
-export type ActionsDefinition<Actions extends object> =
-  Actions extends ActionModelState<infer Name, infer Action>
+export type ActionsDefinition<ActionsMap extends object> =
+  ActionsMap extends ActionModelState<infer Name, infer Action>
     ? {
         [key in Name]: {
           action: (payload: ActionModelStatePayload<Action>) => void
