@@ -29,7 +29,8 @@
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "dependencies": {
-    "@rise-tools/react": "0.2.0"
+    "@rise-tools/react": "0.2.0",
+    "zod": "^3.23.8"
   },
   "peerDependencies": {
     "@tamagui/toast": "^1.100.3",

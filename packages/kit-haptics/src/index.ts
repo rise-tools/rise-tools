@@ -1,4 +1,4 @@
-import type { ActionDefinition } from '@rise-tools/react'
+import type { ActionsDefinition } from '@rise-tools/react'
 import * as Haptics from 'expo-haptics'
 import z from 'zod'
 
@@ -12,11 +12,7 @@ const NotificationActionPayload = z.object({
   type: z.nativeEnum(Haptics.NotificationFeedbackType),
 })
 
-type HapticsActions = {
-  'haptics/impact': ActionDefinition<ImpactAction>
-  'haptics/notification': ActionDefinition<NotificationAction>
-  'haptics/selection': ActionDefinition<SelectionAction>
-}
+type HapticsActions = ActionsDefinition<ImpactAction | NotificationAction | SelectionAction>
 
 export const useHapticsActions = (): HapticsActions => {
   return {

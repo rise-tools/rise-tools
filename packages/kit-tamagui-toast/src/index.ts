@@ -1,13 +1,16 @@
-import type { ActionDefinition } from '@rise-tools/react'
+import type { ActionsDefinition } from '@rise-tools/react'
 import { useToastController } from '@tamagui/toast'
+import z from 'zod'
 
-import type { toast } from './server'
+import type { ToastAction } from './server'
 
-type ToastActions = {
-  toast: ActionDefinition<ReturnType<typeof toast>>
-}
+const ToastActionPayload = z.object({
+  title: z.string(),
+  message: z.string().optional(),
+  duration: z.number().optional(),
+})
 
-export const useToastActions = (): ToastActions => {
+export const useToastActions = (): ActionsDefinition<ToastAction> => {
   const toast = useToastController()
 
   return {
@@ -15,6 +18,7 @@ export const useToastActions = (): ToastActions => {
       action: ({ title, ...options }) => {
         toast.show(title, options)
       },
+      validate: (payload) => ToastActionPayload.parse(payload),
     },
   }
 }
