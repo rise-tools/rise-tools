@@ -66,7 +66,7 @@ function Taxi() {
 
 function Survey() {
   return (
-    <XStack backgroundColor="$green10" padding="$4" gap="$4" alignItems={'center'}>
+    <XStack backgroundColor="$green10" padding="$4" gap="$4" alignItems="center">
       <LucideIcon icon="MessageCircleHeart" size="$6" color="white" />
       <YStack justifyContent="flex-start" gap="$2">
         <H3 color="white">Do you like the App?</H3>
