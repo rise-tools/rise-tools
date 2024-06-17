@@ -2,8 +2,6 @@ import type { ActionDefinition } from '@rise-tools/react'
 import * as Haptics from 'expo-haptics'
 import z from 'zod'
 
-import type { ImpactAction, NotificationAction } from './server'
-
 const ImpactActionPayload = z.object({
   style: z.nativeEnum(Haptics.ImpactFeedbackStyle),
 })
@@ -13,8 +11,8 @@ const NotificationActionPayload = z.object({
 })
 
 type HapticsActions = {
-  'haptics/impact': ActionDefinition<ImpactAction>
-  'haptics/notification': ActionDefinition<NotificationAction>
+  'haptics/impact': ActionDefinition<z.infer<typeof ImpactActionPayload>>
+  'haptics/notification': ActionDefinition<z.infer<typeof NotificationActionPayload>>
   'haptics/selection': ActionDefinition<never>
 }
 
