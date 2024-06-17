@@ -10,18 +10,15 @@ import {
   StateModelState,
 } from './rise'
 
-export type UI = ReactElement<Props> | ServerComponent
+export type UI = ReactElement<ServerComponent['props']> | ServerComponent
 
 type ServerComponent = ComponentModelState<ServerEventModelState>
-type Props = ServerComponent['props'] & {
-  children?: ServerComponent['children']
-}
 
 export const jsxs = jsx
 
 export function jsx(
   componentFactory: (props: any) => UI,
-  { children, ...passedProps }: Props,
+  passedProps: ServerComponent['props'] = {},
   key?: string
 ): ServerComponent {
   const el = componentFactory(passedProps)
@@ -31,8 +28,8 @@ export function jsx(
   if (typeof el.type !== 'string') {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
-  const serialisedProps = Object.fromEntries(
-    Object.entries(el.props).map(([key, value]) => {
+  const { children, ...props } = Object.fromEntries(
+    Object.entries(passedProps).map(([key, value]) => {
       if (typeof value === 'function') {
         return [key, event(value)]
       }
@@ -43,7 +40,7 @@ export function jsx(
     $: 'component',
     component: el.type,
     key,
-    props: serialisedProps,
+    props,
     children,
   }
 }

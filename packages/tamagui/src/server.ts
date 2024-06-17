@@ -179,3 +179,5 @@ export const Unspaced = createComponentDefinition<typeof t.Unspaced>('Unspaced')
 export const VisuallyHidden = createComponentDefinition<typeof t.VisuallyHidden>('VisuallyHidden')
 
 export const LinearGradient = createComponentDefinition<typeof TLinearGradient>('LinearGradient')
+
+export const Theme = createComponentDefinition<typeof t.Theme>('Theme')
