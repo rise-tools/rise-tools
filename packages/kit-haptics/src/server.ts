@@ -1,10 +1,19 @@
-import { action, ActionModelState } from '@rise-tools/react'
+import { action, ActionModelState, ActionsDefinition } from '@rise-tools/react'
 import type { ImpactFeedbackStyle, NotificationFeedbackType } from 'expo-haptics'
 
-export type SelectionAction = ActionModelState<'haptics/selection'>
-export type ImpactAction = ActionModelState<'haptics/impact', { style?: ImpactFeedbackStyle }>
-export type NotificationAction = ActionModelState<
-  'haptics/notification',
+export type HapticsActions = ActionsDefinition<{
+  '@rise-tools/kit-haptics/impact': ImpactAction
+  '@rise-tools/kit-haptics/notification': NotificationAction
+  '@rise-tools/kit-haptics/selection': SelectionAction
+}>
+
+type SelectionAction = ActionModelState<'@rise-tools/kit-haptics/selection'>
+type ImpactAction = ActionModelState<
+  '@rise-tools/kit-haptics/impact',
+  { style?: ImpactFeedbackStyle }
+>
+type NotificationAction = ActionModelState<
+  '@rise-tools/kit-haptics/notification',
   { type?: NotificationFeedbackType }
 >
 
@@ -22,11 +31,11 @@ export function haptics(
 ) {
   switch (type) {
     case 'impact':
-      return action('haptics/impact', style ? { style } : {})
+      return action('@rise-tools/kit-haptics/impact', style ? { style } : {})
     case 'notification':
-      return action('haptics/notification', style ? { type: style } : {})
+      return action('@rise-tools/kit-haptics/notification', style ? { type: style } : {})
     case 'selection':
-      return action('haptics/selection')
+      return action('@rise-tools/kit-haptics/selection')
     default:
       throw new Error(`Invalid haptics type: ${type}`)
   }

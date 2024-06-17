@@ -1,8 +1,7 @@
-import type { ActionsDefinition } from '@rise-tools/react'
 import { useToastController } from '@tamagui/toast'
 import z from 'zod'
 
-import type { ToastAction } from './server'
+import { ToastActions } from './server'
 
 const ToastActionPayload = z.object({
   title: z.string(),
@@ -10,11 +9,11 @@ const ToastActionPayload = z.object({
   duration: z.number().optional(),
 })
 
-export const useToastActions = (): ActionsDefinition<ToastAction> => {
+export const useToastActions = (): ToastActions => {
   const toast = useToastController()
 
   return {
-    toast: {
+    '@rise-tools/kit-tamagui-toast/toast': {
       action: ({ title, ...options }) => {
         toast.show(title, options)
       },
