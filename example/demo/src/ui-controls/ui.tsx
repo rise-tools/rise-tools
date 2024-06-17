@@ -7,7 +7,8 @@ import {
 } from '@rise-tools/kit/server'
 import { navigate } from '@rise-tools/kit-expo-router/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
-import { action, event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
+import { toast } from '@rise-tools/kit-tamagui-toast/server'
+import { event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
 import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@rise-tools/tamagui/server'
 
 // eslint-disable-next-line
@@ -180,9 +181,7 @@ function ListExample() {
 function ShowToastExample() {
   return (
     <YStack>
-      <Button
-        onPress={action('toast', { title: 'Hello World!', message: 'This is toast action!' })}
-      >
+      <Button onPress={toast('Hello World!', 'This is toast action!')}>
         <Text>Show toast</Text>
       </Button>
     </YStack>
