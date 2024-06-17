@@ -9,7 +9,16 @@ import { navigate } from '@rise-tools/kit-expo-router/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
 import { event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
-import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@rise-tools/tamagui/server'
+import {
+  Button,
+  Form,
+  H4,
+  Input,
+  Paragraph,
+  ScrollView,
+  Text,
+  YStack,
+} from '@rise-tools/tamagui/server'
 
 // eslint-disable-next-line
 export const models = {
@@ -190,16 +199,55 @@ function ShowToastExample() {
 
 function HapticsExample() {
   return (
-    <YStack>
-      <Button onPress={haptics()}>
-        <Text>Impact</Text>
-      </Button>
-      <Button onPress={haptics('notification')}>
-        <Text>Notification</Text>
-      </Button>
-      <Button onPress={haptics('selection')}>
-        <Text>Selection</Text>
-      </Button>
-    </YStack>
+    <ScrollView padding="$4" contentContainerStyle={{ gap: '$8' }}>
+      <YStack>
+        <H4>Impact</H4>
+        <YStack gap="$2">
+          <Button onPress={haptics()}>
+            <Text>Default</Text>
+          </Button>
+          <Button onPress={haptics('impact', 'light')}>
+            <Text>Light</Text>
+          </Button>
+          <Button onPress={haptics('impact', 'medium')}>
+            <Text>Medium</Text>
+          </Button>
+          <Button onPress={haptics('impact', 'heavy')}>
+            <Text>Heavy</Text>
+          </Button>
+          <Button onPress={haptics('impact', 'rigid')}>
+            <Text>Rigid</Text>
+          </Button>
+          <Button onPress={haptics('impact', 'soft')}>
+            <Text>Soft</Text>
+          </Button>
+        </YStack>
+      </YStack>
+      <YStack>
+        <H4>Notification</H4>
+        <YStack gap="$2">
+          <Button onPress={haptics('notification')}>
+            <Text>Default</Text>
+          </Button>
+          <Button onPress={haptics('notification', 'success')}>
+            <Text>Success</Text>
+          </Button>
+          <Button onPress={haptics('notification', 'error')}>
+            <Text>Error</Text>
+          </Button>
+          <Button onPress={haptics('notification', 'warning')}>
+            <Text>Warning</Text>
+          </Button>
+        </YStack>
+      </YStack>
+      <YStack>
+        <H4>Notification</H4>
+        <YStack gap="$2">
+          <Button onPress={haptics('selection')}>
+            <Text>Default</Text>
+          </Button>
+        </YStack>
+      </YStack>
+    </ScrollView>
   )
 }
