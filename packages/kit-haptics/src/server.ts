@@ -1,11 +1,11 @@
 import { action, ActionModelState } from '@rise-tools/react'
 import type { ImpactFeedbackStyle, NotificationFeedbackType } from 'expo-haptics'
 
-type SelectionAction = ActionModelState<'haptics/selection'>
-type ImpactAction = ActionModelState<'haptics/impact', { style: `${ImpactFeedbackStyle}` }>
-type NotificationAction = ActionModelState<
+export type SelectionAction = ActionModelState<'haptics/selection'>
+export type ImpactAction = ActionModelState<'haptics/impact', { style: ImpactFeedbackStyle }>
+export type NotificationAction = ActionModelState<
   'haptics/notification',
-  { type: `${NotificationFeedbackType}` }
+  { type: NotificationFeedbackType }
 >
 
 export function haptics(): ImpactAction
