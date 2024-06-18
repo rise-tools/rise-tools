@@ -8,7 +8,7 @@ import {
 import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import { event, eventPayload, Fragment, response, setStateAction, state } from '@rise-tools/react'
+import { event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
 import {
   Button,
   Form,
@@ -244,7 +244,7 @@ function HapticsExample() {
         </YStack>
       </YStack>
       <YStack>
-        <H4>Notification</H4>
+        <H4>Selection</H4>
         <YStack gap="$2">
           <Button onPress={haptics('selection')}>
             <Text>Default</Text>
