@@ -88,5 +88,5 @@ android/keystores/debug.keystore
 .dev.vars
 .wrangler/
 
-# Eric Environment
+# Lefthook
 lefthook.yml
