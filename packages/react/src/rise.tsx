@@ -56,11 +56,18 @@ export type ActionModelState<
   $: 'action'
   name: T
 } & K
-export type ActionModelStatePayload<T> = Omit<T, 'name' | '$'>
-export type ActionDefinition<T extends ActionModelState<any, any>> = {
-  action: (payload: ActionModelStatePayload<T>) => void
-  validate?: (args: unknown) => ActionModelStatePayload<T>
-}
+type ActionPayload<T> = Omit<T, '$' | 'name'>
+export type ActionsDefinition<Actions extends Array<ActionModelState>> =
+  Actions extends Array<infer Action>
+    ? Action extends ActionModelState<infer ActionName>
+      ? {
+          [Key in ActionName]: {
+            action: (payload: ActionPayload<Action>) => void
+            validate?: (args: unknown) => ActionPayload<Action>
+          }
+        }
+      : never
+    : never
 export type ResponseModelState = {
   $: 'response'
   payload: JSONValue

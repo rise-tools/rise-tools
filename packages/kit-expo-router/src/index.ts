@@ -1,23 +1,23 @@
-import type { ActionDefinition } from '@rise-tools/react'
 import { useRouter } from 'expo-router'
+import z from 'zod'
 
-import type { goBack, navigate } from './server'
+import type { ExpoRouterActions } from './server'
 
-type ExpoRouterActions = {
-  navigate: ActionDefinition<ReturnType<typeof navigate>>
-  goBack: ActionDefinition<ReturnType<typeof goBack>>
-}
+const NavigateActionPayload = z.object({
+  path: z.string(),
+})
 
 export const useExpoRouterActions = (opts?: { basePath?: string }): ExpoRouterActions => {
   const router = useRouter()
 
   return {
-    navigate: {
+    '@rise-tools/kit-expo-router/navigate': {
       action: ({ path }) => {
         router.push([opts?.basePath || '', path].join('/'))
       },
+      validate: (payload) => NavigateActionPayload.parse(payload),
     },
-    goBack: {
+    '@rise-tools/kit-expo-router/goBack': {
       action: () => {
         router.back()
       },

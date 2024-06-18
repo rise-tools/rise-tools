@@ -1,8 +1,8 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
 import {
-  ActionDefinition,
   ActionModelState,
+  ActionsDefinition,
   BaseRise,
   ComponentRegistry,
   HandlerEvent,
@@ -179,7 +179,7 @@ export function Rise({
   path?: string | Path
   modelSource: ModelSource
   components: ComponentRegistry
-  actions?: Record<string, ActionDefinition<any>>
+  actions?: ActionsDefinition<any[]>
   onEvent?: (event: HandlerEvent) => Promise<ResponseModelState>
 }) {
   if (typeof path === 'string') {
@@ -213,9 +213,14 @@ export function Rise({
       // eslint-disable-next-line
       let { $, name, ...payload } = action
       if (actionDefinition.validate) {
-        payload = actionDefinition.validate(action.payload)
+        try {
+          actionDefinition.action(actionDefinition.validate(payload))
+        } catch (e) {
+          console.error(`Invalid payload for action "${action.name}":`, e)
+        }
+      } else {
+        actionDefinition.action(payload)
       }
-      actionDefinition.action(payload)
     },
     [actions]
   )

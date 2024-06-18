@@ -23,6 +23,12 @@
     },
     {
       "path": "./packages/kit-expo-router"
+    },
+    {
+      "path": "./packages/kit-tamagui-toast"
+    },
+    {
+      "path": "./packages/kit-haptics"
     }
   ]
 }

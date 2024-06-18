@@ -11,6 +11,10 @@
   }, {
     "path": "../../packages/kit-expo-router"
   }, {
+    "path": "../../packages/kit-haptics"
+  }, {
+    "path": "../../packages/kit-tamagui-toast"
+  }, {
     "path": "../../packages/server"
   }, {
     "path": "../../packages/kit"

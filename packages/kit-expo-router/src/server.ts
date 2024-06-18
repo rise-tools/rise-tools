@@ -1,4 +1,8 @@
-import { action } from '@rise-tools/react'
+import { action, ActionsDefinition } from '@rise-tools/react'
 
-export const navigate = (path: string) => action('navigate', { path })
-export const goBack = () => action('goBack')
+export type ExpoRouterActions = ActionsDefinition<
+  [ReturnType<typeof navigate>, ReturnType<typeof goBack>]
+>
+
+export const navigate = (path: string) => action('@rise-tools/kit-expo-router/navigate', { path })
+export const goBack = () => action('@rise-tools/kit-expo-router/goBack')

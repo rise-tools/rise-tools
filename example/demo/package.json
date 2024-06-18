@@ -20,6 +20,8 @@
   "dependencies": {
     "@rise-tools/tamagui": "0.2.0",
     "@rise-tools/kit": "0.2.0",
+    "@rise-tools/kit-haptics": "0.2.0",
+    "@rise-tools/kit-tamagui-toast": "0.2.0",
     "@rise-tools/server": "0.2.0",
     "@rise-tools/kit-expo-router": "0.2.0"
   },

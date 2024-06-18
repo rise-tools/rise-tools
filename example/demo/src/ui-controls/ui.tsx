@@ -6,8 +6,19 @@ import {
   SwitchField,
 } from '@rise-tools/kit/server'
 import { navigate } from '@rise-tools/kit-expo-router/server'
-import { action, event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
-import { Button, Form, H4, Input, Paragraph, Text, YStack } from '@rise-tools/tamagui/server'
+import { haptics } from '@rise-tools/kit-haptics/server'
+import { toast } from '@rise-tools/kit-tamagui-toast/server'
+import { event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
+import {
+  Button,
+  Form,
+  H4,
+  Input,
+  Paragraph,
+  ScrollView,
+  Text,
+  YStack,
+} from '@rise-tools/tamagui/server'
 
 // eslint-disable-next-line
 export const models = {
@@ -18,6 +29,7 @@ export const models = {
   select: SelectExample,
   list: ListExample,
   toast: ShowToastExample,
+  haptics: HapticsExample,
 }
 
 function UI() {
@@ -29,6 +41,7 @@ function UI() {
       <Button onPress={navigate('select')}>Select</Button>
       <Button onPress={navigate('list')}>List</Button>
       <Button onPress={navigate('toast')}>Toast</Button>
+      <Button onPress={navigate('haptics')}>Haptics</Button>
     </YStack>
   )
 }
@@ -177,11 +190,64 @@ function ListExample() {
 function ShowToastExample() {
   return (
     <YStack>
-      <Button
-        onPress={action('toast', { title: 'Hello World!', message: 'This is toast action!' })}
-      >
+      <Button onPress={toast('Hello World!', 'This is toast action!')}>
         <Text>Show toast</Text>
       </Button>
     </YStack>
+  )
+}
+
+function HapticsExample() {
+  return (
+    <ScrollView padding="$4" contentContainerStyle={{ gap: '$8' }}>
+      <YStack>
+        <H4>Impact</H4>
+        <YStack gap="$2">
+          <Button onPress={haptics()}>
+            <Text>Default</Text>
+          </Button>
+          <Button onPress={haptics('impact', 'light')}>
+            <Text>Light</Text>
+          </Button>
+          <Button onPress={haptics('impact', 'medium')}>
+            <Text>Medium</Text>
+          </Button>
+          <Button onPress={haptics('impact', 'heavy')}>
+            <Text>Heavy</Text>
+          </Button>
+          <Button onPress={haptics('impact', 'rigid')}>
+            <Text>Rigid</Text>
+          </Button>
+          <Button onPress={haptics('impact', 'soft')}>
+            <Text>Soft</Text>
+          </Button>
+        </YStack>
+      </YStack>
+      <YStack>
+        <H4>Notification</H4>
+        <YStack gap="$2">
+          <Button onPress={haptics('notification')}>
+            <Text>Default</Text>
+          </Button>
+          <Button onPress={haptics('notification', 'success')}>
+            <Text>Success</Text>
+          </Button>
+          <Button onPress={haptics('notification', 'error')}>
+            <Text>Error</Text>
+          </Button>
+          <Button onPress={haptics('notification', 'warning')}>
+            <Text>Warning</Text>
+          </Button>
+        </YStack>
+      </YStack>
+      <YStack>
+        <H4>Selection</H4>
+        <YStack gap="$2">
+          <Button onPress={haptics('selection')}>
+            <Text>Default</Text>
+          </Button>
+        </YStack>
+      </YStack>
+    </ScrollView>
   )
 }
