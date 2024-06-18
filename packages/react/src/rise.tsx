@@ -1,4 +1,5 @@
 import React, { useCallback, useContext } from 'react'
+import { jsx, jsxs } from 'react/jsx-runtime'
 
 import { LocalState, useLocalStateValues } from './state'
 import { useStream } from './streams'
@@ -198,10 +199,17 @@ export function BaseRise({
           )
         }
       }
-      return (
-        <Component {...componentProps}>
-          {render(stateNode.children, [...path, 'children'])}
-        </Component>
+      // @ts-ignore
+      const jsxFactory = stateNode.static ? jsxs : jsx
+
+      const { key, ...props } = componentProps
+      return jsxFactory(
+        Component,
+        {
+          ...props,
+          children: render(stateNode.children, [...path, 'children']),
+        },
+        key
       )
     },
     [components]
