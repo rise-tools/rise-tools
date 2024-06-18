@@ -1,8 +1,24 @@
 import { Icon as LucideIcon } from '@rise-tools/kit/server'
-import { Button, Circle, H3, XStack, YStack } from '@rise-tools/tamagui/server'
+import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
+import { toast } from '@rise-tools/kit-tamagui-toast/server'
+import { event, response, setStateAction, state } from '@rise-tools/react'
+import {
+  Button,
+  Circle,
+  Form,
+  FormTrigger,
+  H2,
+  H3,
+  Input,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from '@rise-tools/tamagui/server'
 
 export const models = {
   delivery: UI,
+  'delivery:feedback-form': FeedbackForm,
 }
 
 function UI() {
@@ -13,6 +29,37 @@ function UI() {
       <Restaurants />
       <Taxi />
     </YStack>
+  )
+}
+
+function FeedbackForm() {
+  const name = state('')
+  const feedback = state('')
+  const onFormSubmit = event(
+    ({ name, feedback }) => {
+      console.log('Form submitted', name, feedback)
+      return response(null).action(toast('Thank you for submitting your feedback')).action(goBack())
+    },
+    { args: { name, feedback } }
+  )
+  return (
+    <>
+      <StackScreen options={{ title: 'Feedback' }} />
+      <YStack gap="$4" padding="$4">
+        <H2>Send feedback</H2>
+        <YStack gap="$8" padding="$4">
+          <Form onSubmit={onFormSubmit}>
+            <YStack gap="$4">
+              <Text>Name</Text>
+              <Input onChangeText={setStateAction(name)} />
+              <Text>Feedback</Text>
+              <TextArea onChangeText={setStateAction(feedback)} />
+            </YStack>
+            <Button onPress={onFormSubmit}>Submit</Button>
+          </Form>
+        </YStack>
+      </YStack>
+    </>
   )
 }
 
@@ -75,6 +122,7 @@ function Survey() {
           pressStyle={{ backgroundColor: '$green11', borderColor: '$green11' }}
           color="white"
           fontSize="$5"
+          onPress={navigate('delivery:feedback-form')}
         >
           Send Feedback
         </Button>
