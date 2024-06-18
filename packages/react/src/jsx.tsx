@@ -1,4 +1,5 @@
 import type { JSXElementConstructor, ReactElement } from 'react'
+import React from 'react'
 
 import { event } from './events'
 import {
@@ -10,20 +11,22 @@ import {
   StateModelState,
 } from './rise'
 
-export type UI = ReactElement<Props> | ServerComponent
-
 type ServerComponent = ComponentModelState<ServerEventModelState>
-type Props = ServerComponent['props'] & {
-  children?: ServerComponent['children']
-}
 
 export const jsxs = jsx
 
 export function jsx(
-  componentFactory: (props: any) => UI,
-  passedProps: Props = {},
+  componentFactory: ((props: any) => ServerComponent | ReactElement) | undefined,
+  { children, ...passedProps }: Record<string, any>,
   key?: string
 ): ServerComponent {
+  if (typeof componentFactory === 'undefined') {
+    return {
+      $: 'component',
+      component: 'Fragment',
+      children,
+    }
+  }
   const el = componentFactory(passedProps)
   if (isComponentModelState(el)) {
     return el
@@ -31,6 +34,7 @@ export function jsx(
   if (typeof el.type !== 'string') {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
+  
   const { children, ...props } = Object.fromEntries(
     Object.entries(passedProps).map(([key, value]) => {
       if (typeof value === 'function') {
@@ -86,3 +90,7 @@ export function createComponentDefinition<
 export function isReactElement(obj: any): obj is ReactElement {
   return obj !== null && typeof obj === 'object' && 'type' in obj && 'props' in obj && 'key' in obj
 }
+
+export const Fragment = createComponentDefinition<typeof React.Fragment>(
+  '@rise-tools/react/Fragment'
+)

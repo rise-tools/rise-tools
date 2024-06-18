@@ -165,7 +165,8 @@ export function BaseRise({
 }) {
   const RenderComponent = useCallback(
     function ({ stateNode, path }: { stateNode: ComponentModelState; path: Path }) {
-      const componentDefinition = components[stateNode.component]
+      const componentDefinition =
+        CORE_COMPONENTS[stateNode.component] || components[stateNode.component]
       if (!componentDefinition) {
         throw new RenderError(`Unknown component: ${stateNode.component}`)
       }
@@ -303,3 +304,9 @@ export function BaseRise({
 }
 
 export class RenderError extends Error {}
+
+const CORE_COMPONENTS: ComponentRegistry = {
+  '@rise-tools/react/Fragment': {
+    component: React.Fragment,
+  },
+}

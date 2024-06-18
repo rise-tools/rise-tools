@@ -87,3 +87,6 @@ android/keystores/debug.keystore
 # Wrangler project
 .dev.vars
 .wrangler/
+
+# Lefthook
+lefthook.yml
