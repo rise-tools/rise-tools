@@ -1,4 +1,4 @@
-import { RiseComponents } from '@rise-tools/kit
+import { RiseComponents } from '@rise-tools/kit'
 import { ExpoRouterComponents, useExpoRouterActions } from '@rise-tools/kit-expo-router'
 import { useHapticsActions } from '@rise-tools/kit-haptics'
 import { useToastActions } from '@rise-tools/kit-tamagui-toast'
