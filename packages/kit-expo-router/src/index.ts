@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router'
+import { Stack, useRouter } from 'expo-router'
 import z from 'zod'
 
 import type { ExpoRouterActions } from './server'
@@ -23,4 +23,10 @@ export const useExpoRouterActions = (opts?: { basePath?: string }): ExpoRouterAc
       },
     },
   }
+}
+
+export const ExpoRouterComponents = {
+  StackScreen: {
+    component: Stack.Screen,
+  },
 }
