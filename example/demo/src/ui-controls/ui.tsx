@@ -9,6 +9,7 @@ import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
 import { event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
+import { Fragment } from '@rise-tools/react/server'
 import {
   Button,
   Form,
@@ -34,7 +35,7 @@ export const models = {
 
 function UI() {
   return (
-    <>
+    <Fragment>
       <StackScreen options={{ title: 'UI Controls' }} />
       <YStack>
         <Button onPress={navigate('form')}>Form</Button>
@@ -45,7 +46,7 @@ function UI() {
         <Button onPress={navigate('toast')}>Toast</Button>
         <Button onPress={navigate('haptics')}>Haptics</Button>
       </YStack>
-    </>
+    </Fragment>
   )
 }
 

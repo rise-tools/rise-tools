@@ -14,6 +14,20 @@ it('should compose higher-order functions together', () => {
   expect(isComponentModelState(el)).toBe(true)
 })
 
+it('should handle fragments', () => {
+  const el = jsx(undefined, { children: ['foo', 'bar'] })
+  expect(el).toMatchInlineSnapshot(`
+    Object {
+      "$": "component",
+      "children": Array [
+        "foo",
+        "bar",
+      ],
+      "component": "Fragment",
+    }
+  `)
+})
+
 it('should turn function into event', () => {
   const el = jsx(DummyComponent, {
     onPress: jest.fn(),

@@ -5,7 +5,8 @@
   "description": "",
   "exports": {
     ".": "./lib/index.js",
-    "./jsx-runtime": "./lib/jsx.js"
+    "./jsx-runtime": "./lib/jsx.js",
+    "./server": "./lib/server.js"
   },
   "files": [
     "src",
