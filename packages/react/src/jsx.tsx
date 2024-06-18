@@ -1,4 +1,5 @@
 import type { JSXElementConstructor, ReactElement } from 'react'
+import React from 'react'
 
 import { event } from './events'
 import {
@@ -88,3 +89,5 @@ export function createComponentDefinition<
 export function isReactElement(obj: any): obj is ReactElement {
   return obj !== null && typeof obj === 'object' && 'type' in obj && 'props' in obj && 'key' in obj
 }
+
+export const Fragment = createComponentDefinition<typeof React.Fragment>('Fragment')
