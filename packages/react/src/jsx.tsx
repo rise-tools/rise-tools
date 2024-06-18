@@ -90,4 +90,6 @@ export function isReactElement(obj: any): obj is ReactElement {
   return obj !== null && typeof obj === 'object' && 'type' in obj && 'props' in obj && 'key' in obj
 }
 
-export const Fragment = createComponentDefinition<typeof React.Fragment>('Fragment')
+export const Fragment = createComponentDefinition<typeof React.Fragment>(
+  '@rise-tools/react/Fragment'
+)
