@@ -17,14 +17,14 @@ export const jsxs = jsx
 
 export function jsx(
   componentFactory: ((props: any) => ServerComponent | ReactElement) | undefined,
-  { children, ...passedProps }: Record<string, any>,
+  passedProps: Record<string, any>,
   key?: string
 ): ServerComponent {
   if (typeof componentFactory === 'undefined') {
     return {
       $: 'component',
       component: 'Fragment',
-      children,
+      children: passedProps.children,
     }
   }
   const el = componentFactory(passedProps)
@@ -34,7 +34,6 @@ export function jsx(
   if (typeof el.type !== 'string') {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
-  
   const { children, ...props } = Object.fromEntries(
     Object.entries(passedProps).map(([key, value]) => {
       if (typeof value === 'function') {
