@@ -199,10 +199,10 @@ export function BaseRise({
           )
         }
       }
-      // @ts-ignore
-      const jsxFactory = stateNode.static ? jsxs : jsx
 
+      const jsxFactory = Array.isArray(stateNode.children) ? jsxs : jsx
       const { key, ...props } = componentProps
+
       return jsxFactory(
         Component,
         {
