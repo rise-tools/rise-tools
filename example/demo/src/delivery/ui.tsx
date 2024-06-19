@@ -12,6 +12,7 @@ import {
   Input,
   Text,
   TextArea,
+  Theme,
   XStack,
   YStack,
 } from '@rise-tools/tamagui/server'
@@ -24,7 +25,7 @@ export const models = {
 
 function UI() {
   return (
-    <YStack gap="$4">
+    <YStack gap="$4" backgroundColor="$background">
       <Survey />
       <Groceries />
       <Restaurants />
@@ -104,12 +105,12 @@ function Restaurants() {
 function Taxi() {
   return (
     <Section>
-      <Title>Restaurants</Title>
+      <Title>Summon Taxi</Title>
       <Content>
-        <Button flex={1} backgroundColor="$gray11" color="white" fontSize="$5">
+        <Button flex={1} color="white" fontWeight="bold" fontSize="$5">
           Quick Ride
         </Button>
-        <Button flex={1} backgroundColor="$gray11" color="white" fontSize="$5">
+        <Button flex={1} color="white" fontWeight="bold" fontSize="$5">
           Shared Ride
         </Button>
       </Content>
@@ -119,21 +120,22 @@ function Taxi() {
 
 function Survey() {
   return (
-    <XStack backgroundColor="$green10" padding="$4" gap="$4" alignItems="center">
-      <LucideIcon icon="MessageCircleHeart" size="$6" color="white" />
-      <YStack justifyContent="flex-start" gap="$2">
-        <H3 color="white">Do you like the App?</H3>
-        <Button
-          backgroundColor="$green12"
-          pressStyle={{ backgroundColor: '$green11', borderColor: '$green11' }}
-          color="white"
-          fontSize="$5"
-          onPress={navigate('delivery:feedback-form')}
-        >
-          Send Feedback
-        </Button>
-      </YStack>
-    </XStack>
+    <Theme name="green_active">
+      <XStack backgroundColor="$backgroundFocus" padding="$4" gap="$4" alignItems="center">
+        <LucideIcon icon="MessageCircleHeart" size="$6" color="white" />
+        <YStack justifyContent="flex-start" gap="$2">
+          <H3 color="white">Do you like the App?</H3>
+          <Button
+            fontSize="$5"
+            fontWeight="bold"
+            color="white"
+            onPress={navigate('delivery:feedback-form')}
+          >
+            Send Feedback
+          </Button>
+        </YStack>
+      </XStack>
+    </Theme>
   )
 }
 
@@ -141,21 +143,23 @@ function Survey() {
 
 function Section({ children }: { children: React.ReactNode }) {
   return (
-    <YStack
-      gap="$2"
-      borderColor="$gray11"
-      borderRadius="$8"
-      borderWidth="$2"
-      padding="$4"
-      marginHorizontal="$4"
-    >
-      {children}
-    </YStack>
+    <Theme name="green_active">
+      <YStack
+        gap="$2"
+        borderColor="$borderColor"
+        borderRadius="$8"
+        borderWidth="$2"
+        padding="$4"
+        marginHorizontal="$4"
+      >
+        {children}
+      </YStack>
+    </Theme>
   )
 }
 
 function Title({ children }: { children: React.ReactNode }) {
-  return <H3 color="$gray11">{children}</H3>
+  return <H3 color="$backgroundFocus" lineHeight="$2">{children}</H3>
 }
 
 function Content({ children }: { children: React.ReactNode }) {
@@ -163,5 +167,5 @@ function Content({ children }: { children: React.ReactNode }) {
 }
 
 function Icon() {
-  return <Circle size="$5" backgroundColor="$gray11" />
+  return <Circle size="$5" backgroundColor="$backgroundFocus" />
 }
