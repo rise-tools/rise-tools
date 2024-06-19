@@ -1,4 +1,5 @@
 import * as SVG from 'react-native-svg'
+import * as SVGCSS from 'react-native-svg/css'
 
 export const SVGComponents = {
   '@rise-tools/kit-svg/Circle': {
@@ -90,5 +91,17 @@ export const SVGComponents = {
   },
   '@rise-tools/kit-svg/Use': {
     component: SVG.Use,
+  },
+  '@rise-tools/kit-svg/SvgCss': {
+    component: SVGCSS.SvgCss,
+  },
+  '@rise-tools/kit-svg/SvgCssUri': {
+    component: SVGCSS.SvgCssUri,
+  },
+  '@rise-tools/kit-svg/SvgWithCss': {
+    component: SVGCSS.SvgWithCss,
+  },
+  '@rise-tools/kit-svg/SvgWithCssUri': {
+    component: SVGCSS.SvgWithCssUri,
   },
 }

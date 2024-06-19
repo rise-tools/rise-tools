@@ -1,5 +1,6 @@
 import { createComponentDefinition } from '@rise-tools/react'
 import type * as SVG from 'react-native-svg'
+import type * as SVGCSS from 'react-native-svg/css'
 
 export const Circle = createComponentDefinition<typeof SVG.Circle>('@rise-tools/kit-svg/Circle')
 export const ClipPath = createComponentDefinition<typeof SVG.ClipPath>(
@@ -47,3 +48,14 @@ export const TextPath = createComponentDefinition<typeof SVG.TextPath>(
 )
 export const TSpan = createComponentDefinition<typeof SVG.TSpan>('@rise-tools/kit-svg/TSpan')
 export const Use = createComponentDefinition<typeof SVG.Use>('@rise-tools/kit-svg/Use')
+
+export const SvgCss = createComponentDefinition<typeof SVGCSS.SvgCss>('@rise-tools/kit-svg/SvgCss')
+export const SvgCssUri = createComponentDefinition<typeof SVGCSS.SvgCssUri>(
+  '@rise-tools/kit-svg/SvgCssUri'
+)
+export const SvgWithCss = createComponentDefinition<typeof SVGCSS.SvgWithCss>(
+  '@rise-tools/kit-svg/SvgWithCss'
+)
+export const SvgWithCssUri = createComponentDefinition<typeof SVGCSS.SvgWithCssUri>(
+  '@rise-tools/kit-svg/SvgWithCssUri'
+)
