@@ -8,7 +8,13 @@ import {
 import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import { event, eventPayload, response, setStateAction, state } from '@rise-tools/react'
+import {
+  event,
+  eventPayload,
+  localStateExperimental,
+  response,
+  setStateAction,
+} from '@rise-tools/react'
 import {
   Button,
   Form,
@@ -50,8 +56,8 @@ function UI() {
 }
 
 function FormExample() {
-  const userName = state('')
-  const notification = state('')
+  const userName = localStateExperimental('', 'form/userName')
+  const notification = localStateExperimental('', 'form/notification')
   const onFormSubmit = event(
     (state) => {
       console.log(`Values: ${state}`)
@@ -87,12 +93,11 @@ function FormExample() {
 }
 
 function SliderExample() {
-  const slider = state(0)
+  const slider = localStateExperimental(0, 'slider/slider')
 
-  const sliderRangeStart = state(25)
-  const sliderRangeEnd = state(75)
-
-  const sliderWithReset = state(0)
+  const sliderRangeStart = localStateExperimental(25, 'slider/range-start')
+  const sliderRangeEnd = localStateExperimental(75, 'slider/range-end')
+  const sliderWithReset = localStateExperimental(0, 'slider/with-reset')
 
   return (
     <YStack gap="$8" padding="$4">
@@ -134,7 +139,7 @@ function SliderExample() {
 }
 
 function SwitchExample() {
-  const isChecked = state(false)
+  const isChecked = localStateExperimental(false, 'switch/checked')
   return (
     <YStack gap="$8" padding="$4">
       <SwitchField label="Toggle" value={isChecked} onCheckedChange={setStateAction(isChecked)} />
@@ -151,7 +156,7 @@ const frameworks = [
 ]
 
 function SelectExample() {
-  const selectedItem = state('')
+  const selectedItem = localStateExperimental('', 'select/item')
   return (
     <YStack gap="$8" padding="$4">
       <YStack>
@@ -166,6 +171,7 @@ function SelectExample() {
       <YStack>
         <H4>Bottom sheet</H4>
         <DropdownButton
+          id="select/dropdown-button"
           value={selectedItem}
           button={<Text>Select your favorite framework</Text>}
           options={frameworks}
@@ -176,7 +182,7 @@ function SelectExample() {
 }
 
 function ListExample() {
-  const inventoryItems = state(frameworks)
+  const inventoryItems = localStateExperimental(frameworks, 'list/inventory')
 
   return (
     <YStack flex={1} padding="$4">

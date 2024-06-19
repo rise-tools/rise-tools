@@ -3,14 +3,17 @@ import React from 'react'
 
 import { ModelSource, Rise } from '../refs'
 import { response } from '../response'
-import { eventPayload, increment, setStateAction, state, toggle } from '../state'
+import { eventPayload, increment, localStateExperimental, setStateAction, toggle } from '../state'
 import { BUILT_IN_COMPONENTS } from './rise.test'
 
-it('should render initial state', () => {
-  const value = state('foo')
-  const style = state({
-    opacity: 0,
-  })
+it('should render initial localStateExperimental', () => {
+  const value = localStateExperimental('foo', 'example/value')
+  const style = localStateExperimental(
+    {
+      opacity: 0,
+    },
+    'example/style'
+  )
   const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
@@ -48,8 +51,8 @@ it('should render initial state', () => {
   `)
 })
 
-it('should set state with default payload', async () => {
-  const value = state('foo')
+it('should set localStateExperimental with default payload', async () => {
+  const value = localStateExperimental('foo', 'example/value')
   const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
@@ -91,8 +94,8 @@ it('should set state with default payload', async () => {
   `)
 })
 
-it('should set state with custom value', async () => {
-  const value = state('foo')
+it('should set localStateExperimental with custom value', async () => {
+  const value = localStateExperimental('foo', 'example/value')
   const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
@@ -134,8 +137,8 @@ it('should set state with custom value', async () => {
   `)
 })
 
-it('should toggle state', async () => {
-  const isDisabled = state(false)
+it('should toggle localStateExperimental', async () => {
+  const isDisabled = localStateExperimental(false, 'example/is-disabled')
   const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
@@ -187,8 +190,8 @@ it('should toggle state', async () => {
   `)
 })
 
-it('should increment state', async () => {
-  const counter = state(1)
+it('should increment localStateExperimental', async () => {
+  const counter = localStateExperimental(1, 'example/counter')
   const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
@@ -241,8 +244,8 @@ it('should increment state', async () => {
   `)
 })
 
-it('should modify state after receiving response from the server', async () => {
-  const value = state('foo')
+it('should modify localStateExperimental after receiving response from the server', async () => {
+  const value = localStateExperimental('foo', 'example/value')
   const modelSource: ModelSource = {
     get: () => ({
       subscribe: jest.fn().mockReturnValue(jest.fn()),
@@ -286,9 +289,9 @@ it('should modify state after receiving response from the server', async () => {
   `)
 })
 
-it('should inject state (initial value) into function handler', async () => {
+it('should inject localStateExperimental (initial value) into function handler', async () => {
   const onEvent = jest.fn().mockReturnValue(response(null))
-  const isChecked = state(false)
+  const isChecked = localStateExperimental(false, 'example/is-checked')
   const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
@@ -318,9 +321,9 @@ it('should inject state (initial value) into function handler', async () => {
   expect(onEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: false })
 })
 
-it('should inject current state value into function handler', async () => {
+it('should inject current localStateExperimental value into function handler', async () => {
   const onEvent = jest.fn().mockReturnValue(response(null))
-  const isChecked = state(false)
+  const isChecked = localStateExperimental(false, 'example/is-checked')
   const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
@@ -361,7 +364,7 @@ it('should inject current state value into function handler', async () => {
 })
 
 it('should lookup value from the arguments', async () => {
-  const userName = state('')
+  const userName = localStateExperimental('', 'example/user-name')
   const modelSource: ModelSource = {
     get: () => ({
       subscribe: () => jest.fn(),
