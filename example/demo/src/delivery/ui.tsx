@@ -1,12 +1,13 @@
 import { Icon as LucideIcon } from '@rise-tools/kit/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
+import { openURL } from '@rise-tools/kit-linking/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import { event, response, setStateAction } from '@rise-tools/react'
+import { response } from '@rise-tools/react'
+import { state } from '@rise-tools/server'
 import {
   Button,
   Circle,
   Form,
-  FormTrigger,
   H2,
   H3,
   Input,
@@ -16,7 +17,6 @@ import {
   XStack,
   YStack,
 } from '@rise-tools/tamagui/server'
-import { state } from '@rise-tools/server'
 
 export const models = {
   delivery: UI,
@@ -48,7 +48,7 @@ function FeedbackForm() {
     // return response
     return response(null).action(toast('Thank you for submitting your feedback')).action(goBack())
   }
-  
+
   return (
     <>
       <StackScreen options={{ title: 'Feedback' }} />
@@ -102,12 +102,22 @@ function Restaurants() {
   )
 }
 
+/* https://developer.uber.com/docs/riders/ride-requests/tutorials/deep-links/introduction#ride-requests */
+const UBER_DEEP_LINK =
+  'https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff%5Bformatted_address%5D=Uber%20HQ%2C%20Market%20Street%2C%20San%20Francisco%2C%20CA%2C%20USA&dropoff%5Blatitude%5D=37.775231&dropoff%5Blongitude%5D=-122.417528'
+
 function Taxi() {
   return (
     <Section>
       <Title>Summon Taxi</Title>
       <Content>
-        <Button flex={1} color="white" fontWeight="bold" fontSize="$5">
+        <Button
+          flex={1}
+          color="white"
+          fontWeight="bold"
+          fontSize="$5"
+          onPress={openURL(UBER_DEEP_LINK)}
+        >
           Quick Ride
         </Button>
         <Button flex={1} color="white" fontWeight="bold" fontSize="$5">
@@ -159,7 +169,11 @@ function Section({ children }: { children: React.ReactNode }) {
 }
 
 function Title({ children }: { children: React.ReactNode }) {
-  return <H3 color="$backgroundFocus" lineHeight="$2">{children}</H3>
+  return (
+    <H3 color="$backgroundFocus" lineHeight="$2">
+      {children}
+    </H3>
+  )
 }
 
 function Content({ children }: { children: React.ReactNode }) {
