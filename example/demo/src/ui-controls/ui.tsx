@@ -7,6 +7,7 @@ import {
 } from '@rise-tools/kit/server'
 import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
+import { Circle, Svg } from '@rise-tools/kit-svg/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
 import {
   event,
@@ -36,6 +37,7 @@ export const models = {
   list: ListExample,
   toast: ShowToastExample,
   haptics: HapticsExample,
+  svg: SVGExample,
 }
 
 function UI() {
@@ -50,8 +52,20 @@ function UI() {
         <Button onPress={navigate('list')}>List</Button>
         <Button onPress={navigate('toast')}>Toast</Button>
         <Button onPress={navigate('haptics')}>Haptics</Button>
+        <Button onPress={navigate('svg')}>SVG</Button>
       </YStack>
     </>
+  )
+}
+
+function SVGExample() {
+  return (
+    <YStack>
+      <H4>SVG</H4>
+      <Svg height="50%" width="50%" viewBox="0 0 100 100">
+        <Circle cx="50" cy="50" r="45" stroke="blue" strokeWidth="2.5" fill="green" />
+      </Svg>
+    </YStack>
   )
 }
 
