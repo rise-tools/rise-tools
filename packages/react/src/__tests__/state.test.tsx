@@ -263,7 +263,7 @@ it('should modify localStateExperimental after receiving response from the serve
         }
       },
     }),
-    sendEvent: jest.fn().mockReturnValue(response(null).action(setStateAction(value, 'bar'))),
+    sendEvent: jest.fn().mockReturnValue(response(setStateAction(value, 'bar'))),
   }
   const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   expect(component.asFragment()).toMatchInlineSnapshot(`

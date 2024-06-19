@@ -264,7 +264,7 @@ export function Rise({
           }
         }
       }
-      if (!res.ok) {
+      if (res.error) {
         throw res.payload
       }
       return res.payload

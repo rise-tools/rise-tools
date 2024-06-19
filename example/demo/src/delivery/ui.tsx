@@ -1,12 +1,11 @@
 import { Icon as LucideIcon } from '@rise-tools/kit/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import { event, response, setStateAction } from '@rise-tools/react'
+import { state } from '@rise-tools/server'
 import {
   Button,
   Circle,
   Form,
-  FormTrigger,
   H2,
   H3,
   Input,
@@ -16,7 +15,6 @@ import {
   XStack,
   YStack,
 } from '@rise-tools/tamagui/server'
-import { state } from '@rise-tools/server'
 
 export const models = {
   delivery: UI,
@@ -46,9 +44,9 @@ function FeedbackForm() {
     setFeedback('')
 
     // return response
-    return response(null).action(toast('Thank you for submitting your feedback')).action(goBack())
+    return [toast('Thank you for submitting your feedback'), goBack()]
   }
-  
+
   return (
     <>
       <StackScreen options={{ title: 'Feedback' }} />
@@ -159,7 +157,11 @@ function Section({ children }: { children: React.ReactNode }) {
 }
 
 function Title({ children }: { children: React.ReactNode }) {
-  return <H3 color="$backgroundFocus" lineHeight="$2">{children}</H3>
+  return (
+    <H3 color="$backgroundFocus" lineHeight="$2">
+      {children}
+    </H3>
+  )
 }
 
 function Content({ children }: { children: React.ReactNode }) {

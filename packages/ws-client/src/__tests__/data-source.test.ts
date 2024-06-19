@@ -28,7 +28,7 @@ it('should resolve a promise once response comes in', async () => {
       component: 'View',
     },
     dataState: event(jest.fn()),
-    payload: null,
+    payload: [null],
   }
 
   const promise = dataSource.sendEvent(riseEvent)
@@ -43,10 +43,7 @@ it('should resolve a promise once response comes in', async () => {
   expect(await promise).toMatchInlineSnapshot(`
     Object {
       "$": "response",
-      "actions": Array [],
-      "ok": true,
       "payload": Object {},
-      "statusCode": 200,
     }
   `)
 })
@@ -63,7 +60,7 @@ it('should timeout if response comes later than timeout specified', async () => 
       component: 'View',
     },
     dataState: event(jest.fn(), { timeout: 1000 }),
-    payload: null,
+    payload: [null],
   }
 
   const promise = dataSource.sendEvent(riseEvent)

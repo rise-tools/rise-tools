@@ -8,13 +8,7 @@ import {
 import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import {
-  event,
-  eventPayload,
-  localStateExperimental,
-  response,
-  setStateAction,
-} from '@rise-tools/react'
+import { event, eventPayload, localStateExperimental, setStateAction } from '@rise-tools/react'
 import {
   Button,
   Form,
@@ -61,14 +55,13 @@ function FormExample() {
   const onFormSubmit = event(
     (state) => {
       console.log(`Values: ${state}`)
-      return response(null)
-        .action(setStateAction(userName, ''))
-        .action(
-          setStateAction(
-            notification,
-            'Thank you for submitting the form! Check the logs on the backend to see the submitted values'
-          )
-        )
+      return [
+        setStateAction(userName, ''),
+        setStateAction(
+          notification,
+          'Thank you for submitting the form! Check the logs on the backend to see the submitted values'
+        ),
+      ]
     },
     { args: { userName } }
   )
@@ -125,9 +118,7 @@ function SliderExample() {
           onValueChange={setStateAction(sliderWithReset, eventPayload([0, 0]))}
           onSlideEnd={async () => {
             await new Promise((resolve) => setTimeout(resolve, 2000))
-            return response(null).action(
-              setStateAction(sliderWithReset, sliderWithReset.initialValue)
-            )
+            return [setStateAction(sliderWithReset, sliderWithReset.initialValue)]
           }}
         />
         <Paragraph lineHeight="$3">

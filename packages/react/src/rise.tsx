@@ -70,15 +70,14 @@ export type ActionsDefinition<Actions extends Array<ActionModelState>> =
     : never
 export type ResponseModelState = {
   $: 'response'
-  payload: JSONValue
-  statusCode: number
-  ok: boolean
-  actions: ActionModelState[]
+  payload?: JSONValue
+  error?: boolean
+  actions?: ActionModelState[]
 }
-export type HandlerReturnType = ResponseModelState | JSONValue | void
+export type HandlerReturnType = JSONValue | ActionModelState | ActionModelState[] | void
 export type HandlerFunction<T extends any[] = any[]> = (
   ...args: T
-) => Promise<HandlerReturnType> | HandlerReturnType
+) => Promise<HandlerReturnType | ResponseModelState> | HandlerReturnType | ResponseModelState
 export type EventModelState = {
   $: 'event'
   actions?: ActionModelState[]
