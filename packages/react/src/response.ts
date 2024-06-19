@@ -7,7 +7,7 @@ import {
 } from './rise'
 
 export function response(
-  payload?: HandlerReturnType,
+  payload?: Exclude<HandlerReturnType, ResponseModelState>,
   opts?: {
     actions?: ActionModelState[]
   }

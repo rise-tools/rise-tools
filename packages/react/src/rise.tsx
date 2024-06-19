@@ -74,10 +74,15 @@ export type ResponseModelState = {
   error?: boolean
   actions?: ActionModelState[]
 }
-export type HandlerReturnType = JSONValue | ActionModelState | ActionModelState[] | void
+export type HandlerReturnType =
+  | ResponseModelState
+  | JSONValue
+  | ActionModelState
+  | ActionModelState[]
+  | void
 export type HandlerFunction<T extends any[] = any[]> = (
   ...args: T
-) => Promise<HandlerReturnType | ResponseModelState> | HandlerReturnType | ResponseModelState
+) => Promise<HandlerReturnType> | HandlerReturnType
 export type EventModelState = {
   $: 'event'
   actions?: ActionModelState[]

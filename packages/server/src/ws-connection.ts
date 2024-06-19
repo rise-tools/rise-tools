@@ -140,7 +140,7 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
       }
       let res = await value.handler(...payload)
       if (!isResponseModelState(res)) {
-        res = response(res ?? null)
+        res = response(res)
       }
       clientSenders.get(clientId)?.({
         $: 'evt-res',
