@@ -2,11 +2,10 @@
 
 ## JSON Schema
 
-### `$staticChildren`
+### $staticChildren
 
-React has two JSX factories - `jsx` and `jsxs`.
+In a typical React component, children can be either static:
 
-In a typical React component, children are either static:
 ```tsx
 <View>
    <Text>Hello</Text>
@@ -15,17 +14,18 @@ In a typical React component, children are either static:
 ```
 
 or dynamic:
-```tsx
-const greetings = ['Hello', 'World']
 
+```tsx
+const greetings = ['Hello', 'World'];
 <View>
-  {greetings.map((t) => <Text key={t.id}>{t.label}</Text>)}
+  {greetings.map((t, idx) => <Text key={idx}>{t}</Text>)}
 </View>
 ```
 
-For static children, React knows their order is not changing and does not require key to be provided for each item in children array. For dynamic children, key is required in case order of components changes between re-renders.
+For static children, React doesn't require keys because their order doesn't change. However, for dynamic children, keys are necessary to track order changes between re-renders.
 
-When using Rise JSX on the server to generate JSON, that information gets lost. Both dynamic and static children lead to the same JSON output:
+When using Rise JSX on the server to generate JSON, this distinction is lost. Both static and dynamic children produce the same JSON output:
+
 ```ts
 {
   $: 'component',
@@ -45,9 +45,10 @@ When using Rise JSX on the server to generate JSON, that information gets lost. 
 }
 ```
 
-As a result, React is going to warn you about missing keys for each children, no matter whether you declared them statically or dynamically. In practice, you should only receive this warning if your children were set dynamically.
+As a result, React will warn about missing keys for each child, regardless of whether they were static or dynamic. Typically, this warning should only appear for dynamic children.
 
-To do so, you can set `$staticChildren` to `true` to indicate that the children of a given component are static and their order is not going to change. 
+To indicate that the children of a component are static and their order won't change, set `$staticChildren` to true:
+
 ```ts
 {
   $: 'component',
@@ -68,4 +69,4 @@ To do so, you can set `$staticChildren` to `true` to indicate that the children 
 }
 ```
 
-> Note: When using Rise JSX, this is automatically set for you.
+When using JSX, this setting is automatically applied and you should not worry about this.
