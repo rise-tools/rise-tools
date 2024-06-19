@@ -55,8 +55,14 @@ export const BUILTIN_CONNECTIONS: Record<string, Connection> = {
   },
   ui: {
     id: 'ui',
-    label: '🏭 UI Controls',
+    label: '🎨 UI Controls',
     host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
     path: 'controls',
+  },
+  delivery: {
+    id: 'delivery',
+    label: '🚚 Super Delivery',
+    host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
+    path: 'delivery',
   },
 }

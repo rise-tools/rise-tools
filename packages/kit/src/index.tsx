@@ -12,6 +12,5 @@ export const RiseComponents = {
   },
   LucideIcon: {
     component: LucideIcon,
-    validator: LucideIcon.validate,
   },
 }
