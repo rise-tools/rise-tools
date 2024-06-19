@@ -33,8 +33,10 @@ export function isStateUpdateAction<T extends JSONValue>(
   return action.name === 'state-update'
 }
 
-export function state<T extends JSONValue>(initialValue: T): StateModelState<T> {
-  const key = (Date.now() * Math.random()).toString(16)
+export function localStateExperimental<T extends JSONValue>(
+  initialValue: T,
+  key: string
+): StateModelState<T> {
   return { $: 'state', key, initialValue }
 }
 

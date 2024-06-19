@@ -3,8 +3,8 @@
 import {
   Literal,
   LiteralArray,
+  localStateExperimental,
   setStateAction,
-  state,
   StateModelState,
   WithServerProps,
 } from '@rise-tools/react'
@@ -18,6 +18,7 @@ import {
 } from '@rise-tools/tamagui/server'
 
 type Props = {
+  id: Literal<string>
   value: StateModelState<string>
   onSelect?: (item: string) => void
   button?: JSX.Element
@@ -28,7 +29,7 @@ type Props = {
 }
 
 export function DropdownButton(props: WithServerProps<Props>) {
-  const isOpen = state(false)
+  const isOpen = localStateExperimental(false, props.id)
   return (
     <YStack>
       <Button onPress={setStateAction(isOpen, true)}>{props.button}</Button>
