@@ -2,6 +2,8 @@
 
 For each prop that accepts a function, you can pass an action or an event.
 
+[TBD - explain how/why we automatically allow action, event or action[] to each component that accepts a function] 
+
 ## Actions
 
 ### Executing an action
@@ -67,6 +69,8 @@ function UI() {
 }
 ```
 
+When you pass a function as a prop, we wrap it with `event()` automatically.
+
 ### Passing additional options
 
 ```tsx
@@ -121,7 +125,7 @@ function UI() {
   return (
     <Form
       onSubmit={() => {
-        return { message: 'Thank you for submitting the form' }
+        return { message: 'Thank you!' }
       }}
     />
   )
