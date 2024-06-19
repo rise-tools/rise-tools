@@ -7,6 +7,7 @@ import {
 } from '@rise-tools/kit/server'
 import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
+import { openSettings, openURL } from '@rise-tools/kit-linking/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
 import {
   event,
@@ -36,6 +37,7 @@ export const models = {
   list: ListExample,
   toast: ShowToastExample,
   haptics: HapticsExample,
+  linking: LinkingExample,
 }
 
 function UI() {
@@ -50,8 +52,22 @@ function UI() {
         <Button onPress={navigate('list')}>List</Button>
         <Button onPress={navigate('toast')}>Toast</Button>
         <Button onPress={navigate('haptics')}>Haptics</Button>
+        <Button onPress={navigate('linking')}>Linking</Button>
       </YStack>
     </>
+  )
+}
+
+function LinkingExample() {
+  return (
+    <YStack>
+      <Button onPress={openURL('https://rise.tools')}>
+        <Text>Go to Rise Tools website</Text>
+      </Button>
+      <Button onPress={openSettings()}>
+        <Text>Go to Settings</Text>
+      </Button>
+    </YStack>
   )
 }
 
