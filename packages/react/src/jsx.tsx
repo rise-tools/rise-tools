@@ -13,7 +13,14 @@ import {
 
 type ServerComponent = ComponentModelState<ServerEventModelState>
 
-export const jsxs = jsx
+// @ts-ignore
+export const jsxs = (...args) => {
+  // @ts-ignore
+  const d = jsx(...args)
+  // @ts-ignore
+  d.static = true
+  return d
+}
 
 export function jsx(
   componentFactory: ((props: any) => ServerComponent | ReactElement) | undefined,
