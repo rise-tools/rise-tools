@@ -36,6 +36,7 @@ export type ComponentModelState<T = EventModelState> = {
   component: ComponentIdentifier
   children?: ModelState<T>
   props?: Record<string, ModelState<T>>
+  $staticChildren?: boolean
 }
 type ReferencedComponentModelState<T = EventModelState> = ComponentModelState<T> & {
   path: Path
@@ -199,18 +200,11 @@ export function BaseRise({
           )
         }
       }
-      // @ts-ignore
-      const jsxFactory = stateNode.static ? jsxs : jsx
-
-      const { key, ...props } = componentProps
-      return jsxFactory(
-        Component,
-        {
-          ...props,
-          children: render(stateNode.children, [...path, 'children']),
-        },
-        key
-      )
+      const jsxFactory = stateNode.$staticChildren ? jsxs : jsx
+      return jsxFactory(Component, {
+        ...componentProps,
+        children: render(stateNode.children, [...path, 'children']),
+      })
     },
     [components]
   )
