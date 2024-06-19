@@ -1,7 +1,7 @@
 import { Icon as LucideIcon } from '@rise-tools/kit/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import { event, response, setStateAction, state } from '@rise-tools/react'
+import { event, response, setStateAction } from '@rise-tools/react'
 import {
   Button,
   Circle,
@@ -15,6 +15,7 @@ import {
   XStack,
   YStack,
 } from '@rise-tools/tamagui/server'
+import { state } from '@rise-tools/server'
 
 export const models = {
   delivery: UI,
@@ -32,16 +33,21 @@ function UI() {
   )
 }
 
+const [name, setName] = state('')
+const [feedback, setFeedback] = state('')
+
 function FeedbackForm() {
-  const name = state('')
-  const feedback = state('')
-  const onFormSubmit = event(
-    ({ name, feedback }) => {
-      console.log('Form submitted', name, feedback)
-      return response(null).action(toast('Thank you for submitting your feedback')).action(goBack())
-    },
-    { args: { name, feedback } }
-  )
+  const onFormSubmit = () => {
+    console.log('Form submitted', name.get(), feedback.get())
+
+    // reset fields
+    setName('')
+    setFeedback('')
+
+    // return response
+    return response(null).action(toast('Thank you for submitting your feedback')).action(goBack())
+  }
+  
   return (
     <>
       <StackScreen options={{ title: 'Feedback' }} />
@@ -51,9 +57,9 @@ function FeedbackForm() {
           <Form onSubmit={onFormSubmit}>
             <YStack gap="$4">
               <Text>Name</Text>
-              <Input onChangeText={setStateAction(name)} />
+              <Input onChangeText={setName} />
               <Text>Feedback</Text>
-              <TextArea onChangeText={setStateAction(feedback)} />
+              <TextArea onChangeText={setFeedback} />
             </YStack>
             <Button onPress={onFormSubmit}>Submit</Button>
           </Form>
