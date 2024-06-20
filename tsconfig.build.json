@@ -29,6 +29,9 @@
     },
     {
       "path": "./packages/kit-haptics"
+    },
+    {
+      "path": "./packages/kit-forms"
     }
   ]
 }

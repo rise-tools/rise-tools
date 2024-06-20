@@ -2,15 +2,24 @@ import { createComponentDefinition } from '@rise-tools/react'
 
 import type * as Kit from './form'
 
-export const FormProvider = createComponentDefinition<typeof Kit.FormContext.Provider>(
-  '@rise-tools/kit-form/FormProvider'
+export const RiseForm = createComponentDefinition<typeof Kit.RiseForm>(
+  '@rise-tools/kit-forms/RiseForm'
 )
-
-export const Form = createComponentDefinition<typeof Kit.Form>('@rise-tools/kit-forms/Form')
-export const Input = createComponentDefinition<typeof Kit.Input>('@rise-tools/kit-forms/Input')
-export const TextArea = createComponentDefinition<typeof Kit.TextArea>(
-  '@rise-tools/kit-forms/TextArea'
+export const InputField = createComponentDefinition<typeof Kit.InputField>(
+  '@rise-tools/kit-forms/InputField'
 )
-export const FormButton = createComponentDefinition<typeof Kit.FormButton>(
-  '@rise-tools/kit-forms/FormButton'
+export const TextField = createComponentDefinition<typeof Kit.TextField>(
+  '@rise-tools/kit-forms/TextField'
+)
+export const SubmitButton = createComponentDefinition<typeof Kit.SubmitButton>(
+  '@rise-tools/kit-forms/SubmitButton'
+)
+export const CheckboxField = createComponentDefinition<typeof Kit.CheckboxField>(
+  '@rise-tools/kit-forms/CheckboxField'
+)
+export const SwitchField = createComponentDefinition<typeof Kit.SwitchField>(
+  '@rise-tools/kit-forms/SwitchField'
+)
+export const SliderField = createComponentDefinition<typeof Kit.SliderField>(
+  '@rise-tools/kit-forms/SliderField'
 )

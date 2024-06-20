@@ -1,37 +1,23 @@
+import { DraggableFlatList, DropdownButton, SelectField } from '@rise-tools/kit/server'
+import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import {
-  DraggableFlatList,
-  DropdownButton,
-  SelectField,
+  CheckboxField,
+  InputField,
+  RiseForm,
   SliderField,
+  SubmitButton,
   SwitchField,
-} from '@rise-tools/kit/server'
-import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
+  TextField,
+} from '@rise-tools/kit-forms/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import {
-  event,
-  eventPayload,
-  localStateExperimental,
-  response,
-  setStateAction,
-} from '@rise-tools/react'
-import {
-  Button,
-  Form,
-  H4,
-  Input,
-  Paragraph,
-  ScrollView,
-  Text,
-  YStack,
-} from '@rise-tools/tamagui/server'
+import { eventPayload, localStateExperimental, response, setStateAction } from '@rise-tools/react'
+import { Button, H4, Paragraph, ScrollView, Text, YStack } from '@rise-tools/tamagui/server'
 
 // eslint-disable-next-line
 export const models = {
   controls: UI,
   form: FormExample,
-  slider: SliderExample,
-  switch: SwitchExample,
   select: SelectExample,
   list: ListExample,
   toast: ShowToastExample,
@@ -44,8 +30,6 @@ function UI() {
       <StackScreen options={{ title: 'UI Controls' }} />
       <YStack>
         <Button onPress={navigate('form')}>Form</Button>
-        <Button onPress={navigate('slider')}>Slider</Button>
-        <Button onPress={navigate('switch')}>Switch</Button>
         <Button onPress={navigate('select')}>Select</Button>
         <Button onPress={navigate('list')}>List</Button>
         <Button onPress={navigate('toast')}>Toast</Button>
@@ -56,93 +40,23 @@ function UI() {
 }
 
 function FormExample() {
-  const userName = localStateExperimental('', 'form/userName')
-  const notification = localStateExperimental('', 'form/notification')
-  const onFormSubmit = event(
-    (state) => {
-      console.log(`Values: ${state}`)
-      return response(null)
-        .action(setStateAction(userName, ''))
-        .action(
-          setStateAction(
-            notification,
-            'Thank you for submitting the form! Check the logs on the backend to see the submitted values'
-          )
-        )
-    },
-    { args: { userName } }
-  )
   return (
-    <YStack gap="$8" padding="$4">
-      <YStack gap="$4">
-        <H4>Simple form</H4>
-        <Form onSubmit={onFormSubmit}>
-          <YStack gap="$4">
-            <Text>User name</Text>
-            <Input
-              value={userName}
-              onChangeText={[setStateAction(userName), setStateAction(notification, '')]}
-            />
-          </YStack>
-          <Text>{notification}</Text>
-          <Button onPress={onFormSubmit}>Submit form</Button>
-        </Form>
-      </YStack>
-    </YStack>
-  )
-}
-
-function SliderExample() {
-  const slider = localStateExperimental(0, 'slider/slider')
-
-  const sliderRangeStart = localStateExperimental(25, 'slider/range-start')
-  const sliderRangeEnd = localStateExperimental(75, 'slider/range-end')
-  const sliderWithReset = localStateExperimental(0, 'slider/with-reset')
-
-  return (
-    <YStack gap="$8" padding="$4">
-      <YStack gap="$4">
-        <H4>Single slider</H4>
-        <SliderField
-          value={[slider]}
-          onValueChange={setStateAction(slider, eventPayload([0, 0]))}
-        />
-      </YStack>
-      <YStack gap="$4">
-        <H4>Range slider</H4>
-        <SliderField
-          value={[sliderRangeStart, sliderRangeEnd]}
-          onValueChange={[
-            setStateAction(sliderRangeStart, eventPayload([0, 0])),
-            setStateAction(sliderRangeEnd, eventPayload([0, 1])),
-          ]}
-        />
-      </YStack>
-      <YStack gap="$4">
-        <H4>Resettable slider</H4>
-        <SliderField
-          value={[sliderWithReset]}
-          onValueChange={setStateAction(sliderWithReset, eventPayload([0, 0]))}
-          onSlideEnd={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-            return response(null).action(
-              setStateAction(sliderWithReset, sliderWithReset.initialValue)
-            )
-          }}
-        />
-        <Paragraph lineHeight="$3">
-          This slider will reset after 2 seconds to emulate backend validation with value overwrite.
-        </Paragraph>
-      </YStack>
-    </YStack>
-  )
-}
-
-function SwitchExample() {
-  const isChecked = localStateExperimental(false, 'switch/checked')
-  return (
-    <YStack gap="$8" padding="$4">
-      <SwitchField label="Toggle" value={isChecked} onCheckedChange={setStateAction(isChecked)} />
+    <YStack gap="$4" padding="$4">
+      <RiseForm
+        onSubmit={(values) => {
+          console.log('Form submitted', values)
+          return response(null)
+            .action(toast('Thank you for submitting your feedback'))
+            .action(goBack())
+        }}
+      >
+        <InputField id="name" label="Name" />
+        <TextField id="feedback" label="Feedback" />
+        <CheckboxField id="subscribe" label="Subscribe to newsletter" defaultChecked={true} />
+        <SliderField id="rating" label="Rating" defaultValue={[20, 60]} />
+        <SwitchField id="anonymous" label="I want to be anonymous" />
+        <SubmitButton pendingState={<Text>Submitting...</Text>}>Submit</SubmitButton>
+      </RiseForm>
     </YStack>
   )
 }
