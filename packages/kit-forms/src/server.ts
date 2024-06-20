@@ -11,3 +11,6 @@ export const Input = createComponentDefinition<typeof Kit.Input>('@rise-tools/ki
 export const TextArea = createComponentDefinition<typeof Kit.TextArea>(
   '@rise-tools/kit-forms/TextArea'
 )
+export const FormButton = createComponentDefinition<typeof Kit.FormButton>(
+  '@rise-tools/kit-forms/FormButton'
+)

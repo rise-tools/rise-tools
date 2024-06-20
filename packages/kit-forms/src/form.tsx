@@ -85,3 +85,20 @@ export function TextArea({ id, defaultValue, ...props }: TextAreaProps) {
     />
   )
 }
+
+type ButtonProps = Tamagui.ButtonProps & {
+  pendingState?: React.ReactNode
+}
+export const FormButton = ({ pendingState, ...props }: ButtonProps) => {
+  const formContext = useContext(FormContext)
+
+  if (pendingState && formContext.isSubmitting) {
+    return pendingState
+  }
+
+  return (
+    <Tamagui.Form.Trigger asChild>
+      <Tamagui.Button disabled={formContext.isSubmitting} {...props} />
+    </Tamagui.Form.Trigger>
+  )
+}

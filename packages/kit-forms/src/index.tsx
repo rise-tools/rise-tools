@@ -1,4 +1,4 @@
-import { Form, FormContext, Input, TextArea } from './form'
+import { Form, FormButton, FormContext, Input, TextArea } from './form'
 
 export const FormComponents = {
   '@rise-tools/kit-forms/Form': {
@@ -12,5 +12,8 @@ export const FormComponents = {
   },
   '@rise-tools/kit-forms/FormProvider': {
     component: FormContext.Provider,
+  },
+  '@rise-tools/kit-forms/FormButton': {
+    component: FormButton,
   },
 }

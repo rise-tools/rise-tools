@@ -1,6 +1,6 @@
 import { Icon as LucideIcon } from '@rise-tools/kit/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
-import { Form, Input, TextArea } from '@rise-tools/kit-forms/server'
+import { Form, FormButton, Input, TextArea } from '@rise-tools/kit-forms/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
 import { response } from '@rise-tools/react'
 import {
@@ -55,9 +55,7 @@ function FeedbackForm() {
               <Label htmlFor="feedback">Feedback</Label>
               <TextArea id="feedback" />
             </YStack>
-            <FormTrigger>
-              <Text>Submit</Text>
-            </FormTrigger>
+            <FormButton pendingState={<Text>Submitting...</Text>}>Submit</FormButton>
           </YStack>
         </Form>
       </YStack>
