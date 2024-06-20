@@ -1,22 +1,19 @@
 import { Icon as LucideIcon } from '@rise-tools/kit/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
+import { Form, Input, TextArea } from '@rise-tools/kit-forms/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import { event, response, setStateAction } from '@rise-tools/react'
+import { response } from '@rise-tools/react'
 import {
   Button,
   Circle,
-  Form,
   FormTrigger,
   H2,
   H3,
-  Input,
   Text,
-  TextArea,
   Theme,
   XStack,
   YStack,
 } from '@rise-tools/tamagui/server'
-import { state } from '@rise-tools/server'
 
 export const models = {
   delivery: UI,
@@ -34,35 +31,30 @@ function UI() {
   )
 }
 
-const [name, setName] = state('')
-const [feedback, setFeedback] = state('')
-
 function FeedbackForm() {
-  const onFormSubmit = () => {
-    console.log('Form submitted', name.get(), feedback.get())
-
-    // reset fields
-    setName('')
-    setFeedback('')
-
-    // return response
-    return response(null).action(toast('Thank you for submitting your feedback')).action(goBack())
-  }
-  
   return (
     <>
       <StackScreen options={{ title: 'Feedback' }} />
       <YStack gap="$4" padding="$4">
         <H2>Send feedback</H2>
         <YStack gap="$8" padding="$4">
-          <Form onSubmit={onFormSubmit}>
+          <Form
+            onSubmit={(values) => {
+              console.log('Form submitted', values)
+              return response(null)
+                .action(toast('Thank you for submitting your feedback'))
+                .action(goBack())
+            }}
+          >
             <YStack gap="$4">
               <Text>Name</Text>
-              <Input onChangeText={setName} />
+              <Input id="name" />
               <Text>Feedback</Text>
-              <TextArea onChangeText={setFeedback} />
+              <TextArea id="feedback" />
             </YStack>
-            <Button onPress={onFormSubmit}>Submit</Button>
+            <FormTrigger>
+              <Text>Submit</Text>
+            </FormTrigger>
           </Form>
         </YStack>
       </YStack>
@@ -159,7 +151,11 @@ function Section({ children }: { children: React.ReactNode }) {
 }
 
 function Title({ children }: { children: React.ReactNode }) {
-  return <H3 color="$backgroundFocus" lineHeight="$2">{children}</H3>
+  return (
+    <H3 color="$backgroundFocus" lineHeight="$2">
+      {children}
+    </H3>
+  )
 }
 
 function Content({ children }: { children: React.ReactNode }) {
