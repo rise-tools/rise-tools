@@ -1,9 +1,10 @@
-import { DraggableFlatList, DropdownButton, SelectField } from '@rise-tools/kit/server'
+import { DraggableFlatList } from '@rise-tools/kit/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import {
   CheckboxField,
   InputField,
   RiseForm,
+  SelectField,
   SliderField,
   SubmitButton,
   SwitchField,
@@ -11,14 +12,12 @@ import {
 } from '@rise-tools/kit-forms/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import { eventPayload, localStateExperimental, response, setStateAction } from '@rise-tools/react'
-import { Button, H4, Paragraph, ScrollView, Text, YStack } from '@rise-tools/tamagui/server'
+import { localStateExperimental, response, setStateAction } from '@rise-tools/react'
+import { Button, H4, ScrollView, Text, YStack } from '@rise-tools/tamagui/server'
 
-// eslint-disable-next-line
 export const models = {
   controls: UI,
   form: FormExample,
-  select: SelectExample,
   list: ListExample,
   toast: ShowToastExample,
   haptics: HapticsExample,
@@ -55,6 +54,12 @@ function FormExample() {
         <CheckboxField id="subscribe" label="Subscribe to newsletter" defaultChecked={true} />
         <SliderField id="rating" label="Rating" defaultValue={[20, 60]} />
         <SwitchField id="anonymous" label="I want to be anonymous" />
+        <SelectField
+          id="framework"
+          label="Which one you like?"
+          placeholder="No framework selected"
+          options={frameworks}
+        />
         <SubmitButton pendingState={<Text>Submitting...</Text>}>Submit</SubmitButton>
       </RiseForm>
     </YStack>
@@ -68,32 +73,6 @@ const frameworks = [
   { label: 'Next.js', key: 'next' },
   { label: 'Prefer not say', key: 'unknown' },
 ]
-
-function SelectExample() {
-  const selectedItem = localStateExperimental('', 'select/item')
-  return (
-    <YStack gap="$8" padding="$4">
-      <YStack>
-        <H4>Select</H4>
-        <SelectField
-          value={selectedItem}
-          onValueChange={setStateAction(selectedItem)}
-          unselectedLabel="Select your favorite framework"
-          options={frameworks}
-        />
-      </YStack>
-      <YStack>
-        <H4>Bottom sheet</H4>
-        <DropdownButton
-          id="select/dropdown-button"
-          value={selectedItem}
-          button={<Text>Select your favorite framework</Text>}
-          options={frameworks}
-        />
-      </YStack>
-    </YStack>
-  )
-}
 
 function ListExample() {
   const inventoryItems = localStateExperimental(frameworks, 'list/inventory')

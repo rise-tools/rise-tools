@@ -2,6 +2,7 @@ import {
   CheckboxField,
   InputField,
   RiseForm,
+  SelectField,
   SliderField,
   SubmitButton,
   SwitchField,
@@ -29,5 +30,8 @@ export const FormComponents = {
   },
   '@rise-tools/kit-forms/SliderField': {
     component: SliderField,
+  },
+  '@rise-tools/kit-forms/SelectField': {
+    component: SelectField,
   },
 }

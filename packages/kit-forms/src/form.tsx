@@ -1,7 +1,8 @@
-import { Check as CheckIcon } from '@tamagui/lucide-icons'
+import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import { createContext, useContext, useEffect, useState } from 'react'
 import React from 'react'
 import {
+  Adapt,
   Button,
   ButtonProps,
   Checkbox,
@@ -11,6 +12,9 @@ import {
   Input,
   InputProps,
   Label,
+  Select,
+  SelectProps,
+  Sheet,
   Slider,
   SliderProps,
   SliderThumb,
@@ -24,6 +28,7 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
+import { LinearGradient } from 'tamagui/linear-gradient'
 
 type FormContext = {
   values: Record<string, any>
@@ -146,7 +151,7 @@ export const CheckboxField = ({ id, label, defaultChecked, ...props }: CheckboxF
         {...props}
       >
         <Checkbox.Indicator>
-          <CheckIcon />
+          <Check />
         </Checkbox.Indicator>
       </Checkbox>
       <Label htmlFor={id}>{label}</Label>
@@ -202,6 +207,101 @@ export function SliderField({ id, label, defaultValue, ...props }: SliderFieldPr
         </SliderTrack>
         {defaultValue?.map((_, index) => <SliderThumb key={index} index={index} circular />)}
       </Slider>
+    </YStack>
+  )
+}
+
+type SelectFieldProps = Omit<SelectProps, 'onValueChange' | 'value'> & {
+  id: string
+  label?: string | React.ReactNode
+  placeholder?: string | React.ReactNode
+  options?: { key: string; label: string }[]
+}
+export function SelectField({ label, id, defaultValue, placeholder, ...props }: SelectFieldProps) {
+  const formContext = useContext(FormContext)
+  useEffect(() => {
+    formContext.setValue(id, defaultValue)
+  }, [])
+  return (
+    <YStack>
+      <Label htmlFor={id}>{label}</Label>
+      <Select
+        {...props}
+        id={id}
+        value={formContext.values[id]}
+        onValueChange={(value) => formContext.setValue(id, value)}
+        disablePreventBodyScroll
+      >
+        <Adapt platform="touch">
+          <Sheet modal dismissOnSnapToBottom animation="quick">
+            <Sheet.Overlay />
+            <Sheet.Frame>
+              <Sheet.ScrollView>
+                <Adapt.Contents />
+              </Sheet.ScrollView>
+            </Sheet.Frame>
+          </Sheet>
+        </Adapt>
+        <Select.Trigger>
+          <Select.Value placeholder={placeholder} />
+        </Select.Trigger>
+        <Select.Content zIndex={200000}>
+          <Select.ScrollUpButton
+            alignItems="center"
+            justifyContent="center"
+            position="relative"
+            width="$3"
+            height="$3"
+          >
+            <YStack zIndex={10}>
+              <ChevronUp size={20} />
+            </YStack>
+            <LinearGradient
+              start={[0, 0]}
+              end={[0, 1]}
+              fullscreen
+              colors={['$background', 'transparent']}
+              borderRadius="$4"
+            />
+          </Select.ScrollUpButton>
+          <Select.Viewport
+            animation="quick"
+            animateOnly={['transform', 'opacity']}
+            enterStyle={{ opacity: 0, y: -10 }}
+            exitStyle={{ opacity: 0, y: 10 }}
+            minWidth={200}
+          >
+            {props.options?.map((item, i) => {
+              return (
+                <Select.Item index={i} key={item.key} value={item.key}>
+                  <Select.ItemText>{item.label}</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              )
+            })}
+          </Select.Viewport>
+          <Select.ScrollDownButton
+            alignItems="center"
+            justifyContent="center"
+            position="relative"
+            width="$3"
+            height="$3"
+          >
+            <YStack zIndex={10}>
+              <ChevronDown size={20} />
+            </YStack>
+            <LinearGradient
+              start={[0, 0]}
+              end={[0, 1]}
+              fullscreen
+              colors={['transparent', '$background']}
+              borderRadius="$4"
+            />
+          </Select.ScrollDownButton>
+        </Select.Content>
+      </Select>
     </YStack>
   )
 }

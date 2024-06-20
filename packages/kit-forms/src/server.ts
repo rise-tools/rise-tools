@@ -23,3 +23,6 @@ export const SwitchField = createComponentDefinition<typeof Kit.SwitchField>(
 export const SliderField = createComponentDefinition<typeof Kit.SliderField>(
   '@rise-tools/kit-forms/SliderField'
 )
+export const SelectField = createComponentDefinition<typeof Kit.SelectField>(
+  '@rise-tools/kit-forms/SelectField'
+)
