@@ -9,6 +9,7 @@ import {
   FormTrigger,
   H2,
   H3,
+  Label,
   Text,
   Theme,
   XStack,
@@ -37,26 +38,28 @@ function FeedbackForm() {
       <StackScreen options={{ title: 'Feedback' }} />
       <YStack gap="$4" padding="$4">
         <H2>Send feedback</H2>
-        <YStack gap="$8" padding="$4">
-          <Form
-            onSubmit={(values) => {
-              console.log('Form submitted', values)
-              return response(null)
-                .action(toast('Thank you for submitting your feedback'))
-                .action(goBack())
-            }}
-          >
-            <YStack gap="$4">
-              <Text>Name</Text>
+        <Form
+          onSubmit={(values) => {
+            console.log('Form submitted', values)
+            return response(null)
+              .action(toast('Thank you for submitting your feedback'))
+              .action(goBack())
+          }}
+        >
+          <YStack gap="$4">
+            <YStack>
+              <Label htmlFor="name">Name</Label>
               <Input id="name" />
-              <Text>Feedback</Text>
+            </YStack>
+            <YStack>
+              <Label htmlFor="feedback">Feedback</Label>
               <TextArea id="feedback" />
             </YStack>
             <FormTrigger>
               <Text>Submit</Text>
             </FormTrigger>
-          </Form>
-        </YStack>
+          </YStack>
+        </Form>
       </YStack>
     </>
   )
