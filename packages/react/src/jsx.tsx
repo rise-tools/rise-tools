@@ -14,7 +14,7 @@ import {
 type ServerComponent = ComponentModelState<ServerEventModelState>
 type JSXFactory = (
   componentFactory: ((props: any) => ServerComponent | ReactElement) | undefined,
-  { children, ...passedProps }: Record<string, any>,
+  passedProps: Record<string, any>,
   key?: string
 ) => ServerComponent
 
@@ -30,7 +30,7 @@ export const jsx: JSXFactory = (componentFactory, { children, ...passedProps }, 
     return {
       $: 'component',
       component: 'Fragment',
-      children,
+      children: passedProps.children,
     }
   }
   const el = componentFactory(passedProps)
@@ -40,7 +40,7 @@ export const jsx: JSXFactory = (componentFactory, { children, ...passedProps }, 
   if (typeof el.type !== 'string') {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
-  const serialisedProps = Object.fromEntries(
+  const { children, ...props } = Object.fromEntries(
     Object.entries(passedProps).map(([key, value]) => {
       if (typeof value === 'function') {
         return [key, event(value)]
@@ -52,7 +52,7 @@ export const jsx: JSXFactory = (componentFactory, { children, ...passedProps }, 
     $: 'component',
     component: el.type,
     key,
-    props: serialisedProps,
+    props,
     children,
   }
 }

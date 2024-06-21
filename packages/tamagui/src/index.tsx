@@ -403,4 +403,7 @@ export const TamaguiComponents: ComponentRegistry = {
   LinearGradient: {
     component: LinearGradient,
   },
+  Theme: {
+    component: t.Theme,
+  },
 }
