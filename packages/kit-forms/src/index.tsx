@@ -12,7 +12,7 @@ import {
 } from './form'
 
 export const FormComponents = {
-  '@rise-tools/kit-forms/RiseForm': {
+  '@rise-tools/kit-forms/Form': {
     component: RiseForm,
   },
   '@rise-tools/kit-forms/InputField': {

@@ -2,9 +2,7 @@ import { createComponentDefinition } from '@rise-tools/react'
 
 import type * as Kit from './form'
 
-export const RiseForm = createComponentDefinition<typeof Kit.RiseForm>(
-  '@rise-tools/kit-forms/RiseForm'
-)
+export const RiseForm = createComponentDefinition<typeof Kit.RiseForm>('@rise-tools/kit-forms/Form')
 export const InputField = createComponentDefinition<typeof Kit.InputField>(
   '@rise-tools/kit-forms/InputField'
 )
