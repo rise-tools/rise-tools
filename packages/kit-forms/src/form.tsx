@@ -355,11 +355,18 @@ type ToggleGroupFieldProps = (
   label?: string | React.ReactNode
   options: { key: string; label: string }[]
 }
-export function ToggleGroupField({ id, label, defaultValue, ...props }: ToggleGroupFieldProps) {
+export function ToggleGroupField({
+  id,
+  label,
+  defaultValue,
+  orientation,
+  ...props
+}: ToggleGroupFieldProps) {
   const formContext = useContext(FormContext)
   useEffect(() => {
     formContext.setValue(id, defaultValue)
   }, [])
+  const Layout = orientation === 'vertical' ? YStack : XStack
   return (
     <YStack>
       <Label htmlFor={id}>{label}</Label>
@@ -371,11 +378,11 @@ export function ToggleGroupField({ id, label, defaultValue, ...props }: ToggleGr
         onValueChange={(value: string | string[]) => formContext.setValue(id, value)}
       >
         {props.options.map((item) => (
-          <XStack key={item.key} alignItems="center" gap="$4">
+          <Layout key={item.key} alignItems="center">
             <ToggleGroup.Item value={item.key}>
               {typeof item.label === 'string' ? <Text>{item.label}</Text> : item.label}
             </ToggleGroup.Item>
-          </XStack>
+          </Layout>
         ))}
       </ToggleGroup>
     </YStack>
