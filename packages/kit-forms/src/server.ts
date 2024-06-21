@@ -29,3 +29,6 @@ export const SelectField = createComponentDefinition<typeof Kit.SelectField>(
 export const RadioGroupField = createComponentDefinition<typeof Kit.RadioGroupField>(
   '@rise-tools/kit-forms/RadioGroupField'
 )
+export const ToggleGroupField = createComponentDefinition<typeof Kit.ToggleGroupField>(
+  '@rise-tools/kit-forms/ToggleGroupField'
+)

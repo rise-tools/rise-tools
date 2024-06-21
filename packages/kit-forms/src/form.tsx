@@ -12,6 +12,7 @@ import {
   Input,
   InputProps,
   Label,
+  LabelProps,
   RadioGroup,
   RadioGroupProps,
   Select,
@@ -25,8 +26,13 @@ import {
   Switch,
   SwitchProps,
   SwitchThumb,
+  Text,
   TextArea,
   TextAreaProps,
+  ToggleGroup,
+  ToggleGroupMultipleProps,
+  ToggleGroupProps,
+  ToggleGroupSingleProps,
   XStack,
   YStack,
 } from 'tamagui'
@@ -337,6 +343,41 @@ export function RadioGroupField({ id, label, defaultValue, ...props }: RadioGrou
           </XStack>
         ))}
       </RadioGroup>
+    </YStack>
+  )
+}
+
+type ToggleGroupFieldProps = (
+  | Omit<ToggleGroupSingleProps, 'onValueChange' | 'value'>
+  | Omit<ToggleGroupMultipleProps, 'onValueChange' | 'value'>
+) & {
+  id: string
+  label?: string | React.ReactNode
+  options: { key: string; label: string }[]
+}
+export function ToggleGroupField({ id, label, defaultValue, ...props }: ToggleGroupFieldProps) {
+  const formContext = useContext(FormContext)
+  useEffect(() => {
+    formContext.setValue(id, defaultValue)
+  }, [])
+  return (
+    <YStack>
+      <Label htmlFor={id}>{label}</Label>
+      <ToggleGroup
+        gap="$2"
+        {...props}
+        id={id}
+        value={formContext.values[id]}
+        onValueChange={(value: string | string[]) => formContext.setValue(id, value)}
+      >
+        {props.options.map((item) => (
+          <XStack key={item.key} alignItems="center" gap="$4">
+            <ToggleGroup.Item value={item.key}>
+              {typeof item.label === 'string' ? <Text>{item.label}</Text> : item.label}
+            </ToggleGroup.Item>
+          </XStack>
+        ))}
+      </ToggleGroup>
     </YStack>
   )
 }

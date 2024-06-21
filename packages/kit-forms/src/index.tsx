@@ -8,6 +8,7 @@ import {
   SubmitButton,
   SwitchField,
   TextField,
+  ToggleGroupField,
 } from './form'
 
 export const FormComponents = {
@@ -37,5 +38,8 @@ export const FormComponents = {
   },
   '@rise-tools/kit-forms/RadioGroupField': {
     component: RadioGroupField,
+  },
+  '@rise-tools/kit-forms/ToggleGroupField': {
+    component: ToggleGroupField,
   },
 }

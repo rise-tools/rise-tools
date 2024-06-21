@@ -10,6 +10,7 @@ import {
   SubmitButton,
   SwitchField,
   TextField,
+  ToggleGroupField,
 } from '@rise-tools/kit-forms/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
@@ -68,6 +69,16 @@ function FormExample() {
             { label: 'Red', key: 'red' },
             { label: 'Green', key: 'green' },
             { label: 'Blue', key: 'blue' },
+          ]}
+        />
+        <ToggleGroupField
+          id="car"
+          label="What car(s) do you have?"
+          type="multiple"
+          options={[
+            { label: 'suv', key: 'SUV' },
+            { label: 'sedan', key: 'Sedan' },
+            { label: 'coupe', key: 'Coupe' },
           ]}
         />
         <SubmitButton pendingState={<Text>Submitting...</Text>}>Submit</SubmitButton>
