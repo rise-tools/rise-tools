@@ -62,21 +62,6 @@ export const SVGComponents = {
   '@rise-tools/kit-svg/Svg': {
     component: SVG.Svg,
   },
-  '@rise-tools/kit-svg/SvgAst': {
-    component: SVG.SvgAst,
-  },
-  '@rise-tools/kit-svg/SvgFromUri': {
-    component: SVG.SvgFromUri,
-  },
-  '@rise-tools/kit-svg/SvgFromXml': {
-    component: SVG.SvgFromXml,
-  },
-  '@rise-tools/kit-svg/SvgUri': {
-    component: SVG.SvgUri,
-  },
-  '@rise-tools/kit-svg/SvgXml': {
-    component: SVG.SvgXml,
-  },
   '@rise-tools/kit-svg/Symbol': {
     component: SVG.Symbol,
   },
@@ -92,16 +77,16 @@ export const SVGComponents = {
   '@rise-tools/kit-svg/Use': {
     component: SVG.Use,
   },
+  '@rise-tools/kit-svg/SvgXml': {
+    component: SVG.SvgXml,
+  },
   '@rise-tools/kit-svg/SvgCss': {
     component: SVGCSS.SvgCss,
   },
+  '@rise-tools/kit-svg/SvgUri': {
+    component: SVG.SvgUri,
+  },
   '@rise-tools/kit-svg/SvgCssUri': {
     component: SVGCSS.SvgCssUri,
-  },
-  '@rise-tools/kit-svg/SvgWithCss': {
-    component: SVGCSS.SvgWithCss,
-  },
-  '@rise-tools/kit-svg/SvgWithCssUri': {
-    component: SVGCSS.SvgWithCssUri,
   },
 }

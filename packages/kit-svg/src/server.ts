@@ -32,15 +32,6 @@ export const Rect = createComponentDefinition<typeof SVG.Rect>('@rise-tools/kit-
 export const Shape = createComponentDefinition<typeof SVG.Shape>('@rise-tools/kit-svg/Shape')
 export const Stop = createComponentDefinition<typeof SVG.Stop>('@rise-tools/kit-svg/Stop')
 export const Svg = createComponentDefinition<typeof SVG.Svg>('@rise-tools/kit-svg/Svg')
-export const SvgAst = createComponentDefinition<typeof SVG.SvgAst>('@rise-tools/kit-svg/SvgAst')
-export const SvgFromUri = createComponentDefinition<typeof SVG.SvgFromUri>(
-  '@rise-tools/kit-svg/SvgFromUri'
-)
-export const SvgFromXml = createComponentDefinition<typeof SVG.SvgFromXml>(
-  '@rise-tools/kit-svg/SvgFromXml'
-)
-export const SvgUri = createComponentDefinition<typeof SVG.SvgUri>('@rise-tools/kit-svg/SvgUri')
-export const SvgXml = createComponentDefinition<typeof SVG.SvgXml>('@rise-tools/kit-svg/SvgXml')
 export const Symbol = createComponentDefinition<typeof SVG.Symbol>('@rise-tools/kit-svg/Symbol')
 export const Text = createComponentDefinition<typeof SVG.Text>('@rise-tools/kit-svg/Text')
 export const TextPath = createComponentDefinition<typeof SVG.TextPath>(
@@ -49,13 +40,10 @@ export const TextPath = createComponentDefinition<typeof SVG.TextPath>(
 export const TSpan = createComponentDefinition<typeof SVG.TSpan>('@rise-tools/kit-svg/TSpan')
 export const Use = createComponentDefinition<typeof SVG.Use>('@rise-tools/kit-svg/Use')
 
+export const SvgXml = createComponentDefinition<typeof SVG.SvgXml>('@rise-tools/kit-svg/SvgXml')
 export const SvgCss = createComponentDefinition<typeof SVGCSS.SvgCss>('@rise-tools/kit-svg/SvgCss')
+
+export const SvgUri = createComponentDefinition<typeof SVG.SvgUri>('@rise-tools/kit-svg/SvgUri')
 export const SvgCssUri = createComponentDefinition<typeof SVGCSS.SvgCssUri>(
   '@rise-tools/kit-svg/SvgCssUri'
-)
-export const SvgWithCss = createComponentDefinition<typeof SVGCSS.SvgWithCss>(
-  '@rise-tools/kit-svg/SvgWithCss'
-)
-export const SvgWithCssUri = createComponentDefinition<typeof SVGCSS.SvgWithCssUri>(
-  '@rise-tools/kit-svg/SvgWithCssUri'
 )
