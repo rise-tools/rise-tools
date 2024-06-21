@@ -21,15 +21,30 @@ it('should render fragments', () => {
       <View>bar</View>
     </>
   ).toMatchInlineSnapshot(`
+Object {
+  "$": "component",
+  "$staticChildren": true,
+  "children": Array [
     Object {
       "$": "component",
-      "children": Array [
-        "foo",
-        "bar",
-      ],
-      "component": "Fragment",
-    }
-  `)
+      "children": "foo",
+      "component": "View",
+      "key": undefined,
+      "props": Object {},
+    },
+    Object {
+      "$": "component",
+      "children": "bar",
+      "component": "View",
+      "key": undefined,
+      "props": Object {},
+    },
+  ],
+  "component": "@rise-tools/react/Fragment",
+  "key": undefined,
+  "props": Object {},
+}
+`)
 })
 
 it('should turn function props into event', () => {
@@ -59,24 +74,24 @@ it('should set static children', () => {
         "children": Array [
           Object {
             "$": "component",
-            "children": "foo",
-            "component": "DummyComponent",
+            "children": "Foo",
+            "component": "View",
             "key": undefined,
             "props": Object {},
           },
           Object {
             "$": "component",
-            "children": "bar",
-            "component": "DummyComponent",
+            "children": "Bar",
+            "component": "View",
             "key": undefined,
             "props": Object {},
           },
         ],
-        "component": "DummyComponent",
+        "component": "View",
         "key": undefined,
         "props": Object {},
       },
-      "component": "DummyComponent",
+      "component": "View",
       "key": undefined,
       "props": Object {},
     }
