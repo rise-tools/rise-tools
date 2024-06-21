@@ -18,7 +18,7 @@
       "@rise-tools/kit-haptics": ["./packages/kit-haptics/src"],
       "@rise-tools/kit-haptics/server": ["./packages/kit-haptics/src/server"],
       "@rise-tools/kit-svg": ["./packages/kit-svg/src"],
-      "@rise-tools/kit-svg/server": ["./packages/kit-svg/src/server"]
+      "@rise-tools/kit-svg/server": ["./packages/kit-svg/src/server"],
       "@rise-tools/kit-linking": ["./packages/kit-linking/src"],
       "@rise-tools/kit-linking/server": ["./packages/kit-linking/src/server"]
     },

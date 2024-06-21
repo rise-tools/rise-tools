@@ -7,8 +7,8 @@ import {
 } from '@rise-tools/kit/server'
 import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
-import { Circle, Svg, SvgCss, SvgCssUri } from '@rise-tools/kit-svg/server'
 import { openSettings, openURL } from '@rise-tools/kit-linking/server'
+import { Circle, Svg, SvgUri, SvgXml } from '@rise-tools/kit-svg/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
 import {
   event,
@@ -72,7 +72,7 @@ function SVGExample() {
       </YStack>
       <YStack>
         <H4>SVG from URI</H4>
-        <SvgCssUri
+        <SvgUri
           width="100"
           height="100"
           uri="https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/ruby.svg"
@@ -81,17 +81,12 @@ function SVGExample() {
       </YStack>
       <YStack>
         <H4>SVG string</H4>
-        <SvgCss
+        <SvgXml
           width="100"
           height="100"
           xml={`
             <svg width="32" height="32" viewBox="0 0 32 32">
-              <style>
-                .red {
-                  fill: #ff0000;
-                }
-              </style>
-              <rect class="red" x="0" y="0" width="32" height="32" />
+              <rect fill="#ff0000" x="0" y="0" width="32" height="32" />
             </svg>
           `}
         />
