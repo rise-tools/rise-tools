@@ -104,34 +104,34 @@ function FormExample() {
         }}
       >
         <InputField id="name" label="Input" placeholder="What is your name?" />
-        <TextField id="hobby" label="Textarea" placeholder="What is your hobby?" />
-        <CheckboxField id="checkbox" label="Checkbox" defaultChecked={true} />
-        <SliderField id="rating" label="Rating" defaultValue={[20, 60]} />
+        <TextField id="feedback" label="Textarea" placeholder="What do you think about Rise?" />
+        <CheckboxField id="checkbox" label="I already starred this project on Github" />
+        <SliderField id="rating" label="Rate us" defaultValue={[0]} />
         <SwitchField id="anonymous" label="I want to be anonymous" />
         <SelectField
           id="framework"
-          label="Which one you like?"
-          placeholder="No framework selected"
+          label="What is your favorite frontend framework?"
+          placeholder="Select something!"
           options={frameworks}
         />
-        <RadioGroupField
-          id="color"
-          label="Favorite color"
-          options={[
-            { label: 'Red', key: 'red' },
-            { label: 'Green', key: 'green' },
-            { label: 'Blue', key: 'blue' },
-          ]}
-        />
         <ToggleGroupField
-          id="car"
-          label="What car(s) do you have?"
+          id="platforms"
+          label="What platforms do you target?"
           type="multiple"
           orientation="vertical"
           options={[
-            { label: 'suv', key: 'SUV' },
-            { label: 'sedan', key: 'Sedan' },
-            { label: 'coupe', key: 'Coupe' },
+            { label: 'Web', key: 'web' },
+            { label: 'iOS', key: 'ios' },
+            { label: 'Android', key: 'android' },
+          ]}
+        />
+        <RadioGroupField
+          id="color"
+          label="What is your dev setup?"
+          options={[
+            { label: 'Visual Studio Code', key: 'vscode' },
+            { label: 'Vim / Emacs', key: 'hacker' },
+            { label: 'Notepad', key: 'notepad' },
           ]}
         />
         <SubmitButton pendingState={<Text>Submitting...</Text>}>Submit</SubmitButton>

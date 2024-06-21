@@ -10,7 +10,7 @@ export function App() {
 
 LogBox.ignoreLogs([
   // https://github.com/tamagui/tamagui/issues/1828
-  /bad setState[\s\S]*Theme/,
+  /bad setState[\s\S]/,
   // https://github.com/tamagui/tamagui/issues/2592
   /Warning, duplicate ID for input/
 ]) 
