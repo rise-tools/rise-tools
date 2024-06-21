@@ -41,7 +41,7 @@ function UI() {
 
 function FormExample() {
   return (
-    <YStack gap="$4" padding="$4">
+    <ScrollView contentContainerStyle={{ padding: '$4' }}>
       <RiseForm
         onSubmit={(values) => {
           console.log('Form submitted', values)
@@ -72,7 +72,7 @@ function FormExample() {
         />
         <SubmitButton pendingState={<Text>Submitting...</Text>}>Submit</SubmitButton>
       </RiseForm>
-    </YStack>
+    </ScrollView>
   )
 }
 
