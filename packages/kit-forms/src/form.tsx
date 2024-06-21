@@ -366,25 +366,25 @@ export function ToggleGroupField({
   useEffect(() => {
     formContext.setValue(id, defaultValue)
   }, [])
-  const Layout = orientation === 'vertical' ? YStack : XStack
   return (
     <YStack>
       <Label htmlFor={id}>{label}</Label>
-      <ToggleGroup
-        gap="$2"
-        {...props}
-        id={id}
-        value={formContext.values[id]}
-        onValueChange={(value: string | string[]) => formContext.setValue(id, value)}
-      >
-        {props.options.map((item) => (
-          <Layout key={item.key} alignItems="center">
-            <ToggleGroup.Item value={item.key}>
+      <XStack flexDirection={orientation === 'horizontal' ? 'row' : 'column'}>
+        <ToggleGroup
+          gap="$2"
+          {...props}
+          orientation={orientation}
+          id={id}
+          value={formContext.values[id]}
+          onValueChange={(value: string | string[]) => formContext.setValue(id, value)}
+        >
+          {props.options.map((item) => (
+            <ToggleGroup.Item key={item.key} value={item.key}>
               {typeof item.label === 'string' ? <Text>{item.label}</Text> : item.label}
             </ToggleGroup.Item>
-          </Layout>
-        ))}
-      </ToggleGroup>
+          ))}
+        </ToggleGroup>
+      </XStack>
     </YStack>
   )
 }

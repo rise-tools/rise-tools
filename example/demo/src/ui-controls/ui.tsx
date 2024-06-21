@@ -75,6 +75,7 @@ function FormExample() {
           id="car"
           label="What car(s) do you have?"
           type="multiple"
+          orientation="vertical"
           options={[
             { label: 'suv', key: 'SUV' },
             { label: 'sedan', key: 'Sedan' },
