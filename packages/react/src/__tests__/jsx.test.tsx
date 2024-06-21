@@ -1,7 +1,7 @@
 /* @jsxImportSource .. */
 
 import { createComponentDefinition } from '../jsx-runtime'
-import { isComponentModelState, isEventModelState } from '../rise'
+import { ComponentModelState, isComponentModelState, isEventModelState } from '../rise'
 
 const View = createComponentDefinition('View')
 
@@ -21,30 +21,30 @@ it('should render fragments', () => {
       <View>bar</View>
     </>
   ).toMatchInlineSnapshot(`
-Object {
-  "$": "component",
-  "$staticChildren": true,
-  "children": Array [
     Object {
       "$": "component",
-      "children": "foo",
-      "component": "View",
+      "$staticChildren": true,
+      "children": Array [
+        Object {
+          "$": "component",
+          "children": "foo",
+          "component": "View",
+          "key": undefined,
+          "props": Object {},
+        },
+        Object {
+          "$": "component",
+          "children": "bar",
+          "component": "View",
+          "key": undefined,
+          "props": Object {},
+        },
+      ],
+      "component": "@rise-tools/react/Fragment",
       "key": undefined,
       "props": Object {},
-    },
-    Object {
-      "$": "component",
-      "children": "bar",
-      "component": "View",
-      "key": undefined,
-      "props": Object {},
-    },
-  ],
-  "component": "@rise-tools/react/Fragment",
-  "key": undefined,
-  "props": Object {},
-}
-`)
+    }
+  `)
 })
 
 it('should turn function props into event', () => {
