@@ -3,6 +3,7 @@ import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/serve
 import {
   CheckboxField,
   InputField,
+  RadioGroupField,
   RiseForm,
   SelectField,
   SliderField,
@@ -59,6 +60,15 @@ function FormExample() {
           label="Which one you like?"
           placeholder="No framework selected"
           options={frameworks}
+        />
+        <RadioGroupField
+          id="color"
+          label="Favorite color"
+          options={[
+            { label: 'Red', key: 'red' },
+            { label: 'Green', key: 'green' },
+            { label: 'Blue', key: 'blue' },
+          ]}
         />
         <SubmitButton pendingState={<Text>Submitting...</Text>}>Submit</SubmitButton>
       </RiseForm>

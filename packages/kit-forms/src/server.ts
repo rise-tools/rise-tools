@@ -26,3 +26,6 @@ export const SliderField = createComponentDefinition<typeof Kit.SliderField>(
 export const SelectField = createComponentDefinition<typeof Kit.SelectField>(
   '@rise-tools/kit-forms/SelectField'
 )
+export const RadioGroupField = createComponentDefinition<typeof Kit.RadioGroupField>(
+  '@rise-tools/kit-forms/RadioGroupField'
+)

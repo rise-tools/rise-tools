@@ -12,6 +12,8 @@ import {
   Input,
   InputProps,
   Label,
+  RadioGroup,
+  RadioGroupProps,
   Select,
   SelectProps,
   Sheet,
@@ -67,7 +69,7 @@ export function RiseForm({ children, onSubmit, ...props }: RiseFormProps) {
         setValue: (key, value) => setValues((state) => ({ ...state, [key]: value })),
       }}
     >
-      <Form {...props} onSubmit={submit}>
+      <Form gap="$4" {...props} onSubmit={submit}>
         {children}
       </Form>
     </FormContext.Provider>
@@ -215,7 +217,7 @@ type SelectFieldProps = Omit<SelectProps, 'onValueChange' | 'value'> & {
   id: string
   label?: string | React.ReactNode
   placeholder?: string | React.ReactNode
-  options?: { key: string; label: string }[]
+  options: { key: string; label: string }[]
 }
 export function SelectField({ label, id, defaultValue, placeholder, ...props }: SelectFieldProps) {
   const formContext = useContext(FormContext)
@@ -271,7 +273,7 @@ export function SelectField({ label, id, defaultValue, placeholder, ...props }: 
             exitStyle={{ opacity: 0, y: 10 }}
             minWidth={200}
           >
-            {props.options?.map((item, i) => {
+            {props.options.map((item, i) => {
               return (
                 <Select.Item index={i} key={item.key} value={item.key}>
                   <Select.ItemText>{item.label}</Select.ItemText>
@@ -302,6 +304,39 @@ export function SelectField({ label, id, defaultValue, placeholder, ...props }: 
           </Select.ScrollDownButton>
         </Select.Content>
       </Select>
+    </YStack>
+  )
+}
+
+type RadioGroupFieldProps = Omit<RadioGroupProps, 'onValueChange' | 'value'> & {
+  id: string
+  label?: string | React.ReactNode
+  options: { key: string; label: string }[]
+}
+export function RadioGroupField({ id, label, defaultValue, ...props }: RadioGroupFieldProps) {
+  const formContext = useContext(FormContext)
+  useEffect(() => {
+    formContext.setValue(id, defaultValue)
+  }, [])
+  return (
+    <YStack>
+      <Label htmlFor={id}>{label}</Label>
+      <RadioGroup
+        gap="$2"
+        {...props}
+        id={id}
+        value={formContext.values[id]}
+        onValueChange={(value) => formContext.setValue(id, value)}
+      >
+        {props.options.map((item) => (
+          <XStack key={item.key} alignItems="center" gap="$4">
+            <RadioGroup.Item value={item.key} id={item.key}>
+              <RadioGroup.Indicator />
+            </RadioGroup.Item>
+            <Label htmlFor={item.key}>{item.label}</Label>
+          </XStack>
+        ))}
+      </RadioGroup>
     </YStack>
   )
 }

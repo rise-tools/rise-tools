@@ -1,6 +1,7 @@
 import {
   CheckboxField,
   InputField,
+  RadioGroupField,
   RiseForm,
   SelectField,
   SliderField,
@@ -33,5 +34,8 @@ export const FormComponents = {
   },
   '@rise-tools/kit-forms/SelectField': {
     component: SelectField,
+  },
+  '@rise-tools/kit-forms/RadioGroupField': {
+    component: RadioGroupField,
   },
 }
