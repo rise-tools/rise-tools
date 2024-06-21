@@ -19,12 +19,8 @@ import {
   Sheet,
   Slider,
   SliderProps,
-  SliderThumb,
-  SliderTrack,
-  SliderTrackActive,
   Switch,
   SwitchProps,
-  SwitchThumb,
   Text,
   TextArea,
   TextAreaProps,
@@ -183,7 +179,7 @@ export function SwitchField({ id, defaultChecked, label, ...props }: SwitchField
         checked={formContext.values[id]}
         onCheckedChange={(checked) => formContext.setValue(id, checked)}
       >
-        <SwitchThumb animation="quick" />
+        <Switch.Thumb animation="quick" />
       </Switch>
     </XStack>
   )
@@ -208,10 +204,10 @@ export function SliderField({ id, label, defaultValue, ...props }: SliderFieldPr
         defaultValue={defaultValue}
         onValueChange={(value) => formContext.setValue(id, value)}
       >
-        <SliderTrack>
-          <SliderTrackActive />
-        </SliderTrack>
-        {defaultValue?.map((_, index) => <SliderThumb key={index} index={index} circular />)}
+        <Slider.Track>
+          <Slider.TrackActive />
+        </Slider.Track>
+        {defaultValue?.map((_, index) => <Slider.Thumb key={index} index={index} circular />)}
       </Slider>
     </YStack>
   )

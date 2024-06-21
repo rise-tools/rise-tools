@@ -9,8 +9,10 @@ export function App() {
 }
 
 LogBox.ignoreLogs([
-  // Safe workaround for a pending fix: https://github.com/tamagui/tamagui/issues/1828
+  // https://github.com/tamagui/tamagui/issues/1828
   /bad setState[\s\S]*Theme/,
+  // https://github.com/tamagui/tamagui/issues/2592
+  /arning, duplicate ID for input/
 ]) 
 
 registerRootComponent(App);

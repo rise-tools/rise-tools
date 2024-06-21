@@ -103,9 +103,9 @@ function FormExample() {
             .action(goBack())
         }}
       >
-        <InputField id="name" label="Name" />
-        <TextField id="feedback" label="Feedback" />
-        <CheckboxField id="subscribe" label="Subscribe to newsletter" defaultChecked={true} />
+        <InputField id="name" label="Input" placeholder="What is your name?" />
+        <TextField id="hobby" label="Textarea" placeholder="What is your hobby?" />
+        <CheckboxField id="checkbox" label="Checkbox" defaultChecked={true} />
         <SliderField id="rating" label="Rating" defaultValue={[20, 60]} />
         <SwitchField id="anonymous" label="I want to be anonymous" />
         <SelectField
