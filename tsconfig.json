@@ -3,7 +3,7 @@
   "compilerOptions": {
     "paths": {
       "@rise-tools/react": ["./packages/react/src"],
-      "@rise-tools/react/jsx-runtime": ["./packages/react/src/jsx"],
+      "@rise-tools/react/jsx-runtime": ["./packages/react/src/jsx-runtime"],
       "@rise-tools/ws-client": ["./packages/ws-client/src"],
       "@rise-tools/http-client": ["./packages/http-client/src"],
       "@rise-tools/server": ["./packages/server/src"],
