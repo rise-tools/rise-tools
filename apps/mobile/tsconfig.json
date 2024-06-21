@@ -39,6 +39,8 @@
     {
       "path": "../../packages/kit-svg"
     },
-    
+    {
+      "path": "../../packages/kit-linking"
+    }
   ]
 }

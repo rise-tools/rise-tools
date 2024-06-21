@@ -8,6 +8,7 @@ import {
 import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { Circle, Svg, SvgCss, SvgCssUri } from '@rise-tools/kit-svg/server'
+import { openSettings, openURL } from '@rise-tools/kit-linking/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
 import {
   event,
@@ -38,6 +39,7 @@ export const models = {
   toast: ShowToastExample,
   haptics: HapticsExample,
   svg: SVGExample,
+  linking: LinkingExample,
 }
 
 function UI() {
@@ -53,6 +55,7 @@ function UI() {
         <Button onPress={navigate('toast')}>Toast</Button>
         <Button onPress={navigate('haptics')}>Haptics</Button>
         <Button onPress={navigate('svg')}>SVG</Button>
+        <Button onPress={navigate('linking')}>Linking</Button>
       </YStack>
     </>
   )
@@ -93,6 +96,19 @@ function SVGExample() {
           `}
         />
       </YStack>
+    </YStack>
+  )
+}
+
+function LinkingExample() {
+  return (
+    <YStack>
+      <Button onPress={openURL('https://rise.tools')}>
+        <Text>Go to Rise Tools website</Text>
+      </Button>
+      <Button onPress={openSettings()}>
+        <Text>Go to Settings</Text>
+      </Button>
     </YStack>
   )
 }
