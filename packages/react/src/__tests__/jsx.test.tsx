@@ -71,7 +71,7 @@ it('should set static children', () => {
       "children": Object {
         "$": "component",
         "$staticChildren": true,
-        "children": StaticChildrenArray [
+        "children": Array [
           Object {
             "$": "component",
             "children": "Foo",
@@ -82,6 +82,53 @@ it('should set static children', () => {
           Object {
             "$": "component",
             "children": "Bar",
+            "component": "View",
+            "key": undefined,
+            "props": Object {},
+          },
+        ],
+        "component": "View",
+        "key": undefined,
+        "props": Object {},
+      },
+      "component": "View",
+      "key": undefined,
+      "props": Object {},
+    }
+  `)
+  // Since DynamicSection maps over children, its type should change from static to dynamic
+  const DynamicSection = ({ children }) => {
+    return (
+      <View>
+        <View>
+          {children.map((_el, idx) => (
+            <View>{idx}</View>
+          ))}
+        </View>
+      </View>
+    )
+  }
+  expect(
+    <DynamicSection>
+      <View>Foo</View>
+      <View>Bar</View>
+    </DynamicSection>
+  ).toMatchInlineSnapshot(`
+    Object {
+      "$": "component",
+      "children": Object {
+        "$": "component",
+        "children": Array [
+          Object {
+            "$": "component",
+            "children": 0,
+            "component": "View",
+            "key": undefined,
+            "props": Object {},
+          },
+          Object {
+            "$": "component",
+            "children": 1,
             "component": "View",
             "key": undefined,
             "props": Object {},
