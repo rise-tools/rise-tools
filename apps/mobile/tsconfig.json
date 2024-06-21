@@ -37,6 +37,9 @@
       "path": "../../packages/kit-tamagui-toast"
     },
     {
+      "path": "../../packages/kit-svg"
+    },
+    {
       "path": "../../packages/kit-linking"
     }
   ]

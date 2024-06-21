@@ -8,6 +8,7 @@ import {
 import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { openSettings, openURL } from '@rise-tools/kit-linking/server'
+import { Circle, Svg, SvgUri, SvgXml } from '@rise-tools/kit-svg/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
 import {
   event,
@@ -37,6 +38,7 @@ export const models = {
   list: ListExample,
   toast: ShowToastExample,
   haptics: HapticsExample,
+  svg: SVGExample,
   linking: LinkingExample,
 }
 
@@ -52,9 +54,44 @@ function UI() {
         <Button onPress={navigate('list')}>List</Button>
         <Button onPress={navigate('toast')}>Toast</Button>
         <Button onPress={navigate('haptics')}>Haptics</Button>
+        <Button onPress={navigate('svg')}>SVG</Button>
         <Button onPress={navigate('linking')}>Linking</Button>
       </YStack>
     </>
+  )
+}
+
+function SVGExample() {
+  return (
+    <YStack gap="$8" padding="$4">
+      <YStack>
+        <H4>SVG</H4>
+        <Svg height="100" width="100" viewBox="0 0 100 100">
+          <Circle cx="50" cy="50" r="45" stroke="blue" strokeWidth="2.5" fill="green" />
+        </Svg>
+      </YStack>
+      <YStack>
+        <H4>SVG from URI</H4>
+        <SvgUri
+          width="100"
+          height="100"
+          uri="https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/ruby.svg"
+          onError={toast('Failed to load SVG from URI')}
+        />
+      </YStack>
+      <YStack>
+        <H4>SVG string</H4>
+        <SvgXml
+          width="100"
+          height="100"
+          xml={`
+            <svg width="32" height="32" viewBox="0 0 32 32">
+              <rect fill="#ff0000" x="0" y="0" width="32" height="32" />
+            </svg>
+          `}
+        />
+      </YStack>
+    </YStack>
   )
 }
 

@@ -22,6 +22,7 @@
     "@rise-tools/kit-haptics": "0.2.0",
     "@rise-tools/kit-expo-router": "0.2.0",
     "@rise-tools/kit-tamagui-toast": "0.2.0",
+    "@rise-tools/kit-svg": "0.2.0",
     "@rise-tools/kit-linking": "0.2.0",
     "@shopify/react-native-skia": "1.2.3",
     "@tamagui/font-inter": "^1.100.3",
