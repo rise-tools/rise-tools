@@ -71,7 +71,7 @@ it('should set static children', () => {
       "children": Object {
         "$": "component",
         "$staticChildren": true,
-        "children": Array [
+        "children": StaticChildrenArray [
           Object {
             "$": "component",
             "children": "Foo",

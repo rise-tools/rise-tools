@@ -18,9 +18,14 @@ type JSXFactory = (
   key?: string
 ) => ServerComponent
 
-export const jsxs: JSXFactory = (componentFactory, passedProps, key) => {
-  passedProps.children.$static = true
-  return jsx(componentFactory, passedProps, key)
+class StaticChildrenArray extends Array {}
+
+export const jsxs: JSXFactory = (componentFactory, { children, ...passedProps }, key) => {
+  return jsx(
+    componentFactory,
+    { ...passedProps, children: StaticChildrenArray.from(children) },
+    key
+  )
 }
 
 export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
@@ -52,7 +57,7 @@ export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
     key,
     props,
     children,
-    ...(children?.$static ? { $staticChildren: true } : {}),
+    ...(children instanceof StaticChildrenArray ? { $staticChildren: true } : {}),
   }
 }
 
