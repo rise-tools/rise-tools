@@ -14,7 +14,7 @@ import {
 type ServerComponent = ComponentModelState<ServerEventModelState>
 type JSXFactory = (
   componentFactory: ((props: any) => ServerComponent | ReactElement) | undefined,
-  passedProps: Record<string, any>,
+  { children, ...passedProps }: Record<string, any>,
   key?: string
 ) => ServerComponent
 
@@ -25,7 +25,7 @@ export const jsxs: JSXFactory = (...args) => {
   }
 }
 
-export const jsx: JSXFactory = (componentFactory, { children, ...passedProps }, key) => {
+export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
   if (typeof componentFactory === 'undefined') {
     return {
       $: 'component',
