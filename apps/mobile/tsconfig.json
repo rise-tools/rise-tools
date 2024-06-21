@@ -35,6 +35,9 @@
     },
     {
       "path": "../../packages/kit-tamagui-toast"
+    },
+    {
+      "path": "../../packages/kit-linking"
     }
   ]
 }
