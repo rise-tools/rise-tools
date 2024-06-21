@@ -15,6 +15,8 @@
       "@rise-tools/kit-expo-router/server": ["./packages/kit-expo-router/src/server"],
       "@rise-tools/kit-tamagui-toast": ["./packages/kit-tamagui-toast/src"],
       "@rise-tools/kit-tamagui-toast/server": ["./packages/kit-tamagui-toast/src/server"],
+      "@rise-tools/kit-lucide-icons": ["./packages/kit-lucide-icons/src"],
+      "@rise-tools/kit-lucide-icons/server": ["./packages/kit-lucide-icons/src/server"],
       "@rise-tools/kit-haptics": ["./packages/kit-haptics/src"],
       "@rise-tools/kit-haptics/server": ["./packages/kit-haptics/src/server"],
       "@rise-tools/kit-forms": ["./packages/kit-forms/src"],
