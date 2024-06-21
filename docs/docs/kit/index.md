@@ -14,6 +14,7 @@ import tamagui from '@rise-tools/kit-tamagui'
 import useHapticsActions from '@rise-tools/kit-haptics'
 import useExpoRouterActions from '@rise-tools/kit-expo-router'
 import useToastActions from '@rise-tools/kit-toast'
+import useToastActions from '@rise-tools/kit-linking'
 
 <Rise
     components={{
@@ -24,6 +25,7 @@ import useToastActions from '@rise-tools/kit-toast'
         ...useExpoRouterActions(),
         ...useToastActions(),
         ...useHapticsActions(),
+        ...useLinkingActions()
     }}
 />
 ```
@@ -37,4 +39,6 @@ import useToastActions from '@rise-tools/kit-toast'
 ### Haptics
 
 ### Forms
+
+### Linking
 

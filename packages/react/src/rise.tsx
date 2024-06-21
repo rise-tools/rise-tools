@@ -1,4 +1,5 @@
 import React, { useCallback, useContext } from 'react'
+import { jsx, jsxs } from 'react/jsx-runtime'
 
 import { LocalState, useLocalStateValues } from './state'
 import { useStream } from './streams'
@@ -35,6 +36,7 @@ export type ComponentModelState<T = EventModelState> = {
   component: ComponentIdentifier
   children?: ModelState<T>
   props?: Record<string, ModelState<T>>
+  $staticChildren?: boolean
 }
 type ReferencedComponentModelState<T = EventModelState> = ComponentModelState<T> & {
   path: Path
@@ -198,11 +200,11 @@ export function BaseRise({
           )
         }
       }
-      return (
-        <Component {...componentProps}>
-          {render(stateNode.children, [...path, 'children'])}
-        </Component>
-      )
+      const jsxFactory = stateNode.$staticChildren ? jsxs : jsx
+      return jsxFactory(Component, {
+        ...componentProps,
+        children: render(stateNode.children, [...path, 'children']),
+      })
     },
     [components]
   )
