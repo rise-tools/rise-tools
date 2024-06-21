@@ -35,7 +35,6 @@ function UI() {
       <StackScreen options={{ title: 'UI Controls' }} />
       <YStack>
         <Button onPress={navigate('form')}>Form</Button>
-        <Button onPress={navigate('select')}>Select</Button>
         <Button onPress={navigate('list')}>List</Button>
         <Button onPress={navigate('toast')}>Toast</Button>
         <Button onPress={navigate('haptics')}>Haptics</Button>
