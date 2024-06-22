@@ -76,12 +76,7 @@ export type ResponseModelState = {
   error?: boolean
   actions?: ActionModelState[]
 }
-export type HandlerReturnType =
-  | ResponseModelState
-  | JSONValue
-  | ActionModelState
-  | ActionModelState[]
-  | void
+export type HandlerReturnType = ResponseModelState | JSONValue | void
 export type HandlerFunction<T extends any[] = any[]> = (
   ...args: T
 ) => Promise<HandlerReturnType> | HandlerReturnType

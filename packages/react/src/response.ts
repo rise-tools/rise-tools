@@ -1,13 +1,18 @@
 import {
   ActionModelState,
-  HandlerReturnType,
   isActionModelState,
   isActionModelStateArray,
+  JSONValue,
   ResponseModelState,
 } from './rise'
 
+export function response(actions: ActionModelState | ActionModelState[]): ResponseModelState
 export function response(
-  payload?: Exclude<HandlerReturnType, ResponseModelState>,
+  payload: JSONValue,
+  opts?: { actions?: ActionModelState[] }
+): ResponseModelState
+export function response(
+  payload?: JSONValue | ActionModelState | ActionModelState[],
   opts?: {
     actions?: ActionModelState[]
   }

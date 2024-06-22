@@ -168,7 +168,7 @@ function UI() {
   return (
     <Form
       onSubmit={() => {
-        return goBack()
+        return response(goBack())
       }}
     />
   )
@@ -189,10 +189,10 @@ function UI() {
   return (
     <Form
       onSubmit={() => {
-        return [
+        return response([
           goBack(),
           haptics()
-        ]
+        ])
       }}
     />
   )

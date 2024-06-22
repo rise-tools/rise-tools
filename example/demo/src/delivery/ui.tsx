@@ -2,7 +2,6 @@ import { Icon as LucideIcon } from '@rise-tools/kit/server'
 import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import { openURL } from '@rise-tools/kit-linking/server'
 import { Button, Circle, H3, Theme, XStack, YStack } from '@rise-tools/tamagui/server'
-
 export const models = {
   delivery: UI,
   'delivery:feedback-form': FeedbackForm,
