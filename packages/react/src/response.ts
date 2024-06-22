@@ -1,26 +1,48 @@
-import { ActionModelState, JSONValue, ResponseModelState } from './rise'
+import {
+  ActionModelState,
+  isActionModelState,
+  isActionModelStateArray,
+  ResponseModelState,
+} from './rise'
 
-export function response(payload: JSONValue): ServerResponseModelState {
+export function response(actions: ActionModelState | ActionModelState[]): ResponseModelState<any>
+export function response<T>(
+  payload: T,
+  opts?: { actions?: ActionModelState[] }
+): ResponseModelState<T>
+export function response<T>(
+  payload?: T | ActionModelState | ActionModelState[],
+  opts?: {
+    actions?: ActionModelState[]
+  }
+): ResponseModelState<T> {
+  if (isActionModelState(payload)) {
+    return {
+      $: 'response',
+      actions: [payload],
+    }
+  }
+  if (isActionModelStateArray(payload)) {
+    return {
+      $: 'response',
+      actions: payload,
+    }
+  }
+  if (!payload) {
+    return {
+      $: 'response',
+    }
+  }
   return {
     $: 'response',
     payload,
-    // what are default values in `fetch`?
-    statusCode: 200,
-    ok: true,
-    actions: [],
-    action(action) {
-      this.actions.push(action)
-      return this
-    },
-    status(code: number) {
-      this.statusCode = code
-      this.ok = code >= 200 && code < 300
-      return this
-    },
+    actions: opts?.actions,
   }
 }
 
-export type ServerResponseModelState = ResponseModelState & {
-  action(action: ActionModelState): ServerResponseModelState
-  status(code: number): ServerResponseModelState
+export function errorResponse<T>(...args: Parameters<typeof response<T>>): ResponseModelState<T> {
+  return {
+    ...response(...args),
+    error: true,
+  }
 }

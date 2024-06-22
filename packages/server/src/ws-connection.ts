@@ -1,4 +1,5 @@
 import {
+  errorResponse,
   isResponseModelState,
   isServerEventModelState,
   lookupValue,
@@ -66,7 +67,7 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
   const clientId = `c${context.clientIdIndex}`
   context.clientIdIndex += 1
 
-  const { clientSenders, clientSubscribers, models, getModel } = context
+  const { clientSenders, clientSubscribers, getModel } = context
 
   clientSenders.set(clientId, function sendClient(value: any) {
     ws.send(JSON.stringify(value))
@@ -139,7 +140,7 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
       }
       let res = await value.handler(...payload)
       if (!isResponseModelState(res)) {
-        res = response(res ?? null)
+        res = response(res)
       }
       clientSenders.get(clientId)?.({
         $: 'evt-res',
@@ -150,7 +151,7 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
       clientSenders.get(clientId)?.({
         $: 'evt-res',
         key,
-        res: response(error).status(500),
+        res: errorResponse(error),
       })
       return
     }

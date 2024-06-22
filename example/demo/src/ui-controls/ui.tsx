@@ -98,9 +98,7 @@ function FormExample() {
       <RiseForm
         onSubmit={(values) => {
           console.log('Form submitted', values)
-          return response(null)
-            .action(toast('Thank you for submitting your feedback'))
-            .action(goBack())
+          return response([toast('Thank you for submitting your feedback'), goBack()])
         }}
       >
         <InputField id="name" label="Input" placeholder="What is your name?" />
