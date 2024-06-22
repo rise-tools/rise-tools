@@ -18,7 +18,7 @@ import { LucideIcon } from '@rise-tools/kit-lucide-icons/server'
 import { Circle, Svg, SvgUri, SvgXml } from '@rise-tools/kit-svg/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
 import { localStateExperimental, response, setStateAction } from '@rise-tools/react'
-import { Button, H4, ScrollView, Text, YStack } from '@rise-tools/tamagui/server'
+import { Button, H4, ScrollView, Text, XStack, YStack } from '@rise-tools/tamagui/server'
 
 export const models = {
   controls: UI,
@@ -53,11 +53,23 @@ function LucideIconsExample() {
     <YStack gap="$8" padding="$4">
       <YStack gap="$2">
         <H4>Default size</H4>
-        <LucideIcon icon="Github" />
+        <XStack gap="$2">
+          <LucideIcon icon="PocketKnife" />
+          <LucideIcon icon="HeartHandshake" />
+          <LucideIcon icon="Sunrise" />
+          <LucideIcon icon="Flame" />
+          <LucideIcon icon="Rocket" />
+        </XStack>
       </YStack>
       <YStack gap="$2">
         <H4>Custom size</H4>
-        <LucideIcon icon="Github" size={64} />
+        <XStack gap="$2">
+          <LucideIcon icon="PocketKnife" size={60} />
+          <LucideIcon icon="HeartHandshake" size={60} />
+          <LucideIcon icon="Sunrise" size={60} />
+          <LucideIcon icon="Flame" size={60} />
+          <LucideIcon icon="Rocket" size={60} />
+        </XStack>
       </YStack>
     </YStack>
   )
