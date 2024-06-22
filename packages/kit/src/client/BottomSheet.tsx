@@ -42,7 +42,7 @@ export function BottomSheet({
   )
 }
 
-export function BottomSheetTrigger({ children, ...props }: ButtonProps) {
+export function BottomSheetTriggerButton({ children, ...props }: ButtonProps) {
   const { setOpen } = useContext(BottomSheetContext)
   return (
     <Button
@@ -57,7 +57,7 @@ export function BottomSheetTrigger({ children, ...props }: ButtonProps) {
   )
 }
 
-export function BottomSheetClose({ children, ...props }: ButtonProps) {
+export function BottomSheetCloseButton({ children, ...props }: ButtonProps) {
   const { setOpen } = useContext(BottomSheetContext)
   return (
     <Button
