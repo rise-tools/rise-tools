@@ -1,4 +1,9 @@
-import { DraggableFlatList } from '@rise-tools/kit/server'
+import {
+  BottomSheet,
+  BottomSheetClose,
+  BottomSheetTrigger,
+  DraggableFlatList,
+} from '@rise-tools/kit/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import {
   CheckboxField,
@@ -29,6 +34,7 @@ export const models = {
   svg: SVGExample,
   icons: LucideIconsExample,
   linking: LinkingExample,
+  bottomSheet: BottomSheetExample,
 }
 
 function UI() {
@@ -43,8 +49,24 @@ function UI() {
         <Button onPress={navigate('svg')}>SVG</Button>
         <Button onPress={navigate('icons')}>Icons</Button>
         <Button onPress={navigate('linking')}>Linking</Button>
+        <BottomSheetExample />
       </YStack>
     </>
+  )
+}
+
+function BottomSheetExample() {
+  return (
+    <BottomSheet trigger={<BottomSheetTrigger>Bottom Sheet</BottomSheetTrigger>}>
+      <YStack gap="$4">
+        <BottomSheetClose theme="green" onPress={goBack()}>
+          <Text>Close and go back</Text>
+        </BottomSheetClose>
+        <BottomSheetClose theme="red" onPress={() => console.log('modal closed')}>
+          <Text>Just close</Text>
+        </BottomSheetClose>
+      </YStack>
+    </BottomSheet>
   )
 }
 
