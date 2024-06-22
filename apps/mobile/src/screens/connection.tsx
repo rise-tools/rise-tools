@@ -1,6 +1,9 @@
 import { RiseComponents } from '@rise-tools/kit'
 import { ExpoRouterComponents, useExpoRouterActions } from '@rise-tools/kit-expo-router'
+import { FormComponents } from '@rise-tools/kit-forms'
 import { useHapticsActions } from '@rise-tools/kit-haptics'
+import { SVGComponents } from '@rise-tools/kit-svg'
+import { useLinkingActions } from '@rise-tools/kit-linking'
 import { useToastActions } from '@rise-tools/kit-tamagui-toast'
 import { Rise } from '@rise-tools/react'
 import { TamaguiComponents } from '@rise-tools/tamagui'
@@ -14,6 +17,8 @@ const components = {
   ...TamaguiComponents,
   ...RiseComponents,
   ...ExpoRouterComponents,
+  ...FormComponents,
+  ...SVGComponents,
 }
 
 export function ConnectionScreen({ connection, path }: { connection: Connection; path?: string }) {
@@ -21,6 +26,7 @@ export function ConnectionScreen({ connection, path }: { connection: Connection;
     ...useExpoRouterActions({ basePath: `/connection/${connection.id}` }),
     ...useToastActions(),
     ...useHapticsActions(),
+    ...useLinkingActions(),
   }
 
   const modelSource = useModelSource(connection.id, connection.host)

@@ -1,20 +1,7 @@
 import { Icon as LucideIcon } from '@rise-tools/kit/server'
-import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
-import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import { state } from '@rise-tools/server'
-import {
-  Button,
-  Circle,
-  Form,
-  H2,
-  H3,
-  Input,
-  Text,
-  TextArea,
-  Theme,
-  XStack,
-  YStack,
-} from '@rise-tools/tamagui/server'
+import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
+import { openURL } from '@rise-tools/kit-linking/server'
+import { Button, Circle, H3, Theme, XStack, YStack } from '@rise-tools/tamagui/server'
 
 export const models = {
   delivery: UI,
@@ -32,39 +19,11 @@ function UI() {
   )
 }
 
-const [name, setName] = state('')
-const [feedback, setFeedback] = state('')
-
 function FeedbackForm() {
-  const onFormSubmit = () => {
-    console.log('Form submitted', name.get(), feedback.get())
-
-    // reset fields
-    setName('')
-    setFeedback('')
-
-    // return response
-    return [toast('Thank you for submitting your feedback'), goBack()]
-  }
-
   return (
-    <>
+    <YStack>
       <StackScreen options={{ title: 'Feedback' }} />
-      <YStack gap="$4" padding="$4">
-        <H2>Send feedback</H2>
-        <YStack gap="$8" padding="$4">
-          <Form onSubmit={onFormSubmit}>
-            <YStack gap="$4">
-              <Text>Name</Text>
-              <Input onChangeText={setName} />
-              <Text>Feedback</Text>
-              <TextArea onChangeText={setFeedback} />
-            </YStack>
-            <Button onPress={onFormSubmit}>Submit</Button>
-          </Form>
-        </YStack>
-      </YStack>
-    </>
+    </YStack>
   )
 }
 
@@ -100,12 +59,22 @@ function Restaurants() {
   )
 }
 
+/* https://developer.uber.com/docs/riders/ride-requests/tutorials/deep-links/introduction#ride-requests */
+const UBER_DEEP_LINK =
+  'https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff%5Bformatted_address%5D=Uber%20HQ%2C%20Market%20Street%2C%20San%20Francisco%2C%20CA%2C%20USA&dropoff%5Blatitude%5D=37.775231&dropoff%5Blongitude%5D=-122.417528'
+
 function Taxi() {
   return (
     <Section>
       <Title>Summon Taxi</Title>
       <Content>
-        <Button flex={1} color="white" fontWeight="bold" fontSize="$5">
+        <Button
+          flex={1}
+          color="white"
+          fontWeight="bold"
+          fontSize="$5"
+          onPress={openURL(UBER_DEEP_LINK)}
+        >
           Quick Ride
         </Button>
         <Button flex={1} color="white" fontWeight="bold" fontSize="$5">

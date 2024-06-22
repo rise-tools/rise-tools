@@ -12,14 +12,21 @@ import {
 } from './rise'
 
 type ServerComponent = ComponentModelState<ServerEventModelState>
-
-export const jsxs = jsx
-
-export function jsx(
+type JSXFactory = (
   componentFactory: ((props: any) => ServerComponent | ReactElement) | undefined,
-  passedProps: Record<string, any>,
+  { children, ...passedProps }: Record<string, any>,
   key?: string
-): ServerComponent {
+) => ServerComponent
+
+export const jsxs: JSXFactory = (componentFactory, passedProps, key) => {
+  Object.defineProperty(passedProps.children, '$static', {
+    value: true,
+    enumerable: false,
+  })
+  return jsx(componentFactory, passedProps, key)
+}
+
+export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
   if (typeof componentFactory === 'undefined') {
     return {
       $: 'component',
@@ -48,6 +55,7 @@ export function jsx(
     key,
     props,
     children,
+    ...(children?.$static ? { $staticChildren: true } : {}),
   }
 }
 

@@ -29,6 +29,15 @@
     },
     {
       "path": "./packages/kit-haptics"
+    },
+    {
+      "path": "./packages/kit-forms"
+    },
+    {
+      "path": "./packages/kit-svg"
+    },
+    {
+      "path": "./packages/kit-linking"
     }
   ]
 }

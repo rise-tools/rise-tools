@@ -1,11 +1,11 @@
 {
-  "name": "@rise-tools/react",
+  "name": "@rise-tools/kit-forms",
   "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
   "exports": {
     ".": "./lib/index.js",
-    "./jsx-runtime": "./lib/jsx-runtime.js"
+    "./server": "./lib/server.js"
   },
   "files": [
     "src",
@@ -18,27 +18,22 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rise-tools/rise-tools.git",
-    "directory": "packages/react"
+    "directory": "packages/kit-forms"
   },
   "publishConfig": {
     "access": "public"
   },
-  "author": "Eric Vicenti <ericvicenti@gmail.com> (https://github.com/ericvicenti)",
-  "contributors": [
-    "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
-  ],
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "bugs": {
     "url": "https://github.com/rise-tools/rise-tools/issues"
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
-  "devDependencies": {
-    "@types/react": "^18.0.27",
-    "react": "^18.2.0"
+  "dependencies": {
+    "@rise-tools/react": "0.2.0",
+    "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
-  },
-  "dependencies": {
-    "zod": "^3.22.4"
+    "@rise-tools/tamagui": "0.2.0",
+    "tamagui": "^1.100.3"
   }
 }
