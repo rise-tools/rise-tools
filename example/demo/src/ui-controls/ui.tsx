@@ -3,6 +3,7 @@ import {
   BottomSheetClose,
   BottomSheetTrigger,
   DraggableFlatList,
+  FlatList,
 } from '@rise-tools/kit/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import {
@@ -30,6 +31,7 @@ export const models = {
   controls: UI,
   form: FormExample,
   list: ListExample,
+  draggableList: DraggableListExample,
   toast: ShowToastExample,
   haptics: HapticsExample,
   svg: SVGExample,
@@ -46,6 +48,7 @@ function UI() {
       <YStack>
         <Button onPress={navigate('form')}>Form</Button>
         <Button onPress={navigate('list')}>List</Button>
+        <Button onPress={navigate('draggableList')}>DraggableList</Button>
         <Button onPress={navigate('toast')}>Toast</Button>
         <Button onPress={navigate('haptics')}>Haptics</Button>
         <Button onPress={navigate('svg')}>SVG</Button>
@@ -209,7 +212,7 @@ const frameworks = [
   { label: 'Prefer not say', key: 'unknown' },
 ]
 
-function ListExample() {
+function DraggableListExample() {
   const data = [
     {
       key: 'react',
@@ -256,6 +259,40 @@ function ListExample() {
           console.log('Reordered keys:', keys)
         }}
       />
+    </YStack>
+  )
+}
+
+function ListExample() {
+  const data = [
+    {
+      key: 'rise-tools',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+    {
+      key: 'rise-tools-1',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+    {
+      key: 'rise-tools-2',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+  ]
+  return (
+    <YStack flex={1} padding="$4">
+      <FlatList data={data} header={<H4>Our ranking of JavaScript frameworks</H4>} />
     </YStack>
   )
 }
