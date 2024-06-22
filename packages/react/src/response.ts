@@ -2,21 +2,20 @@ import {
   ActionModelState,
   isActionModelState,
   isActionModelStateArray,
-  JSONValue,
   ResponseModelState,
 } from './rise'
 
-export function response(actions: ActionModelState | ActionModelState[]): ResponseModelState
-export function response(
-  payload: JSONValue,
+export function response(actions: ActionModelState | ActionModelState[]): ResponseModelState<any>
+export function response<T>(
+  payload: T,
   opts?: { actions?: ActionModelState[] }
-): ResponseModelState
-export function response(
-  payload?: JSONValue | ActionModelState | ActionModelState[],
+): ResponseModelState<T>
+export function response<T>(
+  payload?: T | ActionModelState | ActionModelState[],
   opts?: {
     actions?: ActionModelState[]
   }
-): ResponseModelState {
+): ResponseModelState<T> {
   if (isActionModelState(payload)) {
     return {
       $: 'response',
@@ -41,7 +40,7 @@ export function response(
   }
 }
 
-export function errorResponse(...args: Parameters<typeof response>): ResponseModelState {
+export function errorResponse<T>(...args: Parameters<typeof response<T>>): ResponseModelState<T> {
   return {
     ...response(...args),
     error: true,

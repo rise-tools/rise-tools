@@ -25,7 +25,7 @@ export type Store<T = ModelState> = Stream<T>
 
 export type ModelSource = {
   get: (key: string) => Store
-  sendEvent: (event: HandlerEvent) => Promise<ResponseModelState>
+  sendEvent: (event: HandlerEvent) => Promise<ResponseModelState<any>>
 }
 
 /** Refs */
@@ -180,7 +180,7 @@ export function Rise({
   modelSource: ModelSource
   components: ComponentRegistry
   actions?: ActionsDefinition<any[]>
-  onEvent?: (event: HandlerEvent) => Promise<ResponseModelState>
+  onEvent?: (event: HandlerEvent) => Promise<ResponseModelState<any>>
 }) {
   if (typeof path === 'string') {
     path = [path]

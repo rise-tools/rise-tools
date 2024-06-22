@@ -26,9 +26,10 @@ export type ModelState<T = EventModelState> =
   | T
 /** Server data state */
 export type ServerModelState = ModelState<ServerEventModelState>
-export type ServerHandlerModelState<T extends any[] = any[]> = HandlerModelState<
-  ServerEventModelState<T>
->
+export type ServerHandlerModelState<
+  Args extends any[] = any[],
+  ReturnType = void,
+> = HandlerModelState<ServerEventModelState<Args, ReturnType>>
 
 export type ComponentModelState<T = EventModelState> = {
   $: 'component'
@@ -70,26 +71,30 @@ export type ActionsDefinition<Actions extends Array<ActionModelState>> =
         }
       : never
     : never
-export type ResponseModelState = {
+export type ResponseModelState<T> = {
   $: 'response'
-  payload?: JSONValue
+  payload?: T
   error?: boolean
   actions?: ActionModelState[]
 }
-export type HandlerReturnType = ResponseModelState | JSONValue | void
-export type HandlerFunction<T extends any[] = any[]> = (
-  ...args: T
-) => Promise<HandlerReturnType> | HandlerReturnType
+export type HandlerFunction<Args extends any[] = any[], ReturnType = void> = (
+  ...args: Args
+) =>
+  | Promise<ResponseModelState<ReturnType> | ReturnType>
+  | ResponseModelState<ReturnType>
+  | ReturnType
 export type EventModelState = {
   $: 'event'
   actions?: ActionModelState[]
   timeout?: number
   args?: Record<string, StateModelState<any>>
 }
-export type ServerEventModelState<T extends any[] = any[]> = EventModelState & {
-  handler: HandlerFunction<T>
+export type ServerEventModelState<
+  Args extends any[] = any[],
+  ReturnType = void,
+> = EventModelState & {
+  handler: HandlerFunction<Args, ReturnType>
 }
-
 export type JSONValue =
   | { [key: string]: JSONValue; $?: never }
   | string
@@ -140,7 +145,7 @@ export function isActionModelState(obj: any): obj is ActionModelState {
 export function isActionModelStateArray(obj: any): obj is ActionModelState[] {
   return Array.isArray(obj) && obj.every(isActionModelState)
 }
-export function isResponseModelState(obj: any): obj is ResponseModelState {
+export function isResponseModelState(obj: any): obj is ResponseModelState<any> {
   return obj && typeof obj === 'object' && obj.$ === 'response'
 }
 function isStateModelState(obj: any): obj is StateModelState {

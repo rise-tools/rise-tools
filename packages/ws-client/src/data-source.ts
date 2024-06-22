@@ -34,7 +34,7 @@ export type UpdateWebsocketMessage = {
 export type EventResponseWebsocketMessage = {
   $: 'evt-res'
   key: string
-  res: ResponseModelState
+  res: ResponseModelState<any>
 }
 
 export type ClientWebsocketMessage =
@@ -143,7 +143,7 @@ export function createWSModelSource(wsUrl: string): WebSocketModelSource {
     }
   }
 
-  const promises = new Map<string, (value: ResponseModelState) => void>()
+  const promises = new Map<string, (value: ResponseModelState<any>) => void>()
 
   return {
     get: (key: string) => {
