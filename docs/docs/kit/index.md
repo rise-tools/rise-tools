@@ -44,3 +44,5 @@ import useToastActions from '@rise-tools/kit-linking'
 
 ### Lucide Icons
 
+### QR Code
+
