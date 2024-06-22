@@ -42,3 +42,5 @@ import useToastActions from '@rise-tools/kit-linking'
 
 ### Linking
 
+### Lucide Icons
+

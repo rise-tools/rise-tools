@@ -37,6 +37,9 @@
       "path": "../../packages/kit-tamagui-toast"
     },
     {
+      "path": "../../packages/kit-lucide-icons"
+    },
+    {
       "path": "../../packages/kit-forms"
     },
     {

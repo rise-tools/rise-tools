@@ -14,10 +14,11 @@ import {
 } from '@rise-tools/kit-forms/server'
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { openSettings, openURL } from '@rise-tools/kit-linking/server'
+import { LucideIcon } from '@rise-tools/kit-lucide-icons/server'
 import { Circle, Svg, SvgUri, SvgXml } from '@rise-tools/kit-svg/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
 import { localStateExperimental, response, setStateAction } from '@rise-tools/react'
-import { Button, H4, ScrollView, Text, YStack } from '@rise-tools/tamagui/server'
+import { Button, H4, ScrollView, Text, XStack, YStack } from '@rise-tools/tamagui/server'
 
 export const models = {
   controls: UI,
@@ -26,6 +27,7 @@ export const models = {
   toast: ShowToastExample,
   haptics: HapticsExample,
   svg: SVGExample,
+  icons: LucideIconsExample,
   linking: LinkingExample,
 }
 
@@ -39,9 +41,37 @@ function UI() {
         <Button onPress={navigate('toast')}>Toast</Button>
         <Button onPress={navigate('haptics')}>Haptics</Button>
         <Button onPress={navigate('svg')}>SVG</Button>
+        <Button onPress={navigate('icons')}>Icons</Button>
         <Button onPress={navigate('linking')}>Linking</Button>
       </YStack>
     </>
+  )
+}
+
+function LucideIconsExample() {
+  return (
+    <YStack gap="$8" padding="$4">
+      <YStack gap="$2">
+        <H4>Default size</H4>
+        <XStack gap="$2">
+          <LucideIcon icon="PocketKnife" />
+          <LucideIcon icon="HeartHandshake" />
+          <LucideIcon icon="Sunrise" />
+          <LucideIcon icon="Flame" />
+          <LucideIcon icon="Rocket" />
+        </XStack>
+      </YStack>
+      <YStack gap="$2">
+        <H4>Custom size</H4>
+        <XStack gap="$2">
+          <LucideIcon icon="PocketKnife" size={60} />
+          <LucideIcon icon="HeartHandshake" size={60} />
+          <LucideIcon icon="Sunrise" size={60} />
+          <LucideIcon icon="Flame" size={60} />
+          <LucideIcon icon="Rocket" size={60} />
+        </XStack>
+      </YStack>
+    </YStack>
   )
 }
 
