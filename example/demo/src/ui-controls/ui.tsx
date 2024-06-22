@@ -23,7 +23,7 @@ import { LucideIcon } from '@rise-tools/kit-lucide-icons/server'
 import { QRCode } from '@rise-tools/kit-qrcode/server'
 import { Circle, Svg, SvgUri, SvgXml } from '@rise-tools/kit-svg/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import { localStateExperimental, response, setStateAction } from '@rise-tools/react'
+import { response } from '@rise-tools/react'
 import { Button, H4, ScrollView, Text, XStack, YStack } from '@rise-tools/tamagui/server'
 
 export const models = {
@@ -210,15 +210,48 @@ const frameworks = [
 ]
 
 function ListExample() {
-  const inventoryItems = localStateExperimental(frameworks, 'list/inventory')
-
+  const data = [
+    {
+      key: 'react',
+      label: (
+        <Button theme="green" marginVertical="$2">
+          React
+        </Button>
+      ),
+    },
+    {
+      key: 'google',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Flutter
+        </Button>
+      ),
+    },
+    {
+      key: 'svelte',
+      label: (
+        <Button theme="red" marginVertical="$2">
+          Svelte
+        </Button>
+      ),
+    },
+    {
+      key: 'clojure',
+      label: (
+        <Button theme="yellow" marginVertical="$2">
+          ClojureScript
+        </Button>
+      ),
+    },
+  ]
   return (
     <YStack flex={1} padding="$4">
       <DraggableFlatList
-        items={inventoryItems}
-        onReorder={setStateAction(inventoryItems)}
-        header={<H4>Header</H4>}
-        footer={<H4>Footer</H4>}
+        data={data}
+        header={<H4>Best JavaScript frameworks</H4>}
+        onReorder={(keys) => {
+          console.log('Reordered keys:', keys)
+        }}
       />
     </YStack>
   )

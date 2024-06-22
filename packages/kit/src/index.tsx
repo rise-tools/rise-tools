@@ -1,14 +1,9 @@
-import QRCode from 'react-native-qrcode-svg'
-
 import { BottomSheet, BottomSheetClose, BottomSheetTrigger } from './client/BottomSheet'
 import { RNDraggableFlatList } from './client/DraggableFlatList'
 
 export const RiseComponents = {
-  RNDraggableFlatList: {
+  '@rise-tools/kit/RNDraggableFlatList': {
     component: RNDraggableFlatList,
-  },
-  RNQRCode: {
-    component: QRCode,
   },
   '@rise-tools/kit/BottomSheet': {
     component: BottomSheet,

@@ -7,8 +7,9 @@ import type {
 } from './client/BottomSheet'
 import type { RNDraggableFlatList } from './client/DraggableFlatList'
 
-export const DraggableFlatList =
-  createComponentDefinition<typeof RNDraggableFlatList>('RNDraggableFlatList')
+export const DraggableFlatList = createComponentDefinition<typeof RNDraggableFlatList>(
+  '@rise-tools/kit/RNDraggableFlatList'
+)
 
 export const BottomSheet = createComponentDefinition<typeof KitBottomSheet>(
   '@rise-tools/kit/BottomSheet'
