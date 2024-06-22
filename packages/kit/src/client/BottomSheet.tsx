@@ -14,7 +14,6 @@ const BottomSheetContext = createContext<BottomSheetContext>({
 export function BottomSheet({
   trigger,
   children,
-  modal = true,
   ...props
 }: Omit<BottomSheetProps, 'open' | 'onOpenChange'> & {
   trigger: React.ReactNode
@@ -26,7 +25,7 @@ export function BottomSheet({
         {trigger}
         <Sheet
           dismissOnSnapToBottom
-          modal={modal}
+          modal={true}
           forceRemoveScrollEnabled={open}
           {...props}
           open={open}
