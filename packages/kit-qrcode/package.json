@@ -1,5 +1,5 @@
 {
-  "name": "@rise-tools/kit",
+  "name": "@rise-tools/kit-qrcode",
   "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "",
@@ -18,7 +18,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rise-tools/rise-tools.git",
-    "directory": "packages/kit"
+    "directory": "packages/kit-qrcode"
   },
   "publishConfig": {
     "access": "public"
@@ -28,19 +28,10 @@
     "url": "https://github.com/rise-tools/rise-tools/issues"
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
-  "devDependencies": {
-    "@rise-tools/react": "0.2.0",
-    "@tamagui/config": "^1.100.3",
-    "@types/react": "^18.0.27",
-    "react": "^18.2.0",
-    "tamagui": "^1.100.3"
-  },
   "dependencies": {
-    "zod": "^3.22.4"
+    "@rise-tools/react": "0.2.0"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "tamagui": "^1.100.3",
-    "react-native-gesture-handler": "~2.16.1"
+    "react-native-qrcode-svg": "^6.3.1"
   }
 }

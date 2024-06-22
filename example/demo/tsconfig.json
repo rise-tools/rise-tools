@@ -23,6 +23,8 @@
   }, {
     "path": "../../packages/kit-svg"
   }, {
+    "path": "../../packages/kit-qrcode"
+  }, {
     "path": "../../packages/server"
   }, {
     "path": "../../packages/kit"
