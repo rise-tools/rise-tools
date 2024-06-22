@@ -1,53 +1,43 @@
-import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
+import { useEffect, useState } from 'react'
+import DraggableFlatList, {
+  DraggableFlatListProps,
+  ScaleDecorator,
+} from 'react-native-draggable-flatlist'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { Label } from 'tamagui'
-import { z } from 'zod'
 
-function keyExtractor(item: z.infer<typeof SortableListItemSchema>) {
-  return item.key
-}
+type Item = { key: string; label: React.ReactElement }
 
-const SortableListItemSchema = z.object({
-  key: z.string(),
-  label: z.string(),
-  onPress: z.function().optional(),
-})
-
-const SortableListProps = z.object({
-  footer: z.any(),
-  header: z.any(),
-  items: z.array(SortableListItemSchema),
-  onReorder: z.function().optional(),
-})
-
-export function RNDraggableFlatList(props: z.infer<typeof SortableListProps>) {
+export function RNDraggableFlatList(
+  props: Omit<
+    DraggableFlatListProps<Item>,
+    'ListHeaderComponent' | 'ListFooterComponent' | 'keyExtractor' | 'renderItem' | 'onDragEnd'
+  > & {
+    header?: React.ReactElement
+    footer?: React.ReactElement
+    onReorder?: (data: Item['key'][]) => void
+  }
+) {
+  const [data, setData] = useState(props.data)
+  useEffect(() => {
+    setData(props.data)
+  }, [props.data])
   return (
     <DraggableFlatList
-      data={props.items}
-      keyExtractor={keyExtractor}
-      onDragEnd={({ data }) => {
-        props.onReorder?.(data)
+      {...props}
+      data={data}
+      keyExtractor={(item) => item.key}
+      ListHeaderComponent={props.header ? () => props.header : undefined}
+      ListFooterComponent={props.footer ? () => props.footer : undefined}
+      onDragEnd={(e) => {
+        setData(e.data)
+        props.onReorder?.(e.data.map((item) => item.key))
       }}
-      ListHeaderComponent={() => props.header}
-      ListFooterComponent={() => props.footer}
-      renderItem={(row) => {
-        const { item, drag, isActive } = row
+      renderItem={({ item, drag, isActive }) => {
+        const Item = () => item.label
         return (
           <ScaleDecorator>
-            <TouchableOpacity
-              onPress={() => item.onPress?.()}
-              onLongPress={drag}
-              disabled={isActive}
-              style={[
-                {
-                  padding: 10,
-                  backgroundColor: 'white',
-                  margin: 10,
-                  borderRadius: 10,
-                },
-              ]}
-            >
-              <Label>{item.label}</Label>
+            <TouchableOpacity onLongPress={drag} disabled={isActive}>
+              <Item />
             </TouchableOpacity>
           </ScaleDecorator>
         )

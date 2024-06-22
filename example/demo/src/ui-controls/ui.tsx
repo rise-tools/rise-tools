@@ -3,6 +3,7 @@ import {
   BottomSheetCloseButton,
   BottomSheetTriggerButton,
   DraggableFlatList,
+  FlatList,
 } from '@rise-tools/kit/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import {
@@ -23,13 +24,14 @@ import { LucideIcon } from '@rise-tools/kit-lucide-icons/server'
 import { QRCode } from '@rise-tools/kit-qrcode/server'
 import { Circle, Svg, SvgUri, SvgXml } from '@rise-tools/kit-svg/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import { localStateExperimental, response, setStateAction } from '@rise-tools/react'
+import { response } from '@rise-tools/react'
 import { Button, H4, ScrollView, Text, XStack, YStack } from '@rise-tools/tamagui/server'
 
 export const models = {
   controls: UI,
   form: FormExample,
   list: ListExample,
+  draggableList: DraggableListExample,
   toast: ShowToastExample,
   haptics: HapticsExample,
   svg: SVGExample,
@@ -46,6 +48,7 @@ function UI() {
       <YStack>
         <Button onPress={navigate('form')}>Form</Button>
         <Button onPress={navigate('list')}>List</Button>
+        <Button onPress={navigate('draggableList')}>DraggableList</Button>
         <Button onPress={navigate('toast')}>Toast</Button>
         <Button onPress={navigate('haptics')}>Haptics</Button>
         <Button onPress={navigate('svg')}>SVG</Button>
@@ -209,17 +212,87 @@ const frameworks = [
   { label: 'Prefer not say', key: 'unknown' },
 ]
 
-function ListExample() {
-  const inventoryItems = localStateExperimental(frameworks, 'list/inventory')
-
+function DraggableListExample() {
+  const data = [
+    {
+      key: 'react',
+      label: (
+        <Button theme="green" marginVertical="$2">
+          React
+        </Button>
+      ),
+    },
+    {
+      key: 'google',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Flutter
+        </Button>
+      ),
+    },
+    {
+      key: 'svelte',
+      label: (
+        <Button theme="red" marginVertical="$2">
+          Svelte
+        </Button>
+      ),
+    },
+    {
+      key: 'clojure',
+      label: (
+        <Button theme="yellow" marginVertical="$2">
+          ClojureScript
+        </Button>
+      ),
+    },
+  ]
   return (
     <YStack flex={1} padding="$4">
       <DraggableFlatList
-        items={inventoryItems}
-        onReorder={setStateAction(inventoryItems)}
-        header={<H4>Header</H4>}
-        footer={<H4>Footer</H4>}
+        data={data}
+        header={<H4>Best JavaScript frameworks</H4>}
+        footer={
+          <Text paddingVertical="$2">PS. You can reorder them to match your preferences!</Text>
+        }
+        onReorder={(keys) => {
+          console.log('Reordered keys:', keys)
+        }}
       />
+    </YStack>
+  )
+}
+
+function ListExample() {
+  const data = [
+    {
+      key: 'rise-tools',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+    {
+      key: 'rise-tools-1',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+    {
+      key: 'rise-tools-2',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+  ]
+  return (
+    <YStack flex={1} padding="$4">
+      <FlatList data={data} header={<H4>Our ranking of JavaScript frameworks</H4>} />
     </YStack>
   )
 }

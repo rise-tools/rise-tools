@@ -1,11 +1,11 @@
 # Rise Kit
 
-## @rise-tools/kit
+## @rise-tools/kitchen-sink
 
 This package exports the whole kit
 
 ```sh
-npm install @rise-tools/kit
+npm install @rise-tools/kitchen-sink
 ```
 
 ```tsx
@@ -29,6 +29,8 @@ import useToastActions from '@rise-tools/kit-linking'
     }}
 />
 ```
+
+### Kit
 
 ### Tamagui
 

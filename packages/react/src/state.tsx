@@ -33,10 +33,7 @@ export function isStateUpdateAction<T extends JSONValue>(
   return action.name === 'state-update'
 }
 
-export function localStateExperimental<T extends JSONValue>(
-  initialValue: T,
-  key: string
-): StateModelState<T> {
+export function localStateExperimental<T>(initialValue: T, key: string): StateModelState<T> {
   return { $: 'state', key, initialValue }
 }
 
@@ -48,7 +45,7 @@ export function setStateAction(
   state: StateModelState<boolean>,
   value?: boolean | ToggleStateModifier
 ): UpdateStateAction<boolean>
-export function setStateAction<T extends JSONValue>(
+export function setStateAction<T>(
   state: StateModelState<T>,
   value?: T | PayloadStateModifier
 ): UpdateStateAction<T>
