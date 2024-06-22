@@ -18,11 +18,12 @@ type JSXFactory = (
   key?: string
 ) => ServerComponent
 
-export const jsxs: JSXFactory = (...args) => {
-  return {
-    ...jsx(...args),
-    $staticChildren: true,
-  }
+export const jsxs: JSXFactory = (componentFactory, passedProps, key) => {
+  Object.defineProperty(passedProps.children, '$static', {
+    value: true,
+    enumerable: false,
+  })
+  return jsx(componentFactory, passedProps, key)
 }
 
 export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
@@ -54,6 +55,7 @@ export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
     key,
     props,
     children,
+    ...(children?.$static ? { $staticChildren: true } : {}),
   }
 }
 
