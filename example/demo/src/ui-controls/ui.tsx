@@ -249,6 +249,9 @@ function ListExample() {
       <DraggableFlatList
         data={data}
         header={<H4>Best JavaScript frameworks</H4>}
+        footer={
+          <Text paddingVertical="$2">PS. You can reorder them to match your preferences!</Text>
+        }
         onReorder={(keys) => {
           console.log('Reordered keys:', keys)
         }}
