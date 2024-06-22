@@ -3,8 +3,8 @@ import type RNQRCode from 'react-native-qrcode-svg'
 
 import type {
   BottomSheet as KitBottomSheet,
-  BottomSheetClose as KitBottomSheetClose,
-  BottomSheetTrigger as KitBottomSheetTrigger,
+  BottomSheetCloseButton as KitBottomSheetCloseButton,
+  BottomSheetTriggerButton as KitBottomSheetTriggerButton,
 } from './client/BottomSheet'
 import type { RNDraggableFlatList } from './client/DraggableFlatList'
 
@@ -16,9 +16,9 @@ export const DraggableFlatList =
 export const BottomSheet = createComponentDefinition<typeof KitBottomSheet>(
   '@rise-tools/kit/BottomSheet'
 )
-export const BottomSheetClose = createComponentDefinition<typeof KitBottomSheetClose>(
+export const BottomSheetCloseButton = createComponentDefinition<typeof KitBottomSheetCloseButton>(
   '@rise-tools/kit/BottomSheetClose'
 )
-export const BottomSheetTrigger = createComponentDefinition<typeof KitBottomSheetTrigger>(
-  '@rise-tools/kit/BottomSheetTrigger'
-)
+export const BottomSheetTriggerButton = createComponentDefinition<
+  typeof KitBottomSheetTriggerButton
+>('@rise-tools/kit/BottomSheetTrigger')
