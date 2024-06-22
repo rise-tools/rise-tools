@@ -100,7 +100,6 @@ export function applyStateUpdateAction<T extends JSONValue>(
   stateUpdate: StateUpdate<T>,
   payload: JSONValue[]
 ) {
-  console.log(state, stateUpdate, payload)
   if (!isStateModifier(stateUpdate)) {
     return stateUpdate
   }
