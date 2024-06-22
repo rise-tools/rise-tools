@@ -9,15 +9,12 @@ import type {
 } from './client/BottomSheet'
 import type { RNDraggableFlatList } from './client/DraggableFlatList'
 
-export const QRCode = createComponentDefinition<typeof RNQRCode>('RNQRCode')
-
 export const DraggableFlatList =
   createComponentDefinition<typeof RNDraggableFlatList>('RNDraggableFlatList')
 
 export const BottomSheet = createComponentDefinition<typeof KitBottomSheet>(
   '@rise-tools/kit/BottomSheet'
 )
-
 export const BottomSheetCloseButton = createComponentDefinition<typeof KitBottomSheetCloseButton>(
   '@rise-tools/kit/BottomSheetClose'
 )
