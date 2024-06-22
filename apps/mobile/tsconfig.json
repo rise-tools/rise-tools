@@ -47,6 +47,9 @@
     },
     {
       "path": "../../packages/kit-linking"
-    }
+    },
+    {
+      "path": "../../packages/kit-qrcode"
+    },
   ]
 }

@@ -4,6 +4,7 @@ import { FormComponents } from '@rise-tools/kit-forms'
 import { useHapticsActions } from '@rise-tools/kit-haptics'
 import { useLinkingActions } from '@rise-tools/kit-linking'
 import { LucideIconsComponents } from '@rise-tools/kit-lucide-icons'
+import { QRCodeComponents } from '@rise-tools/kit-qrcode'
 import { SVGComponents } from '@rise-tools/kit-svg'
 import { useToastActions } from '@rise-tools/kit-tamagui-toast'
 import { Rise } from '@rise-tools/react'
@@ -21,6 +22,7 @@ const components = {
   ...FormComponents,
   ...SVGComponents,
   ...LucideIconsComponents,
+  ...QRCodeComponents,
 }
 
 export function ConnectionScreen({ connection, path }: { connection: Connection; path?: string }) {

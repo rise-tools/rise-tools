@@ -20,6 +20,7 @@ import {
 import { haptics } from '@rise-tools/kit-haptics/server'
 import { openSettings, openURL } from '@rise-tools/kit-linking/server'
 import { LucideIcon } from '@rise-tools/kit-lucide-icons/server'
+import { QRCode } from '@rise-tools/kit-qrcode/server'
 import { Circle, Svg, SvgUri, SvgXml } from '@rise-tools/kit-svg/server'
 import { toast } from '@rise-tools/kit-tamagui-toast/server'
 import { localStateExperimental, response, setStateAction } from '@rise-tools/react'
@@ -35,6 +36,7 @@ export const models = {
   icons: LucideIconsExample,
   linking: LinkingExample,
   bottomSheet: BottomSheetExample,
+  qrcode: QRCodeExample,
 }
 
 function UI() {
@@ -49,9 +51,18 @@ function UI() {
         <Button onPress={navigate('svg')}>SVG</Button>
         <Button onPress={navigate('icons')}>Icons</Button>
         <Button onPress={navigate('linking')}>Linking</Button>
+        <Button onPress={navigate('qrcode')}>QR Code</Button>
         <BottomSheetExample />
       </YStack>
     </>
+  )
+}
+
+function QRCodeExample() {
+  return (
+    <YStack padding="$4">
+      <QRCode value="https://rise.tools" />
+    </YStack>
   )
 }
 

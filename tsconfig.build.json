@@ -41,6 +41,9 @@
     },
     {
       "path": "./packages/kit-lucide-icons"
+    },
+    {
+      "path": "./packages/kit-qrcode"
     }
   ]
 }
