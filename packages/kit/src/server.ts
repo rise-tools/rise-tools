@@ -1,7 +1,5 @@
 import { createComponentDefinition } from '@rise-tools/react'
 
-import type RNQRCode from 'react-native-qrcode-svg'
-
 import type {
   BottomSheet as KitBottomSheet,
   BottomSheetCloseButton as KitBottomSheetCloseButton,
