@@ -1,7 +1,7 @@
 import {
   BottomSheet,
-  BottomSheetClose,
-  BottomSheetTrigger,
+  BottomSheetCloseButton,
+  BottomSheetTriggerButton,
   DraggableFlatList,
 } from '@rise-tools/kit/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
@@ -57,14 +57,14 @@ function UI() {
 
 function BottomSheetExample() {
   return (
-    <BottomSheet trigger={<BottomSheetTrigger>Bottom Sheet</BottomSheetTrigger>}>
+    <BottomSheet trigger={<BottomSheetTriggerButton>Bottom Sheet</BottomSheetTriggerButton>}>
       <YStack gap="$4">
-        <BottomSheetClose theme="green" onPress={goBack()}>
+        <BottomSheetCloseButton theme="green" onPress={goBack()}>
           <Text>Close and go back</Text>
-        </BottomSheetClose>
-        <BottomSheetClose theme="red" onPress={() => console.log('modal closed')}>
+        </BottomSheetCloseButton>
+        <BottomSheetCloseButton theme="red" onPress={() => console.log('modal closed')}>
           <Text>Just close</Text>
-        </BottomSheetClose>
+        </BottomSheetCloseButton>
       </YStack>
     </BottomSheet>
   )
