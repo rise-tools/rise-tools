@@ -11,6 +11,8 @@
       "@rise-tools/tamagui/server": ["./packages/tamagui/src/server"],
       "@rise-tools/kit": ["./packages/kit/src"],
       "@rise-tools/kit/server": ["./packages/react/src/server"],
+      "@rise-tools/kitchen-sink": ["./packages/kitchen-sink/src"],
+      "@rise-tools/kitchen-sink/server": ["./packages/kitchen-sink/src/server"],
       "@rise-tools/kit-expo-router": ["./packages/kit-expo-router/src"],
       "@rise-tools/kit-expo-router/server": ["./packages/kit-expo-router/src/server"],
       "@rise-tools/kit-tamagui-toast": ["./packages/kit-tamagui-toast/src"],

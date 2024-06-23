@@ -18,17 +18,9 @@
     "start": "tsx ./src"
   },
   "dependencies": {
-    "@rise-tools/tamagui": "0.2.0",
-    "@rise-tools/kit": "0.2.0",
-    "@rise-tools/kit-haptics": "0.2.0",
-    "@rise-tools/kit-forms": "0.2.0",
-    "@rise-tools/kit-linking": "0.2.0",
-    "@rise-tools/kit-tamagui-toast": "0.2.0",
-    "@rise-tools/kit-lucide-icons": "0.2.0",
-    "@rise-tools/kit-svg": "0.2.0",
-    "@rise-tools/kit-qrcode": "0.2.0",
+    "@rise-tools/react": "0.2.0",
     "@rise-tools/server": "0.2.0",
-    "@rise-tools/kit-expo-router": "0.2.0"
+    "@rise-tools/kitchen-sink": "0.2.0"
   },
   "devDependencies": {
     "tsx": "^4.11.0",

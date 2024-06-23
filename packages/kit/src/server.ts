@@ -5,7 +5,6 @@ import type {
   BottomSheetCloseButton as KitBottomSheetCloseButton,
   BottomSheetTriggerButton as KitBottomSheetTriggerButton,
 } from './client/BottomSheet'
-
 import type { RNDraggableFlatList } from './client/DraggableFlatList'
 import { RNFlatList } from './client/FlatList'
 

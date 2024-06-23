@@ -16,40 +16,13 @@
       "path": "../../packages/react"
     },
     {
-      "path": "../../packages/kit"
-    },
-    {
-      "path": "../../packages/kit-expo-router"
+      "path": "../../packages/kitchen-sink"
     },
     {
       "path": "../../packages/http-client"
     },
     {
       "path": "../../packages/ws-client"
-    },
-    {
-      "path": "../../packages/tamagui"
-    },
-    {
-      "path": "../../packages/kit-haptics"
-    },
-    {
-      "path": "../../packages/kit-tamagui-toast"
-    },
-    {
-      "path": "../../packages/kit-lucide-icons"
-    },
-    {
-      "path": "../../packages/kit-forms"
-    },
-    {
-      "path": "../../packages/kit-svg"
-    },
-    {
-      "path": "../../packages/kit-linking"
-    },
-    {
-      "path": "../../packages/kit-qrcode"
-    },
+    }
   ]
 }

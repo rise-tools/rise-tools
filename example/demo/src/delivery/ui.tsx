@@ -1,7 +1,15 @@
-import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
-import { openURL } from '@rise-tools/kit-linking/server'
-import { LucideIcon } from '@rise-tools/kit-lucide-icons/server'
-import { Button, Circle, H3, Theme, XStack, YStack } from '@rise-tools/tamagui/server'
+import {
+  Button,
+  Circle,
+  H3,
+  LucideIcon,
+  navigate,
+  openURL,
+  StackScreen,
+  Theme,
+  XStack,
+  YStack,
+} from '@rise-tools/kitchen-sink/server'
 export const models = {
   delivery: UI,
   'delivery:feedback-form': FeedbackForm,
