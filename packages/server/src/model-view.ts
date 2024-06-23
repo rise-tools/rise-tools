@@ -1,4 +1,3 @@
-
 import { getModelState } from './model-utils'
 import { ValueModel, ViewModel } from './types'
 
@@ -10,6 +9,7 @@ export function view<T>(
   let deps = new Set<ValueModel<any>>()
   let depSubs = new Map<ValueModel<any>, () => void>()
   const subHandlers = new Set<(newState: T) => void>()
+  let updateSchedule: undefined | NodeJS.Timeout = undefined
   function get(): T {
     if (!isInvalid) return state as T
     depSubs.forEach((unsub) => unsub()) // unsubscribe from all deps
@@ -22,6 +22,8 @@ export function view<T>(
           model,
           model.subscribe(() => {
             isInvalid = true
+            clearTimeout(updateSchedule)
+            updateSchedule = setTimeout(get, 1)
           })
         )
       }
@@ -37,7 +39,7 @@ export function view<T>(
     return get()
   }
   function subscribe(listener: (newState: T) => void) {
-    if (state !== undefined) listener(get())
+    listener(get())
     subHandlers.add(listener)
     return () => {
       subHandlers.delete(listener)
