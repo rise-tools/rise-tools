@@ -70,4 +70,23 @@ describe('view models', () => {
     await waitToHaveBeenCalled(2)
     expect(mult.get()).toBe(9)
   })
+  test('view updates only once when two deps change', async () => {
+    const [a, setA] = state(2)
+    const [b, setB] = state(3)
+    const mult = view((get) => {
+      const _a = get(a)
+      const _b = get(b)
+      if (!_a || !_b) return 0
+      return _a * _b
+    })
+    const [handler, waitToHaveBeenCalled] = createWaitableMock()
+    const firstCall = waitToHaveBeenCalled(1)
+    mult.subscribe(handler)
+    await firstCall
+    setA(3)
+    setB(4)
+    await waitToHaveBeenCalled(2)
+    expect(mult.get()).toBe(12)
+    expect(handler).toBeCalledTimes(2)
+  })
 })
