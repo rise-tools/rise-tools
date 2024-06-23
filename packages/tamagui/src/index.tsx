@@ -3,405 +3,405 @@ import * as t from 'tamagui'
 import { LinearGradient } from 'tamagui/linear-gradient'
 
 export const TamaguiComponents: ComponentRegistry = {
-  Adapt: {
+  'rise-tools/tamagui/Adapt': {
     component: t.Adapt,
   },
-  AdaptContents: {
+  'rise-tools/tamagui/AdaptContents': {
     component: t.Adapt.Contents,
   },
   /* https://tamagui.dev/ui/stacks#xstack-ystack-zstack */
-  View: {
+  'rise-tools/tamagui/View': {
     component: t.View,
   },
-  XStack: {
+  'rise-tools/tamagui/XStack': {
     component: t.XStack,
   },
-  YStack: {
+  'rise-tools/tamagui/YStack': {
     component: t.YStack,
   },
-  ZStack: {
+  'rise-tools/tamagui/ZStack': {
     component: t.ZStack,
   },
-  SizableStack: {
+  'rise-tools/tamagui/SizableStack': {
     component: t.SizableStack,
   },
   /* https://tamagui.dev/ui/headings#api-reference */
-  H1: {
+  'rise-tools/tamagui/H1': {
     component: t.H1,
   },
-  H2: {
+  'rise-tools/tamagui/H2': {
     component: t.H2,
   },
-  H3: {
+  'rise-tools/tamagui/H3': {
     component: t.H3,
   },
-  H4: {
+  'rise-tools/tamagui/H4': {
     component: t.H4,
   },
-  H5: {
+  'rise-tools/tamagui/H5': {
     component: t.H5,
   },
-  H6: {
+  'rise-tools/tamagui/H6': {
     component: t.H6,
   },
-  Heading: {
+  'rise-tools/tamagui/Heading': {
     component: t.Heading,
   },
   /* https://tamagui.dev/ui/text */
-  Text: {
+  'rise-tools/tamagui/Text': {
     component: t.Text,
   },
-  Paragraph: {
+  'rise-tools/tamagui/Paragraph': {
     component: t.Paragraph,
   },
-  SizableText: {
+  'rise-tools/tamagui/SizableText': {
     component: t.SizableText,
   },
   /* https://tamagui.dev/ui/button */
-  Button: {
+  'rise-tools/tamagui/Button': {
     component: t.Button,
   },
   /* https://tamagui.dev/ui/checkbox */
-  Checkbox: {
+  'rise-tools/tamagui/Checkbox': {
     component: t.Checkbox,
   },
   /* https://tamagui.dev/ui/form */
-  Form: {
+  'rise-tools/tamagui/Form': {
     component: t.Form,
   },
-  FormTrigger: {
+  'rise-tools/tamagui/FormTrigger': {
     component: t.FormTrigger,
   },
   /* https://tamagui.dev/ui/inputs */
-  Input: {
+  'rise-tools/tamagui/Input': {
     component: t.Input,
   },
-  TextArea: {
+  'rise-tools/tamagui/TextArea': {
     component: t.TextArea,
   },
   /* https://tamagui.dev/ui/label */
-  Label: {
+  'rise-tools/tamagui/Label': {
     component: t.Label,
   },
   /* https://tamagui.dev/ui/progress */
-  Progress: {
+  'rise-tools/tamagui/Progress': {
     component: t.Progress,
   },
-  ProgressIndicator: {
+  'rise-tools/tamagui/ProgressIndicator': {
     component: t.ProgressIndicator,
   },
   /* https://tamagui.dev/ui/radio */
-  RadioGroup: {
+  'rise-tools/tamagui/RadioGroup': {
     component: t.RadioGroup,
   },
-  RadioGroupItem: {
+  'rise-tools/tamagui/RadioGroupItem': {
     component: t.RadioGroup.Item,
   },
-  RadioGroupIndicator: {
+  'rise-tools/tamagui/RadioGroupIndicator': {
     component: t.RadioGroup.Indicator,
   },
   /* https://tamagui.dev/ui/select */
-  Select: {
+  'rise-tools/tamagui/Select': {
     component: t.Select,
   },
-  SelectTrigger: {
+  'rise-tools/tamagui/SelectTrigger': {
     component: t.Select.Trigger,
   },
-  SelectScrollDownButton: {
+  'rise-tools/tamagui/SelectScrollDownButton': {
     component: t.Select.ScrollDownButton,
   },
-  SelectScrollUpButton: {
+  'rise-tools/tamagui/SelectScrollUpButton': {
     component: t.Select.ScrollUpButton,
   },
-  SelectViewport: {
+  'rise-tools/tamagui/SelectViewport': {
     component: t.Select.Viewport,
   },
-  SelectGroup: {
+  'rise-tools/tamagui/SelectGroup': {
     component: t.Select.Group,
   },
-  SelectLabel: {
+  'rise-tools/tamagui/SelectLabel': {
     component: t.Select.Label,
   },
-  SelectItem: {
+  'rise-tools/tamagui/SelectItem': {
     component: t.Select.Item,
   },
-  SelectItemText: {
+  'rise-tools/tamagui/SelectItemText': {
     component: t.Select.ItemText,
   },
-  SelectItemIndicator: {
+  'rise-tools/tamagui/SelectItemIndicator': {
     component: t.Select.ItemIndicator,
   },
-  SelectSheet: {
+  'rise-tools/tamagui/SelectSheet': {
     component: t.Select.Sheet,
   },
-  SelectContent: {
+  'rise-tools/tamagui/SelectContent': {
     component: t.Select.Content,
   },
-  SelectValue: {
+  'rise-tools/tamagui/SelectValue': {
     component: t.Select.Value,
   },
   /* https://tamagui.dev/ui/slider */
-  Slider: {
+  'rise-tools/tamagui/Slider': {
     component: t.Slider,
   },
-  SliderTrack: {
+  'rise-tools/tamagui/SliderTrack': {
     component: t.Slider.Track,
   },
-  SliderTrackActive: {
+  'rise-tools/tamagui/SliderTrackActive': {
     component: t.Slider.TrackActive,
   },
-  SliderThumb: {
+  'rise-tools/tamagui/SliderThumb': {
     component: t.Slider.Thumb,
   },
   /* https://tamagui.dev/ui/switch */
-  Switch: {
+  'rise-tools/tamagui/Switch': {
     component: t.Switch,
   },
-  SwitchThumb: {
+  'rise-tools/tamagui/SwitchThumb': {
     component: t.Switch.Thumb,
   },
   /* https://tamagui.dev/ui/toggle-group */
-  ToggleGroup: {
+  'rise-tools/tamagui/ToggleGroup': {
     component: t.ToggleGroup,
   },
-  ToggleGroupItem: {
+  'rise-tools/tamagui/ToggleGroupItem': {
     component: t.ToggleGroup.Item,
   },
   /* https://tamagui.dev/ui/alert-dialog */
-  AlertDialog: {
+  'rise-tools/tamagui/AlertDialog': {
     component: t.AlertDialog,
   },
-  AlertDialogTitle: {
+  'rise-tools/tamagui/AlertDialogTitle': {
     component: t.AlertDialog.Title,
   },
-  AlertDialogContent: {
+  'rise-tools/tamagui/AlertDialogContent': {
     component: t.AlertDialog.Content,
   },
-  AlertDialogPortal: {
+  'rise-tools/tamagui/AlertDialogPortal': {
     component: t.AlertDialog.Portal,
   },
-  AlertDialogOverlay: {
+  'rise-tools/tamagui/AlertDialogOverlay': {
     component: t.AlertDialog.Overlay,
   },
-  AlertDialogAction: {
+  'rise-tools/tamagui/AlertDialogAction': {
     component: t.AlertDialog.Action,
   },
-  AlertDialogTrigger: {
+  'rise-tools/tamagui/AlertDialogTrigger': {
     component: t.AlertDialog.Trigger,
   },
-  AlertDialogCancel: {
+  'rise-tools/tamagui/AlertDialogCancel': {
     component: t.AlertDialog.Cancel,
   },
-  PortalProvider: {
+  'rise-tools/tamagui/PortalProvider': {
     component: t.PortalProvider,
   },
   /* https://tamagui.dev/ui/dialog */
-  Dialog: {
+  'rise-tools/tamagui/Dialog': {
     component: t.Dialog,
   },
-  DialogTrigger: {
+  'rise-tools/tamagui/DialogTrigger': {
     component: t.Dialog.Trigger,
   },
-  DialogTitle: {
+  'rise-tools/tamagui/DialogTitle': {
     component: t.Dialog.Title,
   },
-  DialogContent: {
+  'rise-tools/tamagui/DialogContent': {
     component: t.Dialog.Content,
   },
-  DialogPortal: {
+  'rise-tools/tamagui/DialogPortal': {
     component: t.Dialog.Portal,
   },
-  DialogOverlay: {
+  'rise-tools/tamagui/DialogOverlay': {
     component: t.Dialog.Overlay,
   },
-  DialogClose: {
+  'rise-tools/tamagui/DialogClose': {
     component: t.Dialog.Close,
   },
-  DialogSheet: {
+  'rise-tools/tamagui/DialogSheet': {
     component: t.Dialog.Sheet,
   },
   /* https://tamagui.dev/ui/popover */
-  Popover: {
+  'rise-tools/tamagui/Popover': {
     component: t.Popover,
   },
-  PopoverTrigger: {
+  'rise-tools/tamagui/PopoverTrigger': {
     component: t.Popover.Trigger,
   },
-  PopoverContent: {
+  'rise-tools/tamagui/PopoverContent': {
     component: t.Popover.Content,
   },
-  PopoverAnchor: {
+  'rise-tools/tamagui/PopoverAnchor': {
     component: t.Popover.Anchor,
   },
-  PopoverSheet: {
+  'rise-tools/tamagui/PopoverSheet': {
     component: t.Popover.Sheet,
   },
-  PopoverScrollView: {
+  'rise-tools/tamagui/PopoverScrollView': {
     component: t.Popover.ScrollView,
   },
   /* https://tamagui.dev/ui/sheet */
-  Sheet: {
+  'rise-tools/tamagui/Sheet': {
     component: t.Sheet,
   },
-  SheetOverlay: {
+  'rise-tools/tamagui/SheetOverlay': {
     component: t.Sheet.Overlay,
   },
-  SheetFrame: {
+  'rise-tools/tamagui/SheetFrame': {
     component: t.Sheet.Frame,
   },
-  SheetHandle: {
+  'rise-tools/tamagui/SheetHandle': {
     component: t.Sheet.Handle,
   },
-  SheetScrollView: {
+  'rise-tools/tamagui/SheetScrollView': {
     component: t.Sheet.ScrollView,
   },
   /* https://tamagui.dev/ui/tooltip */
-  Tooltip: {
+  'rise-tools/tamagui/Tooltip': {
     component: t.Tooltip,
   },
-  TooltipTrigger: {
+  'rise-tools/tamagui/TooltipTrigger': {
     component: t.Tooltip.Trigger,
   },
-  TooltipContent: {
+  'rise-tools/tamagui/TooltipContent': {
     component: t.Tooltip.Content,
   },
-  TooltipAnchor: {
+  'rise-tools/tamagui/TooltipAnchor': {
     component: t.Tooltip.Anchor,
   },
   /* https://tamagui.dev/ui/accordion */
-  Accordion: {
+  'rise-tools/tamagui/Accordion': {
     component: t.Accordion,
   },
-  AccordionItem: {
+  'rise-tools/tamagui/AccordionItem': {
     component: t.Accordion.Item,
   },
-  AccordionHeader: {
+  'rise-tools/tamagui/AccordionHeader': {
     component: t.Accordion.Header,
   },
-  AccordionTrigger: {
+  'rise-tools/tamagui/AccordionTrigger': {
     component: t.Accordion.Trigger,
   },
-  AccordionContent: {
+  'rise-tools/tamagui/AccordionContent': {
     component: t.Accordion.Content,
   },
   /* https://tamagui.dev/ui/group */
-  Group: {
+  'rise-tools/tamagui/Group': {
     component: t.Group,
   },
-  GroupItem: {
+  'rise-tools/tamagui/GroupItem': {
     component: t.Group.Item,
   },
   /* https://tamagui.dev/ui/tabs */
-  Tabs: {
+  'rise-tools/tamagui/Tabs': {
     component: t.Tabs,
   },
-  TabsList: {
+  'rise-tools/tamagui/TabsList': {
     component: t.Tabs.List,
   },
-  TabsTrigger: {
+  'rise-tools/tamagui/TabsTrigger': {
     component: t.Tabs.Trigger,
   },
-  TabsContent: {
+  'rise-tools/tamagui/TabsContent': {
     component: t.Tabs.Content,
   },
   /* https://tamagui.dev/ui/avatar */
-  Avatar: {
+  'rise-tools/tamagui/Avatar': {
     component: t.Avatar,
   },
-  AvatarImage: {
+  'rise-tools/tamagui/AvatarImage': {
     component: t.Avatar.Image,
   },
-  AvatarFallback: {
+  'rise-tools/tamagui/AvatarFallback': {
     component: t.Avatar.Fallback,
   },
   /* https://tamagui.dev/ui/card */
-  Card: {
+  'rise-tools/tamagui/Card': {
     component: t.Card,
   },
-  CardHeader: {
+  'rise-tools/tamagui/CardHeader': {
     component: t.Card.Header,
   },
-  CardFooter: {
+  'rise-tools/tamagui/CardFooter': {
     component: t.Card.Footer,
   },
-  CardBackground: {
+  'rise-tools/tamagui/CardBackground': {
     component: t.Card.Background,
   },
   /* https://tamagui.dev/ui/image */
-  Image: {
+  'rise-tools/tamagui/Image': {
     component: t.Image,
   },
   /* https://tamagui.dev/ui/list-item */
-  ListItem: {
+  'rise-tools/tamagui/ListItem': {
     component: t.ListItem,
   },
-  ListItemText: {
+  'rise-tools/tamagui/ListItemText': {
     component: t.ListItemText,
   },
-  ListItemTitle: {
+  'rise-tools/tamagui/ListItemTitle': {
     component: t.ListItemTitle,
   },
-  ListItemSubtitle: {
+  'rise-tools/tamagui/ListItemSubtitle': {
     component: t.ListItemSubtitle,
   },
   /* https://tamagui.dev/ui/separator */
-  Separator: {
+  'rise-tools/tamagui/Separator': {
     component: t.Separator,
   },
   /* https://tamagui.dev/ui/shapes */
-  Square: {
+  'rise-tools/tamagui/Square': {
     component: t.Square,
   },
-  Circle: {
+  'rise-tools/tamagui/Circle': {
     component: t.Circle,
   },
   /* https://tamagui.dev/ui/anchor */
-  Anchor: {
+  'rise-tools/tamagui/Anchor': {
     component: t.Anchor,
   },
   /* https://tamagui.dev/ui/html-elements */
-  Section: {
+  'rise-tools/tamagui/Section': {
     component: t.Section,
   },
-  Article: {
+  'rise-tools/tamagui/Article': {
     component: t.Article,
   },
-  Main: {
+  'rise-tools/tamagui/Main': {
     component: t.Main,
   },
-  Header: {
+  'rise-tools/tamagui/Header': {
     component: t.Header,
   },
-  Aside: {
+  'rise-tools/tamagui/Aside': {
     component: t.Aside,
   },
-  Footer: {
+  'rise-tools/tamagui/Footer': {
     component: t.Footer,
   },
-  Nav: {
+  'rise-tools/tamagui/Nav': {
     component: t.Nav,
   },
   /* https://tamagui.dev/ui/scroll-view */
-  ScrollView: {
+  'rise-tools/tamagui/ScrollView': {
     component: t.ScrollView,
   },
   /* https://tamagui.dev/ui/spinner */
-  Spinner: {
+  'rise-tools/tamagui/Spinner': {
     component: t.Spinner,
   },
   /*  https://tamagui.dev/ui/unspaced */
-  Unspaced: {
+  'rise-tools/tamagui/Unspaced': {
     component: t.Unspaced,
   },
   /* https://tamagui.dev/ui/visually-hidden */
-  VisuallyHidden: {
+  'rise-tools/tamagui/VisuallyHidden': {
     component: t.VisuallyHidden,
   },
   /* https://tamagui.dev/ui/linear-gradient */
-  LinearGradient: {
+  'rise-tools/tamagui/LinearGradient': {
     component: LinearGradient,
   },
-  Theme: {
+  'rise-tools/tamagui/Theme': {
     component: t.Theme,
   },
 }
