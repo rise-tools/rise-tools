@@ -31,7 +31,7 @@ export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
   if (typeof componentFactory === 'undefined') {
     return {
       $: 'component',
-      component: 'Fragment',
+      component: '@rise-tools/react/Fragment',
       children: passedProps.children,
     }
   }
