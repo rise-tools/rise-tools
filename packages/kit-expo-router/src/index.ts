@@ -11,13 +11,13 @@ export const useExpoRouterActions = (opts?: { basePath?: string }): ExpoRouterAc
   const router = useRouter()
 
   return {
-    '@rise-tools/kit-expo-router/navigate': {
+    'rise-tools/kit-expo-router/navigate': {
       action: ({ path }) => {
         router.push([opts?.basePath || '', path].join('/'))
       },
       validate: (payload) => NavigateActionPayload.parse(payload),
     },
-    '@rise-tools/kit-expo-router/goBack': {
+    'rise-tools/kit-expo-router/goBack': {
       action: () => {
         router.back()
       },

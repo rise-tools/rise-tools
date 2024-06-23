@@ -12,7 +12,7 @@ export function Icon({ icon, size = 20, ...rest }: IconProps & { icon: keyof typ
 }
 
 export const LucideIconsComponents = {
-  '@rise-tools/kit-lucide-icons/Icon': {
+  'rise-tools/kit-lucide-icons/Icon': {
     component: Icon,
   },
 }

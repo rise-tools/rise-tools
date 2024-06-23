@@ -2,8 +2,6 @@ import { ComponentRegistry } from '@rise-tools/react'
 import * as t from 'tamagui'
 import { LinearGradient } from 'tamagui/linear-gradient'
 
-// tbd: check all components and make sure all events are wrapped
-
 export const TamaguiComponents: ComponentRegistry = {
   Adapt: {
     component: t.Adapt,

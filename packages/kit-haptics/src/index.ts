@@ -13,19 +13,19 @@ const NotificationActionPayload = z.object({
 
 export const useHapticsActions = (): HapticsActions => {
   return {
-    '@rise-tools/kit-haptics/impact': {
+    'rise-tools/kit-haptics/impact': {
       action: ({ style }) => {
         Haptics.impactAsync(style)
       },
       validate: (payload) => ImpactActionPayload.parse(payload),
     },
-    '@rise-tools/kit-haptics/notification': {
+    'rise-tools/kit-haptics/notification': {
       action: ({ type }) => {
         Haptics.notificationAsync(type)
       },
       validate: (payload) => NotificationActionPayload.parse(payload),
     },
-    '@rise-tools/kit-haptics/selection': {
+    'rise-tools/kit-haptics/selection': {
       action: () => {
         Haptics.selectionAsync()
       },

@@ -312,7 +312,7 @@ export function BaseRise({
 export class RenderError extends Error {}
 
 const CORE_COMPONENTS: ComponentRegistry = {
-  '@rise-tools/react/Fragment': {
+  'rise-tools/react/Fragment': {
     component: React.Fragment,
   },
 }

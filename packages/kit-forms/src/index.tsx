@@ -12,34 +12,34 @@ import {
 } from './form'
 
 export const FormComponents = {
-  '@rise-tools/kit-forms/Form': {
+  'rise-tools/kit-forms/Form': {
     component: RiseForm,
   },
-  '@rise-tools/kit-forms/InputField': {
+  'rise-tools/kit-forms/InputField': {
     component: InputField,
   },
-  '@rise-tools/kit-forms/TextField': {
+  'rise-tools/kit-forms/TextField': {
     component: TextField,
   },
-  '@rise-tools/kit-forms/SubmitButton': {
+  'rise-tools/kit-forms/SubmitButton': {
     component: SubmitButton,
   },
-  '@rise-tools/kit-forms/CheckboxField': {
+  'rise-tools/kit-forms/CheckboxField': {
     component: CheckboxField,
   },
-  '@rise-tools/kit-forms/SwitchField': {
+  'rise-tools/kit-forms/SwitchField': {
     component: SwitchField,
   },
-  '@rise-tools/kit-forms/SliderField': {
+  'rise-tools/kit-forms/SliderField': {
     component: SliderField,
   },
-  '@rise-tools/kit-forms/SelectField': {
+  'rise-tools/kit-forms/SelectField': {
     component: SelectField,
   },
-  '@rise-tools/kit-forms/RadioGroupField': {
+  'rise-tools/kit-forms/RadioGroupField': {
     component: RadioGroupField,
   },
-  '@rise-tools/kit-forms/ToggleGroupField': {
+  'rise-tools/kit-forms/ToggleGroupField': {
     component: ToggleGroupField,
   },
 }

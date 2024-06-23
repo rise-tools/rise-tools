@@ -3,13 +3,13 @@ import type { ImpactFeedbackStyle, NotificationFeedbackType } from 'expo-haptics
 
 export type HapticsActions = ActionsDefinition<[ImpactAction, NotificationAction, SelectionAction]>
 
-type SelectionAction = ActionModelState<'@rise-tools/kit-haptics/selection'>
+type SelectionAction = ActionModelState<'rise-tools/kit-haptics/selection'>
 type ImpactAction = ActionModelState<
-  '@rise-tools/kit-haptics/impact',
+  'rise-tools/kit-haptics/impact',
   { style?: ImpactFeedbackStyle }
 >
 type NotificationAction = ActionModelState<
-  '@rise-tools/kit-haptics/notification',
+  'rise-tools/kit-haptics/notification',
   { type?: NotificationFeedbackType }
 >
 
@@ -27,11 +27,11 @@ export function haptics(
 ) {
   switch (type) {
     case 'impact':
-      return action('@rise-tools/kit-haptics/impact', style ? { style } : {})
+      return action('rise-tools/kit-haptics/impact', style ? { style } : {})
     case 'notification':
-      return action('@rise-tools/kit-haptics/notification', style ? { type: style } : {})
+      return action('rise-tools/kit-haptics/notification', style ? { type: style } : {})
     case 'selection':
-      return action('@rise-tools/kit-haptics/selection')
+      return action('rise-tools/kit-haptics/selection')
     default:
       throw new Error(`Invalid haptics type: ${type}`)
   }
