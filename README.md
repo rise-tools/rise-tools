@@ -16,7 +16,7 @@ Your UI, defined with any data source
 This repo contains the following packages:
 
 - `packages/react` - Rise Tools core library
-- `packages/tamagui` - Component library based on Tamagui for use with Rise Tools
+- `packages/kit-tamagui` - Component library based on Tamagui for use with Rise Tools
 - `packages/kit` - Our additional components supported in the Playground App
 - `packages/http-client` - HTTP client to use with any compatible server
 - `packages/ws-client` - Websocket client to use with any compatible server

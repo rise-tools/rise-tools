@@ -16,19 +16,35 @@ it('should render function', () => {
 
 it('should render fragments', () => {
   expect(
-  <>
+    <>
       <View>foo</View>
       <View>bar</View>
     </>
-).toMatchInlineSnapshot(`
+  ).toMatchInlineSnapshot(`
 Object {
   "$": "component",
   "$staticChildren": true,
   "children": Array [
     Object {
       "$": "component",
-      "children": "foo",
-      "component": "View",
+      "$staticChildren": true,
+      "children": Array [
+        Object {
+          "$": "component",
+          "children": "foo",
+          "component": "View",
+          "key": undefined,
+          "props": Object {},
+        },
+        Object {
+          "$": "component",
+          "children": "bar",
+          "component": "View",
+          "key": undefined,
+          "props": Object {},
+        },
+      ],
+      "component": "rise-tools/react/Fragment",
       "key": undefined,
       "props": Object {},
     },

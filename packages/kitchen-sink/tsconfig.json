@@ -12,7 +12,7 @@
       "path": "../kit"
     },
     {
-      "path": "../tamagui"
+      "path": "../kit-tamagui"
     },
     {
       "path": "../kit-haptics"
