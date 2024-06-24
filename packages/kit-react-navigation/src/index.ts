@@ -17,7 +17,7 @@ export const useReactNavigationActions = ({
   return {
     'rise-tools/kit-react-navigation/navigate': {
       action: ({ path }) => {
-        // @ts-ignore
+        // @ts-expect-error - we don't know the navigation stack ahead of time
         navigation.navigate(routeName, { path })
       },
       validate: (payload) => NavigateActionPayload.parse(payload),

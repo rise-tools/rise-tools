@@ -7,7 +7,7 @@ import {
 import { registerRootComponent } from 'expo'
 import { useFonts } from 'expo-font'
 import * as Linking from 'expo-linking'
-import * as React from 'react'
+import React from 'react'
 import { useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
