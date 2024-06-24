@@ -6,6 +6,7 @@ import {
 } from '@react-navigation/native'
 import { registerRootComponent } from 'expo'
 import { useFonts } from 'expo-font'
+import * as Linking from 'expo-linking'
 import * as React from 'react'
 import { useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -15,6 +16,8 @@ import { Screens } from './screens'
 import { storage } from './storage'
 import { tamaguiConfig } from './tamagui/config'
 import { TamaguiProvider } from './tamagui/provider'
+
+const prefix = Linking.createURL('/')
 
 function App() {
   const [loaded] = useFonts({
@@ -35,6 +38,9 @@ function App() {
         <TamaguiProvider config={tamaguiConfig}>
           <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
             <NavigationContainer
+              linking={{
+                prefixes: [prefix],
+              }}
               initialState={initialState ? JSON.parse(initialState) : undefined}
               onStateChange={(state) => storage.set('react-navigation', JSON.stringify(state))}
             >

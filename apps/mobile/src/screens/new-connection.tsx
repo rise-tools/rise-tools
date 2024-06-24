@@ -16,7 +16,8 @@ const defaultNewConnection = {
 }
 
 export function NewConnectionScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'newConnection'>>()
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList, 'new-connection'>>()
   return (
     <YStack flex={1} padding="$4">
       <ConnectionForm

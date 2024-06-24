@@ -80,7 +80,7 @@ function ConnectionItem({
             <Button
               backgroundColor="transparent"
               icon={Settings}
-              onPress={() => navigation.push('editConnection', { id: connection.id })}
+              onPress={() => navigation.push('edit-connection', { id: connection.id })}
             />
           )}
         </XStack>
@@ -92,7 +92,7 @@ function ConnectionItem({
 function NewConnectionButton() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'home'>>()
   return (
-    <Button onPress={() => navigation.push('newConnection')} icon={PlusCircle} chromeless>
+    <Button onPress={() => navigation.push('new-connection')} icon={PlusCircle} chromeless>
       Add new connection
     </Button>
   )

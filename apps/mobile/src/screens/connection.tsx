@@ -34,6 +34,7 @@ const components = {
 type RiseStackParamList = {
   index: { id: string; path: string }
   rise: { id: string; path: string }
+  'not-found': undefined
 }
 
 const Stack = createNativeStackNavigator<RiseStackParamList>()
@@ -42,21 +43,19 @@ export function ConnectionScreen({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'connection'>) {
   const connection = useConnection(route.params.id)
-  if (!connection) {
-    return <NotFoundScreen />
-  }
+  const initialRoute = connection ? 'index' : 'not-found'
   return (
-    <Stack.Navigator initialRouteName="index">
+    <Stack.Navigator initialRouteName={initialRoute}>
       <Stack.Screen
         name="index"
         component={RiseScreen}
         initialParams={{
           id: route.params.id,
-          path: connection.path || '',
+          path: connection?.path || '',
         }}
         options={{
           headerLeft: BackButton,
-          title: connection.label || connection.path,
+          title: connection?.label || connection?.path,
         }}
       />
       <Stack.Screen
@@ -69,6 +68,14 @@ export function ConnectionScreen({
         options={({ route }) => ({
           title: route.params.path,
         })}
+      />
+      <Stack.Screen
+        name="not-found"
+        component={NotFoundScreen}
+        options={{
+          headerLeft: BackButton,
+          title: 'Not Found',
+        }}
       />
     </Stack.Navigator>
   )

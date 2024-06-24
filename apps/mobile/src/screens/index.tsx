@@ -11,8 +11,8 @@ export type RootStackParamList = {
   home: undefined
   connect: { connectInfo?: string }
   connection: { id: string }
-  editConnection: { id: string }
-  newConnection: undefined
+  'edit-connection': { id: string }
+  'new-connection': undefined
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -35,12 +35,12 @@ export function Screens() {
         }}
       />
       <Stack.Screen
-        name="editConnection"
+        name="edit-connection"
         component={EditConnectionScreen}
         options={{ title: 'Edit Connection' }}
       />
       <Stack.Screen
-        name="newConnection"
+        name="new-connection"
         component={NewConnectionScreen}
         options={{ title: 'New Connection' }}
       />

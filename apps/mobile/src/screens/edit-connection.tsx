@@ -14,7 +14,7 @@ import { NotFoundScreen } from './not-found'
 export function EditConnectionScreen({
   route,
   navigation,
-}: NativeStackScreenProps<RootStackParamList, 'editConnection'>) {
+}: NativeStackScreenProps<RootStackParamList, 'edit-connection'>) {
   const connection = useConnection(route.params.id)
   if (!connection) {
     return <NotFoundScreen />
