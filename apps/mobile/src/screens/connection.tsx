@@ -15,7 +15,7 @@ import {
 import { Rise } from '@rise-tools/react'
 import React from 'react'
 
-import { BackButton } from '../back-button'
+import { BackButton, DismissButton } from '../back-button'
 import { Connection, useConnection } from '../connection'
 import { DataBoundary } from '../data-boundary'
 import { useModelSource } from '../model-sources'
@@ -71,6 +71,7 @@ export function ConnectionScreen({
         options={{
           title: 'Share Connection',
           presentation: 'modal',
+          headerLeft: DismissButton,
         }}
       >
         {() => <QRCodeScreen connection={connection!} />}

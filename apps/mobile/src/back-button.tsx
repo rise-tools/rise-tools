@@ -1,8 +1,18 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { Home, Share } from '@tamagui/lucide-icons'
+import { X } from '@tamagui/lucide-icons'
 import { Button, Group, Image, Popover, Separator, Text } from 'tamagui'
 
 import type { RiseStackParamList } from './screens/connection'
+
+export function DismissButton() {
+  const navigation = useNavigation<NavigationProp<RiseStackParamList>>()
+  return (
+    <Button onPress={() => navigation.goBack()} unstyled>
+      <X />
+    </Button>
+  )
+}
 
 export function BackButton() {
   const navigation = useNavigation<NavigationProp<RiseStackParamList>>()
@@ -31,7 +41,7 @@ export function BackButton() {
         <Group>
           <Group.Item>
             <Button
-              backgroundColor="white"
+              backgroundColor="$backgroundStrong"
               justifyContent="flex-start"
               onPress={() => navigation.navigate('qr-code')}
             >
@@ -42,7 +52,7 @@ export function BackButton() {
           <Separator />
           <Group.Item>
             <Button
-              backgroundColor="white"
+              backgroundColor="$backgroundStrong"
               justifyContent="flex-start"
               onPress={() => navigation.goBack()}
             >
