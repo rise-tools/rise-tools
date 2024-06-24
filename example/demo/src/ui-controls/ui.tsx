@@ -22,7 +22,6 @@ import {
   ScrollView,
   SelectField,
   SliderField,
-  StackScreen,
   SubmitButton,
   SVG,
   SwitchField,
@@ -54,7 +53,6 @@ export const models = {
 function UI() {
   return (
     <>
-      <StackScreen options={{ title: 'UI Controls' }} />
       <YStack>
         <Button onPress={navigate('form')}>Form</Button>
         <Button onPress={navigate('list')}>List</Button>

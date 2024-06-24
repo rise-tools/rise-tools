@@ -6,37 +6,37 @@
   },
  "references": [
     {
-      "path": "../../packages/react"
+      "path": "../react"
     },
     {
-      "path": "../../packages/kit"
+      "path": "../kit"
     },
     {
-      "path": "../../packages/kit-expo-router"
+      "path": "../kit-react-navigation"
     },
     {
-      "path": "../../packages/tamagui"
+      "path": "../tamagui"
     },
     {
-      "path": "../../packages/kit-haptics"
+      "path": "../kit-haptics"
     },
     {
-      "path": "../../packages/kit-tamagui-toast"
+      "path": "../kit-tamagui-toast"
     },
     {
-      "path": "../../packages/kit-lucide-icons"
+      "path": "../kit-lucide-icons"
     },
     {
-      "path": "../../packages/kit-forms"
+      "path": "../kit-forms"
     },
     {
-      "path": "../../packages/kit-svg"
+      "path": "../kit-svg"
     },
     {
-      "path": "../../packages/kit-linking"
+      "path": "../kit-linking"
     },
     {
-      "path": "../../packages/kit-qrcode"
+      "path": "../kit-qrcode"
     },
   ]
 }

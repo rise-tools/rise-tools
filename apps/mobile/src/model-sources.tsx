@@ -13,7 +13,7 @@ function createModelSource(url: string) {
 export function useModelSource(id: string, url: string) {
   const key = `${id}${url}`
   if (modelSources.has(key)) {
-    return modelSources.get(key)
+    return modelSources.get(key)!
   }
   const newModelSource = createModelSource(url)
   modelSources.set(key, newModelSource)

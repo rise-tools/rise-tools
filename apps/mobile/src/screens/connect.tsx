@@ -1,16 +1,20 @@
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useStream } from '@rise-tools/react'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
-import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
 import React from 'react'
 import { Button, SizableText, YStack } from 'tamagui'
 
 import { addConnection, Connection, connections } from '../connection'
+import { RootStackParamList } from '.'
 
-export function ConnectScreen({ connectInfo }: { connectInfo?: string }) {
-  const { replace } = useRouter()
-
+export function ConnectScreen({
+  route: {
+    params: { connectInfo },
+  },
+  navigation,
+}: NativeStackScreenProps<RootStackParamList, 'connect'>) {
   let importedConnection: Connection | null = null
   if (connectInfo) {
     try {
@@ -39,7 +43,7 @@ export function ConnectScreen({ connectInfo }: { connectInfo?: string }) {
         connection.path === importedConnection?.path
     )
     if (existingConnection) {
-      replace(`/connection/${existingConnection.id}`)
+      navigation.replace('connection', { id: existingConnection.id })
     }
     console.log('existingConnection', existingConnection)
   }, [importedConnection, state])
@@ -58,10 +62,10 @@ export function ConnectScreen({ connectInfo }: { connectInfo?: string }) {
                 connection.path === importedConnection?.path
             )
             if (existingConnection) {
-              replace(`/connection/${existingConnection.id}`)
+              navigation.replace('connection', { id: existingConnection.id })
             } else {
               const newConnId = addConnection(importedConnection)
-              replace(`/connection/${newConnId}`)
+              navigation.replace('connection', { id: newConnId })
             }
           }}
         >

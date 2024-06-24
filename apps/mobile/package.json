@@ -2,7 +2,7 @@
   "name": "@rise-tools/rise-mobile",
   "version": "1.0.0",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "src/index.tsx",
   "private": true,
   "scripts": {
     "start": "npx expo start -c",

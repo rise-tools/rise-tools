@@ -1,54 +1,96 @@
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { RiseComponents } from '@rise-tools/kit'
 import {
-  ExpoRouterComponents,
   FormComponents,
   LucideIconsComponents,
   QRCodeComponents,
   SVGComponents,
   TamaguiComponents,
-  useExpoRouterActions,
   useHapticsActions,
   useLinkingActions,
+  useReactNavigationActions,
   useToastActions,
 } from '@rise-tools/kitchen-sink'
 import { Rise } from '@rise-tools/react'
 import React from 'react'
 
-import { Connection } from '../connection'
+import { BackButton } from '../back-button'
+import { useConnection } from '../connection'
 import { DataBoundary } from '../data-boundary'
 import { useModelSource } from '../model-sources'
+import { RootStackParamList } from '.'
+import { NotFoundScreen } from './not-found'
 
 const components = {
   ...TamaguiComponents,
   ...RiseComponents,
-  ...ExpoRouterComponents,
   ...FormComponents,
   ...SVGComponents,
   ...LucideIconsComponents,
   ...QRCodeComponents,
 }
 
-export function ConnectionScreen({ connection, path }: { connection: Connection; path?: string }) {
+type RiseStackParamList = {
+  index: { id: string; path: string }
+  rise: { id: string; path: string }
+}
+
+const Stack = createNativeStackNavigator<RiseStackParamList>()
+
+export function ConnectionScreen({
+  route,
+}: NativeStackScreenProps<RootStackParamList, 'connection'>) {
+  const connection = useConnection(route.params.id)
+  if (!connection) {
+    return <NotFoundScreen />
+  }
+  return (
+    <Stack.Navigator initialRouteName="index">
+      <Stack.Screen
+        name="index"
+        component={RiseScreen}
+        initialParams={{
+          id: route.params.id,
+          path: connection.path || '',
+        }}
+        options={{
+          headerLeft: BackButton,
+          title: connection.label || connection.path,
+        }}
+      />
+      <Stack.Screen
+        name="rise"
+        component={RiseScreen}
+        getId={({ params }) => params.path}
+        initialParams={{
+          id: route.params.id,
+        }}
+        options={({ route }) => ({
+          title: route.params.path,
+        })}
+      />
+    </Stack.Navigator>
+  )
+}
+
+function RiseScreen({ route }: NativeStackScreenProps<RiseStackParamList, 'rise' | 'index'>) {
   const actions = {
-    ...useExpoRouterActions({ basePath: `/connection/${connection.id}` }),
+    ...useReactNavigationActions({ routeName: 'rise' }),
     ...useToastActions(),
     ...useHapticsActions(),
     ...useLinkingActions(),
   }
 
+  const connection = useConnection(route.params.id)!
   const modelSource = useModelSource(connection.id, connection.host)
-  if (!modelSource) {
-    return null
-  }
-
-  const resolvedPath = path || connection.path || ''
 
   return (
-    <DataBoundary modelSource={modelSource} path={resolvedPath}>
+    <DataBoundary modelSource={modelSource} path={route.params.path}>
       <Rise
         components={components}
         modelSource={modelSource}
-        path={resolvedPath}
+        path={route.params.path}
         actions={actions}
       />
     </DataBoundary>

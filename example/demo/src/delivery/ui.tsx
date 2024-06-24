@@ -5,7 +5,6 @@ import {
   LucideIcon,
   navigate,
   openURL,
-  StackScreen,
   Theme,
   XStack,
   YStack,
@@ -27,11 +26,7 @@ function UI() {
 }
 
 function FeedbackForm() {
-  return (
-    <YStack>
-      <StackScreen options={{ title: 'Feedback' }} />
-    </YStack>
-  )
+  return <YStack />
 }
 
 function Groceries() {
