@@ -1,9 +1,9 @@
+import { navigate } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   H2,
   H4,
   Image,
-  navigate,
   Paragraph,
   ScrollView,
   SizableText,

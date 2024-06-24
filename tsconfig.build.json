@@ -28,6 +28,9 @@
       "path": "./packages/kit-expo-router"
     },
     {
+      "path": "./packages/kit-react-navigation"
+    },
+    {
       "path": "./packages/kit-tamagui-toast"
     },
     {

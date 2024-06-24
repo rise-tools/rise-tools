@@ -10,5 +10,7 @@
     "path": "../../packages/react"
   }, {
     "path": "../../packages/server"
-  },]
+  }, {
+    "path": "../../packages/kit-react-navigation"
+  }]
 }

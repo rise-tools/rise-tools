@@ -5,15 +5,14 @@ import {
   DraggableFlatList,
   FlatList,
 } from '@rise-tools/kit/server'
+import { goBack, navigate } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   CheckboxField,
-  goBack,
   H4,
   haptics,
   InputField,
   LucideIcon,
-  navigate,
   openSettings,
   openURL,
   QRCode,
@@ -22,7 +21,6 @@ import {
   ScrollView,
   SelectField,
   SliderField,
-  StackScreen,
   SubmitButton,
   SVG,
   SwitchField,
@@ -54,7 +52,6 @@ export const models = {
 function UI() {
   return (
     <>
-      <StackScreen options={{ title: 'UI Controls' }} />
       <YStack>
         <Button onPress={navigate('form')}>Form</Button>
         <Button onPress={navigate('list')}>List</Button>

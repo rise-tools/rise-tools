@@ -1,20 +1,21 @@
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Copy, Trash } from '@tamagui/lucide-icons'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
 import { setStringAsync } from 'expo-clipboard'
-import { useLocalSearchParams, useRouter } from 'expo-router'
 import React from 'react'
 import { Button, Separator, YStack } from 'tamagui'
 
 import { removeConnection, updateConnection, useConnection } from '../connection'
 import { ConnectionForm } from '../connection-form'
+import { RootStackParamList } from '.'
 import { NotFoundScreen } from './not-found'
 
-export function EditConnectionScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>()
-  const connection = useConnection(id)
-  const router = useRouter()
-
+export function EditConnectionScreen({
+  route,
+  navigation,
+}: NativeStackScreenProps<RootStackParamList, 'edit-connection'>) {
+  const connection = useConnection(route.params.id)
   if (!connection) {
     return <NotFoundScreen />
   }
@@ -24,7 +25,7 @@ export function EditConnectionScreen() {
       <ConnectionForm
         onSubmit={(values) => {
           updateConnection(connection.id, { ...connection, ...values })
-          router.navigate('/')
+          navigation.navigate('home')
         }}
         defaultValues={connection}
         submitButton={({ submit }) => <Button onPress={() => submit()}>Save Connection</Button>}
@@ -45,7 +46,7 @@ export function EditConnectionScreen() {
         color="$red10"
         onPress={() => {
           removeConnection(connection.id)
-          router.navigate('/')
+          navigation.navigate('home')
         }}
         chromeless
         icon={Trash}
@@ -55,4 +56,5 @@ export function EditConnectionScreen() {
     </YStack>
   )
 }
+
 // rise://connect/3PDaRnc1CoGkXf4HiDu8JnBuU8bdm1ohJLfwhZTNTwN4h5Po6VMDhyUpS9zpEvizipY7KnGWBn68CV9rRz8r6cHbQLVHgktpPsd9ZgCLj8X2AT1eTwJowZ9hqYN3fNSZyy57WXxkfKku4Pi4

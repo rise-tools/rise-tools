@@ -1,5 +1,4 @@
 export * from '@rise-tools/kit'
-export * from '@rise-tools/kit-expo-router'
 export * from '@rise-tools/kit-forms'
 export * from '@rise-tools/kit-haptics'
 export * from '@rise-tools/kit-linking'

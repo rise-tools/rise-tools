@@ -1,11 +1,10 @@
+import { navigate } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   Circle,
   H3,
   LucideIcon,
-  navigate,
   openURL,
-  StackScreen,
   Theme,
   XStack,
   YStack,
@@ -27,11 +26,7 @@ function UI() {
 }
 
 function FeedbackForm() {
-  return (
-    <YStack>
-      <StackScreen options={{ title: 'Feedback' }} />
-    </YStack>
-  )
+  return <YStack />
 }
 
 function Groceries() {

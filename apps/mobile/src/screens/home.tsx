@@ -1,12 +1,14 @@
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useStream } from '@rise-tools/react'
 import { PlusCircle, Settings } from '@tamagui/lucide-icons'
 import { useAssets } from 'expo-asset'
-import { useRouter } from 'expo-router'
 import React from 'react'
 import { ImageURISource, ScrollView } from 'react-native'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
 import { BUILTIN_CONNECTIONS, Connection, connections } from '../connection'
+import { RootStackParamList } from '.'
 
 export function HomeScreen() {
   const state = useStream(connections)
@@ -43,7 +45,7 @@ function HeroImage() {
   if (error) console.error(error)
   if (!assets?.[0]) return null
   return (
-    <XStack maxWidth={'100%'} justifyContent="center">
+    <XStack padding="$4" justifyContent="center">
       <View aspectRatio={1} height={200}>
         <Image source={assets[0] as ImageURISource} aspectRatio={1} height={200} />
       </View>
@@ -58,14 +60,13 @@ function ConnectionItem({
   connection: Connection
   readonly?: boolean
 }) {
-  const router = useRouter()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'home'>>()
 
   return (
     <YGroup.Item>
       <Button
-        paddingHorizontal={0}
         backgroundColor="$color1"
-        onPress={() => router.push(`/connection/${connection.id}?path=${connection.path}`)}
+        onPress={() => navigation.push('connection', { id: connection.id })}
       >
         <XStack>
           <View flex={1} alignItems="center" justifyContent="center" paddingLeft="$4">
@@ -79,7 +80,7 @@ function ConnectionItem({
             <Button
               backgroundColor="transparent"
               icon={Settings}
-              onPress={() => router.push(`/edit-connection/${connection.id}`)}
+              onPress={() => navigation.push('edit-connection', { id: connection.id })}
             />
           )}
         </XStack>
@@ -89,9 +90,9 @@ function ConnectionItem({
 }
 
 function NewConnectionButton() {
-  const router = useRouter()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'home'>>()
   return (
-    <Button onPress={() => router.push('/new-connection')} icon={PlusCircle} chromeless>
+    <Button onPress={() => navigation.push('new-connection')} icon={PlusCircle} chromeless>
       Add new connection
     </Button>
   )
