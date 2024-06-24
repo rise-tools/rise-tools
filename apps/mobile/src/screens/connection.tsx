@@ -1,14 +1,17 @@
 import { RiseComponents } from '@rise-tools/kit'
-import { ExpoRouterComponents, useExpoRouterActions } from '@rise-tools/kit-expo-router'
-import { FormComponents } from '@rise-tools/kit-forms'
-import { useHapticsActions } from '@rise-tools/kit-haptics'
-import { useLinkingActions } from '@rise-tools/kit-linking'
-import { LucideIconsComponents } from '@rise-tools/kit-lucide-icons'
-import { QRCodeComponents } from '@rise-tools/kit-qrcode'
-import { SVGComponents } from '@rise-tools/kit-svg'
-import { useToastActions } from '@rise-tools/kit-tamagui-toast'
+import {
+  ExpoRouterComponents,
+  FormComponents,
+  LucideIconsComponents,
+  QRCodeComponents,
+  SVGComponents,
+  TamaguiComponents,
+  useExpoRouterActions,
+  useHapticsActions,
+  useLinkingActions,
+  useToastActions,
+} from '@rise-tools/kitchen-sink'
 import { Rise } from '@rise-tools/react'
-import { TamaguiComponents } from '@rise-tools/tamagui'
 import React from 'react'
 
 import { Connection } from '../connection'

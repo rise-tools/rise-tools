@@ -5,27 +5,37 @@ import {
   DraggableFlatList,
   FlatList,
 } from '@rise-tools/kit/server'
-import { goBack, navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
 import {
+  Button,
   CheckboxField,
+  goBack,
+  H4,
+  haptics,
   InputField,
+  LucideIcon,
+  navigate,
+  openSettings,
+  openURL,
+  QRCode,
   RadioGroupField,
   RiseForm,
+  ScrollView,
   SelectField,
   SliderField,
+  StackScreen,
   SubmitButton,
+  SVG,
   SwitchField,
+  Text,
   TextField,
+  toast,
   ToggleGroupField,
-} from '@rise-tools/kit-forms/server'
-import { haptics } from '@rise-tools/kit-haptics/server'
-import { openSettings, openURL } from '@rise-tools/kit-linking/server'
-import { LucideIcon } from '@rise-tools/kit-lucide-icons/server'
-import { QRCode } from '@rise-tools/kit-qrcode/server'
-import { Circle, Svg, SvgUri, SvgXml } from '@rise-tools/kit-svg/server'
-import { toast } from '@rise-tools/kit-tamagui-toast/server'
+  XStack,
+  YStack,
+} from '@rise-tools/kitchen-sink/server'
 import { response } from '@rise-tools/react'
-import { Button, H4, ScrollView, Text, XStack, YStack } from '@rise-tools/tamagui/server'
+
+const { Circle, Svg, SvgUri, SvgXml } = SVG
 
 export const models = {
   controls: UI,

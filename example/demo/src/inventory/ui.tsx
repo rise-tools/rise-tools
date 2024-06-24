@@ -1,17 +1,17 @@
-import { navigate } from '@rise-tools/kit-expo-router/server'
-import { ref } from '@rise-tools/react'
-import { lookup, state, StateSetter, view } from '@rise-tools/server'
 import {
   Button,
   H2,
   H4,
   Image,
+  navigate,
   Paragraph,
   ScrollView,
   SizableText,
   XStack,
   YStack,
-} from '@rise-tools/tamagui/server'
+} from '@rise-tools/kitchen-sink/server'
+import { ref } from '@rise-tools/react'
+import { lookup, state, StateSetter, view } from '@rise-tools/server'
 
 import defaultInventory, { Inventory, Item } from './inventory'
 

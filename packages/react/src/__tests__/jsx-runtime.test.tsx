@@ -1,7 +1,7 @@
 /* @jsxImportSource .. */
 
 import { createComponentDefinition } from '../jsx-runtime'
-import { ComponentModelState, isComponentModelState, isEventModelState } from '../rise'
+import { isComponentModelState, isEventModelState } from '../rise'
 
 const View = createComponentDefinition('View')
 
