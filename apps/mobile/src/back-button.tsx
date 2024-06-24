@@ -1,7 +1,9 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { Home, Share } from '@tamagui/lucide-icons'
 import { X } from '@tamagui/lucide-icons'
-import { Button, Group, Image, Popover, Separator, Text } from 'tamagui'
+import * as Haptics from 'expo-haptics'
+import { PropsWithChildren } from 'react'
+import { Button, Group, Image, Popover, Separator, Text, XStack } from 'tamagui'
 
 import type { RiseStackParamList } from './screens/connection'
 
@@ -18,7 +20,7 @@ export function BackButton() {
   const navigation = useNavigation<NavigationProp<RiseStackParamList>>()
 
   return (
-    <Popover size="$5" offset={15} placement="bottom-start">
+    <Popover size="$5" offset={16} placement="bottom-start">
       <Popover.Trigger>
         <Image src={require('../assets/RiseMainIcon.png')} aspectRatio={1} height={25} />
       </Popover.Trigger>
@@ -39,29 +41,40 @@ export function BackButton() {
         ]}
       >
         <Group>
-          <Group.Item>
-            <Button
-              backgroundColor="$backgroundStrong"
-              justifyContent="flex-start"
-              onPress={() => navigation.navigate('qr-code')}
-            >
-              <Share />
-              <Text>Share QR Code</Text>
-            </Button>
-          </Group.Item>
+          <DropdownItem onPress={() => navigation.goBack()} Icon={Home}>
+            Go Home
+          </DropdownItem>
           <Separator />
-          <Group.Item>
-            <Button
-              backgroundColor="$backgroundStrong"
-              justifyContent="flex-start"
-              onPress={() => navigation.goBack()}
-            >
-              <Home />
-              <Text>Go Home</Text>
-            </Button>
-          </Group.Item>
+          <DropdownItem onPress={() => navigation.navigate('qr-code')} Icon={Share}>
+            Share Connection
+          </DropdownItem>
         </Group>
       </Popover.Content>
     </Popover>
+  )
+}
+
+function DropdownItem({
+  children,
+  onPress,
+  Icon,
+}: PropsWithChildren<{ onPress: () => void; Icon: React.ComponentType<any> }>) {
+  return (
+    <Group.Item>
+      <Popover.Close flexDirection="row" justifyContent="flex-start" paddingHorizontal="$4" asChild>
+        <Button
+          backgroundColor="$backgroundStrong"
+          onPress={() => {
+            Haptics.impactAsync()
+            onPress()
+          }}
+        >
+          <XStack alignItems="center" gap="$3">
+            <Icon size="$1" />
+            <Text fontSize="$4">{children}</Text>
+          </XStack>
+        </Button>
+      </Popover.Close>
+    </Group.Item>
   )
 }
