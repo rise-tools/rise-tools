@@ -51,8 +51,10 @@ export function EditConnectionScreen({
         chromeless
         icon={Trash}
       >
-        Delete "{connection.label}" Connection
+        {`Delete "${connection.label}" Connection`}
       </Button>
     </YStack>
   )
 }
+
+// rise://connect/3PDaRnc1CoGkXf4HiDu8JnBuU8bdm1ohJLfwhZTNTwN4h5Po6VMDhyUpS9zpEvizipY7KnGWBn68CV9rRz8r6cHbQLVHgktpPsd9ZgCLj8X2AT1eTwJowZ9hqYN3fNSZyy57WXxkfKku4Pi4
