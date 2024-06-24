@@ -9,13 +9,13 @@ const OpenURLPayload = z.object({
 
 export const useLinkingActions = (): LinkingActions => {
   return {
-    '@rise-tools/kit-linking/openURL': {
+    'rise-tools/kit-linking/openURL': {
       action: ({ url }) => {
         Linking.openURL(url)
       },
       validate: (payload) => OpenURLPayload.parse(payload),
     },
-    '@rise-tools/kit-linking/openSettings': {
+    'rise-tools/kit-linking/openSettings': {
       action: () => {
         Linking.openSettings()
       },

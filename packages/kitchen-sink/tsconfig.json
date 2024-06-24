@@ -15,7 +15,7 @@
       "path": "../../packages/kit-expo-router"
     },
     {
-      "path": "../../packages/tamagui"
+      "path": "../../packages/kit-tamagui"
     },
     {
       "path": "../../packages/kit-haptics"

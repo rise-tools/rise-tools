@@ -13,7 +13,7 @@ export const useToastActions = (): ToastActions => {
   const toast = useToastController()
 
   return {
-    '@rise-tools/kit-tamagui-toast/toast': {
+    'rise-tools/kit-tamagui-toast/toast': {
       action: ({ title, ...options }) => {
         toast.show(title, options)
       },

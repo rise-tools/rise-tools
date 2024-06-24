@@ -3,7 +3,7 @@ import { action, ActionModelState, ActionsDefinition } from '@rise-tools/react'
 export type ToastActions = ActionsDefinition<[ToastAction]>
 
 type ToastAction = ActionModelState<
-  '@rise-tools/kit-tamagui-toast/toast',
+  'rise-tools/kit-tamagui-toast/toast',
   {
     title: string
     message?: string
@@ -12,4 +12,4 @@ type ToastAction = ActionModelState<
 >
 
 export const toast = (title: string, message?: string, duration?: number): ToastAction =>
-  action('@rise-tools/kit-tamagui-toast/toast', { title, message, duration })
+  action('rise-tools/kit-tamagui-toast/toast', { title, message, duration })

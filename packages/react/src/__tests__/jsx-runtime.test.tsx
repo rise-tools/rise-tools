@@ -40,7 +40,7 @@ it('should render fragments', () => {
           "props": Object {},
         },
       ],
-      "component": "@rise-tools/react/Fragment",
+      "component": "rise-tools/react/Fragment",
       "key": undefined,
       "props": Object {},
     }

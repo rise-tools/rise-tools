@@ -31,7 +31,7 @@ export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
   if (typeof componentFactory === 'undefined') {
     return {
       $: 'component',
-      component: '@rise-tools/react/Fragment',
+      component: 'rise-tools/react/Fragment',
       children: passedProps.children,
     }
   }
@@ -101,5 +101,5 @@ export function isReactElement(obj: any): obj is ReactElement {
 }
 
 export const Fragment = createComponentDefinition<typeof React.Fragment>(
-  '@rise-tools/react/Fragment'
+  'rise-tools/react/Fragment'
 )
