@@ -10,7 +10,7 @@
       "path": "./packages/react"
     },
     {
-      "path": "./packages/tamagui"
+      "path": "./packages/kit-tamagui"
     },
     {
       "path": "./packages/kit"

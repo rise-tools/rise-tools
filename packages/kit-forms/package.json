@@ -33,7 +33,7 @@
     "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "@rise-tools/tamagui": "0.2.0",
+    "@rise-tools/kit-tamagui": "0.2.0",
     "tamagui": "^1.100.3"
   }
 }
