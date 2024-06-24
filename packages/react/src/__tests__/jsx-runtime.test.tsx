@@ -21,10 +21,6 @@ it('should render fragments', () => {
       <View>bar</View>
     </>
   ).toMatchInlineSnapshot(`
-Object {
-  "$": "component",
-  "$staticChildren": true,
-  "children": Array [
     Object {
       "$": "component",
       "$staticChildren": true,
@@ -47,20 +43,8 @@ Object {
       "component": "rise-tools/react/Fragment",
       "key": undefined,
       "props": Object {},
-    },
-    Object {
-      "$": "component",
-      "children": "bar",
-      "component": "View",
-      "key": undefined,
-      "props": Object {},
-    },
-  ],
-  "component": "rise-tools/react/Fragment",
-  "key": undefined,
-  "props": Object {},
-}
-`)
+    }
+  `)
 })
 
 it('should turn function props into event', () => {
