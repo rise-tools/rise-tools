@@ -1,3 +1,4 @@
+import { Link, QrCode as QRCodeIcon } from '@tamagui/lucide-icons'
 import bs58 from 'bs58'
 import { Buffer } from 'buffer'
 import * as FileSystem from 'expo-file-system'
@@ -5,7 +6,8 @@ import * as Linking from 'expo-linking'
 import { useRef } from 'react'
 import { Share } from 'react-native'
 import QRCode from 'react-native-qrcode-svg'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Button, XStack, YStack } from 'tamagui'
 
 import { Connection } from '../connection'
 
@@ -47,23 +49,29 @@ export function QRCodeScreen({ connection }: { connection: Connection }) {
   }
 
   return (
-    <YStack padding="$4">
-      <XStack paddingVertical="$10" justifyContent="center">
-        <QRCode
-          // QRCode does not accept ref as a prop, but exposes this prop instead
-          getRef={(ref) => (qrCodeRef.current = ref)}
-          value={deepLink}
-          size={250}
-        />
-      </XStack>
-      <XStack gap="$4" justifyContent="space-between">
-        <Button flex={1} onPress={shareQRCode} theme="green">
-          Share as image
-        </Button>
-        <Button flex={1} onPress={shareLink} theme="blue">
-          Share as link
-        </Button>
-      </XStack>
+    <YStack flex={1} backgroundColor="$backgroundStrong">
+      <SafeAreaView style={{ flex: 1 }}>
+        <YStack flex={1}>
+          <XStack flex={1} justifyContent="center" alignItems="center">
+            <QRCode
+              // QRCode does not accept ref as a prop, but exposes this prop instead
+              getRef={(ref) => (qrCodeRef.current = ref)}
+              value={deepLink}
+              size={250}
+            />
+          </XStack>
+          <XStack paddingHorizontal="$4" gap="$4" justifyContent="space-between">
+            <Button flex={1} onPress={shareQRCode} theme="blue">
+              <QRCodeIcon />
+              Share Image
+            </Button>
+            <Button flex={1} onPress={shareLink} theme="gray">
+              <Link />
+              Share Link
+            </Button>
+          </XStack>
+        </YStack>
+      </SafeAreaView>
     </YStack>
   )
 }
