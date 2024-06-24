@@ -15,18 +15,18 @@ it('should render a Tamagui component', () => {
         components={TamaguiComponents}
         model={{
           $: 'component',
-          component: 'XStack',
+          component: 'rise-tools/tamagui/XStack',
           children: [
             {
               $: 'component',
               key: 'H1Component',
-              component: 'H1',
+              component: 'rise-tools/tamagui/H1',
               children: 'Hello',
             },
             {
               $: 'component',
               key: 'ParagraphComponent',
-              component: 'Paragraph',
+              component: 'rise-tools/tamagui/Paragraph',
               children: 'Welcome to Tamagui!',
             },
           ],
