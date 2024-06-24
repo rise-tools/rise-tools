@@ -95,7 +95,6 @@ function RiseScreen({ connection, path }: { connection: Connection; path: string
     ...useHapticsActions(),
     ...useLinkingActions(),
   }
-
   return (
     <DataBoundary modelSource={modelSource} path={path}>
       <Rise components={components} modelSource={modelSource} path={path} actions={actions} />
