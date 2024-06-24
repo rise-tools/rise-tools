@@ -30,7 +30,8 @@ export function Screens() {
         name="connection"
         component={ConnectionScreen}
         options={{
-          presentation: 'fullScreenModal',
+          animation: 'slide_from_bottom',
+          animationDuration: 250,
           headerShown: false,
         }}
       />
