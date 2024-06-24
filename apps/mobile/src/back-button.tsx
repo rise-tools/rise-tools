@@ -1,4 +1,4 @@
-import { NavigationProp, useNavigation, useRoute } from '@react-navigation/native'
+import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { Home, Share } from '@tamagui/lucide-icons'
 import { Button, Group, Image, Popover, Separator, Text } from 'tamagui'
 
