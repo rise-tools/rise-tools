@@ -56,7 +56,8 @@
     "react-native-web": "~0.19.6",
     "tamagui": "^1.100.3",
     "uuid": "^9.0.1",
-    "expo-haptics": "~13.0.1"
+    "expo-haptics": "~13.0.1",
+    "expo-file-system": "~17.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
