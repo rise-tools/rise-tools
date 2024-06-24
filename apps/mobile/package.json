@@ -18,6 +18,7 @@
     "@rise-tools/http-client": "0.2.0",
     "@rise-tools/ws-client": "0.2.0",
     "@rise-tools/kitchen-sink": "0.2.0",
+    "@rise-tools/kit-react-navigation": "0.2.0",
     "@shopify/react-native-skia": "1.2.3",
     "@tamagui/font-inter": "^1.100.3",
     "@tamagui/react-native-media-driver": "^1.100.3",

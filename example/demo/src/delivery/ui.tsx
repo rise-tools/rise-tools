@@ -1,9 +1,9 @@
+import { navigate } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   Circle,
   H3,
   LucideIcon,
-  navigate,
   openURL,
   Theme,
   XStack,

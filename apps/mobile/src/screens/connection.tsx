@@ -1,6 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { RiseComponents } from '@rise-tools/kit'
+import { useReactNavigationActions } from '@rise-tools/kit-react-navigation'
 import {
   FormComponents,
   LucideIconsComponents,
@@ -9,7 +10,6 @@ import {
   TamaguiComponents,
   useHapticsActions,
   useLinkingActions,
-  useReactNavigationActions,
   useToastActions,
 } from '@rise-tools/kitchen-sink'
 import { Rise } from '@rise-tools/react'

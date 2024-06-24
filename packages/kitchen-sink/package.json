@@ -37,11 +37,9 @@
     "@rise-tools/kit-tamagui-toast": "0.2.0",
     "@rise-tools/kit-lucide-icons": "0.2.0",
     "@rise-tools/kit-svg": "0.2.0",
-    "@rise-tools/kit-react-navigation": "0.2.0",
     "@rise-tools/kit-qrcode": "0.2.0"
   },
   "peerDependencies": {
-    "@react-navigation/native": "^6.1.17",
     "@tamagui/lucide-icons": "^1.100.3",
     "expo-linking": "~6.3.1",
     "expo-haptics": "~13.0.1",
