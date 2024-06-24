@@ -46,8 +46,8 @@ function HeroImage() {
   if (!assets?.[0]) return null
   return (
     <XStack padding="$4" justifyContent="center">
-      <View aspectRatio={1.09} height={200}>
-        <Image source={assets[0] as ImageURISource} aspectRatio={1.09} height={200} />
+      <View aspectRatio={1} height={200}>
+        <Image source={assets[0] as ImageURISource} aspectRatio={1} height={200} />
       </View>
     </XStack>
   )

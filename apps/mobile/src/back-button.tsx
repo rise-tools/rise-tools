@@ -6,7 +6,7 @@ export function BackButton() {
 
   return (
     <Button unstyled onPress={() => navigation.goBack()}>
-      <Image src={require('../assets/RiseMainIcon.png')} aspectRatio={1.09} height={25} />
+      <Image src={require('../assets/RiseMainIcon.png')} aspectRatio={1} height={25} />
     </Button>
   )
 }
