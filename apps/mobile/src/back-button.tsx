@@ -21,7 +21,7 @@ export function BackButton() {
 
   return (
     <Popover size="$5" offset={16} placement="bottom-start">
-      <Popover.Trigger>
+      <Popover.Trigger onPress={() => Haptics.impactAsync()}>
         <Image src={require('../assets/RiseMainIcon.png')} aspectRatio={1} height={25} />
       </Popover.Trigger>
       <Popover.Content
