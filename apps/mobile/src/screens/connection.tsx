@@ -51,7 +51,7 @@ export function ConnectionScreen({
       <Stack.Screen
         name="index"
         options={{
-          headerLeft: BackButton,
+          headerLeft: () => <BackButton connection={connection} />,
           title: connection?.label || connection?.path,
         }}
       >
@@ -80,7 +80,7 @@ export function ConnectionScreen({
         name="not-found"
         component={NotFoundScreen}
         options={{
-          headerLeft: BackButton,
+          headerLeft: () => <BackButton connection={connection} />,
           title: 'Not Found',
         }}
       />

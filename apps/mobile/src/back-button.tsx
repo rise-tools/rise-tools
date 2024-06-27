@@ -1,10 +1,12 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native'
-import { Home, Share } from '@tamagui/lucide-icons'
+import { Home, Pencil, Share } from '@tamagui/lucide-icons'
 import { X } from '@tamagui/lucide-icons'
 import * as Haptics from 'expo-haptics'
 import { PropsWithChildren } from 'react'
 import { Button, Group, Image, Popover, Separator, Text, XStack } from 'tamagui'
 
+import { BUILTIN_CONNECTIONS, Connection } from './connection'
+import { RootStackParamList } from './screens'
 import type { RiseStackParamList } from './screens/connection'
 
 export function DismissButton() {
@@ -16,8 +18,8 @@ export function DismissButton() {
   )
 }
 
-export function BackButton() {
-  const navigation = useNavigation<NavigationProp<RiseStackParamList>>()
+export function BackButton({ connection }: { connection?: Connection }) {
+  const navigation = useNavigation<NavigationProp<RiseStackParamList & RootStackParamList>>()
 
   return (
     <Popover size="$5" offset={16} placement="bottom-start">
@@ -48,6 +50,17 @@ export function BackButton() {
           <DropdownItem onPress={() => navigation.navigate('qr-code')} Icon={Share}>
             Share Connection
           </DropdownItem>
+          {connection && Object.keys(BUILTIN_CONNECTIONS).includes(connection.id) === false && (
+            <>
+              <Separator />
+              <DropdownItem
+                onPress={() => navigation.navigate('edit-connection', { id: connection.id })}
+                Icon={Pencil}
+              >
+                Edit Connection
+              </DropdownItem>
+            </>
+          )}
         </Group>
       </Popover.Content>
     </Popover>

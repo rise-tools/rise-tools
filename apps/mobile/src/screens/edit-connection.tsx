@@ -25,7 +25,7 @@ export function EditConnectionScreen({
       <ConnectionForm
         onSubmit={(values) => {
           updateConnection(connection.id, { ...connection, ...values })
-          navigation.navigate('home')
+          navigation.goBack()
         }}
         defaultValues={connection}
         submitButton={({ submit }) => <Button onPress={() => submit()}>Save Connection</Button>}
