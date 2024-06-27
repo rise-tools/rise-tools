@@ -15,12 +15,13 @@ import {
 import { Rise } from '@rise-tools/react'
 import React from 'react'
 
-import { BackButton } from '../back-button'
-import { useConnection } from '../connection'
+import { BackButton, DismissButton } from '../back-button'
+import { Connection, useConnection } from '../connection'
 import { DataBoundary } from '../data-boundary'
 import { useModelSource } from '../model-sources'
 import { RootStackParamList } from '.'
 import { NotFoundScreen } from './not-found'
+import { QRCodeScreen } from './qr-code'
 
 const components = {
   ...TamaguiComponents,
@@ -31,9 +32,10 @@ const components = {
   ...QRCodeComponents,
 }
 
-type RiseStackParamList = {
-  index: { id: string; path: string }
-  rise: { id: string; path: string }
+export type RiseStackParamList = {
+  index: undefined
+  rise: { path: string }
+  'qr-code': undefined
   'not-found': undefined
 }
 
@@ -48,32 +50,37 @@ export function ConnectionScreen({
     <Stack.Navigator initialRouteName={initialRoute}>
       <Stack.Screen
         name="index"
-        component={RiseScreen}
-        initialParams={{
-          id: route.params.id,
-          path: connection?.path || '',
-        }}
         options={{
-          headerLeft: BackButton,
+          headerLeft: () => <BackButton connection={connection} />,
           title: connection?.label || connection?.path,
         }}
-      />
+      >
+        {() => <RiseScreen connection={connection!} path={connection!.path || ''} />}
+      </Stack.Screen>
       <Stack.Screen
         name="rise"
-        component={RiseScreen}
         getId={({ params }) => params.path}
-        initialParams={{
-          id: route.params.id,
-        }}
         options={({ route }) => ({
           title: route.params.path,
         })}
-      />
+      >
+        {({ route }) => <RiseScreen connection={connection!} path={route.params.path} />}
+      </Stack.Screen>
+      <Stack.Screen
+        name="qr-code"
+        options={{
+          title: 'Share Connection',
+          presentation: 'modal',
+          headerLeft: DismissButton,
+        }}
+      >
+        {() => <QRCodeScreen connection={connection!} />}
+      </Stack.Screen>
       <Stack.Screen
         name="not-found"
         component={NotFoundScreen}
         options={{
-          headerLeft: BackButton,
+          headerLeft: () => <BackButton connection={connection} />,
           title: 'Not Found',
         }}
       />
@@ -81,25 +88,17 @@ export function ConnectionScreen({
   )
 }
 
-function RiseScreen({ route }: NativeStackScreenProps<RiseStackParamList, 'rise' | 'index'>) {
+function RiseScreen({ connection, path }: { connection: Connection; path: string }) {
+  const modelSource = useModelSource(connection.id, connection.host)
   const actions = {
     ...useReactNavigationActions({ routeName: 'rise' }),
     ...useToastActions(),
     ...useHapticsActions(),
     ...useLinkingActions(),
   }
-
-  const connection = useConnection(route.params.id)!
-  const modelSource = useModelSource(connection.id, connection.host)
-
   return (
-    <DataBoundary modelSource={modelSource} path={route.params.path}>
-      <Rise
-        components={components}
-        modelSource={modelSource}
-        path={route.params.path}
-        actions={actions}
-      />
+    <DataBoundary modelSource={modelSource} path={path}>
+      <Rise components={components} modelSource={modelSource} path={path} actions={actions} />
     </DataBoundary>
   )
 }

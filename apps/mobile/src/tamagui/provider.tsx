@@ -1,7 +1,7 @@
 import { ToastProvider } from '@rise-tools/kit-tamagui-toast'
 import React from 'react'
 import { useColorScheme } from 'react-native'
-import { TamaguiProvider as TamaguiProviderOg, TamaguiProviderProps } from 'tamagui'
+import { PortalProvider, TamaguiProvider as TamaguiProviderOg, TamaguiProviderProps } from 'tamagui'
 
 export function TamaguiProvider({ children, ...rest }: TamaguiProviderProps) {
   const scheme = useColorScheme()
@@ -11,7 +11,9 @@ export function TamaguiProvider({ children, ...rest }: TamaguiProviderProps) {
       defaultTheme={scheme === 'dark' ? 'dark' : 'light'}
       {...rest}
     >
-      <ToastProvider>{children}</ToastProvider>
+      <PortalProvider>
+        <ToastProvider>{children}</ToastProvider>
+      </PortalProvider>
     </TamaguiProviderOg>
   )
 }
