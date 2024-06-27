@@ -18,8 +18,8 @@
     "start": "tsx ./src"
   },
   "dependencies": {
-    "@rise-tools/server": "0.2.0",
-    "@rise-tools/kitchen-sink": "0.2.0",
+    "@rise-tools/server": "0.3.0",
+    "@rise-tools/kitchen-sink": "0.3.0",
     "@supabase/supabase-js": "^2.43.2",
     "fastify": "^4.27.0"
   },

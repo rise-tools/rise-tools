@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/kit-lucide-icons",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "Apache-2.0",
   "description": "",
   "exports": {
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "dependencies": {
-    "@rise-tools/react": "0.2.0",
+    "@rise-tools/react": "0.3.0",
     "zod": "^3.22.4"
   },
   "peerDependencies": {
