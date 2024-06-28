@@ -4,7 +4,7 @@ import bs58 from 'bs58'
 import { Buffer } from 'buffer'
 import { setStringAsync } from 'expo-clipboard'
 import React from 'react'
-import { Button, Separator, YStack } from 'tamagui'
+import { Button, YStack } from 'tamagui'
 
 import { removeConnection, updateConnection, useConnection } from '../connection'
 import { ConnectionForm } from '../connection-form'
@@ -21,7 +21,7 @@ export function EditConnectionScreen({
   }
 
   return (
-    <YStack flex={1} padding="$4">
+    <YStack flex={1} padding="$4" gap="$2">
       <ConnectionForm
         onSubmit={(values) => {
           updateConnection(connection.id, { ...connection, ...values })
@@ -30,7 +30,6 @@ export function EditConnectionScreen({
         defaultValues={connection}
         submitButton={({ submit }) => <Button onPress={() => submit()}>Save Connection</Button>}
       />
-      <Separator />
       <Button
         onPress={() => {
           const connectionString = bs58.encode(Buffer.from(JSON.stringify(connection)))

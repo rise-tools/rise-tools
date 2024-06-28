@@ -64,19 +64,14 @@ function ConnectionItem({
 
   return (
     <YGroup.Item>
-      <Button
-        backgroundColor="$color1"
-        onPress={() => navigation.push('connection', { id: connection.id })}
-      >
+      <Button onPress={() => navigation.push('connection', { id: connection.id })}>
         <XStack>
-          <View flex={1} alignItems="center" justifyContent="center" paddingLeft="$4">
+          <View flex={1} alignItems="center" justifyContent="center">
             <Text ellipsizeMode="clip" numberOfLines={1}>
               {connection.label}
             </Text>
           </View>
-          {readonly ? (
-            <Button disabled backgroundColor="transparent" />
-          ) : (
+          {!readonly && (
             <Button
               backgroundColor="transparent"
               icon={Settings}
@@ -93,7 +88,7 @@ function NewConnectionButton() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'home'>>()
   return (
     <Button onPress={() => navigation.push('new-connection')} icon={PlusCircle} chromeless>
-      Add new connection
+      Connect Rise Server
     </Button>
   )
 }

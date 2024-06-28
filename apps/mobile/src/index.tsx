@@ -1,13 +1,9 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  NavigationContainer,
-  ThemeProvider,
-} from '@react-navigation/native'
+import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { registerRootComponent } from 'expo'
 import { useFonts } from 'expo-font'
 import * as Linking from 'expo-linking'
-import React from 'react'
+import * as SystemUI from 'expo-system-ui'
+import React, { useEffect } from 'react'
 import { useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
@@ -26,6 +22,11 @@ function App() {
   })
 
   const scheme = useColorScheme()
+  const theme = scheme === 'dark' ? DarkTheme : DefaultTheme
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(theme.colors.card)
+  }, [theme])
+
   if (!loaded) {
     return null
   }
@@ -36,17 +37,16 @@ function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <TamaguiProvider config={tamaguiConfig}>
-          <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <NavigationContainer
-              linking={{
-                prefixes: [prefix],
-              }}
-              initialState={initialState ? JSON.parse(initialState) : undefined}
-              onStateChange={(state) => storage.set('react-navigation', JSON.stringify(state))}
-            >
-              <Screens />
-            </NavigationContainer>
-          </ThemeProvider>
+          <NavigationContainer
+            linking={{
+              prefixes: [prefix],
+            }}
+            theme={theme}
+            initialState={initialState ? JSON.parse(initialState) : undefined}
+            onStateChange={(state) => storage.set('react-navigation', JSON.stringify(state))}
+          >
+            <Screens />
+          </NavigationContainer>
         </TamaguiProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
