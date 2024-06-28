@@ -16,7 +16,7 @@ export type EventPayload = {
 
 export type EventResponse = {
   $: 'evt-res'
-  res: ResponseModelState
+  res: ResponseModelState<any>
 }
 
 export function createHTTPModelSource(httpUrl: string): HTTPModelSource {

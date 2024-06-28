@@ -22,6 +22,9 @@
       "path": "./packages/ws-client"
     },
     {
+      "path": "./packages/http-client"
+    },
+    {
       "path": "./packages/server"
     },
     {
