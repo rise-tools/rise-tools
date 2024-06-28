@@ -2,9 +2,8 @@ import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useStream } from '@rise-tools/react'
 import { PlusCircle, Settings } from '@tamagui/lucide-icons'
-import { useAssets } from 'expo-asset'
 import React from 'react'
-import { ImageURISource, ScrollView } from 'react-native'
+import { ScrollView } from 'react-native'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
 import { BUILTIN_CONNECTIONS, Connection, connections } from '../connection'
@@ -41,13 +40,10 @@ export function HomeScreen() {
 }
 
 function HeroImage() {
-  const [assets, error] = useAssets([require('../../assets/RiseMainIcon.png')])
-  if (error) console.error(error)
-  if (!assets?.[0]) return null
   return (
     <XStack padding="$4" justifyContent="center">
       <View aspectRatio={1} height={200}>
-        <Image source={assets[0] as ImageURISource} aspectRatio={1} height={200} />
+        <Image source={require('../../assets/RiseMainIcon.png')} aspectRatio={1} height={200} />
       </View>
     </XStack>
   )
