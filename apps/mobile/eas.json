@@ -7,7 +7,7 @@
       },
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_DEMO_WS_URL": "ws://demo.rise.tools"
+        "EXPO_PUBLIC_DEMO_WS_URL": "wss://demo.rise.tools"
       },
       "channel": "production"
     }
