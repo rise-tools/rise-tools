@@ -88,7 +88,7 @@ function NewConnectionButton() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'home'>>()
   return (
     <Button onPress={() => navigation.push('new-connection')} icon={PlusCircle} chromeless>
-      Add new connection
+      Connect Rise Server
     </Button>
   )
 }
