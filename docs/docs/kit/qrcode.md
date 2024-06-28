@@ -1,4 +1,4 @@
-# @rise-tools/kit-qrcode
+# kit-qrcode
 
 ```sh
 npm install @rise-tools/kit-qrcode react-native-qrcode-svg react-native-svg

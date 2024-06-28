@@ -4,7 +4,11 @@ sidebar_position: 2
 
 #  Getting Started
 
-Server
+![when you have no idea what you're doing](./assets/no-idea-rise-tools.png)
+
+So you want to try Server Defined Rendering with Rise Tools? Lets go!
+
+
 
 Playground App
 

@@ -1,4 +1,4 @@
-# @rise-tools/kit-linking
+# kit-linking
 
 ```sh
 npm install @rise-tools/kit-linking

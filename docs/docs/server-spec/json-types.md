@@ -62,7 +62,7 @@ These are specific JSON values that may be used for a callback prop of your comp
 
 ## Component
 
-The primary way you specify which component to render here.
+The primary way to specify which component to render here.
 
 ```ts
 {

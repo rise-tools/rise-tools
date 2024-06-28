@@ -15,6 +15,7 @@
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "scripts": {
     "dev": "tsx watch ./src",
+    "dev-simple-demo": "tsx watch ./src/simple-demo.tsx",
     "start": "tsx ./src"
   },
   "dependencies": {

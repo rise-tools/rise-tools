@@ -1,4 +1,4 @@
-# @rise-tools/kit-forms
+# kit-forms
 
 ```sh
 npm install @rise-tools/kit-haptics expo-haptics

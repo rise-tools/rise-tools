@@ -1,4 +1,4 @@
-# @rise-tools/kit-expo-router
+# kit-expo-router
 
 ```sh
 npm install @rise-tools/kit-expo-router

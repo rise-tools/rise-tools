@@ -1,4 +1,4 @@
-# @rise-tools/kit-react-navigation
+# kit-react-navigation
 
 ```sh
 npm install @rise-tools/kit-react-navigation 
@@ -12,9 +12,9 @@ To install and configure React Navigation, follow [this guide](https://reactnavi
 
 ## Actions
 
-- `navigate(path: string)`
-- `goBack`
+### `navigate(path: string)`
+### `goBack`
 
 ## Components
 
-- `StackScreen`
+### `StackScreen`

@@ -6,7 +6,7 @@ Your UI, defined with any data source
 > This repo is a WORK IN PROGRESS. Please, do not use this yet! At the moment, we would welcome contributors but we cannot support any consumers of the system. For now, you can view this repo as inspiration for how easy and powerful it is to leverage Server-Defined Rendering. Join [our Discord server](https://discord.gg/gdwtbJy7gp) to stay up to date.
 
 - Modular Data Sources - use the [included TypeScript server](https://rise.tools/docs/server-js/), or [bring your own](https://rise.tools/docs/server-spec/)
-- Custom Component Suites - use the [Rise Kit](https://rise.tools/docs/category/kit-reference) and [Tamagui](https://rise.tools/docs/kit/tamagui), or [use your own components](https://rise.tools/docs/guides/custom-components)
+- Custom Component Suites - use the [Rise Kit](https://rise.tools/docs/kit) and [Tamagui](https://rise.tools/docs/kit/tamagui), or [use your own components](https://rise.tools/docs/guides/custom-components)
 - References - [Components can refer to other data keys](https://rise.tools/docs/guides/refs).
 - Safety - [Server data is guarded by the client](https://rise.tools/docs/guides/server-compatibility). Avoid crashes, even with bad data!
 - Rise Playground - [Mobile app for you to quickly prototype custom experiences](https://rise.tools/docs/playground/)

@@ -1,1 +1,1 @@
-# @rise-tools/kit-tamagui
+# kit-tamagui

@@ -1,6 +1,6 @@
-# Advanced
-
-## JSON Schema
+---
+unlisted: true
+---
 
 ### $staticChildren
 

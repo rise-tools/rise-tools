@@ -1,10 +1,11 @@
-# @rise-tools/kit-svg
+# kit-svg
 
 ```sh
-npm install @rise-tools/kit-svg
+npm install @rise-tools/kit-svg react-native-svg
 ```
 
-You must also configure `react-native-svg` in your project. If you're using Expo, run:
+You must set up `react-native-svg` in your project. If you're using Expo, run:
+
 ```sh
 npx expo install react-native-svg
 ```
