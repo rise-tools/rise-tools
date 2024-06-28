@@ -31,9 +31,10 @@ export function query<V>(loadInput: () => Promise<V>): QueryModel<V> {
     },
     invalidate: () => {
       isValid = false
-      // TODO: bug here! we should not call load unless anybody is subscribing. Write a test for this.
-      clearTimeout(updateSchedule)
-      updateSchedule = setTimeout(load, 1)
+      if (subscribers.size > 0) {
+        clearTimeout(updateSchedule)
+        updateSchedule = setTimeout(load, 1)
+      }
     },
     load,
     resolve: async () => {

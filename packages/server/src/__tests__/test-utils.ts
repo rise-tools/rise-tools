@@ -23,3 +23,9 @@ export function createWaitableMock<MockInput extends Array<unknown>, MockOutput>
   }
   return [mock, waitToHaveBeenCalled] as const
 }
+
+export function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
