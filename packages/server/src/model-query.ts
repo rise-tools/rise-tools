@@ -4,6 +4,7 @@ export function query<V>(loadInput: () => Promise<V>): QueryModel<V> {
   let state: V | undefined = undefined
   const subscribers = new Set<(state: V) => void>()
   let isValid = false
+  let updateSchedule: undefined | NodeJS.Timeout = undefined
   function updateData(newData: V) {
     state = newData
     subscribers.forEach((listener) => listener(newData))
@@ -30,6 +31,9 @@ export function query<V>(loadInput: () => Promise<V>): QueryModel<V> {
     },
     invalidate: () => {
       isValid = false
+      // TODO: bug here! we should not call load unless anybody is subscribing. Write a test for this.
+      clearTimeout(updateSchedule)
+      updateSchedule = setTimeout(load, 1)
     },
     load,
     resolve: async () => {
