@@ -1,3 +1,4 @@
+import { query } from '../model-query'
 import { state } from '../model-state'
 import { view } from '../model-view'
 import { createWaitableMock } from './test-utils'
@@ -89,4 +90,24 @@ describe('view models', () => {
     expect(mult.get()).toBe(12)
     expect(handler).toBeCalledTimes(2)
   })
+  test.only('view loads dependency query', async () => {
+    let currentQueryValue = 0
+    const loader = jest.fn(() => Promise.resolve(currentQueryValue))
+    const aQuery = query(loader)
+    const aDoubled = view((get) => {
+      const a = get(aQuery)
+      if (a === undefined) return undefined
+      return a * 2
+    })
+    expect(loader).toHaveBeenCalledTimes(0)
+    expect(aDoubled.get()).toBe(undefined)
+    expect(await aDoubled.load()).toBe(0)
+    expect(loader).toHaveBeenCalledTimes(1)
+    currentQueryValue = 1
+    aQuery.invalidate()
+    expect(aDoubled.get()).toBe(0)
+    expect(await aDoubled.load()).toBe(2)
+    expect(loader).toHaveBeenCalledTimes(2)
+  })
+  // todo: make sure view loads dependency query properly during subscription
 })

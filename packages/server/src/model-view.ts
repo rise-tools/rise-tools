@@ -36,7 +36,15 @@ export function view<T>(
     return newState
   }
   async function load() {
-    // TODO: bug found! make sure dependencies are loaded here!
+    if (!isValid) get() // first update in case we need to get deps
+    await Promise.all(
+      [...deps].map(async (dep) => {
+        if (typeof dep === 'function') return
+        if (dep.type === 'query' || dep.type === 'view') {
+          await dep.load()
+        }
+      })
+    )
     return get()
   }
   function subscribe(listener: (newState: T) => void) {
