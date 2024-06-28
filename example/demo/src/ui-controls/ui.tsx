@@ -9,6 +9,8 @@ import { goBack, navigate } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   CheckboxField,
+  Group,
+  GroupItem,
   H4,
   haptics,
   InputField,
@@ -20,6 +22,7 @@ import {
   RiseForm,
   ScrollView,
   SelectField,
+  Separator,
   SliderField,
   SubmitButton,
   SVG,
@@ -52,16 +55,43 @@ export const models = {
 function UI() {
   return (
     <>
-      <YStack>
-        <Button onPress={navigate('form')}>Form</Button>
-        <Button onPress={navigate('list')}>List</Button>
-        <Button onPress={navigate('draggableList')}>DraggableList</Button>
-        <Button onPress={navigate('toast')}>Toast</Button>
-        <Button onPress={navigate('haptics')}>Haptics</Button>
-        <Button onPress={navigate('svg')}>SVG</Button>
-        <Button onPress={navigate('icons')}>Icons</Button>
-        <Button onPress={navigate('linking')}>Linking</Button>
-        <Button onPress={navigate('qrcode')}>QR Code</Button>
+      <YStack padding="$4">
+        <Button onPress={navigate('form')} borderBottomLeftRadius={0} borderBottomRightRadius={0}>
+          Form
+        </Button>
+        <Separator />
+        <Button onPress={navigate('list')} borderRadius={0}>
+          List
+        </Button>
+        <Separator />
+        <Button onPress={navigate('draggableList')} borderRadius={0}>
+          DraggableList
+        </Button>
+        <Separator />
+        <Button onPress={navigate('toast')} borderRadius={0}>
+          Toast
+        </Button>
+        <Separator />
+        <Button onPress={navigate('haptics')} borderRadius={0}>
+          Haptics
+        </Button>
+        <Separator />
+        <Button onPress={navigate('svg')} borderRadius={0}>
+          SVG
+        </Button>
+        <Separator />
+        <Button onPress={navigate('icons')} borderRadius={0}>
+          Icons
+        </Button>
+        <Separator />
+        <Button onPress={navigate('linking')} borderRadius={0}>
+          Linking
+        </Button>
+        <Separator />
+        <Button onPress={navigate('qrcode')} borderRadius={0}>
+          QR Code
+        </Button>
+        <Separator />
         <BottomSheetExample />
       </YStack>
     </>
@@ -78,7 +108,13 @@ function QRCodeExample() {
 
 function BottomSheetExample() {
   return (
-    <BottomSheet trigger={<BottomSheetTriggerButton>Bottom Sheet</BottomSheetTriggerButton>}>
+    <BottomSheet
+      trigger={
+        <BottomSheetTriggerButton borderTopLeftRadius={0} borderTopRightRadius={0}>
+          Bottom Sheet
+        </BottomSheetTriggerButton>
+      }
+    >
       <YStack gap="$4">
         <BottomSheetCloseButton theme="green" onPress={goBack()}>
           <Text>Close and go back</Text>
@@ -154,7 +190,7 @@ function SVGExample() {
 
 function LinkingExample() {
   return (
-    <YStack>
+    <YStack padding="$4">
       <Button onPress={openURL('https://rise.tools')}>
         <Text>Go to Rise Tools website</Text>
       </Button>
@@ -306,7 +342,7 @@ function ListExample() {
 
 function ShowToastExample() {
   return (
-    <YStack>
+    <YStack padding="$4">
       <Button onPress={toast('Hello World!', 'This is toast action!')}>
         <Text>Show toast</Text>
       </Button>
