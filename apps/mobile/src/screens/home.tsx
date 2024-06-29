@@ -1,12 +1,14 @@
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useStream } from '@rise-tools/react'
-import { PlusCircle, Settings } from '@tamagui/lucide-icons'
+import { CircleEllipsis, Github, Info, PlusCircle, Settings } from '@tamagui/lucide-icons'
+import * as Linking from 'expo-linking'
 import React from 'react'
 import { ScrollView } from 'react-native'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
 import { BUILTIN_CONNECTIONS, Connection, connections } from '../connection'
+import { Dropdown, DropdownItem } from '../dropdown'
 import { RootStackParamList } from '.'
 
 export function HomeScreen() {
@@ -86,5 +88,25 @@ function NewConnectionButton() {
     <Button onPress={() => navigation.push('new-connection')} icon={PlusCircle} chromeless>
       Connect Rise Server
     </Button>
+  )
+}
+
+export function HomeHeaderButton() {
+  const privacyUrl = process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL
+
+  return (
+    <Dropdown trigger={<CircleEllipsis />}>
+      <DropdownItem
+        onPress={() => Linking.openURL('https://github.com/rise-tools/rise-tools')}
+        Icon={Github}
+      >
+        Github
+      </DropdownItem>
+      {privacyUrl && (
+        <DropdownItem onPress={() => Linking.openURL(privacyUrl)} Icon={Info}>
+          Privacy Policy
+        </DropdownItem>
+      )}
+    </Dropdown>
   )
 }
