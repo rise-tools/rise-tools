@@ -1,13 +1,16 @@
-export const createWaitableMock = () => {
+export function createWaitableMock<MockInput extends Array<unknown>, MockOutput>(
+  fn?: (...args: MockInput) => MockOutput
+) {
   let resolve
   let times
   let calledCount = 0
-  const mock = jest.fn()
-  mock.mockImplementation(() => {
+  const mock = jest.fn((...args: MockInput) => {
     calledCount += 1
+    const result = fn ? fn(...args) : undefined
     if (resolve && calledCount >= times) {
       resolve()
     }
+    return result
   })
   const waitToHaveBeenCalled = (t: number): Promise<void> => {
     times = t
@@ -19,4 +22,10 @@ export const createWaitableMock = () => {
     })
   }
   return [mock, waitToHaveBeenCalled] as const
+}
+
+export function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
 }
