@@ -4,7 +4,7 @@ import React from 'react'
 import { ConnectScreen } from './connect'
 import { ConnectionScreen } from './connection'
 import { EditConnectionScreen } from './edit-connection'
-import { HomeScreen } from './home'
+import { HomeHeaderButton, HomeScreen } from './home'
 import { NewConnectionScreen } from './new-connection'
 
 export type RootStackParamList = {
@@ -20,7 +20,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>()
 export function Screens() {
   return (
     <Stack.Navigator initialRouteName="home">
-      <Stack.Screen name="home" component={HomeScreen} options={{ title: 'Rise' }} />
+      <Stack.Screen
+        name="home"
+        component={HomeScreen}
+        options={{ title: 'Rise', headerRight: HomeHeaderButton }}
+      />
       <Stack.Screen
         name="connect"
         component={ConnectScreen}
