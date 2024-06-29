@@ -55,12 +55,18 @@ These values may be included in the `props` object of your [component](#componen
 
 These are specific JSON values that may be used for a callback prop of your components:
 
-- [Action](#action)
-- [Event](#event)
-- [Ref](#ref) (as long as the resulting Ref points to an Action or Event)
+- [Action Model State](#action-model-state)
+- [Event Model State](#event-model-state)
+- [Ref](#ref) (as long as the resulting Ref points to an Action or Event Model State)
 
 
-## Component
+### Model Path
+
+A model path is a list of strings (path terms) which are concatenated by `/` to form a path to a specific model state.
+
+As such, each path term may not contain a `/` character.
+
+## Component Model State
 
 The primary way to specify which component to render here.
 
@@ -75,6 +81,8 @@ The primary way to specify which component to render here.
   children: 'Text'
 }
 ```
+
+### `$: 'component'`
 
 ### `key`
 
@@ -116,7 +124,7 @@ Refs can be specified as arrays, to look up data within objects and arrays of th
 
 You can specify Refs as children components or props of any component. (Maybe even deep props?)
 
-## Action
+## Action Model State
 
 For props that expect a callback, use an `$: 'action'` type to specify that a client-side action will be called.
 
@@ -132,9 +140,19 @@ This action should be handled with the `<Rise onAction={() => {}}` handler.
 
 You may also specify an array of events to a callback prop, allowing you to trigger multiple actions at once.
 
-## Event
+### `$: 'action'`
 
-For props that are treated as events or callbacks on the client, you may use an `$: 'event'` type to specify that the client will go to the server when this happens.
+### `name: string`
+
+The key of the action which will be called from the `actions` prop of `<Rise>`
+
+### Other Fields
+
+You may send additional data in the action which will be used by the action handler.
+
+## Event Model State
+
+For props that are treated as events or callbacks on the client, you may use an `$: 'event'` type to specify that the client will make a request to the server when this happens.
 
 ```ts
 {
@@ -149,71 +167,74 @@ For props that are treated as events or callbacks on the client, you may use an 
 }
 ```
 
-You can then listen to the events with the `onEvent` prop on `<Rise>`.
+You can listen to the events with the `onEvent` prop on `<Rise>`.
 
 ```tsx
 <Rise
   components={components}
   modelSource={modelSource} 
-  onEvent={async (event) => {
-    // you can use this technique to monitor events
+  onEvent={async (event) => { // Note: all events are async
+    // You can use this technique to monitor events before they are sent to the server/modelSource
     console.log(event)
-    // this is the default behavior of onEvent:
+    // This is the default behavior of onEvent:
     return await model.onEvent(event)
+    // If you don't call model.onEvent from your onEvent handler, the server will not see the event!
   }} 
 />
 ```
 
-The event object from `<Rise />` contains properties to let you handle events as desired:
+The Event Model State contains:
 
-```ts
-type RiseEvent<T = any, K = any> = {
-  target: {
-    key?: string
-    path: string
-    component: string
-  }
-  name: string
-  actions: Action[]
-  payload: K
-}
-```
+### `$: 'event'`
+### Other fields
 
-### Event Response Payload
+You may specify any field here that will be recieved by the server.
 
-#### `target`
+
+## Event Request Payload
+
+The event payload will be sent to the server through the WebSocket connection or HTTP POST request.
+
+### `$: 'evt'`
+
+### `key`
+
+The client will generate a unique key for each event that it transmits. This is especially important for the WebSocket API which uses this key to identify the response payload
+
+### `target`
 
 Describes the component that trigerred the event:
 - `key` - optional, present only if it was explicitly set by you
-- `path` - path to the component in a rendered tree 
+- `path` - path to the component in a rendered tree
 - `component` - name of the component that trigerred the event, e.g. "TouchableOpacity"
 
-#### `name`
+### `name`
 
 Name of the event handler, e.g. `onPress`.
 
-#### `payload`
+### `payload`
 
-First argument that was passed to the event handler, shape is specific to the component that trigerred the event. Note that native events are not serialised and passed. For `TouchableOpacity`'s `onPress`, you will receive `[native code]` instead.
+First argument that was passed to the event handler, shape is specific to the component that trigerred the event.
 
-#### `actions`
+> Note that native events can not be serialised. For `TouchableOpacity`'s `onPress`, you will receive `[native code]` instead.
 
-Optional field that can be helpful to differntiate events within the application or trigger certain actions. Its shape is opaque to this library and can be set to anything that works for your use case.
+## Event Response Payload
 
-For example, it can be a string, e.g. `navigation:goBack` or an array: `['navigation', 'goBack']`. 
+This structure is used to send information back to the client as the result of server-side code.
 
-Then, in the `onEvent` handler, you may want to do as follows:
-```tsx
-<Rise
-  components={components}
-  model={model} 
-  onEvent={(event) => {
-    // assumes event.dataState.action is an array
-    if (event.dataState.action?.includes('navigation')) {
-      return handleNavigationEvent(event)
-    }
-    handleGenericEvent(event)
-  }} 
-/>
+```js
+{
+  $: 'evt-res',
+}
 ```
+
+### `$: 'evt-res'`
+
+### `error`
+
+### `actions`
+
+These actions will be called by the `<Rise>` component when it receives an event response.
+
+
 

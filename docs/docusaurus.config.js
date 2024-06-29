@@ -48,7 +48,7 @@ const config = {
           editUrl: 'https://github.com/rise-tools/rise-tools/tree/main/docs',
         },
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: './src/css/site.css',
         },
       }),
     ],
