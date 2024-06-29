@@ -35,6 +35,7 @@ import {
   FormComponents,
   LucideIconsComponents,
   QRCodeComponents,
+  RiseComponents,
   SVGComponents,
   TamaguiComponents,
   useHapticsActions,
@@ -43,12 +44,12 @@ import {
 } from '@rise-tools/kitchen-sink'
 
 const components = {
-  ...TamaguiComponents,
-  ...RiseComponents,
   ...FormComponents,
-  ...SVGComponents,
   ...LucideIconsComponents,
   ...QRCodeComponents,
+  ...RiseComponents,
+  ...SVGComponents,
+  ...TamaguiComponents,
 }
 
 // when you render your client entry point component:
@@ -56,9 +57,9 @@ const components = {
 <Rise
     components={components}
     actions={{
-        ...useToastActions(),
         ...useHapticsActions(),
         ...useLinkingActions(),
+        ...useToastActions(),
     }}
     modelSource={...}
 />

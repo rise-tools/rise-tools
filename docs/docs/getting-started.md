@@ -75,7 +75,79 @@ Connect to your server by adding `ws://<your-computer-ip>:8888` and setting the 
 
 ## React Native Quick Start
 
-> TODO: quick start react native app
+Or you can connect a React Native app to your new server. We will demonstrate in a fresh Expo app. Start by cloning the [mobile quickstart repo](https://github.com/rise-tools/rise-mobile-quickstart):
+
+```sh
+git clone git@github.com:rise-tools/rise-mobile-quickstart.git
+```
+
+This starter app has the following setup:
+
+- [Create a new Expo App](https://docs.expo.dev/tutorial/create-your-first-app/)
+- [Set up Tamagui](https://tamagui.dev/docs/intro/installation)
+- Install [@rise-tools/react](/docs/core) - The component responsible for rendering the server-defined UI
+- Install `@rise-tools/ws-client` - The network client that will talk to your server
+- Install [@rise-tools/kitchen-sink](/docs/kit/#rise-toolskitchen-sink) - Components and Actions for getting started quickly
+
+See `src/riseComponents.ts` which defines the local component library for the app:
+
+```tsx
+import {
+  FormComponents,
+  LucideIconsComponents,
+  QRCodeComponents,
+  RiseComponents,
+  SVGComponents,
+  TamaguiComponents,
+} from "@rise-tools/kitchen-sink";
+
+export const components = {
+  ...FormComponents,
+  ...LucideIconsComponents,
+  ...QRCodeComponents,
+  ...RiseComponents,
+  ...SVGComponents,
+  ...TamaguiComponents,
+};
+```
+
+Next, look at `src/modelSource.ts` which defines the connection to the WebSocket server we created earlier:
+
+```tsx
+import { createWSModelSource } from "@rise-tools/ws-client";
+
+export const modelSource = createWSModelSource("ws://localhost:8888");
+```
+
+Finally lets see how it all ties together in the home screen `app/index.tsx`:
+
+```tsx
+import { Rise } from '@rise-tools/react'
+import {
+  useHapticsActions,
+  useLinkingActions,
+  useToastActions,
+} from '@rise-tools/kitchen-sink'
+import { modelSource } from '@/src/modelSource';
+import { components } from '@/src/riseComponents';
+
+export default function HomeScreen() {
+  return (
+    <Rise
+      modelSource={modelSource}
+      components={components}
+      path="incrementer"
+      actions={{
+        ...useHapticsActions(),
+        ...useLinkingActions(),
+        ...useToastActions(),
+      }}
+    />
+  );
+}
+```
+
+Here we render the main `<Rise>` component, we specify the component library and model source, and we specify the `incrementer` path to reference the model on the server which provides our UI. We also include the actions from the kit, so the server can perform certain local behaviors such as [haptics](/docs/kit/haptics) and [linking](/docs/kit/linking).
 
 ## Time to Code on the Server!
 
