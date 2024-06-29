@@ -1,7 +1,15 @@
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useStream } from '@rise-tools/react'
-import { CircleEllipsis, Github, Info, PlusCircle, Settings } from '@tamagui/lucide-icons'
+import {
+  BookOpenText,
+  CircleEllipsis,
+  Github,
+  Info,
+  PlusCircle,
+  Settings,
+  VenetianMask,
+} from '@tamagui/lucide-icons'
 import * as Linking from 'expo-linking'
 import React from 'react'
 import { ScrollView } from 'react-native'
@@ -97,13 +105,13 @@ export function HomeHeaderButton() {
   return (
     <Dropdown trigger={<CircleEllipsis />}>
       <DropdownItem
-        onPress={() => Linking.openURL('https://github.com/rise-tools/rise-tools')}
-        Icon={Github}
+        onPress={() => Linking.openURL('https://rise.tools/docs/playground/')}
+        Icon={BookOpenText}
       >
-        Github
+        Docs
       </DropdownItem>
       {privacyUrl && (
-        <DropdownItem onPress={() => Linking.openURL(privacyUrl)} Icon={Info}>
+        <DropdownItem onPress={() => Linking.openURL(privacyUrl)} Icon={VenetianMask}>
           Privacy Policy
         </DropdownItem>
       )}
