@@ -90,7 +90,7 @@ describe('view models', () => {
     expect(mult.get()).toBe(12)
     expect(handler).toBeCalledTimes(2)
   })
-  test.only('view loads dependency query', async () => {
+  test('view loads dependency query', async () => {
     let currentQueryValue = 0
     const loader = jest.fn(() => Promise.resolve(currentQueryValue))
     const aQuery = query(loader)
