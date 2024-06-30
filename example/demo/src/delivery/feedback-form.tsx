@@ -15,27 +15,12 @@ export function FeedbackForm() {
     <View padding="$4">
       <RiseForm
         onSubmit={(values) => {
-          if (!values['rating']) {
-            return response(toast('Please tell us how you like the app!'))
-          }
           if (!values['usefulness']) {
             return response(toast('Please tell us how useful Rise is!'))
           }
           return response([toast('Thank you for your feedback!'), goBack()])
         }}
       >
-        <RadioGroupField
-          id="rating"
-          mode="horizontal"
-          label="How do you like the app?"
-          options={[
-            { label: '1', key: '1' },
-            { label: '2', key: '2' },
-            { label: '3', key: '3' },
-            { label: '4', key: '4' },
-            { label: '5', key: '5' },
-          ]}
-        />
         <RadioGroupField
           id="usefulness"
           mode="horizontal"
