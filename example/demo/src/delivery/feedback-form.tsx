@@ -49,7 +49,7 @@ export function FeedbackForm() {
           ]}
         />
         <TextField id="notes" label="Additional comments" />
-        <SubmitButton pendingState={<Text>Submitting...</Text>}>Submit</SubmitButton>
+        <SubmitButton>Submit</SubmitButton>
       </RiseForm>
     </View>
   )
