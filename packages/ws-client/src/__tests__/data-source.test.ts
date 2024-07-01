@@ -27,7 +27,7 @@ it('should resolve a promise once response comes in', async () => {
       propKey: 'onPress',
       component: 'View',
     },
-    dataState: event(jest.fn()),
+    modelState: event(jest.fn()),
     payload: [null],
   }
 
@@ -59,7 +59,7 @@ it('should timeout if response comes later than timeout specified', async () => 
       propKey: 'onPress',
       component: 'View',
     },
-    dataState: event(jest.fn(), { timeout: 1000 }),
+    modelState: event(jest.fn(), { timeout: 1000 }),
     payload: [null],
   }
 

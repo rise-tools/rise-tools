@@ -28,7 +28,7 @@ const serverEventMessageSchema = z.object({
       propKey: z.string(),
       path: z.array(z.string().or(z.number())),
     }),
-    dataState: z.any(),
+    modelState: z.any(),
     payload: z.any(),
   }),
   key: z.string(),

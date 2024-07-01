@@ -293,7 +293,7 @@ it('should accept event handler as a prop', () => {
   const firedEvent = onEvent.mock.lastCall[0] as RiseEvent
   expect(firedEvent).toMatchInlineSnapshot(`
     Object {
-      "dataState": Array [
+      "modelState": Array [
         Object {
           "$": "action",
           "name": "foo-action",
@@ -415,7 +415,7 @@ it('should fire multiple template events for an array of actions', () => {
   )
   fireEvent.click(component.getByTestId('button'))
 
-  expect(onEvent.mock.calls[0][0].dataState).toMatchInlineSnapshot(`
+  expect(onEvent.mock.calls[0][0].modelState).toMatchInlineSnapshot(`
     Array [
       Object {
         "$": "action",

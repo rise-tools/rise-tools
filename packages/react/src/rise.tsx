@@ -111,7 +111,7 @@ export type RiseEvent<P = EventModelState | ActionModelState[], K = any[]> = {
     propKey: string
     path: Path
   }
-  dataState: P
+  modelState: P
   payload: K
 }
 
@@ -137,7 +137,7 @@ export function isEventModelState(obj: any): obj is EventModelState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'event'
 }
 export function isHandlerEvent(obj: RiseEvent): obj is HandlerEvent {
-  return isEventModelState(obj.dataState)
+  return isEventModelState(obj.modelState)
 }
 export function isActionModelState(obj: any): obj is ActionModelState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'action'
@@ -263,7 +263,7 @@ export function BaseRise({
         // with JSON.stringify and also provide little to no value for the server.
         // tbd: figure a better way to handle this in a cross-platform way
         payload = payload.map((arg) => (arg?.nativeEvent ? '[native code]' : arg))
-        const dataState = isActionModelState(propValue) ? [propValue] : propValue
+        const modelState = isActionModelState(propValue) ? [propValue] : propValue
         return onEvent?.({
           target: {
             key: parentNode.key,
@@ -271,7 +271,7 @@ export function BaseRise({
             propKey,
             path,
           },
-          dataState,
+          modelState,
           payload,
         })
       }

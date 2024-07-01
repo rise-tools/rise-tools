@@ -166,7 +166,7 @@ export function createWSModelSource(wsUrl: string): WebSocketModelSource {
             reject(new Error('Request timeout'))
             promises.delete(key)
           }
-        }, event.dataState.timeout || 10_000)
+        }, event.modelState.timeout || 10_000)
       })
     },
   }

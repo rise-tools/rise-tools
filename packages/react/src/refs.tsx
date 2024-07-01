@@ -227,9 +227,9 @@ export function Rise({
 
   const handleEvent = useCallback(
     async (event: RiseEvent) => {
-      const eventActions = isEventModelState(event.dataState)
-        ? event.dataState.actions
-        : event.dataState
+      const eventActions = isEventModelState(event.modelState)
+        ? event.modelState.actions
+        : event.modelState
       for (const action of eventActions || []) {
         if (isStateUpdateAction(action)) {
           applyStateUpdateAction(action, event.payload)
@@ -240,10 +240,10 @@ export function Rise({
       if (!isHandlerEvent(event)) {
         return
       }
-      if (event.dataState.args) {
+      if (event.modelState.args) {
         event.payload = [
           Object.fromEntries(
-            Object.entries(event.dataState.args).map(([key, value]) => {
+            Object.entries(event.modelState.args).map(([key, value]) => {
               return [key, localState.getStream(value).get()]
             })
           ),

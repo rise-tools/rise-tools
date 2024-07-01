@@ -99,7 +99,7 @@ describe('model server', () => {
           propKey: 'onPress',
           path: ['EventButton', 'props', 'onPress'],
         },
-        dataState: { $: 'event' },
+        modelState: { $: 'event' },
         payload: ['[native code]'],
       },
     })
