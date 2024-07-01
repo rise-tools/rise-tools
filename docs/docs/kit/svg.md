@@ -52,7 +52,7 @@ For the full list of SVG elements, see [ReactNativeSVG.ts](https://github.com/so
 
 ## JSON Components
 
-Your custom server may provide the raw SVG components by using the [component definitions](/docs/server-spec/json-types#component):
+Your custom server may provide the raw SVG components by using the [component definitions](/docs/server-spec/json-types#component-model-state):
 
 ```js
 {

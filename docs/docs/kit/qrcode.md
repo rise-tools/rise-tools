@@ -87,7 +87,7 @@ type Props = {
 
 ## JSON Component
 
-Your custom server may define the QRCode component by using the [component definition](/docs/server-spec/json-types#component):
+Your custom server may define the QRCode component by using the [component definition](/docs/server-spec/json-types#component-model-state):
 
 ```js
 {
