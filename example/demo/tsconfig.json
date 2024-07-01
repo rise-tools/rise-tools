@@ -11,6 +11,8 @@
   }, {
     "path": "../../packages/server"
   }, {
+    "path": "../../packages/kit-tamagui"
+  }, {
     "path": "../../packages/kit-react-navigation"
   }]
 }
