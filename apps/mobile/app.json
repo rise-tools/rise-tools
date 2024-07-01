@@ -26,8 +26,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/RiseMainIcon.png",
+        "backgroundColor": "#260162"
       },
       "package": "com.xplatlabs.rise",
       "versionCode": 4
