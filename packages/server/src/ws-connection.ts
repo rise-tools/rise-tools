@@ -121,12 +121,7 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
     keys.forEach(handleUnsubKey)
   }
 
-  async function handleEvt({
-    key,
-    target,
-    payload,
-    // modelState,
-  }: z.infer<typeof serverEventMessageSchema>) {
+  async function handleEvt({ key, target, payload }: z.infer<typeof serverEventMessageSchema>) {
     const { path } = target
     try {
       const [storeName, ...lookupPath] = path

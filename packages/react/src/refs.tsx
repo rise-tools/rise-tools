@@ -252,7 +252,7 @@ export function Rise({
       const res = await onEvent(event)
       if (!isEventResponse(res)) {
         throw new Error(
-          `Invalid response from "onEvent" handler. Expected ServerEventResponse. Received: ${JSON.stringify(res)}`
+          `Invalid response from "onEvent" handler. Expected EventResponse. Received: ${JSON.stringify(res)}`
         )
       }
       if (res.actions) {
