@@ -36,7 +36,8 @@ it('should resolve a promise once response comes in', async () => {
 
   expect(await promise).toMatchInlineSnapshot(`
     Object {
-      "$": "response",
+      "$": "evt-res",
+      "key": "1",
       "payload": Object {},
     }
   `)

@@ -291,8 +291,14 @@ it('should accept event handler as a prop', () => {
   expect(onEvent).toHaveBeenCalledTimes(1)
 
   const firedEvent = onEvent.mock.lastCall[0] as EventRequest
-  expect(firedEvent).toMatchInlineSnapshot(`
+  expect(firedEvent).toMatchInlineSnapshot(
+    {
+      key: expect.any(String),
+    },
+    `
     Object {
+      "$": "evt",
+      "key": Any<String>,
       "modelState": Array [
         Object {
           "$": "action",
@@ -313,7 +319,8 @@ it('should accept event handler as a prop', () => {
         "propKey": "onClick",
       },
     }
-  `)
+  `
+  )
 })
 
 it('should validate props with a validator', () => {

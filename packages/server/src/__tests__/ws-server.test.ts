@@ -92,16 +92,14 @@ describe('model server', () => {
     testB?.clientSend({
       $: 'evt',
       key: 'eventKey0',
-      event: {
-        target: {
-          key: 'a',
-          component: 'Button',
-          propKey: 'onPress',
-          path: ['EventButton', 'props', 'onPress'],
-        },
-        modelState: { $: 'event' },
-        payload: ['[native code]'],
+      target: {
+        key: 'a',
+        component: 'Button',
+        propKey: 'onPress',
+        path: ['EventButton', 'props', 'onPress'],
       },
+      modelState: { $: 'event' },
+      payload: ['[native code]'],
     })
     await waitForHandled
     expect(eventHandler).toHaveBeenLastCalledWith('[native code]')
