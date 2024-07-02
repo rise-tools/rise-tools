@@ -44,7 +44,13 @@ function App() {
             linking={{
               prefixes: [prefix],
             }}
-            theme={theme}
+            theme={{
+              ...theme,
+              colors: {
+                ...theme.colors,
+                primary: scheme === 'dark' ? '#FD5811' : '#E74500',
+              },
+            }}
             initialState={initialState ? JSON.parse(initialState) : undefined}
             onStateChange={(state) => storage.set('react-navigation', JSON.stringify(state))}
           >
