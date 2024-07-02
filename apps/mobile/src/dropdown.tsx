@@ -2,6 +2,7 @@ import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { X } from '@tamagui/lucide-icons'
 import * as Haptics from 'expo-haptics'
 import { PropsWithChildren } from 'react'
+import { Platform } from 'react-native'
 import { Button, Group, Popover, Text, XStack } from 'tamagui'
 
 import type { RiseStackParamList } from './screens/connection'
@@ -17,7 +18,14 @@ export function DismissButton() {
 
 export function Dropdown({ trigger, children }: PropsWithChildren<{ trigger: React.ReactNode }>) {
   return (
-    <Popover size="$5" offset={16} placement="bottom-start">
+    <Popover
+      size="$5"
+      offset={Platform.select({
+        ios: 16,
+        default: 45,
+      })}
+      placement="bottom-start"
+    >
       <Popover.Trigger onPress={() => Haptics.impactAsync()}>{trigger}</Popover.Trigger>
       <Popover.Content
         elevate
