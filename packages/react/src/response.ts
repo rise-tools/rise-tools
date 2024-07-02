@@ -1,46 +1,51 @@
 import {
   ActionModelState,
+  EventResponse,
   isActionModelState,
   isActionModelStateArray,
-  ResponseModelState,
 } from './rise'
 
-export function response(actions: ActionModelState | ActionModelState[]): ResponseModelState<any>
+export function response(actions: ActionModelState | ActionModelState[]): EventResponse<any>
 export function response<T>(
   payload: T,
-  opts?: { actions?: ActionModelState[] }
-): ResponseModelState<T>
+  opts?: { actions?: ActionModelState[]; key?: string }
+): EventResponse<T>
 export function response<T>(
   payload?: T | ActionModelState | ActionModelState[],
   opts?: {
     actions?: ActionModelState[]
+    key?: string
   }
-): ResponseModelState<T> {
+): EventResponse<T> {
   if (isActionModelState(payload)) {
     return {
-      $: 'response',
+      $: 'evt-res',
+      key: opts?.key || '',
       actions: [payload],
     }
   }
   if (isActionModelStateArray(payload)) {
     return {
-      $: 'response',
+      $: 'evt-res',
+      key: opts?.key || '',
       actions: payload,
     }
   }
   if (!payload) {
     return {
-      $: 'response',
+      $: 'evt-res',
+      key: opts?.key || '',
     }
   }
   return {
-    $: 'response',
+    $: 'evt-res',
+    key: opts?.key || '',
     payload,
     actions: opts?.actions,
   }
 }
 
-export function errorResponse<T>(...args: Parameters<typeof response<T>>): ResponseModelState<T> {
+export function errorResponse<T>(...args: Parameters<typeof response<T>>): EventResponse<T> {
   return {
     ...response(...args),
     error: true,

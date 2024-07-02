@@ -28,7 +28,7 @@ The component has called an [event definition](/docs/server-spec/json-types#even
 - `$: "evt"`
 - `key: string` - A unique identifier for this event, as determined by the client
 - `event: {` - object of event details, containing the following keys:
-    - `dataState: JSONValue` - the [event definition](/docs/server-spec/json-types#event-model-state)
+    - `modelState: JSONValue` - the [event definition](/docs/server-spec/json-types#event-model-state)
     - `payload: JSONValue` - the data coming from the component
     - `target: {` - object detailing the source of the event, containing:
         - `key?: string`

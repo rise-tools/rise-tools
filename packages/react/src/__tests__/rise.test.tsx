@@ -2,7 +2,7 @@ import { act, fireEvent, render } from '@testing-library/react'
 import React, { useState } from 'react'
 
 import { action } from '../events'
-import { BaseRise, ComponentDefinition, ComponentRegistry, RiseEvent } from '../rise'
+import { BaseRise, ComponentDefinition, ComponentRegistry, EventRequest } from '../rise'
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
   View: {
@@ -290,10 +290,16 @@ it('should accept event handler as a prop', () => {
 
   expect(onEvent).toHaveBeenCalledTimes(1)
 
-  const firedEvent = onEvent.mock.lastCall[0] as RiseEvent
-  expect(firedEvent).toMatchInlineSnapshot(`
+  const firedEvent = onEvent.mock.lastCall[0] as EventRequest
+  expect(firedEvent).toMatchInlineSnapshot(
+    {
+      key: expect.any(String),
+    },
+    `
     Object {
-      "dataState": Array [
+      "$": "evt",
+      "key": Any<String>,
+      "modelState": Array [
         Object {
           "$": "action",
           "name": "foo-action",
@@ -313,7 +319,8 @@ it('should accept event handler as a prop', () => {
         "propKey": "onClick",
       },
     }
-  `)
+  `
+  )
 })
 
 it('should validate props with a validator', () => {
@@ -415,7 +422,7 @@ it('should fire multiple template events for an array of actions', () => {
   )
   fireEvent.click(component.getByTestId('button'))
 
-  expect(onEvent.mock.calls[0][0].dataState).toMatchInlineSnapshot(`
+  expect(onEvent.mock.calls[0][0].modelState).toMatchInlineSnapshot(`
     Array [
       Object {
         "$": "action",
