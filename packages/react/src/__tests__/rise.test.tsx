@@ -2,7 +2,7 @@ import { act, fireEvent, render } from '@testing-library/react'
 import React, { useState } from 'react'
 
 import { action } from '../events'
-import { BaseRise, ComponentDefinition, ComponentRegistry, RiseEvent } from '../rise'
+import { BaseRise, ComponentDefinition, ComponentRegistry, EventRequest } from '../rise'
 
 export const BUILT_IN_COMPONENTS: ComponentRegistry = {
   View: {
@@ -290,7 +290,7 @@ it('should accept event handler as a prop', () => {
 
   expect(onEvent).toHaveBeenCalledTimes(1)
 
-  const firedEvent = onEvent.mock.lastCall[0] as RiseEvent
+  const firedEvent = onEvent.mock.lastCall[0] as EventRequest
   expect(firedEvent).toMatchInlineSnapshot(`
     Object {
       "modelState": Array [

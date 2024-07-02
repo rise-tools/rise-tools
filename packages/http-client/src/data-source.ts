@@ -1,25 +1,8 @@
-import {
-  HandlerEvent,
-  type ModelSource,
-  ModelState,
-  ResponseModelState,
-  Store,
-} from '@rise-tools/react'
+import { type ModelSource, ModelState, Store } from '@rise-tools/react'
 
 type Handler = (value: ModelState) => void
 
-export type HTTPModelSource = ModelSource
-export type EventPayload = {
-  $: 'evt'
-  event: HandlerEvent
-}
-
-export type EventResponse = {
-  $: 'evt-res'
-  res: ResponseModelState<any>
-}
-
-export function createHTTPModelSource(httpUrl: string): HTTPModelSource {
+export function createHTTPModelSource(httpUrl: string): ModelSource {
   const subscriptions = new Map<string, Set<Handler>>()
   const cache = new Map<string, any>()
 
@@ -73,7 +56,7 @@ export function createHTTPModelSource(httpUrl: string): HTTPModelSource {
           'Content-Type': 'application/json',
         },
       })
-      const message = (await req.json()) as EventResponse
+      const message = await req.json()
       return message.res
     },
   }

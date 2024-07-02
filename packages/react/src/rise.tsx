@@ -71,18 +71,19 @@ export type ActionsDefinition<Actions extends Array<ActionModelState>> =
         }
       : never
     : never
-export type ResponseModelState<T> = {
-  $: 'response'
+
+export type EventResponse<T> = {
+  $: 'evt-res'
+  key: string
   payload?: T
   error?: boolean
   actions?: ActionModelState[]
 }
+
 export type HandlerFunction<Args extends any[] = any[], ReturnType = void> = (
   ...args: Args
-) =>
-  | Promise<ResponseModelState<ReturnType> | ReturnType>
-  | ResponseModelState<ReturnType>
-  | ReturnType
+) => Promise<EventResponse<ReturnType> | ReturnType> | EventResponse<ReturnType> | ReturnType
+
 export type EventModelState = {
   $: 'event'
   actions?: ActionModelState[]
@@ -104,7 +105,9 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type RiseEvent<P = EventModelState | ActionModelState[], K = any[]> = {
+export type EventRequest<P = EventModelState | ActionModelState[], K = any[]> = {
+  $: 'evt'
+  key: string
   target: {
     key?: string
     component: string
@@ -115,7 +118,7 @@ export type RiseEvent<P = EventModelState | ActionModelState[], K = any[]> = {
   payload: K
 }
 
-export type HandlerEvent = RiseEvent<EventModelState>
+export type HandlerEvent = EventRequest<EventModelState>
 export type HandlerModelState<T = EventModelState> = T | ActionModelState | ActionModelState[]
 
 export function isCompositeModelState(
@@ -136,7 +139,7 @@ export function isReferencedComponentModelState(obj: any): obj is ReferencedComp
 export function isEventModelState(obj: any): obj is EventModelState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'event'
 }
-export function isHandlerEvent(obj: RiseEvent): obj is HandlerEvent {
+export function isHandlerEvent(obj: EventRequest): obj is HandlerEvent {
   return isEventModelState(obj.modelState)
 }
 export function isActionModelState(obj: any): obj is ActionModelState {
@@ -145,8 +148,8 @@ export function isActionModelState(obj: any): obj is ActionModelState {
 export function isActionModelStateArray(obj: any): obj is ActionModelState[] {
   return Array.isArray(obj) && obj.every(isActionModelState)
 }
-export function isResponseModelState(obj: any): obj is ResponseModelState<any> {
-  return obj && typeof obj === 'object' && obj.$ === 'response'
+export function isEventResponse(obj: any): obj is EventResponse<any> {
+  return obj && typeof obj === 'object' && obj.$ === 'evt-res'
 }
 function isStateModelState(obj: any): obj is StateModelState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'state'
@@ -167,7 +170,7 @@ export function BaseRise({
   path?: Path
   components: ComponentRegistry
   model: ModelState
-  onEvent?: (event: RiseEvent) => any
+  onEvent?: (event: EventRequest) => any
 }) {
   const RenderComponent = useCallback(
     function ({ stateNode, path }: { stateNode: ComponentModelState; path: Path }) {
@@ -264,7 +267,10 @@ export function BaseRise({
         // tbd: figure a better way to handle this in a cross-platform way
         payload = payload.map((arg) => (arg?.nativeEvent ? '[native code]' : arg))
         const modelState = isActionModelState(propValue) ? [propValue] : propValue
+        const key = (Date.now() * Math.random()).toString(16)
         return onEvent?.({
+          $: 'evt',
+          key,
           target: {
             key: parentNode.key,
             component: parentNode.component,
