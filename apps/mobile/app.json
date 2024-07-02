@@ -33,6 +33,10 @@
       "package": "com.xplatlabs.rise",
       "versionCode": 4
     },
+    "androidStatusBar": {
+      "backgroundColor": "#260162",
+      "barStyle": "light-content"
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     },

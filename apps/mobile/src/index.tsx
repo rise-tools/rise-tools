@@ -4,7 +4,7 @@ import { useFonts } from 'expo-font'
 import * as Linking from 'expo-linking'
 import * as SystemUI from 'expo-system-ui'
 import React, { useEffect } from 'react'
-import { useColorScheme } from 'react-native'
+import { StatusBar, useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
@@ -25,6 +25,7 @@ function App() {
   const theme = scheme === 'dark' ? DarkTheme : DefaultTheme
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(theme.colors.card)
+    StatusBar.setBackgroundColor(theme.colors.card)
   }, [theme])
 
   if (!loaded) {
