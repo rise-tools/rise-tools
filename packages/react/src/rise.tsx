@@ -1,4 +1,5 @@
 import React, { useCallback, useContext } from 'react'
+import { jsx, jsxs } from 'react/jsx-runtime'
 
 import { LocalState, useLocalStateValues } from './state'
 import { useStream } from './streams'
@@ -25,9 +26,10 @@ export type ModelState<T = EventModelState> =
   | T
 /** Server data state */
 export type ServerModelState = ModelState<ServerEventModelState>
-export type ServerHandlerModelState<T extends any[] = any[]> = HandlerModelState<
-  ServerEventModelState<T>
->
+export type ServerHandlerModelState<
+  Args extends any[] = any[],
+  ReturnType = void,
+> = HandlerModelState<ServerEventModelState<Args, ReturnType>>
 
 export type ComponentModelState<T = EventModelState> = {
   $: 'component'
@@ -35,6 +37,7 @@ export type ComponentModelState<T = EventModelState> = {
   component: ComponentIdentifier
   children?: ModelState<T>
   props?: Record<string, ModelState<T>>
+  $staticChildren?: boolean
 }
 type ReferencedComponentModelState<T = EventModelState> = ComponentModelState<T> & {
   path: Path
@@ -68,27 +71,31 @@ export type ActionsDefinition<Actions extends Array<ActionModelState>> =
         }
       : never
     : never
-export type ResponseModelState = {
-  $: 'response'
-  payload: JSONValue
-  statusCode: number
-  ok: boolean
-  actions: ActionModelState[]
+
+export type EventResponse<T> = {
+  $: 'evt-res'
+  key: string
+  payload?: T
+  error?: boolean
+  actions?: ActionModelState[]
 }
-export type HandlerReturnType = ResponseModelState | JSONValue | void
-export type HandlerFunction<T extends any[] = any[]> = (
-  ...args: T
-) => Promise<HandlerReturnType> | HandlerReturnType
+
+export type HandlerFunction<Args extends any[] = any[], ReturnType = void> = (
+  ...args: Args
+) => Promise<EventResponse<ReturnType> | ReturnType> | EventResponse<ReturnType> | ReturnType
+
 export type EventModelState = {
   $: 'event'
   actions?: ActionModelState[]
   timeout?: number
   args?: Record<string, StateModelState<any>>
 }
-export type ServerEventModelState<T extends any[] = any[]> = EventModelState & {
-  handler: HandlerFunction<T>
+export type ServerEventModelState<
+  Args extends any[] = any[],
+  ReturnType = void,
+> = EventModelState & {
+  handler: HandlerFunction<Args, ReturnType>
 }
-
 export type JSONValue =
   | { [key: string]: JSONValue; $?: never }
   | string
@@ -98,18 +105,20 @@ export type JSONValue =
   | undefined
   | JSONValue[]
 
-export type RiseEvent<P = EventModelState | ActionModelState[], K = any[]> = {
+export type EventRequest<P = EventModelState | ActionModelState[], K = any[]> = {
+  $: 'evt'
+  key: string
   target: {
     key?: string
     component: string
     propKey: string
     path: Path
   }
-  dataState: P
+  modelState: P
   payload: K
 }
 
-export type HandlerEvent = RiseEvent<EventModelState>
+export type HandlerEvent = EventRequest<EventModelState>
 export type HandlerModelState<T = EventModelState> = T | ActionModelState | ActionModelState[]
 
 export function isCompositeModelState(
@@ -130,8 +139,8 @@ export function isReferencedComponentModelState(obj: any): obj is ReferencedComp
 export function isEventModelState(obj: any): obj is EventModelState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'event'
 }
-export function isHandlerEvent(obj: RiseEvent): obj is HandlerEvent {
-  return isEventModelState(obj.dataState)
+export function isHandlerEvent(obj: EventRequest): obj is HandlerEvent {
+  return isEventModelState(obj.modelState)
 }
 export function isActionModelState(obj: any): obj is ActionModelState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'action'
@@ -142,8 +151,8 @@ export function isActionModalStateContainingArray(obj: any): obj is any[] {
 export function isActionModelStateArray(obj: any): obj is ActionModelState[] {
   return Array.isArray(obj) && obj.every(isActionModelState)
 }
-export function isResponseModelState(obj: any): obj is ResponseModelState {
-  return obj && typeof obj === 'object' && obj.$ === 'response'
+export function isEventResponse(obj: any): obj is EventResponse<any> {
+  return obj && typeof obj === 'object' && obj.$ === 'evt-res'
 }
 function isStateModelState(obj: any): obj is StateModelState {
   return obj !== null && typeof obj === 'object' && obj.$ === 'state'
@@ -164,7 +173,7 @@ export function BaseRise({
   path?: Path
   components: ComponentRegistry
   model: ModelState
-  onEvent?: (event: RiseEvent) => any
+  onEvent?: (event: EventRequest) => any
 }) {
   const RenderComponent = useCallback(
     function ({ stateNode, path }: { stateNode: ComponentModelState; path: Path }) {
@@ -201,11 +210,11 @@ export function BaseRise({
           )
         }
       }
-      return (
-        <Component {...componentProps}>
-          {render(stateNode.children, [...path, 'children'])}
-        </Component>
-      )
+      const jsxFactory = stateNode.$staticChildren ? jsxs : jsx
+      return jsxFactory(Component, {
+        ...componentProps,
+        children: render(stateNode.children, [...path, 'children']),
+      })
     },
     [components]
   )
@@ -265,15 +274,18 @@ export function BaseRise({
         // with JSON.stringify and also provide little to no value for the server.
         // tbd: figure a better way to handle this in a cross-platform way
         payload = payload.map((arg) => (arg?.nativeEvent ? '[native code]' : arg))
-        const dataState = isActionModelState(propValue) ? [propValue] : propValue
+        const modelState = isActionModelState(propValue) ? [propValue] : propValue
+        const key = (Date.now() * Math.random()).toString(16)
         return onEvent?.({
+          $: 'evt',
+          key,
           target: {
             key: parentNode.key,
             component: parentNode.component,
             propKey,
             path,
           },
-          dataState,
+          modelState,
           payload,
         })
       }
@@ -314,7 +326,7 @@ export function BaseRise({
 export class RenderError extends Error {}
 
 const CORE_COMPONENTS: ComponentRegistry = {
-  '@rise-tools/react/Fragment': {
+  'rise-tools/react/Fragment': {
     component: React.Fragment,
   },
 }

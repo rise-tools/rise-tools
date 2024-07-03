@@ -10,13 +10,19 @@
       "path": "./packages/react"
     },
     {
-      "path": "./packages/tamagui"
+      "path": "./packages/kit-tamagui"
     },
     {
       "path": "./packages/kit"
+    }, 
+    {
+      "path": "./packages/kitchen-sink"
     },
     {
       "path": "./packages/ws-client"
+    },
+    {
+      "path": "./packages/http-client"
     },
     {
       "path": "./packages/server"
@@ -25,10 +31,28 @@
       "path": "./packages/kit-expo-router"
     },
     {
+      "path": "./packages/kit-react-navigation"
+    },
+    {
       "path": "./packages/kit-tamagui-toast"
     },
     {
       "path": "./packages/kit-haptics"
+    },
+    {
+      "path": "./packages/kit-forms"
+    },
+    {
+      "path": "./packages/kit-svg"
+    },
+    {
+      "path": "./packages/kit-linking"
+    },
+    {
+      "path": "./packages/kit-lucide-icons"
+    },
+    {
+      "path": "./packages/kit-qrcode"
     }
   ]
 }

@@ -12,7 +12,7 @@ The `model` is an object with one mandatory function to returns a store for a gi
 ```ts
 type ModelSource = {
   get: (key: string) => Store
-  sendEvent: (event: HandlerEvent) => Promise<ResponseModelState>
+  sendEvent: (event: HandlerEvent) => Promise<EventResponse>
 }
 ```
 

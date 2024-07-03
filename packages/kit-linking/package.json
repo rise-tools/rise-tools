@@ -1,0 +1,39 @@
+{
+  "name": "@rise-tools/kit-linking",
+  "version": "0.3.1",
+  "license": "Apache-2.0",
+  "description": "",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./server": "./lib/server.js"
+  },
+  "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
+    "directory": "packages/kit-linking"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "bugs": {
+    "url": "https://github.com/rise-tools/rise-tools/issues"
+  },
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
+  "dependencies": {
+    "@rise-tools/react": "0.3.1",
+    "zod": "^3.22.4"
+  },
+  "peerDependencies": {
+    "expo-linking": "~6.3.1"
+  }
+}

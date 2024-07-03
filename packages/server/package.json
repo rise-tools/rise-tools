@@ -1,10 +1,9 @@
 {
   "name": "@rise-tools/server",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "license": "Apache-2.0",
   "description": "",
-  "main": "lib",
-  "react-native": "src",
+  "main": "./lib/index.js",
   "files": [
     "src",
     "lib",
@@ -33,8 +32,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@rise-tools/react": "0.2.0",
-    "@rise-tools/ws-client": "0.2.0",
+    "@rise-tools/react": "0.3.1",
+    "@rise-tools/ws-client": "0.3.1",
     "@types/ws": "^8.5.10",
     "metro-react-native-babel-preset": "^0.77.0",
     "node-fetch": "^3.3.2"

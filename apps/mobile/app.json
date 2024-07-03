@@ -3,7 +3,7 @@
     "name": "Rise",
     "slug": "riseremote",
     "scheme": "rise",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/RiseIcon.png",
     "userInterfaceStyle": "automatic",
@@ -26,11 +26,16 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/RiseIcon-Adaptive.png",
+        "backgroundColor": "#260162",
+        "monochromeImage": "./assets/RiseIcon-Adaptive-Mono.png"
       },
       "package": "com.xplatlabs.rise",
       "versionCode": 4
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#260162",
+      "barStyle": "light-content"
     },
     "web": {
       "favicon": "./assets/favicon.png"

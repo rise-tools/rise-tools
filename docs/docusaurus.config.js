@@ -48,7 +48,7 @@ const config = {
           editUrl: 'https://github.com/rise-tools/rise-tools/tree/main/docs',
         },
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: './src/css/site.css',
         },
       }),
     ],
@@ -76,10 +76,29 @@ const config = {
             position: 'left',
             label: 'Docs',
           },
+          {
+            type: 'docSidebar',
+            sidebarId: 'guidesSidebar',
+            position: 'left',
+            label: 'Guides',
+          },
           { to: '/blog', label: 'Blog', position: 'left' },
           {
             href: 'https://github.com/rise-tools/rise-tools',
-            label: 'GitHub',
+            'aria-label': 'GitHub',
+            className: 'header-github-link',
+            position: 'right',
+          },
+          {
+            href: 'https://twitter.com/risetools_',
+            'aria-label': 'Twitter',
+            className: 'header-twitter-link',
+            position: 'right',
+          },
+          {
+            href: 'https://discord.gg/vK3tBdA2nZ',
+            'aria-label': 'Discord',
+            className: 'header-discord-link',
             position: 'right',
           },
         ],
@@ -96,7 +115,7 @@ const config = {
               },
               {
                 label: 'Guides',
-                to: '/docs/category/guides',
+                to: '/docs/guides/integration-examples',
               },
             ],
           },

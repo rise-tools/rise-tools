@@ -5,17 +5,17 @@ import {
   ActionsDefinition,
   BaseRise,
   ComponentRegistry,
+  EventRequest,
+  EventResponse,
   HandlerEvent,
   isComponentModelState,
   isCompositeModelState,
   isEventModelState,
+  isEventResponse,
   isHandlerEvent,
-  isResponseModelState,
   ModelState,
   Path,
   ReferencedModelState,
-  ResponseModelState,
-  RiseEvent,
 } from './rise'
 import { isStateUpdateAction, LocalState, useLocalState } from './state'
 import { Stream } from './streams'
@@ -25,7 +25,7 @@ export type Store<T = ModelState> = Stream<T>
 
 export type ModelSource = {
   get: (key: string) => Store
-  sendEvent: (event: HandlerEvent) => Promise<ResponseModelState>
+  sendEvent: (event: HandlerEvent) => Promise<EventResponse<any>>
 }
 
 /** Refs */
@@ -180,7 +180,7 @@ export function Rise({
   modelSource: ModelSource
   components: ComponentRegistry
   actions?: ActionsDefinition<any[]>
-  onEvent?: (event: HandlerEvent) => Promise<ResponseModelState>
+  onEvent?: (event: HandlerEvent) => Promise<EventResponse<any>>
 }) {
   if (typeof path === 'string') {
     path = [path]
@@ -226,10 +226,10 @@ export function Rise({
   )
 
   const handleEvent = useCallback(
-    async (event: RiseEvent) => {
-      const eventActions = isEventModelState(event.dataState)
-        ? event.dataState.actions
-        : event.dataState
+    async (event: EventRequest) => {
+      const eventActions = isEventModelState(event.modelState)
+        ? event.modelState.actions
+        : event.modelState
       for (const action of eventActions || []) {
         if (isStateUpdateAction(action)) {
           applyStateUpdateAction(action, event.payload)
@@ -240,19 +240,19 @@ export function Rise({
       if (!isHandlerEvent(event)) {
         return
       }
-      if (event.dataState.args) {
+      if (event.modelState.args) {
         event.payload = [
           Object.fromEntries(
-            Object.entries(event.dataState.args).map(([key, value]) => {
+            Object.entries(event.modelState.args).map(([key, value]) => {
               return [key, localState.getStream(value).get()]
             })
           ),
         ]
       }
       const res = await onEvent(event)
-      if (!isResponseModelState(res)) {
+      if (!isEventResponse(res)) {
         throw new Error(
-          `Invalid response from "onEvent" handler. Expected ServerResponseModelState. Received: ${JSON.stringify(res)}`
+          `Invalid response from "onEvent" handler. Expected EventResponse. Received: ${JSON.stringify(res)}`
         )
       }
       if (res.actions) {
@@ -264,7 +264,7 @@ export function Rise({
           }
         }
       }
-      if (!res.ok) {
+      if (res.error) {
         throw res.payload
       }
       return res.payload

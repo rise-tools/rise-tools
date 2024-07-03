@@ -7,7 +7,7 @@
 	"references": [{
     "path": "../../packages/react"
   }, {
-    "path": "../../packages/tamagui"
+    "path": "../../packages/kitchen-sink"
   }, {
     "path": "../../packages/server"
   }]

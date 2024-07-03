@@ -1,149 +1,247 @@
 import {
+  BottomSheet,
+  BottomSheetCloseButton,
+  BottomSheetTriggerButton,
   DraggableFlatList,
-  DropdownButton,
-  SelectField,
-  SliderField,
-  SwitchField,
+  FlatList,
 } from '@rise-tools/kit/server'
-import { navigate, StackScreen } from '@rise-tools/kit-expo-router/server'
-import { haptics } from '@rise-tools/kit-haptics/server'
-import { toast } from '@rise-tools/kit-tamagui-toast/server'
-import {
-  event,
-  eventPayload,
-  localStateExperimental,
-  response,
-  setStateAction,
-} from '@rise-tools/react'
+import { goBack, navigate } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
-  Form,
+  CheckboxField,
   H4,
-  Input,
-  Paragraph,
+  haptics,
+  InputField,
+  LucideIcon,
+  openSettings,
+  openURL,
+  QRCode,
+  RadioGroupField,
+  RiseForm,
   ScrollView,
+  SelectField,
+  Separator,
+  SliderField,
+  SubmitButton,
+  SVG,
+  SwitchField,
   Text,
+  TextField,
+  toast,
+  ToggleGroupField,
+  XStack,
   YStack,
-} from '@rise-tools/tamagui/server'
+} from '@rise-tools/kitchen-sink/server'
+import { response } from '@rise-tools/react'
 
-// eslint-disable-next-line
+const { Circle, Svg, SvgUri, SvgXml } = SVG
+
 export const models = {
   controls: UI,
   form: FormExample,
-  slider: SliderExample,
-  switch: SwitchExample,
-  select: SelectExample,
   list: ListExample,
+  draggableList: DraggableListExample,
   toast: ShowToastExample,
   haptics: HapticsExample,
+  svg: SVGExample,
+  icons: LucideIconsExample,
+  linking: LinkingExample,
+  bottomSheet: BottomSheetExample,
+  qrcode: QRCodeExample,
 }
 
 function UI() {
   return (
     <>
-      <StackScreen options={{ title: 'UI Controls' }} />
-      <YStack>
-        <Button onPress={navigate('form')}>Form</Button>
-        <Button onPress={navigate('slider')}>Slider</Button>
-        <Button onPress={navigate('switch')}>Switch</Button>
-        <Button onPress={navigate('select')}>Select</Button>
-        <Button onPress={navigate('list')}>List</Button>
-        <Button onPress={navigate('toast')}>Toast</Button>
-        <Button onPress={navigate('haptics')}>Haptics</Button>
+      <YStack padding="$4">
+        <Button onPress={navigate('form')} borderBottomLeftRadius={0} borderBottomRightRadius={0}>
+          Form
+        </Button>
+        <Separator />
+        <Button onPress={navigate('list')} borderRadius={0}>
+          List
+        </Button>
+        <Separator />
+        <Button onPress={navigate('draggableList')} borderRadius={0}>
+          DraggableList
+        </Button>
+        <Separator />
+        <Button onPress={navigate('toast')} borderRadius={0}>
+          Toast
+        </Button>
+        <Separator />
+        <Button onPress={navigate('haptics')} borderRadius={0}>
+          Haptics
+        </Button>
+        <Separator />
+        <Button onPress={navigate('svg')} borderRadius={0}>
+          SVG
+        </Button>
+        <Separator />
+        <Button onPress={navigate('icons')} borderRadius={0}>
+          Icons
+        </Button>
+        <Separator />
+        <Button onPress={navigate('linking')} borderRadius={0}>
+          Linking
+        </Button>
+        <Separator />
+        <Button onPress={navigate('qrcode')} borderRadius={0}>
+          QR Code
+        </Button>
+        <Separator />
+        <BottomSheetExample />
       </YStack>
     </>
   )
 }
 
-function FormExample() {
-  const userName = localStateExperimental('', 'form/userName')
-  const notification = localStateExperimental('', 'form/notification')
-  const onFormSubmit = event(
-    (state) => {
-      console.log(`Values: ${state}`)
-      return response(null)
-        .action(setStateAction(userName, ''))
-        .action(
-          setStateAction(
-            notification,
-            'Thank you for submitting the form! Check the logs on the backend to see the submitted values'
-          )
-        )
-    },
-    { args: { userName } }
+function QRCodeExample() {
+  return (
+    <YStack padding="$4">
+      <QRCode value="https://rise.tools" />
+    </YStack>
   )
+}
+
+function BottomSheetExample() {
+  return (
+    <BottomSheet
+      trigger={
+        <BottomSheetTriggerButton borderTopLeftRadius={0} borderTopRightRadius={0}>
+          Bottom Sheet
+        </BottomSheetTriggerButton>
+      }
+    >
+      <YStack gap="$4">
+        <BottomSheetCloseButton theme="green" onPress={goBack()}>
+          <Text>Close and go back</Text>
+        </BottomSheetCloseButton>
+        <BottomSheetCloseButton theme="red" onPress={() => console.log('modal closed')}>
+          <Text>Just close</Text>
+        </BottomSheetCloseButton>
+      </YStack>
+    </BottomSheet>
+  )
+}
+
+function LucideIconsExample() {
   return (
     <YStack gap="$8" padding="$4">
-      <YStack gap="$4">
-        <H4>Simple form</H4>
-        <Form onSubmit={onFormSubmit}>
-          <YStack gap="$4">
-            <Text>User name</Text>
-            <Input
-              value={userName}
-              onChangeText={[setStateAction(userName), setStateAction(notification, '')]}
-            />
-          </YStack>
-          <Text>{notification}</Text>
-          <Button onPress={onFormSubmit}>Submit form</Button>
-        </Form>
+      <YStack gap="$2">
+        <H4>Default size</H4>
+        <XStack gap="$2">
+          <LucideIcon icon="PocketKnife" />
+          <LucideIcon icon="HeartHandshake" />
+          <LucideIcon icon="Sunrise" />
+          <LucideIcon icon="Flame" />
+          <LucideIcon icon="Rocket" />
+        </XStack>
+      </YStack>
+      <YStack gap="$2">
+        <H4>Custom size</H4>
+        <XStack gap="$2">
+          <LucideIcon icon="PocketKnife" size={60} />
+          <LucideIcon icon="HeartHandshake" size={60} />
+          <LucideIcon icon="Sunrise" size={60} />
+          <LucideIcon icon="Flame" size={60} />
+          <LucideIcon icon="Rocket" size={60} />
+        </XStack>
       </YStack>
     </YStack>
   )
 }
 
-function SliderExample() {
-  const slider = localStateExperimental(0, 'slider/slider')
-
-  const sliderRangeStart = localStateExperimental(25, 'slider/range-start')
-  const sliderRangeEnd = localStateExperimental(75, 'slider/range-end')
-  const sliderWithReset = localStateExperimental(0, 'slider/with-reset')
-
+function SVGExample() {
   return (
     <YStack gap="$8" padding="$4">
-      <YStack gap="$4">
-        <H4>Single slider</H4>
-        <SliderField
-          value={[slider]}
-          onValueChange={setStateAction(slider, eventPayload([0, 0]))}
+      <YStack>
+        <H4>SVG</H4>
+        <Svg height="100" width="100" viewBox="0 0 100 100">
+          <Circle cx="50" cy="50" r="45" stroke="blue" strokeWidth="2.5" fill="green" />
+        </Svg>
+      </YStack>
+      <YStack>
+        <H4>SVG from URI</H4>
+        <SvgUri
+          width="100"
+          height="100"
+          uri="https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/ruby.svg"
+          onError={toast('Failed to load SVG from URI')}
         />
       </YStack>
-      <YStack gap="$4">
-        <H4>Range slider</H4>
-        <SliderField
-          value={[sliderRangeStart, sliderRangeEnd]}
-          onValueChange={[
-            setStateAction(sliderRangeStart, eventPayload([0, 0])),
-            setStateAction(sliderRangeEnd, eventPayload([0, 1])),
+      <YStack>
+        <H4>SVG string</H4>
+        <SvgXml
+          width="100"
+          height="100"
+          xml={`
+            <svg width="32" height="32" viewBox="0 0 32 32">
+              <rect fill="#ff0000" x="0" y="0" width="32" height="32" />
+            </svg>
+          `}
+        />
+      </YStack>
+    </YStack>
+  )
+}
+
+function LinkingExample() {
+  return (
+    <YStack padding="$4">
+      <Button onPress={openURL('https://rise.tools')}>
+        <Text>Go to Rise Tools website</Text>
+      </Button>
+      <Button onPress={openSettings()}>
+        <Text>Go to Settings</Text>
+      </Button>
+    </YStack>
+  )
+}
+
+function FormExample() {
+  return (
+    <ScrollView contentContainerStyle={{ padding: '$4' }}>
+      <RiseForm
+        onSubmit={(values) => {
+          console.log('Form submitted', values)
+          return response([toast('Thank you for submitting your feedback'), goBack()])
+        }}
+      >
+        <InputField id="name" label="Input" placeholder="What is your name?" />
+        <TextField id="feedback" label="Textarea" placeholder="What do you think about Rise?" />
+        <CheckboxField id="checkbox" label="I already starred this project on Github" />
+        <SliderField id="rating" label="Rate us" defaultValue={[0]} />
+        <SwitchField id="anonymous" label="I want to be anonymous" />
+        <SelectField
+          id="framework"
+          label="What is your favorite frontend framework?"
+          placeholder="Select something!"
+          options={frameworks}
+        />
+        <ToggleGroupField
+          id="platforms"
+          label="What platforms do you target?"
+          type="multiple"
+          orientation="vertical"
+          options={[
+            { label: 'Web', key: 'web' },
+            { label: 'iOS', key: 'ios' },
+            { label: 'Android', key: 'android' },
           ]}
         />
-      </YStack>
-      <YStack gap="$4">
-        <H4>Resettable slider</H4>
-        <SliderField
-          value={[sliderWithReset]}
-          onValueChange={setStateAction(sliderWithReset, eventPayload([0, 0]))}
-          onSlideEnd={async () => {
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-            return response(null).action(
-              setStateAction(sliderWithReset, sliderWithReset.initialValue)
-            )
-          }}
+        <RadioGroupField
+          id="color"
+          label="What is your dev setup?"
+          options={[
+            { label: 'Visual Studio Code', key: 'vscode' },
+            { label: 'Vim / Emacs', key: 'hacker' },
+            { label: 'Notepad', key: 'notepad' },
+          ]}
         />
-        <Paragraph lineHeight="$3">
-          This slider will reset after 2 seconds to emulate backend validation with value overwrite.
-        </Paragraph>
-      </YStack>
-    </YStack>
-  )
-}
-
-function SwitchExample() {
-  const isChecked = localStateExperimental(false, 'switch/checked')
-  return (
-    <YStack gap="$8" padding="$4">
-      <SwitchField label="Toggle" value={isChecked} onCheckedChange={setStateAction(isChecked)} />
-    </YStack>
+        <SubmitButton pendingState={<Text>Submitting...</Text>}>Submit</SubmitButton>
+      </RiseForm>
+    </ScrollView>
   )
 }
 
@@ -155,50 +253,94 @@ const frameworks = [
   { label: 'Prefer not say', key: 'unknown' },
 ]
 
-function SelectExample() {
-  const selectedItem = localStateExperimental('', 'select/item')
+function DraggableListExample() {
+  const data = [
+    {
+      key: 'react',
+      label: (
+        <Button theme="green" marginVertical="$2">
+          React
+        </Button>
+      ),
+    },
+    {
+      key: 'google',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Flutter
+        </Button>
+      ),
+    },
+    {
+      key: 'svelte',
+      label: (
+        <Button theme="red" marginVertical="$2">
+          Svelte
+        </Button>
+      ),
+    },
+    {
+      key: 'clojure',
+      label: (
+        <Button theme="yellow" marginVertical="$2">
+          ClojureScript
+        </Button>
+      ),
+    },
+  ]
   return (
-    <YStack gap="$8" padding="$4">
-      <YStack>
-        <H4>Select</H4>
-        <SelectField
-          value={selectedItem}
-          onValueChange={setStateAction(selectedItem)}
-          unselectedLabel="Select your favorite framework"
-          options={frameworks}
-        />
-      </YStack>
-      <YStack>
-        <H4>Bottom sheet</H4>
-        <DropdownButton
-          id="select/dropdown-button"
-          value={selectedItem}
-          button={<Text>Select your favorite framework</Text>}
-          options={frameworks}
-        />
-      </YStack>
+    <YStack flex={1} padding="$4">
+      <DraggableFlatList
+        data={data}
+        header={<H4>Best JavaScript frameworks</H4>}
+        footer={
+          <Text paddingVertical="$2">PS. You can reorder them to match your preferences!</Text>
+        }
+        onReorder={(keys) => {
+          console.log('Reordered keys:', keys)
+        }}
+      />
     </YStack>
   )
 }
 
 function ListExample() {
-  const inventoryItems = localStateExperimental(frameworks, 'list/inventory')
-
+  const data = [
+    {
+      key: 'rise-tools',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+    {
+      key: 'rise-tools-1',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+    {
+      key: 'rise-tools-2',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+  ]
   return (
     <YStack flex={1} padding="$4">
-      <DraggableFlatList
-        items={inventoryItems}
-        onReorder={setStateAction(inventoryItems)}
-        header={<H4>Header</H4>}
-        footer={<H4>Footer</H4>}
-      />
+      <FlatList data={data} header={<H4>Our ranking of JavaScript frameworks</H4>} />
     </YStack>
   )
 }
 
 function ShowToastExample() {
   return (
-    <YStack>
+    <YStack padding="$4">
       <Button onPress={toast('Hello World!', 'This is toast action!')}>
         <Text>Show toast</Text>
       </Button>

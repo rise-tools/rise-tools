@@ -1,0 +1,39 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib"
+  },
+ "references": [
+    {
+      "path": "../react"
+    },
+    {
+      "path": "../kit"
+    },
+    {
+      "path": "../kit-tamagui"
+    },
+    {
+      "path": "../kit-haptics"
+    },
+    {
+      "path": "../kit-tamagui-toast"
+    },
+    {
+      "path": "../kit-lucide-icons"
+    },
+    {
+      "path": "../kit-forms"
+    },
+    {
+      "path": "../kit-svg"
+    },
+    {
+      "path": "../kit-linking"
+    },
+    {
+      "path": "../kit-qrcode"
+    },
+  ]
+}

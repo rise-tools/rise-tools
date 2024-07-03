@@ -29,9 +29,11 @@ export function useConnection(id?: string) {
 }
 
 export function addConnection(connection: ConnectionPayload) {
+  const id = Math.random().toString()
   write((connections) => {
-    return [...connections, { ...connection, id: Math.random().toString() }]
+    return [...connections, { ...connection, id }]
   })
+  return id
 }
 
 export function removeConnection(id: string) {

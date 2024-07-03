@@ -17,3 +17,9 @@ Also, Rise supports navigation between different screens in the app. With a cust
 - Tamagui
 - Playground Navigation
 - Playground Actions
+
+## Open Source
+
+Of course the [Playground code is Open Source](https://github.com/rise-tools/rise-tools/tree/main/apps/mobile) under the same [Apache 2.0 license](https://github.com/rise-tools/rise-tools/blob/main/LICENSE) as the rest of the project.
+
+You can use the Playground code to distribute your own whitelabel app, or you can use it as inspiration for your own project.

@@ -5,18 +5,14 @@
     "jsxImportSource": "@rise-tools/react"
 	},
 	"references": [{
+    "path": "../../packages/kitchen-sink"
+  }, {
     "path": "../../packages/react"
-  }, {
-    "path": "../../packages/tamagui"
-  }, {
-    "path": "../../packages/kit-expo-router"
-  }, {
-    "path": "../../packages/kit-haptics"
-  }, {
-    "path": "../../packages/kit-tamagui-toast"
   }, {
     "path": "../../packages/server"
   }, {
-    "path": "../../packages/kit"
+    "path": "../../packages/kit-tamagui"
+  }, {
+    "path": "../../packages/kit-react-navigation"
   }]
 }

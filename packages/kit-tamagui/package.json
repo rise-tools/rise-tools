@@ -1,0 +1,44 @@
+{
+  "name": "@rise-tools/kit-tamagui",
+  "version": "0.3.1",
+  "license": "Apache-2.0",
+  "description": "",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./server": "./lib/server.js"
+  },
+  "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
+    "directory": "packages/kit-tamagui"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "bugs": {
+    "url": "https://github.com/rise-tools/rise-tools/issues"
+  },
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
+  "devDependencies": {
+    "@rise-tools/react": "0.3.1",
+    "@tamagui/config": "^1.100.3",
+    "@types/react": "^18.0.27",
+    "react": "^18.2.0",
+    "tamagui": "^1.100.3"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "tamagui": "^1.100.3",
+    "expo-linear-gradient": "*"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "name": "@rise-tools/kitchen-sink",
+  "version": "0.3.1",
+  "license": "Apache-2.0",
+  "description": "",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./server": "./lib/server.js"
+  },
+  "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
+    "directory": "packages/kitchen-sink"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "bugs": {
+    "url": "https://github.com/rise-tools/rise-tools/issues"
+  },
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
+  "dependencies": {
+    "@rise-tools/kit-tamagui": "0.3.1",
+    "@rise-tools/kit": "0.3.1",
+    "@rise-tools/kit-haptics": "0.3.1",
+    "@rise-tools/kit-forms": "0.3.1",
+    "@rise-tools/kit-linking": "0.3.1",
+    "@rise-tools/kit-tamagui-toast": "0.3.1",
+    "@rise-tools/kit-lucide-icons": "0.3.1",
+    "@rise-tools/kit-svg": "0.3.1",
+    "@rise-tools/kit-qrcode": "0.3.1"
+  },
+  "peerDependencies": {
+    "@tamagui/lucide-icons": "^1.100.3",
+    "expo-linking": "~6.3.1",
+    "expo-haptics": "~13.0.1",
+    "react-native-draggable-flatlist": "^4.0.1",
+    "react-native-gesture-handler": "~2.16.1",
+    "react-native-safe-area-context": ">= 3.0.0",
+    "react-native-svg": "15.2.0",
+    "react-native-qrcode-svg": "^6.3.1",
+    "tamagui": "^1.100.3"
+  }
+}

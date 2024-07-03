@@ -15,15 +15,14 @@
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "scripts": {
     "dev": "tsx watch ./src",
+    "dev-simple-demo": "tsx watch ./src/simple-demo.tsx",
     "start": "tsx ./src"
   },
   "dependencies": {
-    "@rise-tools/tamagui": "0.2.0",
-    "@rise-tools/kit": "0.2.0",
-    "@rise-tools/kit-haptics": "0.2.0",
-    "@rise-tools/kit-tamagui-toast": "0.2.0",
-    "@rise-tools/server": "0.2.0",
-    "@rise-tools/kit-expo-router": "0.2.0"
+    "@rise-tools/react": "0.3.1",
+    "@rise-tools/server": "0.3.1",
+    "@rise-tools/kitchen-sink": "0.3.1",
+    "@rise-tools/kit-react-navigation": "0.3.1"
   },
   "devDependencies": {
     "tsx": "^4.11.0",

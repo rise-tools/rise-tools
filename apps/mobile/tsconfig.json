@@ -9,32 +9,24 @@
     "esModuleInterop": true,
     "module": "Preserve",
     "moduleResolution": "Bundler",
-    "target": "ESNext"
+    "target": "ESNext",
+    "noEmit": true
   },
   "references": [
     {
       "path": "../../packages/react"
     },
     {
-      "path": "../../packages/kit"
+      "path": "../../packages/kitchen-sink"
     },
     {
-      "path": "../../packages/kit-expo-router"
+      "path": "../../packages/kit-react-navigation"
     },
     {
       "path": "../../packages/http-client"
     },
     {
       "path": "../../packages/ws-client"
-    },
-    {
-      "path": "../../packages/tamagui"
-    },
-    {
-      "path": "../../packages/kit-haptics"
-    },
-    {
-      "path": "../../packages/kit-tamagui-toast"
     }
   ]
 }

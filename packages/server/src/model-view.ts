@@ -1,4 +1,3 @@
-
 import { getModelState } from './model-utils'
 import { ValueModel, ViewModel } from './types'
 
@@ -6,12 +5,13 @@ export function view<T>(
   loadInput: (get: <V>(model: ValueModel<V>) => V | undefined) => T
 ): ViewModel<T> {
   let state: T | undefined = undefined
-  let isInvalid = true
+  let isValid = false
   let deps = new Set<ValueModel<any>>()
   let depSubs = new Map<ValueModel<any>, () => void>()
   const subHandlers = new Set<(newState: T) => void>()
+  let updateSchedule: undefined | NodeJS.Timeout = undefined
   function get(): T {
-    if (!isInvalid) return state as T
+    if (isValid) return state as T
     depSubs.forEach((unsub) => unsub()) // unsubscribe from all deps
     deps = new Set<ValueModel<any>>()
     depSubs = new Map<ValueModel<any>, () => void>()
@@ -21,7 +21,9 @@ export function view<T>(
         depSubs.set(
           model,
           model.subscribe(() => {
-            isInvalid = true
+            isValid = false
+            clearTimeout(updateSchedule)
+            updateSchedule = setTimeout(get, 1)
           })
         )
       }
@@ -29,15 +31,24 @@ export function view<T>(
     }
     const newState = loadInput(getter)
     state = newState
-    isInvalid = false
+    isValid = true
     subHandlers.forEach((handler) => handler(newState))
     return newState
   }
   async function load() {
+    if (!isValid) get() // first update in case we need to get deps
+    await Promise.all(
+      [...deps].map(async (dep) => {
+        if (typeof dep === 'function') return
+        if (dep.type === 'query' || dep.type === 'view') {
+          await dep.load()
+        }
+      })
+    )
     return get()
   }
   function subscribe(listener: (newState: T) => void) {
-    if (state !== undefined) listener(get())
+    listener(get())
     subHandlers.add(listener)
     return () => {
       subHandlers.delete(listener)

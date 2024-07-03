@@ -1,5 +1,5 @@
 export * from './events'
-export * from './jsx'
+export * from './jsx-runtime'
 export * from './refs'
 export * from './response'
 export * from './rise'

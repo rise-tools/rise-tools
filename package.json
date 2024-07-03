@@ -52,7 +52,9 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "testMatch": [ "**/?(*.)+(spec|test).[jt]s?(x)" ],
+    "testMatch": [
+      "**/?(*.)+(spec|test).[jt]s?(x)"
+    ],
     "prettierPath": null,
     "moduleNameMapper": {
       "@rise-tools/(.*)": "<rootDir>/packages/$1/src",
@@ -88,5 +90,5 @@
       }
     }
   },
-  "version": "0.2.0"
+  "version": "0.3.1"
 }

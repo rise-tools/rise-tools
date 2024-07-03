@@ -1,11 +1,12 @@
 {
   "name": "@rise-tools/react",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "license": "Apache-2.0",
   "description": "",
+  "main": "./lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./jsx-runtime": "./lib/jsx.js"
+    "./jsx-runtime": "./lib/jsx-runtime.js"
   },
   "files": [
     "src",

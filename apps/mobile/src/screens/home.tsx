@@ -1,12 +1,23 @@
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useStream } from '@rise-tools/react'
-import { PlusCircle, Settings } from '@tamagui/lucide-icons'
-import { useAssets } from 'expo-asset'
-import { useRouter } from 'expo-router'
+import {
+  BookOpenText,
+  CircleEllipsis,
+  Github,
+  Info,
+  PlusCircle,
+  Settings,
+  VenetianMask,
+} from '@tamagui/lucide-icons'
+import * as Linking from 'expo-linking'
 import React from 'react'
-import { ImageURISource, ScrollView } from 'react-native'
+import { ScrollView } from 'react-native'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
 import { BUILTIN_CONNECTIONS, Connection, connections } from '../connection'
+import { Dropdown, DropdownItem } from '../dropdown'
+import { RootStackParamList } from '.'
 
 export function HomeScreen() {
   const state = useStream(connections)
@@ -39,13 +50,10 @@ export function HomeScreen() {
 }
 
 function HeroImage() {
-  const [assets, error] = useAssets([require('../../assets/RiseMainIcon.png')])
-  if (error) console.error(error)
-  if (!assets?.[0]) return null
   return (
-    <XStack maxWidth={'100%'} justifyContent="center">
+    <XStack padding="$4" justifyContent="center">
       <View aspectRatio={1} height={200}>
-        <Image source={assets[0] as ImageURISource} aspectRatio={1} height={200} />
+        <Image source={require('../../assets/RiseMainIcon.png')} aspectRatio={1} height={200} />
       </View>
     </XStack>
   )
@@ -58,28 +66,22 @@ function ConnectionItem({
   connection: Connection
   readonly?: boolean
 }) {
-  const router = useRouter()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'home'>>()
 
   return (
     <YGroup.Item>
-      <Button
-        paddingHorizontal={0}
-        backgroundColor="$color1"
-        onPress={() => router.push(`/connection/${connection.id}?path=${connection.path}`)}
-      >
+      <Button onPress={() => navigation.push('connection', { id: connection.id })}>
         <XStack>
-          <View flex={1} alignItems="center" justifyContent="center" paddingLeft="$4">
+          <View flex={1} alignItems="center" justifyContent="center">
             <Text ellipsizeMode="clip" numberOfLines={1}>
               {connection.label}
             </Text>
           </View>
-          {readonly ? (
-            <Button disabled backgroundColor="transparent" />
-          ) : (
+          {!readonly && (
             <Button
               backgroundColor="transparent"
               icon={Settings}
-              onPress={() => router.push(`/edit-connection/${connection.id}`)}
+              onPress={() => navigation.push('edit-connection', { id: connection.id })}
             />
           )}
         </XStack>
@@ -89,10 +91,30 @@ function ConnectionItem({
 }
 
 function NewConnectionButton() {
-  const router = useRouter()
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'home'>>()
   return (
-    <Button onPress={() => router.push('/new-connection')} icon={PlusCircle} chromeless>
-      Add new connection
+    <Button onPress={() => navigation.push('new-connection')} icon={PlusCircle} chromeless>
+      Connect Rise Server
     </Button>
+  )
+}
+
+export function HomeHeaderButton() {
+  const privacyUrl = process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL
+
+  return (
+    <Dropdown trigger={<CircleEllipsis />}>
+      <DropdownItem
+        onPress={() => Linking.openURL('https://rise.tools/docs/playground/')}
+        Icon={BookOpenText}
+      >
+        Docs
+      </DropdownItem>
+      {privacyUrl && (
+        <DropdownItem onPress={() => Linking.openURL(privacyUrl)} Icon={VenetianMask}>
+          Privacy Policy
+        </DropdownItem>
+      )}
+    </Dropdown>
   )
 }

@@ -1,9 +1,9 @@
 import {
   createWritableStream,
-  HandlerEvent,
+  EventRequest,
+  EventResponse,
   type ModelSource,
   ModelState,
-  ResponseModelState,
   Store,
   Stream,
 } from '@rise-tools/react'
@@ -19,30 +19,18 @@ export type UnsubscribeWebsocketMessage = {
   keys: string[]
 }
 
-export type EventWebsocketMessage = {
-  $: 'evt'
-  key: string
-  event: HandlerEvent
-}
-
 export type UpdateWebsocketMessage = {
   $: 'up'
   key: string
   val: ModelState
 }
 
-export type EventResponseWebsocketMessage = {
-  $: 'evt-res'
-  key: string
-  res: ResponseModelState
-}
-
 export type ClientWebsocketMessage =
   | SubscribeWebsocketMessage
   | UnsubscribeWebsocketMessage
-  | EventWebsocketMessage
+  | EventRequest<unknown>
 
-export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponseWebsocketMessage
+export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponse<unknown>
 
 type Handler = (value: ModelState) => void
 
@@ -88,10 +76,9 @@ export function createWSModelSource(wsUrl: string): WebSocketModelSource {
         break
       }
       case 'evt-res': {
-        const { res } = event
         const resolve = promises.get(event.key)
         if (resolve) {
-          resolve(res)
+          resolve(event)
           promises.delete(event.key)
         } else {
           console.warn(
@@ -143,7 +130,7 @@ export function createWSModelSource(wsUrl: string): WebSocketModelSource {
     }
   }
 
-  const promises = new Map<string, (value: ResponseModelState) => void>()
+  const promises = new Map<string, (value: EventResponse<any>) => void>()
 
   return {
     get: (key: string) => {
@@ -157,16 +144,16 @@ export function createWSModelSource(wsUrl: string): WebSocketModelSource {
     },
     state: createStateStream(rws),
     sendEvent: async (event) => {
-      const key = (Date.now() * Math.random()).toString(16)
-      send({ $: 'evt', event, key })
+      send(event)
+      // send({ $: 'evt', event, key })
       return new Promise((resolve, reject) => {
-        promises.set(key, resolve)
+        promises.set(event.key, resolve)
         setTimeout(() => {
-          if (promises.has(key)) {
+          if (promises.has(event.key)) {
             reject(new Error('Request timeout'))
-            promises.delete(key)
+            promises.delete(event.key)
           }
-        }, event.dataState.timeout || 10_000)
+        }, event.modelState.timeout || 10_000)
       })
     },
   }

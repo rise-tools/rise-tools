@@ -31,18 +31,39 @@ The Template component accepts the following props:
 
 ### `components`
 
-The component library object, with all the component that the data can request to be displayed
+The component library object, with all the component that the data can request to be displayed.
+
+```tsx
+components={{
+  Button: {
+    component: Button, // the react component that will be rendered
+    validator: () => {} // validate props
+  }
+}}
+```
 
 ### `modelSource`
 
-The store of data that will define the views for rendering
+The data client that will define the views for rendering. Usually this will be a connection to your server.
 
 ### `onEvent`
 
 To handle events that come from your rendered components
 
-### `onAction`
+### `actions`
 
+The action library object, with all the actions that can be called by your server-defined components
+
+```tsx
+actions={{
+  makeNoise: {
+    handler: () => {
+      // make the noise
+    },
+    validate: () => {} // validate the action
+  }
+}}
+```
 
 ### `path`
 
