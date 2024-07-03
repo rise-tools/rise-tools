@@ -1,6 +1,9 @@
 # Rise Use Cases
 
-Let's discuss some popular use-cases for Server Defined Rendering!
+Let's discuss some interesting and popular use-cases for Server Defined Rendering!
+
+## Electron Applications
+
 
 ## AB Testing
 
