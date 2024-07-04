@@ -5,5 +5,8 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always"
   },
-  "cmake.configureOnOpen": false
+  "cmake.configureOnOpen": false,
+  "github.copilot.enable": {
+    "*": "false"
+  }
 }
