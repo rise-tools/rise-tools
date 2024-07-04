@@ -17,15 +17,7 @@ const sidebars = {
   mainSidebar: [
     'intro',
     'getting-started',
-    {
-      type: 'category',
-      label: 'Playground',
-      link: {
-        type: 'doc',
-        id: 'playground/index',
-      },
-      items: ['playground/actions', 'playground/navigation'],
-    },
+    'playground/index',
     'core',
     {
       type: 'category',
