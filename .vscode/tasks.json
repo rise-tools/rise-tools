@@ -35,7 +35,7 @@
     },
     {
       "label": "Start all servers",
-      "dependsOn": ["Mobile Expo", "Demo server", "Demo server (HTTP)"]
+      "dependsOn": ["Mobile Expo", "Demo server"]
     }
   ]
 }

@@ -17,7 +17,7 @@ module.exports = {
         semi: false,
         singleQuote: true,
         arrowParens: 'always',
-        printWidth: 100,
+        printWidth: 60,
       },
     ],
     'object-shorthand': ['error', 'always'],
@@ -28,11 +28,19 @@ module.exports = {
     {
       files: ['*.ts', '*.tsx'],
       parser: '@typescript-eslint/parser',
-      plugins: ['@typescript-eslint/eslint-plugin'],
-      extends: ['plugin:@typescript-eslint/recommended', 'plugin:import/typescript'],
+      plugins: [
+        '@typescript-eslint/eslint-plugin',
+      ],
+      extends: [
+        'plugin:@typescript-eslint/recommended',
+        'plugin:import/typescript',
+      ],
       settings: {
         'import/parsers': {
-          '@typescript-eslint/parser': ['.ts', '.tsx'],
+          '@typescript-eslint/parser': [
+            '.ts',
+            '.tsx',
+          ],
         },
         'import/resolver': {
           typescript: {
@@ -41,11 +49,15 @@ module.exports = {
         },
       },
       rules: {
-        '@typescript-eslint/no-explicit-any': 'off',
-        '@typescript-eslint/ban-ts-comment': 'off',
+        '@typescript-eslint/no-explicit-any':
+          'off',
+        '@typescript-eslint/ban-ts-comment':
+          'off',
         '@typescript-eslint/ban-ts-ignore': 'off',
-        '@typescript-eslint/explicit-module-boundary-types': 'off',
-        '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/explicit-module-boundary-types':
+          'off',
+        '@typescript-eslint/explicit-function-return-type':
+          'off',
       },
     },
     {
