@@ -1,8 +1,8 @@
-import { createWritableStream, ModelSource, useStream } from '@rise-tools/react'
+import { ModelSource, useStream } from '@rise-tools/react'
 import { WebSocketModelSource } from '@rise-tools/ws-client'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import React, { PropsWithChildren, useEffect, useState } from 'react'
-import { H4, SizableText, Spinner, Text, XStack, YStack } from 'tamagui'
+import { H4, SizableText, Text, YStack } from 'tamagui'
 
 export function DataBoundary({
   modelSource,
@@ -102,12 +102,5 @@ function WebSocketDataBoundary({
     )
   }
 
-  return (
-    <XStack padding="$3" backgroundColor="$blue5" justifyContent="center" gap="$2">
-      <Spinner size="small" color="white" />
-      <Text textAlign="center" color="$blue9">
-        Connecting
-      </Text>
-    </XStack>
-  )
+  return null
 }
