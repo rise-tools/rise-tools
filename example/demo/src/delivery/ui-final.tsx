@@ -1,17 +1,82 @@
-import { navigate } from '@rise-tools/kit-react-navigation/server'
+import {
+  goBack,
+  navigate,
+} from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   Circle,
   H3,
+  InputField,
   LucideIcon,
   openURL,
+  RadioGroupField,
+  RiseForm,
+  SubmitButton,
   Theme,
+  toast,
   XStack,
   YStack,
 } from '@rise-tools/kitchen-sink/server'
+import { response } from '@rise-tools/react'
 
 export const models = {
   delivery: UI,
+  feedbackForm: FeedbackUI,
+}
+
+function FeedbackUI() {
+  return (
+    <YStack padding="$4">
+      <RiseForm
+        onSubmit={(values) => {
+          console.log(values)
+          // tbd: validation
+          return response([
+            toast('Thank you for your comments!'),
+            goBack(),
+          ])
+        }}
+      >
+        <InputField
+          id="comments"
+          label="What do you think?"
+        />
+        <RatingInputField
+          id="usefulness"
+          label="How useful is Rise?"
+        />
+        <RatingInputField
+          id="easiness"
+          label="How easy is Rise to use?"
+        />
+        <SubmitButton>Submit</SubmitButton>
+      </RiseForm>
+    </YStack>
+  )
+}
+
+function RatingInputField({
+  id,
+  label,
+}: {
+  id: string
+  label: string
+}) {
+  return (
+    <RadioGroupField
+      id={id}
+      label={label}
+      mode="horizontal"
+      options={[
+        { label: 'Good', key: 'good' },
+        { label: 'Greatly', key: 'greatly' },
+        {
+          label: 'Incredibly',
+          key: 'incredibly',
+        },
+      ]}
+    />
+  )
 }
 
 function UI() {
