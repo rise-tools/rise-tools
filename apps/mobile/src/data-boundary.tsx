@@ -2,7 +2,7 @@ import { createWritableStream, ModelSource, useStream } from '@rise-tools/react'
 import { WebSocketModelSource } from '@rise-tools/ws-client'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import React, { PropsWithChildren, useEffect, useState } from 'react'
-import { H4, SizableText, Text, YStack } from 'tamagui'
+import { H4, SizableText, Spinner, Text, XStack, YStack } from 'tamagui'
 
 export function DataBoundary({
   modelSource,
@@ -27,7 +27,7 @@ export function DataBoundary({
 }
 
 const useStatus = (ws: WebSocketModelSource['ws']) => {
-  const [isConnected, setConnected] = useState<boolean | undefined>(undefined)
+  const [isConnected, setConnected] = useState<boolean | undefined>(ws.readyState === ws.OPEN)
 
   let timeout: NodeJS.Timeout | undefined
   const setConnectedDelayed = (connected: boolean) => {
@@ -41,7 +41,7 @@ const useStatus = (ws: WebSocketModelSource['ws']) => {
   }
 
   useEffect(() => {
-    let hasConnectedAlready = false
+    let hasConnectedAlready = ws.readyState === ws.OPEN
     const onDisconnected = () => {
       if (hasConnectedAlready) {
         setConnectedDelayed(false)
@@ -102,5 +102,12 @@ function WebSocketDataBoundary({
     )
   }
 
-  return null
+  return (
+    <XStack padding="$3" backgroundColor="$blue5" justifyContent="center" gap="$2">
+      <Spinner size="small" color="white" />
+      <Text textAlign="center" color="$blue9">
+        Connecting
+      </Text>
+    </XStack>
+  )
 }
