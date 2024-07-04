@@ -1,6 +1,6 @@
 import {
   errorResponse,
-  isResponseModelState,
+  isEventResponse,
   isServerEventModelState,
   lookupValue,
   response,
@@ -21,17 +21,15 @@ const serverUnsubscribeMessageSchema = z.object({
 })
 const serverEventMessageSchema = z.object({
   $: z.literal('evt'),
-  event: z.object({
-    target: z.object({
-      key: z.string().optional(),
-      component: z.string(),
-      propKey: z.string(),
-      path: z.array(z.string().or(z.number())),
-    }),
-    dataState: z.any(),
-    payload: z.any(),
-  }),
   key: z.string(),
+  target: z.object({
+    key: z.string().optional(),
+    component: z.string(),
+    propKey: z.string(),
+    path: z.array(z.string().or(z.number())),
+  }),
+  modelState: z.any(),
+  payload: z.any(),
 })
 
 const serverMessageSchema = z.discriminatedUnion('$', [
@@ -123,8 +121,7 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
     keys.forEach(handleUnsubKey)
   }
 
-  async function handleEvt({ key, event }: z.infer<typeof serverEventMessageSchema>) {
-    const { target, payload } = event
+  async function handleEvt({ key, target, payload }: z.infer<typeof serverEventMessageSchema>) {
     const { path } = target
     try {
       const [storeName, ...lookupPath] = path
@@ -139,20 +136,14 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
         throw new Error(`Missing event handler on the server for event: ${JSON.stringify(event)}`)
       }
       let res = await value.handler(...payload)
-      if (!isResponseModelState(res)) {
-        res = response(res)
+      if (isEventResponse(res)) {
+        res = { ...res, key }
+      } else {
+        res = response(res, { key })
       }
-      clientSenders.get(clientId)?.({
-        $: 'evt-res',
-        key,
-        res,
-      })
+      clientSenders.get(clientId)?.(res)
     } catch (error: any) {
-      clientSenders.get(clientId)?.({
-        $: 'evt-res',
-        key,
-        res: errorResponse(error),
-      })
+      clientSenders.get(clientId)?.(errorResponse(error, { key }))
       return
     }
   }

@@ -4,7 +4,7 @@ import { useFonts } from 'expo-font'
 import * as Linking from 'expo-linking'
 import * as SystemUI from 'expo-system-ui'
 import React, { useEffect } from 'react'
-import { useColorScheme } from 'react-native'
+import { Platform, StatusBar, useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
@@ -25,6 +25,9 @@ function App() {
   const theme = scheme === 'dark' ? DarkTheme : DefaultTheme
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(theme.colors.card)
+    if (Platform.OS === 'android') {
+      StatusBar.setBackgroundColor(theme.colors.card)
+    }
   }, [theme])
 
   if (!loaded) {
@@ -41,7 +44,13 @@ function App() {
             linking={{
               prefixes: [prefix],
             }}
-            theme={theme}
+            theme={{
+              ...theme,
+              colors: {
+                ...theme.colors,
+                primary: scheme === 'dark' ? '#FD5811' : '#E74500',
+              },
+            }}
             initialState={initialState ? JSON.parse(initialState) : undefined}
             onStateChange={(state) => storage.set('react-navigation', JSON.stringify(state))}
           >

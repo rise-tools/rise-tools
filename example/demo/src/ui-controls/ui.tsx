@@ -9,8 +9,6 @@ import { goBack, navigate } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   CheckboxField,
-  Group,
-  GroupItem,
   H4,
   haptics,
   InputField,

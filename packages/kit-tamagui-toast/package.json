@@ -34,6 +34,7 @@
     "zod": "^3.22.4"
   },
   "peerDependencies": {
+    "burnt": "^0.12.2",
     "@tamagui/toast": "^1.100.3",
     "react-native-safe-area-context": ">= 3.0.0"
   }

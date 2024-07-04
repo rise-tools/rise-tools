@@ -1,11 +1,7 @@
-import { event, HandlerEvent, response } from '@rise-tools/react'
+import { event, EventRequest, HandlerEvent, response } from '@rise-tools/react'
 import WS from 'jest-websocket-mock'
 
-import {
-  createWSModelSource,
-  EventResponseWebsocketMessage,
-  EventWebsocketMessage,
-} from '../data-source'
+import { createWSModelSource } from '../data-source'
 
 let ws: WS
 
@@ -20,29 +16,28 @@ it('should resolve a promise once response comes in', async () => {
   const dataSource = createWSModelSource('ws://localhost:8080')
   await ws.connected
 
-  const riseEvent: HandlerEvent = {
+  const EventRequest: HandlerEvent = {
+    $: 'evt',
+    key: '1',
     target: {
       key: 'key',
       path: ['mainStore'],
       propKey: 'onPress',
       component: 'View',
     },
-    dataState: event(jest.fn()),
+    modelState: event(jest.fn()),
     payload: [null],
   }
 
-  const promise = dataSource.sendEvent(riseEvent)
+  const promise = dataSource.sendEvent(EventRequest)
 
-  const message = (await ws.nextMessage) as EventWebsocketMessage
-  ws.send({
-    $: 'evt-res',
-    key: message.key,
-    res: response({}),
-  } satisfies EventResponseWebsocketMessage)
+  const message = (await ws.nextMessage) as EventRequest
+  ws.send(response({}, { key: message.key }))
 
   expect(await promise).toMatchInlineSnapshot(`
     Object {
-      "$": "response",
+      "$": "evt-res",
+      "key": "1",
       "payload": Object {},
     }
   `)
@@ -52,26 +47,24 @@ it('should timeout if response comes later than timeout specified', async () => 
   const dataSource = createWSModelSource('ws://localhost:8080')
   await ws.connected
 
-  const riseEvent: HandlerEvent = {
+  const EventRequest: HandlerEvent = {
+    $: 'evt',
+    key: '1',
     target: {
       key: 'key',
       path: ['mainStore'],
       propKey: 'onPress',
       component: 'View',
     },
-    dataState: event(jest.fn(), { timeout: 1000 }),
+    modelState: event(jest.fn(), { timeout: 1000 }),
     payload: [null],
   }
 
-  const promise = dataSource.sendEvent(riseEvent)
-  const message = (await ws.nextMessage) as EventWebsocketMessage
+  const promise = dataSource.sendEvent(EventRequest)
+  const message = (await ws.nextMessage) as EventRequest
 
   setTimeout(() => {
-    ws.send({
-      $: 'evt-res',
-      key: message.key,
-      res: response({}),
-    } satisfies EventResponseWebsocketMessage)
+    ws.send(response({}, { key: message.key }))
   }, 2000)
 
   expect(promise).rejects.toMatch('timeout')
