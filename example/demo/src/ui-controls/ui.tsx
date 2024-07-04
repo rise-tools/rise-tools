@@ -5,7 +5,11 @@ import {
   DraggableFlatList,
   FlatList,
 } from '@rise-tools/kit/server'
-import { goBack, navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
+import {
+  goBack,
+  navigate,
+  StackScreen,
+} from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   CheckboxField,
@@ -54,7 +58,11 @@ function UI() {
   return (
     <>
       <YStack padding="$4">
-        <Button onPress={navigate('form')} borderBottomLeftRadius={0} borderBottomRightRadius={0}>
+        <Button
+          onPress={navigate('form')}
+          borderBottomLeftRadius={0}
+          borderBottomRightRadius={0}
+        >
           Form
         </Button>
         <Separator />
@@ -62,15 +70,24 @@ function UI() {
           List
         </Button>
         <Separator />
-        <Button onPress={navigate('draggableList')} borderRadius={0}>
+        <Button
+          onPress={navigate('draggableList')}
+          borderRadius={0}
+        >
           DraggableList
         </Button>
         <Separator />
-        <Button onPress={navigate('toast')} borderRadius={0}>
+        <Button
+          onPress={navigate('toast')}
+          borderRadius={0}
+        >
           Toast
         </Button>
         <Separator />
-        <Button onPress={navigate('haptics')} borderRadius={0}>
+        <Button
+          onPress={navigate('haptics')}
+          borderRadius={0}
+        >
           Haptics
         </Button>
         <Separator />
@@ -78,15 +95,24 @@ function UI() {
           SVG
         </Button>
         <Separator />
-        <Button onPress={navigate('icons')} borderRadius={0}>
+        <Button
+          onPress={navigate('icons')}
+          borderRadius={0}
+        >
           Icons
         </Button>
         <Separator />
-        <Button onPress={navigate('linking')} borderRadius={0}>
+        <Button
+          onPress={navigate('linking')}
+          borderRadius={0}
+        >
           Linking
         </Button>
         <Separator />
-        <Button onPress={navigate('qrcode')} borderRadius={0}>
+        <Button
+          onPress={navigate('qrcode')}
+          borderRadius={0}
+        >
           QR Code
         </Button>
         <Separator />
@@ -111,16 +137,25 @@ function BottomSheetExample() {
   return (
     <BottomSheet
       trigger={
-        <BottomSheetTriggerButton borderTopLeftRadius={0} borderTopRightRadius={0}>
+        <BottomSheetTriggerButton
+          borderTopLeftRadius={0}
+          borderTopRightRadius={0}
+        >
           Bottom Sheet
         </BottomSheetTriggerButton>
       }
     >
       <YStack gap="$4">
-        <BottomSheetCloseButton theme="green" onPress={goBack()}>
+        <BottomSheetCloseButton
+          theme="green"
+          onPress={goBack()}
+        >
           <Text>Close and go back</Text>
         </BottomSheetCloseButton>
-        <BottomSheetCloseButton theme="red" onPress={() => console.log('modal closed')}>
+        <BottomSheetCloseButton
+          theme="red"
+          onPress={() => console.log('modal closed')}
+        >
           <Text>Just close</Text>
         </BottomSheetCloseButton>
       </YStack>
@@ -165,8 +200,19 @@ function SVGExample() {
       <YStack gap="$8" padding="$4">
         <YStack>
           <H4>SVG</H4>
-          <Svg height="100" width="100" viewBox="0 0 100 100">
-            <Circle cx="50" cy="50" r="45" stroke="blue" strokeWidth="2.5" fill="green" />
+          <Svg
+            height="100"
+            width="100"
+            viewBox="0 0 100 100"
+          >
+            <Circle
+              cx="50"
+              cy="50"
+              r="45"
+              stroke="blue"
+              strokeWidth="2.5"
+              fill="green"
+            />
           </Svg>
         </YStack>
         <YStack>
@@ -219,14 +265,37 @@ function FormExample() {
         <RiseForm
           onSubmit={(values) => {
             console.log('Form submitted', values)
-            return response([toast('Thank you for submitting your feedback'), goBack()])
+            return response([
+              toast(
+                'Thank you for submitting your feedback'
+              ),
+              goBack(),
+            ])
           }}
         >
-          <InputField id="name" label="Input" placeholder="What is your name?" />
-          <TextField id="feedback" label="Textarea" placeholder="What do you think about Rise?" />
-          <CheckboxField id="checkbox" label="I already starred this project on Github" />
-          <SliderField id="rating" label="Rate us" defaultValue={[0]} />
-          <SwitchField id="anonymous" label="I want to be anonymous" />
+          <InputField
+            id="name"
+            label="Input"
+            placeholder="What is your name?"
+          />
+          <TextField
+            id="feedback"
+            label="Textarea"
+            placeholder="What do you think about Rise?"
+          />
+          <CheckboxField
+            id="checkbox"
+            label="I already starred this project on Github"
+          />
+          <SliderField
+            id="rating"
+            label="Rate us"
+            defaultValue={[0]}
+          />
+          <SwitchField
+            id="anonymous"
+            label="I want to be anonymous"
+          />
           <SelectField
             id="framework"
             label="What is your favorite frontend framework?"
@@ -248,12 +317,19 @@ function FormExample() {
             id="color"
             label="What is your dev setup?"
             options={[
-              { label: 'Visual Studio Code', key: 'vscode' },
+              {
+                label: 'Visual Studio Code',
+                key: 'vscode',
+              },
               { label: 'Vim / Emacs', key: 'hacker' },
               { label: 'Notepad', key: 'notepad' },
             ]}
           />
-          <SubmitButton pendingState={<Text>Submitting...</Text>}>Submit</SubmitButton>
+          <SubmitButton
+            pendingState={<Text>Submitting...</Text>}
+          >
+            Submit
+          </SubmitButton>
         </RiseForm>
       </ScrollView>
     </>
@@ -311,7 +387,10 @@ function DraggableListExample() {
           data={data}
           header={<H4>Best JavaScript frameworks</H4>}
           footer={
-            <Text paddingVertical="$2">PS. You can reorder them to match your preferences!</Text>
+            <Text paddingVertical="$2">
+              PS. You can reorder them to match your
+              preferences!
+            </Text>
           }
           onReorder={(keys) => {
             console.log('Reordered keys:', keys)
@@ -353,7 +432,12 @@ function ListExample() {
     <>
       <StackScreen title="List" />
       <YStack flex={1} padding="$4">
-        <FlatList data={data} header={<H4>Our ranking of JavaScript frameworks</H4>} />
+        <FlatList
+          data={data}
+          header={
+            <H4>Our ranking of JavaScript frameworks</H4>
+          }
+        />
       </YStack>
     </>
   )
@@ -364,7 +448,12 @@ function ShowToastExample() {
     <>
       <StackScreen title="Toast" />
       <YStack padding="$4">
-        <Button onPress={toast('Hello World!', 'This is toast action!')}>
+        <Button
+          onPress={toast(
+            'Hello World!',
+            'This is toast action!'
+          )}
+        >
           <Text>Show toast</Text>
         </Button>
       </YStack>
@@ -376,7 +465,10 @@ function HapticsExample() {
   return (
     <>
       <StackScreen title="Haptics" />
-      <ScrollView padding="$4" contentContainerStyle={{ gap: '$8' }}>
+      <ScrollView
+        padding="$4"
+        contentContainerStyle={{ gap: '$8' }}
+      >
         <YStack>
           <H4>Impact</H4>
           <YStack gap="$2">
@@ -406,13 +498,19 @@ function HapticsExample() {
             <Button onPress={haptics('notification')}>
               <Text>Default</Text>
             </Button>
-            <Button onPress={haptics('notification', 'success')}>
+            <Button
+              onPress={haptics('notification', 'success')}
+            >
               <Text>Success</Text>
             </Button>
-            <Button onPress={haptics('notification', 'error')}>
+            <Button
+              onPress={haptics('notification', 'error')}
+            >
               <Text>Error</Text>
             </Button>
-            <Button onPress={haptics('notification', 'warning')}>
+            <Button
+              onPress={haptics('notification', 'warning')}
+            >
               <Text>Warning</Text>
             </Button>
           </YStack>
