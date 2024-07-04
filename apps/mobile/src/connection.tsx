@@ -13,7 +13,10 @@ export type Connection = ConnectionPayload & {
   id: string
 }
 
-const [stream, write] = createMMKVStream('connections-v2', [] as Connection[])
+const [stream, write] = createMMKVStream(
+  'connections-v2',
+  [] as Connection[]
+)
 
 export const connections = stream
 
@@ -28,7 +31,9 @@ export function useConnection(id?: string) {
   return state.find((connection) => connection.id === id)
 }
 
-export function addConnection(connection: ConnectionPayload) {
+export function addConnection(
+  connection: ConnectionPayload
+) {
   const id = Math.random().toString()
   write((connections) => {
     return [...connections, { ...connection, id }]
@@ -38,28 +43,32 @@ export function addConnection(connection: ConnectionPayload) {
 
 export function removeConnection(id: string) {
   write((connections) => {
-    return connections.filter((connection) => connection.id !== id)
+    return connections.filter(
+      (connection) => connection.id !== id
+    )
   })
 }
 
-export function updateConnection(id: string, connection: ConnectionPayload) {
+export function updateConnection(
+  id: string,
+  connection: ConnectionPayload
+) {
   write((connections) => {
-    return connections.map((c) => (c.id === id ? { ...c, ...connection } : c))
+    return connections.map((c) =>
+      c.id === id ? { ...c, ...connection } : c
+    )
   })
 }
 
-export const BUILTIN_CONNECTIONS: Record<string, Connection> = {
+export const BUILTIN_CONNECTIONS: Record<
+  string,
+  Connection
+> = {
   inventory: {
     id: 'inventory',
     label: '🏭 Car Parts Inventory',
     host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
     path: 'inventory',
-  },
-  ui: {
-    id: 'ui',
-    label: '🎨 UI Controls',
-    host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
-    path: 'controls',
   },
   delivery: {
     id: 'delivery',
