@@ -1,10 +1,19 @@
-import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native'
+import {
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+} from '@react-navigation/native'
 import { registerRootComponent } from 'expo'
 import { useFonts } from 'expo-font'
 import * as Linking from 'expo-linking'
 import * as SystemUI from 'expo-system-ui'
 import React, { useEffect } from 'react'
-import { Platform, StatusBar, useColorScheme } from 'react-native'
+import {
+  LogBox,
+  Platform,
+  StatusBar,
+  useColorScheme,
+} from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
@@ -48,11 +57,21 @@ function App() {
               ...theme,
               colors: {
                 ...theme.colors,
-                primary: scheme === 'dark' ? '#FD5811' : '#E74500',
+                primary:
+                  scheme === 'dark' ? '#FD5811' : '#E74500',
               },
             }}
-            initialState={initialState ? JSON.parse(initialState) : undefined}
-            onStateChange={(state) => storage.set('react-navigation', JSON.stringify(state))}
+            initialState={
+              initialState
+                ? JSON.parse(initialState)
+                : undefined
+            }
+            onStateChange={(state) =>
+              storage.set(
+                'react-navigation',
+                JSON.stringify(state)
+              )
+            }
           >
             <Screens />
           </NavigationContainer>
@@ -63,3 +82,5 @@ function App() {
 }
 
 registerRootComponent(App)
+
+LogBox.ignoreAllLogs()
