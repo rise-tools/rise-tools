@@ -46,7 +46,7 @@ const incrementer = view(get => (
 
 console.log('Starting server on ws://localhost:8888')
 
-createWSServer({ incrementer }, 8888)
+createWSServer({ home: incrementer }, 8888)
 ```
 
 This code establishes:
@@ -55,7 +55,7 @@ This code establishes:
 - A `view` model which renders a `YStack` container,
     - `Text` which displays the current count
     - `Button` with a handler that mutates the internal count state
-- The WebSocket server on port `8888` which serves the `incrementer` view
+- The WebSocket server on port `8888` which serves the `home` view
 
 To run the app:
 
@@ -71,7 +71,7 @@ If everything goes well, your server is ready to use and develop on!
 
 The fastest way to start developing is by downloading the [Rise Playground App](/docs/playground) from the App Store or Play Store.
 
-Connect to your server by adding `ws://<your-computer-ip>:8888` and setting the path to `incrementer`
+Connect to your server by adding `ws://<your-computer-ip>:8888` and setting the path to `home`
 
 ## React Native Quick Start
 
@@ -136,7 +136,7 @@ export default function HomeScreen() {
     <Rise
       modelSource={modelSource}
       components={components}
-      path="incrementer"
+      path="home"
       actions={{
         ...useHapticsActions(),
         ...useLinkingActions(),
@@ -155,8 +155,43 @@ At this point you should be able to change the code in `index.tsx` and see the U
 
 > TODO: example code changes
 
-## Next Steps
+## Navigation
 
-- Navigation
-- Custom Components
-- ???
+The starter app supports [navigation](/docs/guides/navigation). If you have a custom integration in your React Native app, follow the setup guide for [Expo Router](/docs/kit/expo-router#client-installation) or [React Navigation](/docs/kit/react-navigation#client-installation).
+
+To see how this works, replace `index.tsx` with:
+
+```tsx
+import { navigationExample } from './examples/navigation'
+createWSServer(navigationExample, 8888)
+```
+
+And see the `examples/navigation.tsx` file:
+
+```tsx
+import { goBack, navigate } from "@rise-tools/kit-expo-router/server";
+import { Button, Text, YStack } from "@rise-tools/kitchen-sink/server";
+
+
+const home = (() => (
+    <YStack>
+        <Text>{'Home From Server'}</Text>
+        <Button onPress={navigate('details')}>Go to Details</Button>
+    </YStack>
+));
+
+const details = (() => (
+    <YStack>
+        <Text>{'Details From Server'}</Text>
+        <Button onPress={goBack()}>Go Back</Button>
+    </YStack>
+));
+
+
+export const navigationExample = {
+    home,
+    details
+}
+```
+
+Now your app has a button that will go to a new screen.
