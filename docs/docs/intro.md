@@ -44,7 +44,7 @@ You are encouraged to bring your own components to the Rise client in your app, 
 
 ### Model Source
 
-The models are responsible for defining the data and 
+The model source is responsible for defining the data fetching and event handling interactions with the server. For now you may use the `createWSModelSource` and `createHTTPModelSource` to interact with the server-side implementation (either your [JS server](/docs/server-js), or a custom server which follows the [Rise API specification](/docs/server-spec)).
 
 ### Actions
 
@@ -58,9 +58,9 @@ This can be accomplished by passing an object of actions into the Rise client:
   modelSource={modelSource}
   actions={{
     goToTheMoon: {
-        action: () => {
-            // TODO: implement moon launch
-        }
+      handler: () => {
+        // TODO: implement moon launch. easy, right?!
+      }
     }
   }}
 />
@@ -72,6 +72,11 @@ The Kit also includes several actions such as [linking](/docs/kit/linking) and [
 
 ### Server Libraries
 
+We include a [JS Server](/docs/server-js) which can be used to quickly implement a server that provides Rise components to your client.
+
+This server implementation supports a [suite of model atoms](/docs/server-js/models), such as [state](/docs/server-js/models#state), [query](/docs/server-js/models#query), and [view](/docs/server-js/models#view). These atoms can be composed with [objects](/docs/server-js/models#object-models) or [lookups](/docs/server-js/models#lookup) to build an elaborate server that handles the [use cases](/docs/guides/use-cases) of SDR in your application.
+
+Alternatively, you can use the [Server Spec](/docs/server-spec) to implement a server in any language, which may be useful for other infrastructure or to enable other teams to manage part of your UI.
 
 ## Rise Playground
 
@@ -83,4 +88,10 @@ If you have a hobby project, or if you want to create an internal tool for your 
 
 ## Get Started
 
-There is so much more to talk about, such as [navigation](/docs/guides/navigation) and [creating safe interactions with the server](/docs/guides/server-compatibility), but at this point you probably want to [get started](./getting-started)!
+There is so much more to talk about, such as: 
+
+- [Navigation Integration](/docs/guides/navigation)
+- [Rise Kit](/docs/kit)
+- [Creating safe interactions with the server](/docs/guides/server-compatibility)
+
+But at this point you probably just want to [get started](./getting-started)! 😉

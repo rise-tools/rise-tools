@@ -1,7 +1,14 @@
 # kit-forms
 
+
+> Note: This document is a WIP. Your [contributions](/docs/contributors) to the docs would be greatly appreciated!
+
+For more details on `@rise-tools/kit-forms`, see the [implementation here](https://github.com/rise-tools/rise-tools/blob/main/packages/kit-forms/src/index.tsx).
+
+## Client Installation
+
 ```sh
-npm install @rise-tools/kit-haptics expo-haptics
+npm install @rise-tools/kit-forms
 ```
 
 ## Components

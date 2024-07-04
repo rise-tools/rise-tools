@@ -68,7 +68,6 @@ const sidebars = {
     'guides/custom-components',
     'guides/custom-models',
     'guides/navigation',
-    'guides/error-handling',
     'guides/jsx-setup',
     'guides/refs',
     'guides/server-compatibility',

@@ -1,12 +1,12 @@
 # Actions and Events
 
-For each prop that accepts a function, you can pass an action or an event.
+For each prop that accepts a callback/function, you can pass an action, array of actions, or an event that will be sent to the server.
 
-[TBD - explain how/why we automatically allow action, event or action[] to each component that accepts a function] 
+When the server responds, it may use the `response()` helper to send one or more actions to the client that will be executed as a follow-up behavior to the server-side event.
 
 ## Actions
 
-### Executing an action
+### Single Action
 
 ```tsx
 import { goBack } from "@rise-tools/kit-expo-router"
@@ -22,7 +22,8 @@ function UI() {
 }
 ```
 
-### Executing multiple actions
+### Multiple Actions
+
 
 ```tsx
 import { goBack } from "@rise-tools/kit-expo-router"
@@ -33,7 +34,7 @@ function UI() {
     <Button
       onPress={[goBack(), haptics()]}
     >
-      Go back
+      Go back with a vibrate effect
     </Button>
   )
 }
@@ -55,7 +56,8 @@ function UI() {
 }
 ```
 
-Note: the above example is equivalent to:
+When you pass a function as a prop, we wrap it with `event()` automatically.
+So the above example is equivalent to:
 
 ```tsx
 function UI() {
@@ -69,15 +71,16 @@ function UI() {
 }
 ```
 
-When you pass a function as a prop, we wrap it with `event()` automatically.
 
 ### Passing additional options
+
+This allows a custom timeout where the client will throw an error locally if it does not recieve a response from the server in the specified number of milliseconds.
 
 ```tsx
 function UI() {
   return (
     <Button
-      onPress={event(() => /* redacted */, { timeout: 5000 })}
+      onPress={event(() => /* slow server behavior */, { timeout: 5000 })}
     >
       Go back
     </Button>
@@ -107,7 +110,7 @@ function UI() {
 
 ### Return payload
 
-You can return an arbitrary JSON value from an event handler. This value will be sent back to the client. From client component, you can await the callback to read the response from the server. 
+You can return an arbitrary JSON value from an event handler. This value will be sent back to the client. From client components, you can await the callback to see the response sent from the server. 
 
 <table>
 <thead>
@@ -125,6 +128,7 @@ function UI() {
   return (
     <Form
       onSubmit={() => {
+        // this function may be async but it does not need to be.
         return { message: 'Thank you!' }
       }}
     />
@@ -140,6 +144,7 @@ function Form({ onSubmit }) {
   const [isPending, setIsPending] = useState(false)
   const handleSubmit = async () => {
     setIsPending(true)
+    // this onSubmit handler is always async because it has to go to the server.
     const { message } = await onSubmit()
     setIsPending(false)
     alert(message)
@@ -157,7 +162,7 @@ function Form({ onSubmit }) {
 </tbody>
 </table>
 
-### Execute an action
+### Event Responds with Action
 
 You can also execute an action in response to an event:
 
@@ -177,7 +182,7 @@ function UI() {
 
 This will navigate back after the form is submitted and sucesfully processed by the server.
 
-### Execute multiple actions
+### Event Responds with Actions
 
 You can also execute multiple actions in response to an event:
 
@@ -221,3 +226,5 @@ function UI() {
   )
 }
 ```
+
+When the event handler gets back to the client, it the message will be visible from `await props.onSubmit()`, and the `goBack` navigation action will be triggered, moving the user to the previous route.

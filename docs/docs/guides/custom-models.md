@@ -2,12 +2,14 @@
 description: How to build a custom modelSource
 ---
 
-# Custom Models
+# Custom Model Sources
 
 
-The template uses "stores" of data to decide what UI to render. RNT is entirely network-agnostic, but it is designed for realtime scenarios where your server can push updates to the UI.
+The template uses "stores" of data to decide what UI to render. Rise is entirely network-agnostic, but it includes clients such as `createWSModelSource` and `createHTTPModelSource`.
 
-The `model` is an object with one mandatory function to returns a store for a given path. If no `path` prop was provided to the `<Rise>`, the root path of "" (empty string) will be used to query for the UI data.
+## Model Source
+
+The `modelSource` is an object with one mandatory function to returns a "store" for a given path. If no `path` prop was provided to the `<Rise>`, the root path of "" (empty string) will be used to query for the UI data.
 
 ```ts
 type ModelSource = {
@@ -15,6 +17,10 @@ type ModelSource = {
   sendEvent: (event: HandlerEvent) => Promise<EventResponse>
 }
 ```
+
+The event sent into `sendEvent` should conform to the [Event Request Payload](/docs/server-spec/json-types#event-request-payload).
+
+## Store
 
 A Store allows the template to get and subscribe to data changes:
 

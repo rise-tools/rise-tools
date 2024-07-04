@@ -53,7 +53,7 @@ These logical elements can be composed to express the UI content in your server.
 
 ## Servers
 
-We provide a HTTP server and a WebSocket server, plus a server which includes the functionality of both.
+We provide a [HTTP server](/docs/server-js/servers#http-server), a [WebSocket server](/docs/server-js/servers#websocket-server), plus a [server which includes the functionality of both](/docs/server-js/servers#combined-server).
 
 ## Extended Examples
 

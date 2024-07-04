@@ -6,9 +6,13 @@ Let's discuss some interesting and popular use-cases for Server Defined Renderin
 
 Electron desktop apps have a front-end (Chromium) instance for each window, and a nodejs backend that is shared across the application. Most Electron apps put the majority of the logic in the front-end window instances. This is problematic for apps who want to support multi-windows, because each window must have duplicate data and manually synchronize state between them. This could be fixed by using Server-Defined Rendering on the nodejs backplane, keeping the windows very light and stateless.
 
-## AB Testing
+## A/B Testing
 
 You may wish to run tests after you ship your app, where users will receive a slightly different experience depending on their test group. By using a `<Rise />` component, you can adjust each user's experience on the server.
+
+## Feature Flags
+
+Your server can be used to enable or disable some features on the client. For example a new component can be added to a component library, and the server may render it or not depending on the server-side flags that are enabled by your organiztion.
 
 ## Media Streaming Home
 
