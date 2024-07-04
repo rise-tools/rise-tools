@@ -1,7 +1,10 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { RiseComponents } from '@rise-tools/kit'
-import { useReactNavigationActions } from '@rise-tools/kit-react-navigation'
+import {
+  ReactNavigationComponents,
+  useReactNavigationActions,
+} from '@rise-tools/kit-react-navigation'
 import {
   FormComponents,
   LucideIconsComponents,
@@ -30,6 +33,7 @@ const components = {
   ...SVGComponents,
   ...LucideIconsComponents,
   ...QRCodeComponents,
+  ...ReactNavigationComponents,
 }
 
 export type RiseStackParamList = {
@@ -60,8 +64,8 @@ export function ConnectionScreen({
       <Stack.Screen
         name="rise"
         getId={({ params }) => params.path}
-        options={({ route }) => ({
-          title: route.params.path,
+        options={() => ({
+          title: '',
         })}
       >
         {({ route }) => <RiseScreen connection={connection!} path={route.params.path} />}
