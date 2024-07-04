@@ -42,6 +42,6 @@ export function Screen(options: NativeStackNavigationOptions) {
   const navigation = useNavigation()
   useEffect(() => {
     navigation.setOptions(options)
-  }, [])
+  }, [options])
   return null
 }
