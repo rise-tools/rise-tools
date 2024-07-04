@@ -1,4 +1,6 @@
 import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationOptions } from '@react-navigation/native-stack'
+import { useEffect } from 'react'
 import z from 'zod'
 
 import { ReactNavigationActions } from './server'
@@ -28,4 +30,18 @@ export const useReactNavigationActions = ({
       },
     },
   }
+}
+
+export const ReactNavigationComponents = {
+  'rise-tools/kit-react-navigation/StackScreen': {
+    component: Screen,
+  },
+}
+
+export function Screen(options: NativeStackNavigationOptions) {
+  const navigation = useNavigation()
+  useEffect(() => {
+    navigation.setOptions(options)
+  }, [options])
+  return null
 }

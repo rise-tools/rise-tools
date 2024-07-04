@@ -1,13 +1,5 @@
-import {
-  createWritableStream,
-  EventRequest,
-  EventResponse,
-  type ModelSource,
-  ModelState,
-  Store,
-  Stream,
-} from '@rise-tools/react'
-import ReconnectingWebSocket from 'reconnecting-websocket'
+import { EventRequest, EventResponse, type ModelSource, ModelState, Store } from '@rise-tools/react'
+import ReconnectingWebSocket, { Options as RWSOptions } from 'reconnecting-websocket'
 
 export type SubscribeWebsocketMessage = {
   $: 'sub'
@@ -34,16 +26,23 @@ export type ServerWebsocketMessage = UpdateWebsocketMessage | EventResponse<unkn
 
 type Handler = (value: ModelState) => void
 
-type WebSocketState = {
-  status?: 'connected' | 'disconnected'
-}
-
 export type WebSocketModelSource = ModelSource & {
-  state: Stream<WebSocketState>
+  ws: ReconnectingWebSocket
 }
 
-export function createWSModelSource(wsUrl: string): WebSocketModelSource {
-  const rws = new ReconnectingWebSocket(wsUrl)
+const rwsDefaultOptions: RWSOptions = {
+  minReconnectionDelay: 100,
+}
+
+type Options = {
+  rws?: RWSOptions
+}
+
+export function createWSModelSource(wsUrl: string, options?: Options): WebSocketModelSource {
+  const rws = new ReconnectingWebSocket(wsUrl, undefined, {
+    ...rwsDefaultOptions,
+    ...(options?.rws || {}),
+  })
   function send(payload: ClientWebsocketMessage) {
     rws.send(JSON.stringify(payload))
   }
@@ -133,6 +132,7 @@ export function createWSModelSource(wsUrl: string): WebSocketModelSource {
   const promises = new Map<string, (value: EventResponse<any>) => void>()
 
   return {
+    ws: rws,
     get: (key: string) => {
       const store = stores.get(key)
       if (store) {
@@ -142,7 +142,6 @@ export function createWSModelSource(wsUrl: string): WebSocketModelSource {
       stores.set(key, newStore)
       return newStore
     },
-    state: createStateStream(rws),
     sendEvent: async (event) => {
       send(event)
       // send({ $: 'evt', event, key })
@@ -157,14 +156,4 @@ export function createWSModelSource(wsUrl: string): WebSocketModelSource {
       })
     },
   }
-}
-
-const createStateStream = (ws: ReconnectingWebSocket) => {
-  const [state, write] = createWritableStream<WebSocketState>({ status: undefined })
-
-  ws.addEventListener('open', () => write({ status: 'connected' }))
-  ws.addEventListener('close', () => write({ status: 'disconnected' }))
-  ws.addEventListener('error', () => write({ status: 'disconnected' }))
-
-  return state
 }

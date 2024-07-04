@@ -19,6 +19,7 @@ import {
 import React, { ReactNode } from 'react'
 
 import test from '../../assets/forms-ui.png'
+import { PlaygroundAppDownload } from '../components/PlaygroundAppDownload'
 import styles from './index.module.css'
 
 function HomepageHeader() {
@@ -170,7 +171,12 @@ export default function Home() {
           <SectionContent
             title="Playground App: Jump-Start Your Dev"
             text=""
-            graphic={<img src="/img/playground-app.png" />}
+            graphic={
+              <>
+                <img src="/img/playground-app.png" />
+                <PlaygroundAppDownload />
+              </>
+            }
           />
         </Section>
         <Section alt>

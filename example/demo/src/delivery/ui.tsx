@@ -1,4 +1,4 @@
-import { navigate } from '@rise-tools/kit-react-navigation/server'
+import { navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   Circle,
@@ -47,6 +47,10 @@ function UI() {
       <Taxi />
     </YStack>
   )
+}
+
+function FeedbackForm() {
+  return <StackScreen title="Feedback" />
 }
 
 function Groceries() {
