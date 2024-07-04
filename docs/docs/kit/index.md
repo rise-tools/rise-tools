@@ -7,15 +7,15 @@ We provide the "Rise Kit" library of components that are ready to use in your ap
 
 You may import individual kit packages for different functionality. To provide flexibility for your server, you can use all of these:
 
-- [Kit](./kit/rise-kit) - High-level components such as List and Sheets
-- [Tamagui](./kit/tamagui) - Delivers the functionality from the excellent [Tamagui](https://tamagui.dev/) component system.
-- [Forms](./kit/forms) - Rise form toolkit powered by Tamagui
-- [Haptics](./kit/haptics) - Haptic vibration actions powered by [Expo Haptics](https://docs.expo.dev/versions/latest/sdk/haptics/)
-- [Linking](./kit/linking) - [React Native Linking](https://reactnative.dev/docs/linking) to the browser or settings app
-- [Lucide Icons](./kit/lucide-icons) - Use any icons from the [Lucide Icon Pack](https://lucide.dev) in your server components
-- [SVG](./kit/svg) - Render custom SVGs from your server
-- [QRCode](./kit/qrcode) - Render QRCodes in your app
-- [Tamagui Toast](./kit/tamagui-toast) - Toast UI by [Tamagui](https://tamagui.dev/ui/toast/)
+- [Kit](/docs/kit/rise-kit) - High-level components such as List and Sheets
+- [Tamagui](/docs/kit/tamagui) - Delivers the functionality from the excellent [Tamagui](https://tamagui.dev/) component system.
+- [Forms](/docs/kit/forms) - Rise form toolkit powered by Tamagui
+- [Haptics](/docs/kit/haptics) - Haptic vibration actions powered by [Expo Haptics](https://docs.expo.dev/versions/latest/sdk/haptics/)
+- [Linking](/docs/kit/linking) - [React Native Linking](https://reactnative.dev/docs/linking) to the browser or settings app
+- [Lucide Icons](/docs/kit/lucide-icons) - Use any icons from the [Lucide Icon Pack](https://lucide.dev) in your server components
+- [SVG](/docs/kit/svg) - Render custom SVGs from your server
+- [QRCode](/docs/kit/qrcode) - Render QRCodes in your app
+- [Tamagui Toast](/docs/kit/tamagui-toast) - Toast UI by [Tamagui](https://tamagui.dev/ui/toast/)
 
 We also support navigation utility packages to help you navigate between screens in your app. You will only need one of:
 

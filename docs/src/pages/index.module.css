@@ -45,18 +45,51 @@
   background-color: #150235;
 }
 
-.toolsSection {
+.section {
+}
+
+.sectionAlt {
+  background-color: black;
+}
+
+.section > div {
   max-width: 1320px;
   margin: 0 auto;
   padding: 30px 0 60px;
 }
+  
 
-.toolsSection h2 {
+
+.interstitial {
+  background-color: #ddd;
+  padding: 40px 30px;
+}
+
+.interstitial h2 {
+  color: black;
+  text-align: center;
+  font-size: 42px;
+}
+
+
+.sectionContent h2,
+.sectionTitle {
   padding: 0 50px;
   font-size: 48px;
 }
 
+@media screen and (max-width: 600px) {
+  .sectionContent h2,
+  .sectionTitle {
+    font-size: 32px;
+  }
+  
+}
+
 .toolsList {
+  margin: 0 auto;
+  padding: 0 50px;
+  max-width: 950px;
   flex-wrap: wrap;
   display: flex;
   justify-content: center;
@@ -67,8 +100,10 @@
   flex-direction: column;
   display: flex;
   color: white;
-  width: 200px;
+  width: 140px;
   justify-content: center;
+  align-content: center;
+  text-align: center;
 }
 
 .tool:hover {
@@ -76,4 +111,5 @@
 }
 
 .toolIcon {
+  margin: 0 auto;
 }
