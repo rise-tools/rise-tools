@@ -387,7 +387,6 @@ export function ToggleGroupField({
       <Label htmlFor={id}>{label}</Label>
       <XStack flexDirection={orientation === 'horizontal' ? 'row' : 'column'}>
         <ToggleGroup
-          gap="$2"
           {...props}
           orientation={orientation}
           id={id}
