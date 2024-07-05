@@ -1,14 +1,16 @@
 # kit-expo-router
 
+## Client Installation
+
 ```sh
 npm install @rise-tools/kit-expo-router
 ```
 
 To install Expo Router, follow [this guide](https://docs.expo.dev/router/installation/)
 
-## Configuring navigation to work with `<Rise />` component
+> This document is a Work-in-Progress, and your contribution would be appreciated. 
 
-[TBD]
+To see an example integration with Expo Router, see the [starter React Native app](https://github.com/rise-tools/rise-mobile-quickstart).
 
 ## Actions
 

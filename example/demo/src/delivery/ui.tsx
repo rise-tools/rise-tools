@@ -1,4 +1,4 @@
-import { navigate } from '@rise-tools/kit-react-navigation/server'
+import { navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   Circle,
@@ -9,6 +9,9 @@ import {
   XStack,
   YStack,
 } from '@rise-tools/kitchen-sink/server'
+
+import { FeedbackForm } from './feedback-form'
+
 export const models = {
   delivery: UI,
   'delivery:feedback-form': FeedbackForm,
@@ -26,7 +29,7 @@ function UI() {
 }
 
 function FeedbackForm() {
-  return <YStack />
+  return <StackScreen title="Feedback" />
 }
 
 function Groceries() {

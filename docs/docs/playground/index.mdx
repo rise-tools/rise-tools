@@ -1,22 +1,21 @@
+import { PlaygroundAppDownload } from '../../src/components/PlaygroundAppDownload'
+
 # Rise Playground App
 
-> purpose of the app
+<PlaygroundAppDownload />
 
 The Rise app allows the user to specify different "connections", which are WebSocket URLs that will define their UI.
 
-Also, Rise supports navigation between different screens in the app. With a custom event definition such as `props: { onPress: [ 'navigate', 'myOtherPath' ] }`
+![Playground App Screenshot](/img/playground-app.png)
 
 
 
-
-> app download links
 
 ## Building for Playground
 
-- Kit
-- Tamagui
-- Playground Navigation
-- Playground Actions
+The playground supports all of [Rise Kit](/docs/kit), which allows you to quickly build a UI for testing on your device.
+
+> Note: The Playground app uses [React Navigation](/docs/kit/react-navigation), so the Expo Router kit is not available.
 
 ## Open Source
 

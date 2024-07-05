@@ -60,7 +60,7 @@ In an example button handler:
 
 ## JSON Action
 
-Your custom server may provide the toast action by using the [action definitions](/docs/server-spec/json-types#action):
+Your custom server may provide the toast action by using the [action definitions](/docs/server-spec/json-types#action-model-state):
 
 ```ts
 {

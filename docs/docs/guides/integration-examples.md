@@ -14,4 +14,4 @@ You may use the Rise Component as a full screen of your app.
 
 You may navigate to a single route which handles arbitrary full-screen pages of your app. This is a useful integration because it allows your Server-Defined Components to navigate to new pages which are not determined at the time you ship your app to production.
 
-> Todo: Show React Navigation Setup
+See the [navigation guide](/docs/guides/navigation) for more details, or reference the [React Native starter app](https://github.com/rise-tools/rise-mobile-quickstart) to see how this works with Expo Router.

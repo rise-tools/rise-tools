@@ -145,7 +145,75 @@ console.log(await moviesList.load().join(', ')) // "hackers, johnny mnemonic"
 
 ## View
 
-ooh boy this is an important one.
+A view is a model that is derived from other models. Define views with a function that takes a getter argument:
+
+```tsx
+const summary = view(get => {
+    const movieCount = get(moviesList)?.count || 0
+    const gameCount = get(gamesList)?.count || 0
+    return `${movieCount} movies and ${gameCount} games`
+})
+```
+
+You will often want to use a `view` to render a user interface based on some state. The [jsx](/docs/guides/jsx-setup) utility comes in handy when defining these views.
+
+```tsx
+const movies = view(get => {
+    const moviesData = get(moviesList)
+    return (
+        <YStack>
+            {moviesData?.map((movie, index) => (
+                <Text key={index}>{movie}</Text>
+            ))}
+        </YStack>
+    )
+})
+```
+
+### `get`
+
+You call `get()` to immediately retrieve the current value of the view.
+
+> Note: this does not ensure that the dependent values have been loaded. It will work if all the dependencies are states, functions, or other views. Otherwise it may result in a stale value.
+
+### `load`
+
+Asynchronously load the value of the view. This will call the load function of the dependent models, so the result of `load()` will be up to date.
+
+### `subscribe`
+
+Watch the value of the view over time. This will call subscribe on the dependent models, to make sure they are loaded and stay loaded.
+
+## Object Models
+
+Anywhere you can use a model, you can provide an object. For example in the server:
+
+```tsx
+createServer({
+    foo: () => "Model Foo",
+    bar: () => "Model Bar",
+})
+```
+
+You can also return an object a lookup.
+
+```tsx
+const users = lookup((userId) => {
+    const profile = query(async () => {
+        return db.getUserProfile(userId)
+    })
+    return {
+        profile,
+        profilePage: view(get => (
+            <ProfilePage profile={get(profile)} />
+        ))
+    }
+})
+
+createServer({ users }, 3000)
+```
+
+This example will enable a path such as `users/bob/profile` which is the data of Bob's profile, and you can link to `users/bob/profilePage` to see the page which displays his profile.
 
 ## Static Functions
 

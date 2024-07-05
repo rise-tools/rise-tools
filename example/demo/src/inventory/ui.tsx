@@ -1,4 +1,4 @@
-import { navigate } from '@rise-tools/kit-react-navigation/server'
+import { navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   H2,
@@ -7,11 +7,10 @@ import {
   Paragraph,
   ScrollView,
   SizableText,
-  toast,
   XStack,
   YStack,
 } from '@rise-tools/kitchen-sink/server'
-import { ref, response } from '@rise-tools/react'
+import { ref } from '@rise-tools/react'
 import { lookup, state, StateSetter, view } from '@rise-tools/server'
 
 import defaultInventory, { Inventory, Item } from './inventory'
@@ -27,27 +26,6 @@ const inventoryItem = lookup((key) =>
   })
 )
 
-// // user profile example
-// const userProfile = lookup((key) =>
-//   query(async () => {
-//     return await db.getUser(key)
-//   })
-// )
-// const userForms = lookup((key) =>
-//   view(({ get }) => {
-//     const user = get(userProfile, key)
-//     return (
-//       <UserForm
-//         user={user}
-//         onUpdate={async (payload) => {
-//           await db.writeUser(key, payload)
-//           userProfiles.get(key).invalidate()
-//         }}
-//       />
-//     )
-//   })
-// )
-
 export const models = {
   inventory: inventoryHome,
   inventoryItem,
@@ -56,7 +34,7 @@ export const models = {
 
 function HomeScreen({ inventory }: { inventory?: Inventory }) {
   return (
-    <YStack backgroundColor={'$background'}>
+    <YStack backgroundColor="$background">
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {inventory?.map((item, idx) => (
           <Button

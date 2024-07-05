@@ -17,15 +17,7 @@ const sidebars = {
   mainSidebar: [
     'intro',
     'getting-started',
-    {
-      type: 'category',
-      label: 'Playground',
-      link: {
-        type: 'doc',
-        id: 'playground/index',
-      },
-      items: ['playground/actions', 'playground/navigation'],
-    },
+    'playground/index',
     'core',
     {
       type: 'category',
@@ -76,7 +68,6 @@ const sidebars = {
     'guides/custom-components',
     'guides/custom-models',
     'guides/navigation',
-    'guides/error-handling',
     'guides/jsx-setup',
     'guides/refs',
     'guides/server-compatibility',
