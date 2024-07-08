@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /*
  * Use color editor in https://docusaurus.io/docs/styling-layout
  */
