@@ -31,16 +31,6 @@
 
 <img src='./assets/dir.png' height='300'>
 
-The models generated from the above structure will be:
-
-
-```ts
-const models = {
-    '': string
-    'feedback-form': string
-    'feedback-form:social-links': string
-}
-```
 
 
 ---
