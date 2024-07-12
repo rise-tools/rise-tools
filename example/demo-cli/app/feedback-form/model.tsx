@@ -1,4 +1,4 @@
-import { goBack } from '@rise-tools/kit-react-navigation/server'
+import { goBack, navigate } from '@rise-tools/kit-react-navigation/server'
 import { RiseForm, SubmitButton, TextField, toast, View } from '@rise-tools/kitchen-sink/server'
 import { response } from '@rise-tools/react'
 import React from 'react'
@@ -11,6 +11,7 @@ export default function FeedbackForm() {
       <RiseForm
         onSubmit={(values) => {
           if (!values['usefulness']) {
+            navigate('')
             return response(toast('Please tell us how useful Rise is!'))
           }
           return response([toast('Thank you for your feedback!'), goBack()])
