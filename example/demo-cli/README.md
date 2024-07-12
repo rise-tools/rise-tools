@@ -3,6 +3,8 @@
 > A CLI tool for creating new projects
 
 
+[Checkout the dev server code here](./script/server.ts)
+
 - [Rise Start](#rise-start)
     - [QR Code for smooth Playground access](#qr-code-for-smooth-playground-access)
     - [File-based Router](#file-based-router)
