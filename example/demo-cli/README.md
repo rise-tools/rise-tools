@@ -1,6 +1,6 @@
 #  Rise Start
 
-> A CLI tool for creating new projects
+> A CLI tool for rise-tools
 
 
 
