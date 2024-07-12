@@ -3,13 +3,14 @@
 > A CLI tool for creating new projects
 
 
-[Checkout the dev server code here](./script/server.ts)
+
 
 - [Rise Start](#rise-start)
     - [QR Code for smooth Playground access](#qr-code-for-smooth-playground-access)
     - [File-based Router](#file-based-router)
     - [Type-safe Navigation](#type-safe-navigation)
 
+---
 
 ### QR Code for smooth Playground access
 
@@ -18,6 +19,8 @@
 - QR code generation for quick mobile device testing
 
 <img src='./assets/qr.png' height='200'>
+
+---
 
 ### File-based Router
 
@@ -39,9 +42,15 @@ const models = {
 }
 ```
 
+
+---
+
 ### Type-safe Navigation
 
 - Leverage TypeScript for type-safe model navigation
 - Autocomplete and error checking for model paths
 
 ![Type-safe Navigation](./assets/ts.png)
+
+
+[Checkout the dev server code here](./script/server.ts)
