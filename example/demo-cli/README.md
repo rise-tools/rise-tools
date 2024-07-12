@@ -15,7 +15,7 @@
 - Hot-reload functionality for specific models that are changed
 - QR code generation for quick mobile device testing
 
-![QR Code Example](./assets/qr.png)
+<img src='./assets/qr.png' height='200'>
 
 ### File-based Router
 
@@ -24,7 +24,7 @@
 - Private routes can be created by prefixing filenames with an underscore
 
 
-![Directory Structure](./assets/dir.png)
+<img src='./assets/dir.png' height='300'>
 
 The models generated from the above structure will be:
 
