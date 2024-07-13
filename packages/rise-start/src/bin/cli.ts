@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
 
-import { devServerAction } from '../dev'
+import { devAction } from '../dev'
+import { genAction } from '../gen'
 
 const program = new Command()
 
@@ -13,6 +14,8 @@ program
   .option('-ws', 'Websocket server')
   .option('-p, --port [port]', 'Port for dev server', Number, 3500)
   .option('-m, --host [host]', 'dev server host, can be localhost, lan, tunnel', 'lan')
-  .action(devServerAction)
+  .action(devAction)
+
+program.command('gen').description('Build the models.ts').action(genAction)
 
 program.parse()

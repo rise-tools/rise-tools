@@ -164,6 +164,12 @@ export class DevServer {
       }
       this.updateNavigatePathInterface()
     })
+
+    return {
+      close() {
+        watcher.close()
+      },
+    }
   }
 
   updateNavigatePathInterface() {
