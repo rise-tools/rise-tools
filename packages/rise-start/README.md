@@ -26,7 +26,7 @@ Options:
 
 
 
-Generate models.tsx for the project, example for demo-cli project
+> Generate models.tsx for the project, example for demo-cli:
 
 ```ts
 import feedback_form from './app/feedback-form/model'
