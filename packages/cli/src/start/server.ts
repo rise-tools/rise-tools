@@ -16,6 +16,9 @@ interface IndexedModels {
   [key: string]: any
 }
 
+const WATCH_PATH = 'models/**/model.tsx'
+const IGNORED_PATH = ['**/_*']
+
 export const devArgsSchema = z.object({
   ws: z.boolean().optional().default(false),
   prod: z.boolean().optional().default(false),
@@ -65,6 +68,25 @@ export class DevServer {
     this.modelManager = new ModelManager(options.cwd!)
 
     this.start()
+  }
+
+  async start() {
+    const port = this.options.port
+    const host = this.getHost()
+
+    const fsWatcher = await this.watchFiles()
+
+    if (this.options.prod) {
+      // Close the watcher if we are in prod mode after adding all models
+      fsWatcher.close()
+    }
+
+    this.startServer()
+
+    console.log('Server started on', `${host}:${port}`)
+    console.log('Scan the QR from rise playground')
+
+    this.createDevQR(`rise-playground://${host}:${port}`)
   }
 
   getIpAddress(): string {
@@ -131,46 +153,35 @@ export class DevServer {
     }
   }
 
-  start() {
-    const port = this.options.port
-    const host = this.getHost()
+  watchFiles(): Promise<{ close: () => void }> {
+    return new Promise((resolve) => {
+      const watcher = chokidar.watch(WATCH_PATH, {
+        persistent: true,
+        followSymlinks: true,
+        ignored: IGNORED_PATH,
+      })
 
-    this.watchFiles()
-    this.startServer()
+      watcher.on('all', async (eventName, path) => {
+        switch (eventName) {
+          case 'add':
+          case 'change':
+            await this.modelManager.updateModel(path)
+            break
+          case 'unlink':
+            this.modelManager.removeModel(path)
+            break
+        }
+        this.updateNavigatePathInterface()
+      })
 
-    console.log('Server started on', `${host}:${port}`)
-    console.log('Scan the QR from rise playground')
-
-    this.createDevQR(`rise-playground://${host}:${port}`)
-  }
-
-  watchFiles() {
-    const watcher = chokidar.watch('app/**/model.tsx', {
-      persistent: true,
-      followSymlinks: true,
-      ignored: ['**/_*'],
+      watcher.on('ready', () => {
+        resolve({
+          close() {
+            watcher.close()
+          },
+        })
+      })
     })
-
-    watcher.on('all', async (eventName, path) => {
-      switch (eventName) {
-        case 'add':
-        case 'addDir':
-        case 'change':
-          await this.modelManager.updateModel(path)
-          break
-        case 'unlink':
-        case 'unlinkDir':
-          this.modelManager.removeModel(path)
-          break
-      }
-      this.updateNavigatePathInterface()
-    })
-
-    return {
-      close() {
-        watcher.close()
-      },
-    }
   }
 
   updateNavigatePathInterface() {
