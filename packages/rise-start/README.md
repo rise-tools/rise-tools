@@ -12,7 +12,8 @@ yarn global add rise-start
 
 ## Commands
 
-### `rise-start dev` - Start the development server
+### `rise-start dev`
+> Start the development server
 
 ```
 Options:
@@ -22,9 +23,7 @@ Options:
   -h, --help         display help for command
 ```
 
-### `rise-start gen` - Generate models.tsx for the project
-
-
+### `rise-start gen`
 
 > Generate models.tsx for the project, example for demo-cli:
 
