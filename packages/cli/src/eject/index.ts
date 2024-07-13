@@ -14,7 +14,6 @@ export const ejectAction = async () => {
   let types = 'export type Model ='
 
   watcher.on('add', async (modelPath) => {
-    console.log(modelPath)
     const modelName = modelPath.split('/').slice(1, -1).join(':')
     const modelVar = modelName.replace(/[^a-zA-Z0-9]/g, '_') || 'default_model'
     importScripts.push(`import ${modelVar} from './${modelPath.split('.').slice(0, -1)}'`)
@@ -23,6 +22,7 @@ export const ejectAction = async () => {
   })
 
   watcher.on('ready', () => {
+    console.log("Created 'server.ts' file")
     fs.writeFileSync(
       'server.ts',
       importScripts.join('\n') +

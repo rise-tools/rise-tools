@@ -6,7 +6,7 @@ import { startAction } from '../start'
 
 const program = new Command()
 
-program.name('rise').description('CLI toolkit for Rise Tools').version('0.0.0.alpha.0')
+program.name('rise').description('CLI toolkit for Rise Tools').version('0.0.1')
 
 program
   .command('start')
