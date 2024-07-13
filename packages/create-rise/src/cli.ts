@@ -40,24 +40,9 @@ async function prompt() {
         },
       ],
     },
-    {
-      when(answers) {
-        if (answers.overwrite === 'no') {
-          throw new Error('✖' + ' Operation cancelled')
-        }
-        return true
-      },
-      type: 'list',
-      name: 'router',
-      message: 'Please select the router',
-      choices: [
-        { value: 'expo', name: 'expo' },
-        { value: 'react-navigation', name: 'react-navigation' },
-      ],
-    },
   ])
 
-  const { router, projectName, overwrite } = answers
+  const { projectName, overwrite } = answers
   const root = path.join(cwd, projectName)
 
   if (overwrite === 'yes') {
@@ -70,7 +55,7 @@ async function prompt() {
     _gitignore: '.gitignore',
   }
 
-  const template = `template-${router}`
+  const template = 'template-react-navigation'
   const templateDir = path.join(__dirname, `../${template}`)
 
   const pkg = JSON.parse(fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'))
