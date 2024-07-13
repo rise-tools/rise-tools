@@ -17,7 +17,7 @@ yarn global add rise-start
 
 ```
 Options:
-  -ws                Websocket server
+  -ws                Enable websocket server
   -p, --port [port]  Port for dev server (default: 3500)
   -m, --host [host]  dev server host, can be localhost, lan, tunnel (default: "lan")
   -h, --help         display help for command
@@ -40,3 +40,8 @@ export const models = {
 
 export type Model = '' | 'feedback-form' | 'feedback-form:social-links' | (string & {})
 ```
+
+
+## Development
+
+Build the project and do `npx tsx ../../packages/rise-start/src/bin/cli.ts dev`
