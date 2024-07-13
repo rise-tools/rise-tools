@@ -1,6 +1,6 @@
 # rise-start
 
-Rise start is a command line tool to start the development server for the rise tools.
+Rise Start is a command line tool to start the development server for the rise tools.
 
 ## Installation
 
