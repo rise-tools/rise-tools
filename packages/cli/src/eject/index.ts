@@ -2,9 +2,11 @@ import fs from 'node:fs'
 
 import chokidar from 'chokidar'
 
+import { IGNORED_PATH, WATCH_PATH } from '../config/constants'
+
 export const ejectAction = async () => {
-  const watcher = chokidar.watch('app/**/model.tsx', {
-    ignored: ['**/_*'],
+  const watcher = chokidar.watch(WATCH_PATH, {
+    ignored: IGNORED_PATH,
   })
 
   const importScripts: string[] = []
@@ -22,7 +24,7 @@ export const ejectAction = async () => {
 
   watcher.on('ready', () => {
     fs.writeFileSync(
-      'models.ts',
+      'server.ts',
       importScripts.join('\n') +
         '\n\n' +
         'export const models={\n' +

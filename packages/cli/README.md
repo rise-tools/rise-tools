@@ -1,34 +1,35 @@
-# rise-start
+# @rise-tools/cli
 
-Rise Start is a command line tool to start the development server for the rise tools.
+A command line tool to start the development with rise tools.
 
 ## Installation
 
 ```bash
-npm install -g rise-start
+npm install -g @rise-tools/cli
 # or
-yarn global add rise-start
+yarn global add @rise-tools/cli
 ```
 
 ## Commands
 
-### `rise-start dev`
+### `npx rise start`
 > Start the development server
 
 ```
 Options:
   -ws                Enable websocket server
+  -p, --prod         Start in production mode
   -p, --port [port]  Port for dev server (default: 3500)
-  -m, --host [host]  dev server host, can be localhost, lan, tunnel (default: "lan")
+  -m, --host [host]  Dev server host, can be localhost, lan, tunnel (default: "lan")
   -h, --help         display help for command
 ```
 
-### `rise-start eject`
+### `npx rise eject`
 
-> Eject from Rise Start and generate models.ts, use with your own server.
+> Eject from Rise CLI and generate server.ts, use with your own server.
 
 ```ts
-// Generated models.ts
+// Generated server.ts
 import feedback_form from './app/feedback-form/model'
 import feedback_form_social_links from './app/feedback-form/social-links/model'
 import default_model from './app/model'
@@ -41,6 +42,3 @@ export const models = {
 ```
 
 
-## Development
-
-Build the project and do `npx tsx ../../packages/rise-start/src/bin/cli.ts dev`

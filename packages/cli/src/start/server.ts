@@ -11,13 +11,11 @@ import z from 'zod'
 
 // TODO
 import { connectWebSocket, createWSServerContext } from '../../../server/src/ws-connection'
+import { IGNORED_PATH, WATCH_PATH } from '../config/constants'
 
 interface IndexedModels {
   [key: string]: any
 }
-
-const WATCH_PATH = 'models/**/model.tsx'
-const IGNORED_PATH = ['**/_*']
 
 export const devArgsSchema = z.object({
   ws: z.boolean().optional().default(false),
