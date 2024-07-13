@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "rise start"
+    "start": "rise start",
+    "eject": "rise eject"
   },
   "author": "",
   "license": "ISC",
