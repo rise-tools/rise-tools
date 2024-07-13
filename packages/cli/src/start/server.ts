@@ -18,6 +18,7 @@ interface IndexedModels {
 
 export const devArgsSchema = z.object({
   ws: z.boolean().optional().default(false),
+  prod: z.boolean().optional().default(false),
   port: z.number(),
   host: z.string(),
   cwd: z.string().optional(),
@@ -56,7 +57,7 @@ class ModelManager {
 }
 
 export class DevServer {
-  options: DevArgs = { host: 'lan', port: 3500, ws: false }
+  options: DevArgs
   modelManager: ModelManager
 
   constructor(options: DevArgs) {
