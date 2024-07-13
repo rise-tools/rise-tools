@@ -1,8 +1,18 @@
+# rise-start
 
+Rise start is a command line tool to start the development server for the rise tools.
 
-### Commands
+## Installation
 
-#### `rise-start dev` - Start the development server
+```bash
+npm install -g rise-start
+# or
+yarn global add rise-start
+```
+
+## Commands
+
+### `rise-start dev` - Start the development server
 
 ```
 Options:
@@ -12,5 +22,5 @@ Options:
   -h, --help         display help for command
 ```
 
-#### `rise-start gen` - Generate models.tsx for the project
+### `rise-start gen` - Generate models.tsx for the project
 
