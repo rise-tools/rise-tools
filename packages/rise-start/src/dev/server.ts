@@ -40,8 +40,9 @@ class ModelManager {
   }
 
   async updateModel(modelPath: string) {
-    const { key, path } = this.parseModelPath(modelPath)
-    this.models[key] = await import(path)
+    const { key, path: basePath } = this.parseModelPath(modelPath)
+    const cwd = this.cwd!
+    this.models[key] = await import(path.join(cwd, basePath))
   }
 
   removeModel(modelPath: string) {
@@ -134,9 +135,9 @@ export class DevServer {
     const host = this.getHost()
 
     this.watchFiles()
-    // this.startServer()
+    this.startServer()
 
-    console.log('Server started on port', port)
+    console.log('Server started on', `${host}:${port}`)
     console.log('Scan the QR from rise playground')
 
     this.createDevQR(`rise-playground://${host}:${port}`)
@@ -145,20 +146,20 @@ export class DevServer {
   watchFiles() {
     const watcher = chokidar.watch('app/**/model.tsx', {
       persistent: true,
+      followSymlinks: true,
+      ignored: ['**/_*'],
     })
-    const cwd = this.options.cwd!
 
-    watcher.on('all', (eventName, filePath) => {
-      const completePath = path.join(cwd, filePath)
+    watcher.on('all', async (eventName, path) => {
       switch (eventName) {
         case 'add':
         case 'addDir':
         case 'change':
-          this.modelManager.updateModel(completePath)
+          await this.modelManager.updateModel(path)
           break
         case 'unlink':
         case 'unlinkDir':
-          this.modelManager.removeModel(completePath)
+          this.modelManager.removeModel(path)
           break
       }
       this.updateNavigatePathInterface()
