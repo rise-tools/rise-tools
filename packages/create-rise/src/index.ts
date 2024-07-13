@@ -15,14 +15,11 @@ async function prompt() {
       name: 'projectName',
       message: 'Project Name',
       default: defaultProjectName,
-      validate(value) {
-        targetDir = formatTargetDir(value)!
-        return true
-      },
     },
     {
       type: 'list',
-      when() {
+      when(ans) {
+        targetDir = formatTargetDir(ans.projectName)!
         return fs.existsSync(targetDir) || !isEmpty(targetDir)
       },
       name: 'overwrite',
@@ -43,6 +40,12 @@ async function prompt() {
       ],
     },
     {
+      when(answers) {
+        if (answers.overwrite === 'no') {
+          throw new Error('✖' + ' Operation cancelled')
+        }
+        return true
+      },
       type: 'list',
       name: 'router',
       message: 'Please select the router',
@@ -61,8 +64,9 @@ async function prompt() {
   } else if (!fs.existsSync(root)) {
     fs.mkdirSync(root, { recursive: true })
   }
-  if (overwrite === 'no') {
-    throw new Error('✖' + ' Operation cancelled')
+
+  const renameFiles: Record<string, string | undefined> = {
+    _gitignore: '.gitignore',
   }
 
   const template = `template-${router}`
@@ -77,10 +81,6 @@ async function prompt() {
   const files = fs.readdirSync(templateDir)
   for (const file of files.filter((f) => f !== 'package.json')) {
     write(file)
-  }
-
-  const renameFiles: Record<string, string | undefined> = {
-    _gitignore: '.gitignore',
   }
 
   function write(file: string, content?: string) {
@@ -111,8 +111,12 @@ async function prompt() {
   }
 
   function isEmpty(path: string) {
-    const files = fs.readdirSync(path)
-    return files.length === 0 || (files.length === 1 && files[0] === '.git')
+    try {
+      const files = fs.readdirSync(path)
+      return files.length === 0 || (files.length === 1 && files[0] === '.git')
+    } catch (e) {
+      return true
+    }
   }
 
   function emptyDir(dir: string) {
@@ -132,5 +136,5 @@ async function prompt() {
 }
 
 prompt().catch((e) => {
-  console.log(e)
+  console.log(e.message)
 })
