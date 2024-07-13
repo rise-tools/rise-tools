@@ -2,7 +2,7 @@
 import { Command } from 'commander'
 
 import { devAction } from '../dev'
-import { genAction } from '../gen'
+import { ejectAction } from '../eject'
 
 const program = new Command()
 
@@ -16,6 +16,9 @@ program
   .option('-m, --host [host]', 'dev server host, can be localhost, lan, tunnel', 'lan')
   .action(devAction)
 
-program.command('gen').description('Build the models.ts').action(genAction)
+program
+  .command('eject')
+  .description('Eject from Rise Start and generate models.ts')
+  .action(ejectAction)
 
 program.parse()

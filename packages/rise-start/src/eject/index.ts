@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 import chokidar from 'chokidar'
 
-export const genAction = async () => {
+export const ejectAction = async () => {
   const watcher = chokidar.watch('app/**/model.tsx', {
     ignored: ['**/_*'],
   })

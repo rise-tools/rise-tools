@@ -23,11 +23,12 @@ Options:
   -h, --help         display help for command
 ```
 
-### `rise-start gen`
+### `rise-start eject`
 
-> Generate models.tsx for the project, example for demo-cli:
+> Eject from Rise Start and generate models.ts, use with your own server.
 
 ```ts
+// Generated models.ts
 import feedback_form from './app/feedback-form/model'
 import feedback_form_social_links from './app/feedback-form/social-links/model'
 import default_model from './app/model'
@@ -37,8 +38,6 @@ export const models = {
   'feedback-form': feedback_form,
   'feedback-form:social-links': feedback_form_social_links,
 }
-
-export type Model = '' | 'feedback-form' | 'feedback-form:social-links' | (string & {})
 ```
 
 
