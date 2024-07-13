@@ -1,15 +1,17 @@
 {
-  "name": "template-react-navigation",
+  "name": "create-rise",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "create-rise": "dist/cli.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev":"tsx src/cli.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "commander": "^12.1.0",
     "inquirer": "^10.0.1"
   }
 }
