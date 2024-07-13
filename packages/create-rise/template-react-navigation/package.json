@@ -1,15 +1,18 @@
 {
-  "name": "template-expo-router",
+  "name": "template-react-navigation",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "rise start"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "commander": "^12.1.0",
-    "inquirer": "^10.0.1"
+    "@rise-tools/server": "latest",
+    "@rise-tools/kitchen-sink": "latest"
+  },
+  "devDependencies": {
+    "@rise-tools/cli": "latest"
   }
 }
