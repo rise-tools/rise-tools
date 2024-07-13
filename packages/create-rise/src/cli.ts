@@ -69,6 +69,12 @@ async function prompt() {
     write(file)
   }
 
+  console.log('Done')
+
+  if (projectName !== '.') console.info('cd', projectName)
+  console.info('npm install')
+  console.info('npm start')
+
   function write(file: string, content?: string) {
     const targetPath = path.join(root, renameFiles[file] ?? file)
     if (content) {
