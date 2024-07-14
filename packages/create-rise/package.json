@@ -2,7 +2,7 @@
   "name": "create-rise",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "type": "commonjs",
   "bin": {
     "create-rise": "dist/cli.js"
   },
@@ -10,7 +10,7 @@
     "dev":"tsx src/cli.ts"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "inquirer": "^10.0.1"
   }
