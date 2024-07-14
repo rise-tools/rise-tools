@@ -1,21 +1,33 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import { createServer } from '@rise-tools/server'
 import chokidar from 'chokidar'
 
 import { IGNORED_PATH, WATCH_PATH } from '../config/constants'
+import { createDeepLink } from '../utils/createDeepLink'
+import { createDevQR } from '../utils/createDevQR'
+import { getHost } from '../utils/getHost'
 import { buildNavigateInterface } from './buildNavigateInterface'
-import { createDevQR } from './createDevQR'
-import { getHost } from './getHost'
 import { setupModelSource } from './setupModelSource'
 import { DevArgs } from './types'
+
+const readPkgJSON = (root: string) => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf-8'))
+  } catch (error) {
+    return {}
+  }
+}
 
 export function createDevServer(options: DevArgs) {
   const { host: hostType, port, prod, root } = options
 
   const dataSource = setupModelSource({ root })
+  const host = getHost(hostType)
+  const pkg = readPkgJSON(root)
 
   async function start() {
-    const host = getHost(hostType)
-
     const watcher = chokidar.watch(WATCH_PATH, {
       persistent: true,
       followSymlinks: true,
@@ -43,16 +55,19 @@ export function createDevServer(options: DevArgs) {
     console.log('Server started on', `${host}:${port}`)
     console.log('Scan the QR from rise playground')
 
-    createDevQR(`rise-playground://${host}:${port}`)
+    const link = createDeepLink({
+      id: 'CLI_' + Date.now(),
+      host,
+      label: pkg.name || 'Rise Playground',
+      path: '/',
+    })
 
-    const cleanup = () => {
+    createDevQR(link)
+
+    return () => {
       server.close()
       watcher.close()
     }
-
-    process.on('SIGINT', cleanup)
-    process.on('SIGTERM', cleanup)
-    process.on('exit', cleanup)
   }
 
   return { start }

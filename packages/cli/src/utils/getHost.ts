@@ -1,5 +1,5 @@
-import { getIpAddress } from '../utils/getIpAddress'
-import { DevArgs } from './types'
+import { DevArgs } from '../start/types'
+import { getIpAddress } from './getIpAddress'
 
 export function getHost(host: DevArgs['host']) {
   switch (host) {
