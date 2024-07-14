@@ -17,10 +17,11 @@ export async function createServer(models: AnyModels, port: number) {
     return resp
   })
   const wsContext = createWSServerContext(models)
-  await server.listen({ port })
   server.get('/', { websocket: true }, (connection) => {
     connectWebSocket(wsContext, connection)
   })
+
+  await server.listen({ port })
   return {
     close() {
       server.close()
