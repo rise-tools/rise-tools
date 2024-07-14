@@ -1,17 +1,15 @@
 import React from 'react'
 
-import styles from './PlaygroundAppDownload.module.css'
-
 function DLButton({ img, url }: { img: string; url: string }) {
   return (
-    <a href={url} className={styles.dlButton}>
+    <a href={url} className={'flex w-46 h-12 overflow-hidden'}>
       <img src={img} />
     </a>
   )
 }
 export function PlaygroundAppDownload() {
   return (
-    <div className={styles.dlButtons}>
+    <div className={'flex w-100 gap-3 center'}>
       <DLButton
         img="/img/dl-appstore.png"
         url="https://apps.apple.com/us/app/rise-playground/id6499588861"
