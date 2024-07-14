@@ -6,4 +6,4 @@ export interface IndexedModels {
   [key: string]: any
 }
 
-export type DevArgs = z.infer<typeof argsSchema>
+export type CLIArgs = z.infer<typeof argsSchema>

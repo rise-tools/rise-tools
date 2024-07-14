@@ -1,6 +1,3 @@
-import fs from 'node:fs'
-import path from 'node:path'
-
 import { createServer } from '@rise-tools/server'
 import chokidar from 'chokidar'
 
@@ -8,19 +5,12 @@ import { IGNORED_PATH, WATCH_PATH } from '../config/constants'
 import { createDeepLink } from '../utils/createDeepLink'
 import { createDevQR } from '../utils/createDevQR'
 import { getHost } from '../utils/getHost'
+import { readPkgJSON } from '../utils/readPkgJSON'
 import { buildNavigateInterface } from './buildNavigateInterface'
 import { setupModelSource } from './setupModelSource'
-import { DevArgs } from './types'
+import { CLIArgs } from './types'
 
-const readPkgJSON = (root: string) => {
-  try {
-    return JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf-8'))
-  } catch (error) {
-    return {}
-  }
-}
-
-export function createDevServer(options: DevArgs) {
+export function createDevServer(options: CLIArgs) {
   const { host: hostType, port, prod, root } = options
 
   const dataSource = setupModelSource({ root })

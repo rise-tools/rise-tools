@@ -1,12 +1,12 @@
-import { DevArgs } from '../start/types'
+import { CLIArgs } from '../start/types'
 import { getIpAddress } from './getIpAddress'
 
-export function getHost(host: DevArgs['host']) {
+export function getHost(host: CLIArgs['host']) {
   switch (host) {
     case 'localhost':
-      return 'localhost'
+      return 'http://localhost'
     case 'lan':
-      return getIpAddress()
+      return 'http://' + getIpAddress()
     case 'tunnel':
       return 'tunnel'
     default:
