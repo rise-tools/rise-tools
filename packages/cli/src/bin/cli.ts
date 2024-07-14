@@ -17,9 +17,9 @@ program
   .command('start')
   .description('Start the dev server')
   .option('--prod', 'Start in production mode')
-  .option('--root [root]', 'Root directory', process.cwd())
-  .option('-p, --port [port]', 'Port for dev server', Number, 3500)
-  .option('-m, --host [host]', 'Server host; can be localhost, lan, tunnel', 'lan')
+  .option('--root [root]', 'Root directory of project', process.cwd())
+  .option('-p, --port [port]', 'Port for server', Number, 3500)
+  .option('-m, --host [host]', 'Server host type; can be localhost, lan, tunnel', 'lan')
   .action(startAction)
 
 program
