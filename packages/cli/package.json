@@ -2,6 +2,7 @@
   "name": "@rise-tools/cli",
   "version": "0.0.1",
   "description": "CLI toolkit for Rise Tools",
+  "type": "commonjs",
   "scripts": {
     "dev": "tsx src/bin/cli.ts"
   },

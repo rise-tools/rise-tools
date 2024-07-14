@@ -1,18 +1,23 @@
 #!/usr/bin/env node
+import fs from 'node:fs'
+import path from 'node:path'
+
 import { Command } from 'commander'
 
 import { ejectAction } from '../eject'
 import { startAction } from '../start'
 
+const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf-8'))
+
 const program = new Command()
 
-program.name('rise').description('CLI toolkit for Rise Tools').version('0.0.1')
+program.name('rise').description(pkg.description).version(pkg.version)
 
 program
   .command('start')
   .description('Start the dev server')
-  .option('-ws', 'Enable websocket server')
   .option('--prod', 'Start in production mode')
+  .option('--root [root]', 'Root directory', process.cwd())
   .option('-p, --port [port]', 'Port for dev server', Number, 3500)
   .option('-m, --host [host]', 'Server host; can be localhost, lan, tunnel', 'lan')
   .action(startAction)

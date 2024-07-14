@@ -1,9 +1,10 @@
-import { devArgsSchema, DevServer } from './server'
+import { argsSchema } from './argsSchema'
+import { createDevServer } from './server'
 
 export const startAction = async (opts: any) => {
-  const args = devArgsSchema.safeParse(opts)
-  if (!args.data) return console.log('Invalid arguments')
+  const args = argsSchema.parse(opts)
 
-  args.data.cwd = process.cwd()
-  new DevServer(args.data)
+  const { start } = createDevServer(args)
+
+  start()
 }
