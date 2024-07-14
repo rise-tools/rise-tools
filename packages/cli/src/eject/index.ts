@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 
 import chokidar from 'chokidar'
+import prettier from 'prettier'
 
 import { IGNORED_PATH, WATCH_PATH } from '../config/constants'
 
@@ -11,28 +12,28 @@ export const ejectAction = async () => {
 
   const importScripts: string[] = []
   const modelObject: string[] = []
-  let types = 'export type Model ='
 
   watcher.on('add', async (modelPath) => {
     const modelName = modelPath.split('/').slice(1, -1).join(':')
     const modelVar = modelName.replace(/[^a-zA-Z0-9]/g, '_') || 'default_model'
-    importScripts.push(`import ${modelVar} from './${modelPath.split('.').slice(0, -1)}'`)
-    modelObject.push(`'${modelName}': ${modelVar}`)
-    types += `'${modelName}'|`
+    importScripts.push(`import ${modelVar} from './${modelPath.split('.').slice(0, -1)}';`)
+    modelObject.push(`'${modelName}': ${modelVar},`)
   })
 
-  watcher.on('ready', () => {
+  watcher.on('ready', async () => {
     console.log("Created 'server.ts' file")
-    fs.writeFileSync(
-      'server.ts',
-      importScripts.join('\n') +
-        '\n\n' +
-        'export const models={\n' +
-        modelObject.join(',\n') +
-        '\n}\n' +
-        types +
-        '(string & {})'
-    )
+    const output = `
+      ${importScripts.join('\n')}
+
+      export const models = {
+        ${modelObject.join('\n')}
+      }`
+
+    const formattedOutput = await prettier.format(output, {
+      parser: 'typescript',
+    })
+
+    fs.writeFileSync('server.ts', formattedOutput)
 
     watcher.close()
   })

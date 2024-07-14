@@ -19,7 +19,9 @@ export function setupModelSource({ root }: SetupModelSourceOptions) {
 
   async function updateModel(modelPath: string) {
     const { key, path: basePath } = parseModelPath(modelPath)
-    // TODO
+    // set the key to sync build navigation definition
+    models[key] = undefined
+    // TODO: alias imports
     models[key] = await import(path.join(root, basePath))
   }
 

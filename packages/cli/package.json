@@ -16,6 +16,7 @@
     "chokidar": "^3.6.0",
     "commander": "^12.1.0",
     "internal-ip": "^4.3.0",
+    "prettier": "^3.3.3",
     "qrcode-terminal": "^0.12.0"
   },
   "devDependencies": {
