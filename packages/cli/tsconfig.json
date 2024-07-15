@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./bin"
+    "outDir": "./lib"
   },
   "references": [{
     "path": "../../packages/server"
