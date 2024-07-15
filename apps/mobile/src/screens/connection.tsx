@@ -1,7 +1,10 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { RiseComponents } from '@rise-tools/kit'
-import { useReactNavigationActions } from '@rise-tools/kit-react-navigation'
+import {
+  useReactNavigationActions,
+  useReactNavigationStackComponents,
+} from '@rise-tools/kit-react-navigation'
 import {
   FormComponents,
   LucideIconsComponents,
@@ -22,15 +25,6 @@ import { useModelSource } from '../model-sources'
 import { RootStackParamList } from '.'
 import { NotFoundScreen } from './not-found'
 import { QRCodeScreen } from './qr-code'
-
-const components = {
-  ...TamaguiComponents,
-  ...RiseComponents,
-  ...FormComponents,
-  ...SVGComponents,
-  ...LucideIconsComponents,
-  ...QRCodeComponents,
-}
 
 export type RiseStackParamList = {
   index: undefined
@@ -91,10 +85,21 @@ export function ConnectionScreen({
 function RiseScreen({ connection, path }: { connection: Connection; path: string }) {
   const modelSource = useModelSource(connection.id, connection.host)
   const actions = {
-    ...useReactNavigationActions({ routeName: 'rise' }),
+    ...useReactNavigationActions({ routeName: '' }),
     ...useToastActions(),
     ...useHapticsActions(),
     ...useLinkingActions(),
+  }
+  const components = {
+    ...TamaguiComponents,
+    ...RiseComponents,
+    ...FormComponents,
+    ...SVGComponents,
+    ...LucideIconsComponents,
+    ...QRCodeComponents,
+    ...useReactNavigationStackComponents({
+      render: (name) => <RiseScreen connection={connection} path={name} />,
+    }),
   }
   return (
     <DataBoundary modelSource={modelSource} path={path}>
