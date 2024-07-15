@@ -8,7 +8,10 @@ export type ReactNavigationActions = ActionsDefinition<
 
 export interface NavigatePath {}
 
-export const navigate = (path: keyof NavigatePath | (string & { $: string })) =>
+// eslint-disable-next-line @typescript-eslint/ban-types
+type AnyString = string & {}
+
+export const navigate = (path: keyof NavigatePath | AnyString) =>
   action('rise-tools/kit-react-navigation/navigate', { path })
 
 export const goBack = () => action('rise-tools/kit-react-navigation/goBack')
