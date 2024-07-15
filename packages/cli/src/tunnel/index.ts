@@ -1,1 +1,3 @@
-export const connectTunnel = async () => {}
+export const getTunnelAddress = async () => {
+  return 'http://localhost'
+}
