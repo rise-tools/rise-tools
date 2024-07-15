@@ -1,5 +1,7 @@
 import internalIp from 'internal-ip'
 
+import { connectTunnel } from './tunnel'
+
 export enum HostType {
   lan = 'lan',
   localhost = 'localhost',
@@ -17,7 +19,7 @@ export function getHost(hostType: HostType) {
     case HostType.lan:
       return 'http://' + getIpAddress()
     case HostType.tunnel:
-      return 'tunnel'
+      return connectTunnel()
     default:
       throw new Error(`Invalid host: ${hostType}`)
   }
