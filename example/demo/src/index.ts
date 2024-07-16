@@ -1,7 +1,6 @@
 import '@rise-tools/kit-react-navigation/server'
 
-import { createConnectionQR, getHost, HostType } from '@rise-tools/cli'
-import { createHTTPServer } from '@rise-tools/server'
+import { createServer } from '@rise-tools/cli'
 
 import { models as delivery } from './delivery/ui'
 import { models as inventory } from './inventory/ui'
@@ -11,19 +10,14 @@ const models = { ...inventory, ...controls, ...delivery }
 
 async function init() {
   const port = Number(process.env.PORT || '3005')
-  const host = await getHost(HostType.tunnel)
 
-  // await createWSServer(models, port)
-  await createHTTPServer(models, port)
-
-  const qr = await createConnectionQR({
-    host: `${host}:${port}`,
-    label: 'Rise Demo',
-    id: 'demo',
-    path: '/',
+  const server = await createServer(models, {
+    port,
+    // ws: true,
   })
 
-  console.log(qr)
+  console.log(server.appConnectionURL)
+  server.printQR()
 }
 
 init()
