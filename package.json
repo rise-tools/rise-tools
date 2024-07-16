@@ -6,7 +6,8 @@
     "apps/*",
     "packages/*",
     "example/*",
-    "docs"
+    "docs",
+    "tunnel"
   ],
   "engines": {
     "node": ">= 18.0.0"
