@@ -1,26 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /*
  * Use color editor in https://docusaurus.io/docs/styling-layout
  */
 
- :root {
-  --ifm-color-primary: #b40817;
-  --ifm-color-primary-dark: #a20715;
-  --ifm-color-primary-darker: #990714;
-  --ifm-color-primary-darkest: #7e0610;
-  --ifm-color-primary-light: #c60919;
-  --ifm-color-primary-lighter: #cf091a;
-  --ifm-color-primary-lightest: #ea0a1e;
+ @layer base {
+  :root {
+    --ifm-color-primary: #b40817;
+    --ifm-color-primary-dark: #a20715;
+    --ifm-color-primary-darker: #990714;
+    --ifm-color-primary-darkest: #7e0610;
+    --ifm-color-primary-light: #c60919;
+    --ifm-color-primary-lighter: #cf091a;
+    --ifm-color-primary-lightest: #ea0a1e;
+  }
+  
+  [data-theme='dark'] {
+    --ifm-color-primary: #fd5811;
+    --ifm-color-primary-dark: #f14a02;
+    --ifm-color-primary-darker: #ee4902;
+    --ifm-color-primary-darkest: #ec4802;
+    --ifm-color-primary-light: #fd6b2c;
+    --ifm-color-primary-lighter: #fd7439;
+    --ifm-color-primary-lightest: #fe9061;
+  }
+ }
+
+ @layer components {
+  .rise-button {
+    @apply drop-shadow-sm center hover:no-underline text-white hover:text-white bg-gradient-to-t from-secondary to-100% to-primary focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-lg px-5 py-2.5 text-center
+  }
+  .rise-button-outlined {
+    @apply box-border drop-shadow-sm center border-2 -m-[2px] border-solid border-secondary  hover:no-underline hover:text-white text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-lg px-5 py-2.5 text-center
+  }
+  .rise-gradient-text {
+    @apply bg-gradient-to-r from-primary to-secondary inline-block text-transparent bg-clip-text
+  }
+ }
+
+
+
+@layer utilities{
+  .center{
+    @apply content-center justify-center; 
+  }
 }
 
-[data-theme='dark'] {
-  --ifm-color-primary: #fd5811;
-  --ifm-color-primary-dark: #f14a02;
-  --ifm-color-primary-darker: #ee4902;
-  --ifm-color-primary-darkest: #ec4802;
-  --ifm-color-primary-light: #fd6b2c;
-  --ifm-color-primary-lighter: #fd7439;
-  --ifm-color-primary-lightest: #fe9061;
-}
 
 .mainWrapper {
   background-color: green;
