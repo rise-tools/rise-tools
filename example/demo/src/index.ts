@@ -8,19 +8,17 @@ import { models as controls } from './ui-controls/ui'
 
 const models = { ...inventory, ...controls, ...delivery }
 
-async function init() {
-  const port = Number(process.env.PORT || '3005')
 
-  const server = await createServer(models, {
-    port,
+const port = Number(process.env.PORT || '3005')
+
+createServer(models, {
+      port,
     // ws: true,
-  })
+}).then((server) => {
+    console.log(server.appConnectionURL)
+    server.printQR()
+})
 
-  console.log(server.appConnectionURL)
-  server.printQR()
-}
-
-init()
 
 declare module '@rise-tools/kit-react-navigation/server' {
   type ModelKeys = keyof typeof models
