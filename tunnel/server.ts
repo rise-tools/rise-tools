@@ -4,7 +4,7 @@ import { Hono } from 'hono'
 import { bearerAuth } from 'hono/bearer-auth'
 import httpProxy from 'http-proxy'
 
-import { tunnelService } from './tunnelService'
+import { jwt, tunnelService } from './tunnelService'
 
 const app = new Hono()
 
@@ -29,7 +29,7 @@ app.post(
   '/projects/:projectId',
   bearerAuth({
     verifyToken: async (token, c) => {
-      return service.verifySecret(token)
+      return !!jwt.verify(token)?.projectId
     },
   }),
   async (c) => {
