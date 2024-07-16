@@ -1,56 +1,43 @@
-import fs from 'node:fs'
-import path from 'node:path'
+import { promises as Stream, Readable } from 'node:stream'
 
-import { renameFiles } from './cli'
+import tar from 'tar'
 
-export function copy(src: string, dest: string) {
-  const stat = fs.statSync(src)
-  if (stat.isDirectory()) {
-    copyDir(src, dest)
-  } else {
-    fs.copyFileSync(src, dest)
-  }
+export function formatTargetDir(targetDir: string) {
+  return targetDir.trim().replace(/\/+$/g, '')
 }
 
-function copyDir(srcDir: string, destDir: string) {
-  fs.mkdirSync(destDir, { recursive: true })
-  for (const file of fs.readdirSync(srcDir)) {
-    const srcFile = path.resolve(srcDir, file)
-    const destFile = path.resolve(destDir, file)
-    copy(srcFile, destFile)
-  }
+export const renameFiles: Record<string, string> = {
+  _gitignore: '.gitignore',
 }
 
-export function isEmpty(path: string) {
-  try {
-    const files = fs.readdirSync(path)
-    return files.length === 0 || (files.length === 1 && files[0] === '.git')
-  } catch (e) {
-    return true
+/**
+ * Inspired by Expo
+ * https://github.com/expo/expo/blob/main/packages/create-expo/src/Examples.ts#L90
+ */
+export async function downloadAndExtractTemplate(root: string, name: string) {
+  // tbd: We should have separate repository with examples to download less and list them dynamically
+  const response = await fetch('https://codeload.github.com/rise-tools/rise-tools/tar.gz/master')
+  if (!response.ok || !response.body) {
+    throw new Error(
+      'Failed to fetch the examples code from https://github.com/rise-tools/rise-tools'
+    )
   }
+
+  await Stream.pipeline([
+    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
+    Readable.fromWeb(response.body),
+    tar.extract(
+      {
+        cwd: root,
+        // tbd: We should specify `fileTransformer` to automatically replace projectName in all relevant
+        // files with the one specified by the user
+        strip: 2,
+      },
+      [`rise-tools/templates/${name}`]
+    ),
+  ])
 }
 
-export function emptyDir(dir: string) {
-  if (!fs.existsSync(dir)) {
-    return
-  }
-  for (const file of fs.readdirSync(dir)) {
-    if (file === '.git') {
-      continue
-    }
-    fs.rmSync(path.resolve(dir, file), { recursive: true, force: true })
-  }
-}
-
-export function formatTargetDir(targetDir: string | undefined) {
-  return targetDir?.trim().replace(/\/+$/g, '')
-}
-
-export function write(root: string, templateDir: string, file: string, content?: string) {
-  const targetPath = path.join(root, renameFiles[file] ?? file)
-  if (content) {
-    fs.writeFileSync(targetPath, content)
-  } else {
-    copy(path.join(templateDir, file), targetPath)
-  }
+export function isNodeError(error: unknown): error is NodeJS.ErrnoException {
+  return (error as NodeJS.ErrnoException).code !== undefined
 }

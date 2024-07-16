@@ -1,17 +1,40 @@
 {
   "name": "create-rise",
-  "version": "1.0.0",
-  "description": "",
-  "type": "commonjs",
+  "version": "0.3.1",
+  "license": "Apache-2.0",
+  "description": "Create new Rise application",
+  "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
+    "directory": "packages/create-rise"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Arpit Bhalla (https://github.com/arpitBhalla)",
+  "contributors": [
+    "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
+  ],
+  "bugs": {
+    "url": "https://github.com/rise-tools/rise-tools/issues"
+  },
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "bin": {
     "create-rise": "dist/cli.js"
   },
   "scripts": {
-    "dev":"tsx src/cli.ts"
+    "dev": "tsx src/cli.ts"
   },
-  "author": "",
-  "license": "MIT",
   "dependencies": {
-    "inquirer": "^10.0.1"
+    "inquirer": "^10.0.1",
+    "tar": "^7.4.0"
   }
 }

@@ -1,0 +1,40 @@
+{
+  "name": "@rise-tools/template-react-navigation",
+  "version": "0.3.1",
+  "license": "Apache-2.0",
+  "description": "Template for Rise projects with React Navigation",
+  "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
+    "directory": "packages/template-react-navigation"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "bugs": {
+    "url": "https://github.com/rise-tools/rise-tools/issues"
+  },
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "dev": "tsx watch src/server.ts"
+  },
+  "dependencies": {
+    "tsx": "^4.11.0",
+    "@rise-tools/server": "0.3.1",
+    "@rise-tools/kitchen-sink": "0.3.1",
+    "@rise-tools/kit-react-navigation": "0.3.1"
+  },
+  "devDependencies": {
+    "@rise-tools/tsconfig-preset": "0.3.1"
+  }
+}

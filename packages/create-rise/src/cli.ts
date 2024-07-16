@@ -1,83 +1,73 @@
 #!/usr/bin/env node
-import fs from 'node:fs'
+
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import inquirer from 'inquirer'
 
-import { emptyDir, formatTargetDir, isEmpty, write } from './utils'
-
-const cwd = process.cwd()
-
-const defaultProjectName = 'rise-project'
-
-export const renameFiles: Record<string, string> = {
-  _gitignore: '.gitignore',
-}
+import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils'
 
 async function prompt() {
-  let targetDir = ''
-  const answers = await inquirer.prompt([
+  const { projectName, template } = await inquirer.prompt([
     {
       type: 'input',
       name: 'projectName',
       message: 'Project Name',
-      default: defaultProjectName,
+      default: 'rise-project',
     },
     {
       type: 'list',
-      when(ans) {
-        targetDir = formatTargetDir(ans.projectName)!
-        return fs.existsSync(targetDir) || !isEmpty(targetDir)
-      },
-      name: 'overwrite',
-      message: 'Target directory is not empty. Please choose how to proceed:',
+      name: 'template',
       choices: [
-        {
-          name: 'Remove existing files and continue',
-          value: 'yes',
-        },
-        {
-          name: 'Cancel operation',
-          value: 'no',
-        },
-        {
-          name: 'Ignore files and continue',
-          value: 'ignore',
-        },
+        { name: 'React Navigation', value: 'react-navigation' },
+        { name: 'Base', value: 'base' },
       ],
     },
   ])
 
-  const { projectName, overwrite } = answers
-  const root = path.join(cwd, projectName)
+  // tbd: provide a bit more comprehensive name sanitisation
+  const targetDir = formatTargetDir(projectName)
 
-  if (overwrite === 'yes') {
-    emptyDir(root)
-  } else if (!fs.existsSync(root)) {
-    fs.mkdirSync(root, { recursive: true })
+  const root = path.join(process.cwd(), targetDir)
+
+  try {
+    await fs.mkdir(root)
+  } catch (e) {
+    if (!isNodeError(e) || e.code !== 'EEXIST') {
+      throw e
+    }
+    const { overwrite } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'overwrite',
+        message: 'Target directory is not empty. Would you like to remove it and proceed?',
+      },
+    ])
+    if (!overwrite) {
+      console.error(`The directory "${root}" already exists. Exiting...`)
+      return
+    }
+    await fs.rm(root, { recursive: true, force: true })
   }
 
-  const template = 'template-react-navigation'
-  const templateDir = path.join(__dirname, `../${template}`)
+  // tbd: offer selection and ask users which template they want
+  await downloadAndExtractTemplate(root, template)
 
-  const pkg = JSON.parse(fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'))
-
-  pkg.name = targetDir === '.' ? path.basename(path.resolve()) : targetDir
-
-  write(root, templateDir, 'package.json', JSON.stringify(pkg, null, 2) + '\n')
-
-  const files = fs.readdirSync(templateDir)
-  for (const file of files.filter((f) => f !== 'package.json')) {
-    write(root, templateDir, file)
-  }
+  // tbd: copy and rename remaining files
+  // tbd: modify `package.json` to only include "dependencies", "devDependencies" and "scripts"
 
   console.log('Done')
 
   if (projectName !== '.') console.info('cd', projectName)
+
+  // tbd: offer an option to choose the package manager
+
+  // tbd: replace with actual commands
   console.info('npm install')
   console.info('npm start')
 }
 
 prompt().catch((e) => {
   console.log(e.message)
+  process.exit(1)
 })
