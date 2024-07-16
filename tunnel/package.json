@@ -12,6 +12,7 @@
     "@types/jsonwebtoken": "^9.0.6"
   },
   "dependencies": {
+    "hono": "^4.5.0",
     "http-proxy": "^1.18.1",
     "jsonwebtoken": "^9.0.2",
     "uuidv4": "^6.2.13",
