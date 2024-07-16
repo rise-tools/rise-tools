@@ -78,6 +78,9 @@ const server = serve({
 })
 
 server.on('upgrade', (req, socket, head) => {
+  const projectId = req.headers.host?.split('.')[0]
+  if (!projectId) return
+  const tunnelURL = service.getTunnelURL(projectId)
   proxy.ws(req, socket, head, {
     target: 'ws://destination-server.com',
   })
