@@ -3,15 +3,18 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
-    "start": "rise start",
-    "eject": "rise eject"
+    "start": "tsx src/server.ts",
+    "dev": "tsx watch src/server.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "tsx": "latest",
     "@rise-tools/server": "latest",
-    "@rise-tools/kitchen-sink": "latest"
+    "@rise-tools/kitchen-sink": "latest",
+    "@rise-tools/kit-react-navigation": "latest"
   },
   "devDependencies": {
     "@rise-tools/cli": "latest"
