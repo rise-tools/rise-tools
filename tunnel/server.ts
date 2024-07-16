@@ -1,5 +1,4 @@
-import http from 'node:http'
-
+import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { bearerAuth } from 'hono/bearer-auth'
 import httpProxy from 'http-proxy'
@@ -8,7 +7,6 @@ import { jwt, tunnelService } from './tunnelService'
 
 const app = new Hono()
 
-// websocket?
 const proxy = httpProxy.createProxyServer({})
 
 const service = tunnelService()
@@ -50,11 +48,37 @@ app.post(
   }
 )
 
-http
-  .createServer(function (req, res) {
-    const projectId = req.headers.host?.split('.')[0]
+app.all('/*', async (c) => {
+  return new Promise((resolve) => {
+    const projectId = c.req.headers.host?.split('.')[0]
     if (!projectId) return
     const tunnelURL = service.getTunnelURL(projectId)
-    proxy.web(req, res, { target: tunnelURL })
+    proxy.web(
+      c.req.raw,
+      c.res.raw,
+      {
+        target: tunnelURL,
+        ws: true,
+      },
+      (err) => {
+        if (err) {
+          console.error('Proxy error:', err)
+          resolve(c.text('Proxy error', 500))
+        }
+      }
+    )
   })
-  .listen(3000)
+})
+
+const PORT = 3000
+
+const server = serve({
+  fetch: app.fetch,
+  port: PORT,
+})
+
+server.on('upgrade', (req, socket, head) => {
+  proxy.ws(req, socket, head, {
+    target: 'ws://destination-server.com',
+  })
+})
