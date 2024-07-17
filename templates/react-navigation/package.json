@@ -36,5 +36,8 @@
   },
   "devDependencies": {
     "@rise-tools/preset-typescript": "0.3.1"
+  },
+  "overrides": {
+    "react-dom": "18.2.0"
   }
 }
