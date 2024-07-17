@@ -58,7 +58,7 @@ async function createRise() {
   await downloadAndExtractTemplate(root, template)
   await copyAdditionalTemplateFiles(root)
 
-  const { dependencies, devDependencies, scripts } = await fs.readJSON(
+  const { dependencies, devDependencies, scripts, overrides } = await fs.readJSON(
     path.join(root, 'package.json'),
     'utf-8'
   )
@@ -70,6 +70,7 @@ async function createRise() {
       dependencies,
       devDependencies,
       scripts,
+      overrides,
     },
     {
       spaces: 2,
