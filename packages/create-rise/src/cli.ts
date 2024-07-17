@@ -91,7 +91,7 @@ async function createRise() {
 async function copyAdditionalTemplateFiles(root: string) {
   const source = path.dirname(fileURLToPath(import.meta.url))
 
-  await $`cp ${path.join(source, '_gitignore')} ${path.join(root, '.gitignore')}`
+  await $`cp ${path.join(source, '../_gitignore')} ${path.join(root, '.gitignore')}`
 }
 
 createRise().catch((e) => {

@@ -1,11 +1,12 @@
 {
   "name": "create-rise",
-  "version": "0.3.1",
+  "version": "0.4.1",
   "license": "Apache-2.0",
   "description": "Create new Rise application",
   "files": [
     "src",
     "lib",
+    "_gitignore",
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
