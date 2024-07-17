@@ -80,7 +80,8 @@
       },
       "@release-it-plugins/workspaces": {
         "workspaces": [
-          "packages/*"
+          "packages/*",
+          "templates/*"
         ],
         "additionalManifests": {
           "dependencyUpdates": [

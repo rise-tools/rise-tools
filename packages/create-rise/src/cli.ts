@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
-import fs from 'node:fs/promises'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import inquirer from 'inquirer'
+import { $, cd, fs, spinner } from 'zx'
 
-import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils'
+import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils.js'
 
 async function prompt() {
   const { projectName, template } = await inquirer.prompt([
@@ -18,9 +19,10 @@ async function prompt() {
     {
       type: 'list',
       name: 'template',
+      message: 'Choose a template',
       choices: [
-        { name: 'React Navigation', value: 'react-navigation' },
-        { name: 'Base', value: 'base' },
+        { name: 'React Navigation', value: '@rise-tools/template-react-navigation' },
+        { name: 'Base', value: '@rise-tools/template-base' },
       ],
     },
   ])
@@ -48,26 +50,47 @@ async function prompt() {
       return
     }
     await fs.rm(root, { recursive: true, force: true })
+    await fs.mkdir(root)
   }
 
-  // tbd: offer selection and ask users which template they want
   await downloadAndExtractTemplate(root, template)
+  await copyAdditionalTemplateFiles(root)
 
-  // tbd: copy and rename remaining files
-  // tbd: modify `package.json` to only include "dependencies", "devDependencies" and "scripts"
+  const { dependencies, devDependencies, scripts } = await fs.readJSON(
+    path.join(root, 'package.json'),
+    'utf-8'
+  )
+  await fs.writeJSON(
+    path.join(root, 'package.json'),
+    {
+      name: projectName,
+      private: true,
+      dependencies,
+      devDependencies,
+      scripts,
+    },
+    {
+      spaces: 2,
+    }
+  )
 
-  console.log('Done')
+  if (projectName !== '.') cd(root)
 
-  if (projectName !== '.') console.info('cd', projectName)
+  // tbd: offer an option to choose the package manager via options
+  await spinner(`Installing dependencies in ${projectName}`, () => $`npm install`)
 
-  // tbd: offer an option to choose the package manager
+  console.log(
+    `The project has been successfully created in ${projectName}. To start, run 'npm dev'`
+  )
+}
 
-  // tbd: replace with actual commands
-  console.info('npm install')
-  console.info('npm start')
+async function copyAdditionalTemplateFiles(root: string) {
+  const source = path.dirname(fileURLToPath(import.meta.url))
+
+  await $`cp ${path.join(source, '_gitignore')} ${path.join(root, '.gitignore')}`
 }
 
 prompt().catch((e) => {
-  console.log(e.message)
+  console.log(e)
   process.exit(1)
 })

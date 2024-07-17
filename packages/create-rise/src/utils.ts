@@ -1,26 +1,18 @@
 import { promises as Stream, Readable } from 'node:stream'
 
-import tar from 'tar'
+import * as tar from 'tar'
+import { $, spinner } from 'zx'
 
 export function formatTargetDir(targetDir: string) {
   return targetDir.trim().replace(/\/+$/g, '')
 }
 
-export const renameFiles: Record<string, string> = {
-  _gitignore: '.gitignore',
-}
+export async function downloadAndExtractTemplate(root: string, packageName: string) {
+  const tarball = (await $`npm view ${packageName} dist.tarball`).stdout
 
-/**
- * Inspired by Expo
- * https://github.com/expo/expo/blob/main/packages/create-expo/src/Examples.ts#L90
- */
-export async function downloadAndExtractTemplate(root: string, name: string) {
-  // tbd: We should have separate repository with examples to download less and list them dynamically
-  const response = await fetch('https://codeload.github.com/rise-tools/rise-tools/tar.gz/master')
+  const response = await spinner('Downloading template', () => fetch(tarball))
   if (!response.ok || !response.body) {
-    throw new Error(
-      'Failed to fetch the examples code from https://github.com/rise-tools/rise-tools'
-    )
+    throw new Error('Failed to fetch the code for example from ${tarball}.')
   }
 
   await Stream.pipeline([
@@ -29,11 +21,11 @@ export async function downloadAndExtractTemplate(root: string, name: string) {
     tar.extract(
       {
         cwd: root,
-        // tbd: We should specify `fileTransformer` to automatically replace projectName in all relevant
-        // files with the one specified by the user
-        strip: 2,
+        // tbd: in the future, we should specify `fileTransformer` to automatically replace
+        // projectName in all relevant files with the one specified by the user
+        strip: 1,
       },
-      [`rise-tools/templates/${name}`]
+      ['package']
     ),
   ])
 }
