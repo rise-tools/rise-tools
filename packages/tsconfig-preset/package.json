@@ -1,5 +1,5 @@
 {
-  "name": "@rise-tools/tsconfig-preset",
+  "name": "@rise-tools/preset-typescript",
   "version": "0.3.1",
   "license": "Apache-2.0",
   "description": "TypeScript preset for Rise projects",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rise-tools/rise-tools.git",
-    "directory": "packages/tsconfig-preset"
+    "directory": "packages/preset-typescript"
   },
   "publishConfig": {
     "access": "public"

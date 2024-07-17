@@ -1,2 +1,2 @@
-@rise-tools/tsconfig-preset
+@rise-tools/preset-typescript
 =====

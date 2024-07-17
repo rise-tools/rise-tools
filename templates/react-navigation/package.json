@@ -35,6 +35,6 @@
     "@rise-tools/kit-react-navigation": "0.3.1"
   },
   "devDependencies": {
-    "@rise-tools/tsconfig-preset": "0.3.1"
+    "@rise-tools/preset-typescript": "0.3.1"
   }
 }

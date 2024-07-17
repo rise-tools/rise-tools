@@ -7,13 +7,13 @@ We support JSX in our JS server, but we are not running React! This means there 
 To set up your JS server so you can use JSX, you should install our TypeScript preset:
 
 ```sh
-npm install @rise-tools/tsconfig-preset
+npm install @rise-tools/preset-typescript
 ```
 
 and then, reference it from your `tsconfig.json`:
 
 ```tsx
 {
-  "preset": "@rise-tools/tsconfig-preset",
+  "preset": "@rise-tools/preset-typescript",
 }
 ```
