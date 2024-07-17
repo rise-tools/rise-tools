@@ -9,23 +9,24 @@ import { $, cd, fs, spinner } from 'zx'
 import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils.js'
 
 async function prompt() {
-  const { projectName, template } = await inquirer.prompt([
+  const { projectName } = await inquirer.prompt([
     {
       type: 'input',
       name: 'projectName',
       message: 'Project Name',
       default: 'rise-project',
     },
-    {
-      type: 'list',
-      name: 'template',
-      message: 'Choose a template',
-      choices: [
-        { name: 'React Navigation', value: '@rise-tools/template-react-navigation' },
-        { name: 'Base', value: '@rise-tools/template-base' },
-      ],
-    },
+    // {
+    //   type: 'list',
+    //   name: 'template',
+    //   message: 'Choose a template',
+    //   choices: [
+    //     { name: 'React Navigation', value: '@rise-tools/template-react-navigation' },
+    //   ],
+    // },
   ])
+
+  const template = '@rise-tools/template-react-navigation'
 
   // tbd: provide a bit more comprehensive name sanitisation
   const targetDir = formatTargetDir(projectName)
@@ -77,7 +78,10 @@ async function prompt() {
   if (projectName !== '.') cd(root)
 
   // tbd: offer an option to choose the package manager via options
-  await spinner(`Installing dependencies in ${projectName}`, () => $`npm install`)
+  await spinner(
+    `Installing dependencies in ${projectName}`,
+    () => $`npm install --legacy-peer-deps`
+  )
 
   console.log(
     `The project has been successfully created in ${projectName}. To start, run 'npm dev'`
