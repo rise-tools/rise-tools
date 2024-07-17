@@ -1,9 +1,5 @@
 {
-	"extends": "../../tsconfig.json",
-	"compilerOptions": {
-		"jsx": "react-jsx",
-    "jsxImportSource": "@rise-tools/react"
-	},
+	"extends": "@rise-tools/preset-typescript",
 	"references": [{
     "path": "../../packages/kitchen-sink"
   }, {

@@ -1,56 +1,36 @@
-import fs from 'node:fs'
-import path from 'node:path'
+import { promises as Stream, Readable } from 'node:stream'
 
-import { renameFiles } from './cli'
+import * as tar from 'tar'
+import { $, spinner } from 'zx'
 
-export function copy(src: string, dest: string) {
-  const stat = fs.statSync(src)
-  if (stat.isDirectory()) {
-    copyDir(src, dest)
-  } else {
-    fs.copyFileSync(src, dest)
-  }
+export function formatTargetDir(targetDir: string) {
+  return targetDir.trim().replace(/\/+$/g, '')
 }
 
-function copyDir(srcDir: string, destDir: string) {
-  fs.mkdirSync(destDir, { recursive: true })
-  for (const file of fs.readdirSync(srcDir)) {
-    const srcFile = path.resolve(srcDir, file)
-    const destFile = path.resolve(destDir, file)
-    copy(srcFile, destFile)
+export async function downloadAndExtractTemplate(root: string, packageName: string) {
+  const response = await spinner('Downloading template', async () => {
+    const tarball = (await $`npm view ${packageName} dist.tarball`).stdout
+    return fetch(tarball)
+  })
+  if (!response.ok || !response.body) {
+    throw new Error(`Failed to fetch the code for example from ${tarball}.`)
   }
+
+  await Stream.pipeline([
+    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
+    Readable.fromWeb(response.body),
+    tar.extract(
+      {
+        cwd: root,
+        // tbd: in the future, we should specify `fileTransformer` to automatically replace
+        // projectName in all relevant files with the one specified by the user
+        strip: 1,
+      },
+      ['package']
+    ),
+  ])
 }
 
-export function isEmpty(path: string) {
-  try {
-    const files = fs.readdirSync(path)
-    return files.length === 0 || (files.length === 1 && files[0] === '.git')
-  } catch (e) {
-    return true
-  }
-}
-
-export function emptyDir(dir: string) {
-  if (!fs.existsSync(dir)) {
-    return
-  }
-  for (const file of fs.readdirSync(dir)) {
-    if (file === '.git') {
-      continue
-    }
-    fs.rmSync(path.resolve(dir, file), { recursive: true, force: true })
-  }
-}
-
-export function formatTargetDir(targetDir: string | undefined) {
-  return targetDir?.trim().replace(/\/+$/g, '')
-}
-
-export function write(root: string, templateDir: string, file: string, content?: string) {
-  const targetPath = path.join(root, renameFiles[file] ?? file)
-  if (content) {
-    fs.writeFileSync(targetPath, content)
-  } else {
-    copy(path.join(templateDir, file), targetPath)
-  }
+export function isNodeError(error: unknown): error is NodeJS.ErrnoException {
+  return (error as NodeJS.ErrnoException).code !== undefined
 }
