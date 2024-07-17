@@ -22,12 +22,12 @@ async function createRise() {
     //   name: 'template',
     //   message: 'Choose a template',
     //   choices: [
-    //     { name: 'React Navigation', value: '@rise-tools/template-react-navigation' },
+    //     { name: 'React Navigation', value: '@rise-tools/template-blank-playground' },
     //   ],
     // },
   ])
 
-  const template = '@rise-tools/template-react-navigation'
+  const template = '@rise-tools/template-blank-playground'
 
   // tbd: provide a bit more comprehensive name sanitisation
   const targetDir = formatTargetDir(projectName)
