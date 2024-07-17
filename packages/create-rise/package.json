@@ -35,8 +35,12 @@
     "dev": "tsx src/cli.ts"
   },
   "dependencies": {
+    "dedent": "^1.5.3",
     "inquirer": "^10.0.1",
     "tar": "^7.4.0",
     "zx": "^8.1.4"
+  },
+  "devDependencies": {
+    "@types/dedent": "^0.7.2"
   }
 }
