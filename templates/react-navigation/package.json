@@ -6,6 +6,7 @@
   "files": [
     "src",
     "lib",
+    "tsconfig.json",
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
