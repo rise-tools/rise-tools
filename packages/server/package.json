@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/server",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "license": "Apache-2.0",
   "description": "",
   "main": "./lib/index.js",
@@ -32,8 +32,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@rise-tools/react": "0.4.0",
-    "@rise-tools/ws-client": "0.4.0",
+    "@rise-tools/react": "0.4.1",
+    "@rise-tools/ws-client": "0.4.1",
     "@types/ws": "^8.5.10",
     "metro-react-native-babel-preset": "^0.77.0",
     "node-fetch": "^3.3.2"

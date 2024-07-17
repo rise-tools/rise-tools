@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/template-react-navigation",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "license": "Apache-2.0",
   "description": "Template for Rise projects with React Navigation",
   "files": [
@@ -30,12 +30,12 @@
   },
   "dependencies": {
     "tsx": "^4.11.0",
-    "@rise-tools/server": "0.4.0",
-    "@rise-tools/kitchen-sink": "0.4.0",
-    "@rise-tools/kit-react-navigation": "0.4.0"
+    "@rise-tools/server": "0.4.1",
+    "@rise-tools/kitchen-sink": "0.4.1",
+    "@rise-tools/kit-react-navigation": "0.4.1"
   },
   "devDependencies": {
-    "@rise-tools/preset-typescript": "0.4.0"
+    "@rise-tools/preset-typescript": "0.4.1"
   },
   "overrides": {
     "react-dom": "18.2.0"
