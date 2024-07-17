@@ -91,6 +91,8 @@ async function copyAdditionalTemplateFiles(root: string) {
   await $`cp ${path.join(source, '_gitignore')} ${path.join(root, '.gitignore')}`
 }
 
+// tbd: error handling
+// tbd: options/description, --help
 prompt().catch((e) => {
   console.log(e)
   process.exit(1)
