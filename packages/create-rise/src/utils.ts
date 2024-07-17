@@ -13,7 +13,7 @@ export async function downloadAndExtractTemplate(root: string, packageName: stri
     return fetch(tarball)
   })
   if (!response.ok || !response.body) {
-    throw new Error(`Failed to fetch the code for example from ${tarball}.`)
+    throw new Error(`Failed to fetch the code for example from ${response.url}.`)
   }
 
   await Stream.pipeline([
