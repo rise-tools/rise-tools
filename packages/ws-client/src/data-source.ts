@@ -108,7 +108,7 @@ export function createWSModelSource(wsUrl: string, options?: Options): WebSocket
       subscribe: (handler) => {
         const shouldSubscribeRemotely = handlers.size === 0
         handlers.add(handler)
-        if (shouldSubscribeRemotely && key) {
+        if (shouldSubscribeRemotely) {
           send({
             $: 'sub',
             keys: [key],
@@ -121,7 +121,7 @@ export function createWSModelSource(wsUrl: string, options?: Options): WebSocket
           if (shouldUnsubscribeRemotely) {
             send({
               $: 'unsub',
-              keys: [key].filter((key) => key != null),
+              keys: [key],
             })
           }
         }

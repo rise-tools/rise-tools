@@ -4,15 +4,16 @@ We support JSX in our JS server, but we are not running React! This means there 
 
 > Note: This is still an experimental API
 
-To set up your JS server so you can use JSX, you should configure your `tsconfig.json` with the following:
+To set up your JS server so you can use JSX, you should install our TypeScript preset:
+
+```sh
+npm install @rise-tools/preset-typescript
+```
+
+and then, reference it from your `tsconfig.json`:
 
 ```tsx
 {
-    "compilerOptions": {
-        "jsx": "react-jsx",
-        "jsxImportSource": "@rise-tools/react",
-    }
+  "preset": "@rise-tools/preset-typescript",
 }
 ```
-
-> Known limitation: we don't support fragments yet (`<> </>`)

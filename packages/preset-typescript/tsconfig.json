@@ -1,0 +1,7 @@
+{
+	"extends": "@tsconfig/node18",
+	"compilerOptions": {
+		"jsx": "react-jsx",
+    "jsxImportSource": "@rise-tools/react"
+	}
+}

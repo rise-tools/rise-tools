@@ -1,83 +1,106 @@
 #!/usr/bin/env node
-import fs from 'node:fs'
+
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
+import dedent from 'dedent'
 import inquirer from 'inquirer'
+import { $, cd, chalk, fs, spinner } from 'zx'
 
-import { emptyDir, formatTargetDir, isEmpty, write } from './utils'
+import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils.js'
 
-const cwd = process.cwd()
-
-const defaultProjectName = 'rise-project'
-
-export const renameFiles: Record<string, string> = {
-  _gitignore: '.gitignore',
-}
-
-async function prompt() {
-  let targetDir = ''
-  const answers = await inquirer.prompt([
+async function createRise() {
+  const { projectName } = await inquirer.prompt([
     {
       type: 'input',
       name: 'projectName',
       message: 'Project Name',
-      default: defaultProjectName,
+      default: 'rise-project',
     },
-    {
-      type: 'list',
-      when(ans) {
-        targetDir = formatTargetDir(ans.projectName)!
-        return fs.existsSync(targetDir) || !isEmpty(targetDir)
-      },
-      name: 'overwrite',
-      message: 'Target directory is not empty. Please choose how to proceed:',
-      choices: [
-        {
-          name: 'Remove existing files and continue',
-          value: 'yes',
-        },
-        {
-          name: 'Cancel operation',
-          value: 'no',
-        },
-        {
-          name: 'Ignore files and continue',
-          value: 'ignore',
-        },
-      ],
-    },
+    // {
+    //   type: 'list',
+    //   name: 'template',
+    //   message: 'Choose a template',
+    //   choices: [
+    //     { name: 'React Navigation', value: '@rise-tools/template-react-navigation' },
+    //   ],
+    // },
   ])
 
-  const { projectName, overwrite } = answers
-  const root = path.join(cwd, projectName)
+  const template = '@rise-tools/template-react-navigation'
 
-  if (overwrite === 'yes') {
-    emptyDir(root)
-  } else if (!fs.existsSync(root)) {
-    fs.mkdirSync(root, { recursive: true })
+  // tbd: provide a bit more comprehensive name sanitisation
+  const targetDir = formatTargetDir(projectName)
+
+  const root = path.join(process.cwd(), targetDir)
+
+  try {
+    await fs.mkdir(root)
+  } catch (e) {
+    if (!isNodeError(e) || e.code !== 'EEXIST') {
+      throw e
+    }
+    const { overwrite } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'overwrite',
+        message: 'Target directory is not empty. Would you like to remove it and proceed?',
+      },
+    ])
+    if (!overwrite) {
+      console.error(`The directory "${root}" already exists. Exiting...`)
+      return
+    }
+    await fs.rm(root, { recursive: true, force: true })
+    await fs.mkdir(root)
   }
 
-  const template = 'template-react-navigation'
-  const templateDir = path.join(__dirname, `../${template}`)
+  await downloadAndExtractTemplate(root, template)
+  await copyAdditionalTemplateFiles(root)
 
-  const pkg = JSON.parse(fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'))
+  const { dependencies, devDependencies, scripts, overrides } = await fs.readJSON(
+    path.join(root, 'package.json'),
+    'utf-8'
+  )
+  await fs.writeJSON(
+    path.join(root, 'package.json'),
+    {
+      name: projectName,
+      private: true,
+      dependencies,
+      devDependencies,
+      scripts,
+      overrides,
+    },
+    {
+      spaces: 2,
+    }
+  )
 
-  pkg.name = targetDir === '.' ? path.basename(path.resolve()) : targetDir
+  cd(root)
 
-  write(root, templateDir, 'package.json', JSON.stringify(pkg, null, 2) + '\n')
+  // tbd: offer an option to choose the package manager via options
+  // maybe this is something we can share with the Community CLI?
+  await spinner(`Installing dependencies in ${projectName}`, () => $`npm install`)
 
-  const files = fs.readdirSync(templateDir)
-  for (const file of files.filter((f) => f !== 'package.json')) {
-    write(root, templateDir, file)
-  }
-
-  console.log('Done')
-
-  if (projectName !== '.') console.info('cd', projectName)
-  console.info('npm install')
-  console.info('npm start')
+  console.log(
+    `The project has been successfully created in ${projectName}. To start, run 'npm dev'`
+  )
 }
 
-prompt().catch((e) => {
-  console.log(e.message)
+async function copyAdditionalTemplateFiles(root: string) {
+  const source = path.dirname(fileURLToPath(import.meta.url))
+
+  await $`cp ${path.join(source, '_gitignore')} ${path.join(root, '.gitignore')}`
+}
+
+createRise().catch((e) => {
+  console.log(dedent`
+    ${chalk.red('🚨 There was an error setting up new Rise project.')}
+    ${chalk.gray(e.stack)}
+
+    If you believe this is a bug in Rise CLI, please open a new issue here:
+    ${chalk.underline('https://github.com/rise-tools/rise-tools/issues/new')}
+  `)
+  process.exit(1)
 })
