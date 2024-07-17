@@ -20,7 +20,8 @@
     "qrcode-terminal": "^0.12.0"
   },
   "peerDependencies": {
-    "@rise-tools/server": "0.3.1"
+    "@rise-tools/server": "0.3.1",
+    "@rise-tools/preset-typescript": "0.3.1"
   },
   "devDependencies": {
     "@types/qrcode-terminal": "^0.12.2"
