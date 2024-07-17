@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "bin": {
-    "create-rise": "dist/cli.js"
+    "create-rise": "lib/cli.js"
   },
   "scripts": {
     "dev": "tsx src/cli.ts"
