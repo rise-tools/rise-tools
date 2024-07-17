@@ -80,7 +80,7 @@ async function prompt() {
   // tbd: offer an option to choose the package manager via options
   await spinner(
     `Installing dependencies in ${projectName}`,
-    () => $`npm install --legacy-peer-deps`
+    () => $`npm install`
   )
 
   console.log(
