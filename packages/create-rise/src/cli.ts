@@ -75,13 +75,10 @@ async function prompt() {
     }
   )
 
-  if (projectName !== '.') cd(root)
+  cd(root)
 
   // tbd: offer an option to choose the package manager via options
-  await spinner(
-    `Installing dependencies in ${projectName}`,
-    () => $`npm install`
-  )
+  await spinner(`Installing dependencies in ${projectName}`, () => $`npm install`)
 
   console.log(
     `The project has been successfully created in ${projectName}. To start, run 'npm dev'`
