@@ -8,9 +8,10 @@ export function formatTargetDir(targetDir: string) {
 }
 
 export async function downloadAndExtractTemplate(root: string, packageName: string) {
-  const tarball = (await $`npm view ${packageName} dist.tarball`).stdout
-
-  const response = await spinner('Downloading template', () => fetch(tarball))
+  const response = await spinner('Downloading template', async () => {
+    const tarball = (await $`npm view ${packageName} dist.tarball`).stdout
+    return fetch(tarball)
+  })
   if (!response.ok || !response.body) {
     throw new Error('Failed to fetch the code for example from ${tarball}.')
   }
