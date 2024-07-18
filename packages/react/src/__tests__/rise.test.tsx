@@ -291,7 +291,7 @@ it('should accept event handler as a prop', () => {
 
   expect(onEvent).toHaveBeenCalledTimes(1)
 
-  const firedEvent = onEvent.mock.lastCall[0] as EventRequest
+  const firedEvent = onEvent.mock.lastCall?.[0] as EventRequest
   expect(firedEvent).toMatchInlineSnapshot(
     {
       key: expect.any(String),

@@ -319,7 +319,7 @@ it('should inject localStateExperimental (initial value) into function handler',
   await act(async () => {
     fireEvent.click(component.getByTestId('button'))
   })
-  expect(onEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: false })
+  expect(onEvent.mock.lastCall?.[0].payload[0]).toEqual({ isChecked: false })
 })
 
 it('should inject current localStateExperimental value into function handler', async () => {
@@ -361,7 +361,7 @@ it('should inject current localStateExperimental value into function handler', a
     fireEvent.click(component.getByTestId('checkbox'))
     fireEvent.click(component.getByTestId('button'))
   })
-  expect(onEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: true })
+  expect(onEvent.mock.lastCall?.[0].payload[0]).toEqual({ isChecked: true })
 })
 
 it('should lookup value from the arguments', async () => {

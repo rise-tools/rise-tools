@@ -133,7 +133,7 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
       const value = lookupValue(modelState, lookupPath)
 
       if (!isServerEventModelState(value)) {
-        throw new Error(`Missing event handler on the server for event: ${JSON.stringify(event)}`)
+        throw new Error(`Missing event handler on the server for target: ${JSON.stringify(target)}`)
       }
       let res = await value.handler(...payload)
       if (isEventResponse(res)) {

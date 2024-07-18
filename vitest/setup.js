@@ -1,6 +1,7 @@
-// `matchMedia` is not available in JSDOM, so we need to mock it out
-import { vi } from 'vitest'
+import { cleanup } from '@testing-library/react'
+import { afterEach, vi } from 'vitest'
 
+// `matchMedia` is not available in JSDOM, so we need to mock it out
 // https://github.com/vitest-dev/vitest/issues/821
 Object.defineProperty(global, 'matchMedia', {
   writable: true,
@@ -14,4 +15,8 @@ Object.defineProperty(global, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
+})
+
+afterEach(() => {
+  cleanup()
 })
