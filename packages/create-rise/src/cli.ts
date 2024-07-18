@@ -3,38 +3,31 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { ExitPromptError } from '@inquirer/core'
 import { confirm, input } from '@inquirer/prompts'
 import dedent from 'dedent'
 import { $, cd, chalk, fs, minimist, spinner } from 'zx'
 
-import { colors, styledPrompt } from './theme.js'
+import { bold, debug, error, gradient, highlight, prompt, text } from './theme.js'
 import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils.js'
 
-type Args = {
-  verbose?: boolean
+type Options = {
+  verbose: boolean
+  install: boolean
+  help: boolean
 }
 
 const RISE_ASCII =
   '\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2557  \r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u255A\u2550\u2550\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u255D  \r\n\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\r\n                           \r\n'
 
-async function createRise() {
-  const { verbose } = minimist<Args>(process.argv.slice(2))
-  const { base, baseBold, highlight, error, errorBold, riseGradient } = colors
+async function createRise(opts: Options) {
+  console.log(gradient(RISE_ASCII))
 
-  console.log(riseGradient(RISE_ASCII))
-
-  const projectName = await input(
-    styledPrompt({
-      message: 'Project Name',
-      default: 'rise-project',
-    })
-  )
-  const installDeps = await confirm(
-    styledPrompt({
-      message: 'Would you like to install dependencies?',
-      default: true,
-    })
-  )
+  const projectName = await input({
+    message: 'Project Name',
+    default: 'rise-project',
+    theme: prompt,
+  })
 
   const template = '@rise-tools/template-react-navigation'
 
@@ -50,16 +43,14 @@ async function createRise() {
       throw e
     }
 
-    const overwrite = await confirm(
-      styledPrompt({
-        message: 'Target directory is not empty. Would you like to remove it and proceed?',
-      })
-    )
+    const overwrite = await confirm({
+      message: 'Target directory is not empty. Would you like to remove it and proceed?',
+      theme: prompt,
+    })
 
     if (!overwrite) {
       console.error(dedent`
-        ${errorBold('🚨 There was an error setting up new Rise project:')}
-        ${error(`The directory "${root}" already exists. Exiting...`)}
+        ${debug(`The directory "${root}" already exists. Exiting...`)}
       `)
       return
     }
@@ -89,31 +80,33 @@ async function createRise() {
     }
   )
 
-  if (installDeps) {
+  if (opts.install) {
     // tbd: offer an option to choose the package manager via options
     // maybe this is something we can share with the Community CLI?
-
     cd(root)
 
-    console.log(base(`📦 Using ${highlight('npm')} to install packages.`))
+    console.log(text(`📦 Using ${highlight('npm')} to install packages`))
 
     await spinner(
-      base(`🔧 Installing dependencies in ${highlight(projectName)}`),
-      () => $({ quiet: !verbose })`npm install`
+      text(`🔧 Installing dependencies in ${highlight(projectName)}`),
+      () => $({ quiet: !opts.verbose })`npm install`
     )
   }
 
-  console.log(
-    [
-      '',
-      baseBold(`✔ The project has been successfully created !`),
-      '',
-      base('To run your project, navigate to the directory and run the following commands'),
-      highlight(`cd ${projectName}`),
-      ...(installDeps ? [highlight('npm install')] : []),
-      highlight(`npm dev`),
-    ].join('\n')
-  )
+  console.log()
+
+  console.log(dedent`
+    ${bold(`✔ The project has been successfully created!`)}
+
+    ${text('To run your project, navigate to the directory and run the following commands:')}
+    ${highlight(`cd ${projectName}`)}
+  `)
+
+  if (!opts.install) {
+    console.log(highlight('npm install'))
+  }
+
+  console.log(highlight('npm run dev'))
 }
 
 async function copyAdditionalTemplateFiles(root: string) {
@@ -122,10 +115,42 @@ async function copyAdditionalTemplateFiles(root: string) {
   await $`cp ${path.join(source, '../_gitignore')} ${path.join(root, '.gitignore')}`
 }
 
-createRise().catch((e) => {
+const opts = minimist<Options>(process.argv.slice(2), {
+  boolean: ['verbose', 'install', 'help'],
+  default: {
+    verbose: false,
+    install: true,
+    help: false,
+  },
+  alias: {
+    v: 'verbose',
+    h: 'help',
+  },
+})
+
+if (opts.help) {
   console.log(dedent`
-    ${chalk.red.bold('🚨 There was an error setting up new Rise project.')}
-    ${chalk.gray(e.stack)}
+    ${bold('Info')}
+      Creates a new Rise project
+
+    ${bold('Usage')}
+      ${debug('$')} npx create-rise [options]
+
+    Options
+      --no-install         Skip installing npm packages
+      -v, --verbose        Print additional logs
+      -h, --help           Usage info
+  `)
+  process.exit(0)
+}
+
+createRise(opts).catch((e) => {
+  if (e instanceof ExitPromptError) {
+    return
+  }
+  console.log(dedent`
+    ${error('🚨 There was an error setting up new Rise project')}
+    ${debug(e.stack)}
 
     If you believe this is a bug in Rise CLI, please open a new issue here:
     ${chalk.underline('https://github.com/rise-tools/rise-tools/issues/new')}
