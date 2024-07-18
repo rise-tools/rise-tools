@@ -36,12 +36,14 @@
     "dev": "tsx src/cli.ts"
   },
   "dependencies": {
+    "@inquirer/prompts": "^5.2.0",
     "dedent": "^1.5.3",
-    "inquirer": "^10.0.1",
+    "gradient-string": "^2.0.2",
     "tar": "^7.4.0",
     "zx": "^8.1.4"
   },
   "devDependencies": {
-    "@types/dedent": "^0.7.2"
+    "@types/dedent": "^0.7.2",
+    "@types/gradient-string": "^1.1.6"
   }
 }
