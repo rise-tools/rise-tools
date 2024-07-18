@@ -15,19 +15,24 @@ type Options = {
   verbose: boolean
   install: boolean
   help: boolean
+  yes: boolean
 }
 
 const RISE_ASCII =
   '\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2557  \r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u255A\u2550\u2550\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u255D  \r\n\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\r\n                           \r\n'
+const DEFAULT_PROJECT_NAME = 'rise-project'
 
 async function createRise(opts: Options) {
   console.log(gradient(RISE_ASCII))
 
-  const projectName = await input({
-    message: 'Project Name',
-    default: 'rise-project',
-    theme: prompt,
-  })
+  let projectName = DEFAULT_PROJECT_NAME
+  if (!opts.yes) {
+    projectName = await input({
+      message: 'Project Name',
+      default: DEFAULT_PROJECT_NAME,
+      theme: prompt,
+    })
+  }
 
   const template = '@rise-tools/template-blank-playground'
 
@@ -43,17 +48,20 @@ async function createRise(opts: Options) {
       throw e
     }
 
-    const overwrite = await confirm({
-      message: 'Target directory is not empty. Would you like to remove it and proceed?',
-      theme: prompt,
-    })
+    if (!opts.yes) {
+      const overwrite = await confirm({
+        message: 'Target directory is not empty. Would you like to remove it and proceed?',
+        theme: prompt,
+      })
 
-    if (!overwrite) {
-      console.error(dedent`
-        ${debug(`The directory "${root}" already exists. Exiting...`)}
-      `)
-      return
+      if (!overwrite) {
+        console.error(dedent`
+          ${debug(`The directory "${root}" already exists. Exiting...`)}
+        `)
+        return
+      }
     }
+
     await fs.rm(root, { recursive: true, force: true })
     await fs.mkdir(root)
   }
@@ -116,15 +124,17 @@ async function copyAdditionalTemplateFiles(root: string) {
 }
 
 const opts = minimist<Options>(process.argv.slice(2), {
-  boolean: ['verbose', 'install', 'help'],
+  boolean: ['verbose', 'install', 'help', 'yes'],
   default: {
     verbose: false,
     install: true,
     help: false,
+    yes: false,
   },
   alias: {
     v: 'verbose',
     h: 'help',
+    y: 'yes',
   },
 })
 
@@ -140,6 +150,7 @@ if (opts.help) {
       --no-install         Skip installing npm packages
       -v, --verbose        Print additional logs
       -h, --help           Usage info
+      -y, --yes            Use the default options for creating a project
   `)
   process.exit(0)
 }
