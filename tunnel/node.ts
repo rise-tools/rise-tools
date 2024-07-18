@@ -1,6 +1,6 @@
 import axios from 'axios'
+import fs from 'fs/promises'
 import path from 'path'
-import { fs } from 'zx'
 
 interface Config {
   projectId: string
@@ -13,11 +13,17 @@ const CONFIG_PATH = path.join(process.cwd(), CONFIG_DIR, CONFIG_FILE)
 const RISE_CLOUD_URL = 'https://tunnel.rise.tools'
 
 async function readConfig(): Promise<Config | null> {
-  return fs.readJsonSync(CONFIG_PATH)
+  try {
+    const configData = await fs.readFile(CONFIG_PATH, 'utf-8')
+    return JSON.parse(configData)
+  } catch (error) {
+    return null
+  }
 }
 
 async function writeConfig(config: Config): Promise<void> {
-  fs.writeJsonSync(CONFIG_PATH, config)
+  await fs.mkdir(CONFIG_DIR, { recursive: true })
+  await fs.writeFile(CONFIG_PATH, JSON.stringify(config, null, 2))
 }
 
 async function getTunnelUrl(): Promise<string> {
