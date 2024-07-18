@@ -29,7 +29,7 @@ async function createRise(opts: Options) {
     theme: prompt,
   })
 
-  const template = '@rise-tools/template-react-navigation'
+  const template = '@rise-tools/template-blank-playground'
 
   // tbd: provide a bit more comprehensive name sanitisation
   const targetDir = formatTargetDir(projectName)
