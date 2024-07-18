@@ -7,7 +7,7 @@ import { confirm, input } from '@inquirer/prompts'
 import dedent from 'dedent'
 import { $, cd, chalk, fs, minimist, spinner } from 'zx'
 
-import { bold, debug, error, highlight, prompt, riseGradient, text } from './theme.js'
+import { bold, debug, error, gradient, highlight, prompt, text } from './theme.js'
 import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils.js'
 
 type Options = {
@@ -20,7 +20,7 @@ const RISE_ASCII =
   '\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2557  \r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u255A\u2550\u2550\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u255D  \r\n\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\r\n                           \r\n'
 
 async function createRise(opts: Options) {
-  console.log(riseGradient(RISE_ASCII))
+  console.log(gradient(RISE_ASCII))
 
   const projectName = await input({
     message: 'Project Name',
