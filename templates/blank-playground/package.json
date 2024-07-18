@@ -32,13 +32,12 @@
   "dependencies": {
     "@rise-tools/kit-react-navigation": "0.4.1",
     "@rise-tools/kitchen-sink": "0.4.1",
-    "@rise-tools/server": "0.4.1",
-    "@tsconfig/node18": "^18.2.4",
-    "tsx": "^4.11.0"
+    "@rise-tools/server": "0.4.1"
   },
   "devDependencies": {
     "@rise-tools/preset-typescript": "0.4.1",
     "@types/react": "^18.2.0",
+    "tsx": "^4.11.0",
     "typescript": "^5.5.3"
   },
   "overrides": {
