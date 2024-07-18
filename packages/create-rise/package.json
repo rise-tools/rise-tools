@@ -36,6 +36,7 @@
     "dev": "tsx src/cli.ts"
   },
   "dependencies": {
+    "@rise-tools/cli": "0.5.0",
     "@inquirer/prompts": "^5.2.0",
     "dedent": "^1.5.3",
     "gradient-string": "^2.0.2",

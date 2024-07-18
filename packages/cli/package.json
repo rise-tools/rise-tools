@@ -1,10 +1,16 @@
+
 {
   "name": "@rise-tools/cli",
-  "version": "0.4.1",
+  "version": "0.5.0",
+  "license": "Apache-2.0",
   "description": "Utils for CLI",
-  "main": "./lib/index.js",
-  "scripts": {
-  },
+  "files": [
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/rise-tools/rise-tools.git",
@@ -13,15 +19,21 @@
   "publishConfig": {
     "access": "public"
   },
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "internal-ip": "^4.3.0",
-    "qrcode-terminal": "^0.12.0"
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "contributors": [
+    "Arpit Bhalla (https://github.com/arpitBhalla)"
+  ],
+  "bugs": {
+    "url": "https://github.com/rise-tools/rise-tools/issues"
   },
-  "peerDependencies": {
-    "@rise-tools/server": "0.3.1",
-    "@rise-tools/preset-typescript": "0.3.1"
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
+  "type": "module",
+  "main": "./lib/index.js",
+  "dependencies": {
+    "bs58": "^5.0.0",
+    "internal-ip": "^7.0.0",
+    "qrcode-terminal": "^0.12.0",
+    "zx": "^8.1.4"
   },
   "devDependencies": {
     "@types/qrcode-terminal": "^0.12.2"
