@@ -3,12 +3,15 @@ import { promises as Stream, Readable } from 'node:stream'
 import * as tar from 'tar'
 import { $, spinner } from 'zx'
 
+import { colors } from './theme.js'
+
 export function formatTargetDir(targetDir: string) {
   return targetDir.trim().replace(/\/+$/g, '')
 }
 
 export async function downloadAndExtractTemplate(root: string, packageName: string) {
-  const response = await spinner('Downloading template', async () => {
+  const { base } = colors
+  const response = await spinner(base('Downloading template'), async () => {
     const tarball = (await $`npm view ${packageName} dist.tarball`).stdout
     return fetch(tarball)
   })

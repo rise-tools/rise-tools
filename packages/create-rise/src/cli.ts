@@ -3,44 +3,36 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { confirm, input } from '@inquirer/prompts'
 import dedent from 'dedent'
-import gradient from 'gradient-string'
-import inquirer from 'inquirer'
 import { $, cd, chalk, fs, minimist, spinner } from 'zx'
 
+import { colors, styledPrompt } from './theme.js'
 import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils.js'
 
 type Args = {
   verbose?: boolean
 }
 
-const WELCOME_TO_RISE_ASCII =
-  "__          __  _                            _          _____  _            _ \r\n\\ \\        / / | |                          | |        |  __ \\(_)          | |\r\n \\ \\  /\\  / /__| | ___ ___  _ __ ___   ___  | |_ ___   | |__) |_ ___  ___  | |\r\n  \\ \\/  \\/ / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\  |  _  /| / __|/ _ \\ | |\r\n   \\  /\\  /  __/ | (_| (_) | | | | | |  __/ | || (_) | | | \\ \\| \\__ \\  __/ |_|\r\n    \\/  \\/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/  |_|  \\_\\_|___/\\___| (_)"
+const RISE_ASCII =
+  '\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2557  \r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u255A\u2550\u2550\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u255D  \r\n\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\r\n                           \r\n'
 
 async function createRise() {
   const { verbose } = minimist<Args>(process.argv.slice(2))
-  const { projectName, installDeps } = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'projectName',
+  const { base, baseBold, highlight, error, errorBold, riseGradient } = colors
+
+  const projectName = await input(
+    styledPrompt({
       message: 'Project Name',
       default: 'rise-project',
-    },
-    {
-      type: 'confirm',
-      name: 'installDeps',
-      message: 'Would you like to install dependencies ?',
+    })
+  )
+  const installDeps = await confirm(
+    styledPrompt({
+      message: 'Would you like to install dependencies?',
       default: true,
-    },
-    // {
-    //   type: 'list',
-    //   name: 'template',
-    //   message: 'Choose a template',
-    //   choices: [
-    //     { name: 'React Navigation', value: '@rise-tools/template-react-navigation' },
-    //   ],
-    // },
-  ])
+    })
+  )
 
   const template = '@rise-tools/template-react-navigation'
 
@@ -55,18 +47,18 @@ async function createRise() {
     if (!isNodeError(e) || e.code !== 'EEXIST') {
       throw e
     }
-    const { overwrite } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'overwrite',
+
+    const overwrite = await confirm(
+      styledPrompt({
         message: 'Target directory is not empty. Would you like to remove it and proceed?',
-      },
-    ])
+      })
+    )
+
     if (!overwrite) {
       console.error(dedent`
-        ${chalk.red.bold('🚨 There was an error setting up new Rise project:')}
-        ${chalk.red(`The directory "${root}" already exists. Exiting...`)}
-        `)
+        ${errorBold('🚨 There was an error setting up new Rise project:')}
+        ${error(`The directory "${root}" already exists. Exiting...`)}
+      `)
       return
     }
     await fs.rm(root, { recursive: true, force: true })
@@ -101,25 +93,24 @@ async function createRise() {
 
     cd(root)
 
-    console.log(chalk.bold(`📦 Using ${chalk.bold.cyan('npm')} to install packages.`))
+    console.log(base(`📦 Using ${highlight('npm')} to install packages.`))
 
     await spinner(
-      chalk.bold(`🔧 Installing dependencies in ${projectName}`),
+      base(`🔧 Installing dependencies in ${highlight(projectName)}`),
       () => $({ quiet: !verbose })`npm install`
     )
   }
 
-  console.log(riseGradient(WELCOME_TO_RISE_ASCII))
+  console.log(riseGradient(RISE_ASCII))
 
   console.log(
     [
+      baseBold(`✅ The project has been successfully created !`),
       '',
-      chalk.bold.green(`✅ The project has been successfully created !`),
-      '',
-      'To run your project, navigate to the directory and run the following commands',
-      chalk.cyan(`cd ${projectName}`),
-      ...(installDeps ? [chalk.cyan('npm install')] : []),
-      chalk.cyan(`npm dev`),
+      base('To run your project, navigate to the directory and run the following commands'),
+      highlight(`cd ${projectName}`),
+      ...(installDeps ? [highlight('npm install')] : []),
+      highlight(`npm dev`),
     ].join('\n')
   )
 }
@@ -140,5 +131,3 @@ createRise().catch((e) => {
   `)
   process.exit(1)
 })
-
-const riseGradient = gradient('fd5811', '#fd26b5')
