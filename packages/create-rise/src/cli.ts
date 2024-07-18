@@ -3,6 +3,7 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { ExitPromptError } from '@inquirer/core'
 import { confirm, input } from '@inquirer/prompts'
 import dedent from 'dedent'
 import { $, cd, chalk, fs, minimist, spinner } from 'zx'
@@ -144,6 +145,9 @@ if (opts.help) {
 }
 
 createRise(opts).catch((e) => {
+  if (e instanceof ExitPromptError) {
+    return
+  }
   console.log(dedent`
     ${error('🚨 There was an error setting up new Rise project')}
     ${debug(e.stack)}
