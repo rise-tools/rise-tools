@@ -6,14 +6,19 @@ import { fileURLToPath } from 'node:url'
 import dedent from 'dedent'
 import gradient from 'gradient-string'
 import inquirer from 'inquirer'
-import { $, cd, chalk, fs, spinner } from 'zx'
+import { $, cd, chalk, fs, minimist, spinner } from 'zx'
 
 import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils.js'
+
+type Args = {
+  verbose?: boolean
+}
 
 const WELCOME_TO_RISE_ASCII =
   "__          __  _                            _          _____  _            _ \r\n\\ \\        / / | |                          | |        |  __ \\(_)          | |\r\n \\ \\  /\\  / /__| | ___ ___  _ __ ___   ___  | |_ ___   | |__) |_ ___  ___  | |\r\n  \\ \\/  \\/ / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\  |  _  /| / __|/ _ \\ | |\r\n   \\  /\\  /  __/ | (_| (_) | | | | | |  __/ | || (_) | | | \\ \\| \\__ \\  __/ |_|\r\n    \\/  \\/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/  |_|  \\_\\_|___/\\___| (_)"
 
 async function createRise() {
+  const { verbose } = minimist<Args>(process.argv.slice(2))
   const { projectName, installDeps } = await inquirer.prompt([
     {
       type: 'input',
@@ -98,7 +103,10 @@ async function createRise() {
 
     console.log(chalk.bold(`📦 Using ${chalk.bold.cyan('npm')} to install packages.`))
 
-    await spinner(chalk.bold(`🔧 Installing dependencies in ${projectName}`), () => $`npm install`)
+    await spinner(
+      chalk.bold(`🔧 Installing dependencies in ${projectName}`),
+      () => $({ quiet: !verbose })`npm install`
+    )
   }
 
   console.log(riseGradient(WELCOME_TO_RISE_ASCII))
