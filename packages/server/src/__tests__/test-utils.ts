@@ -4,7 +4,7 @@ export function createWaitableMock<MockInput extends Array<unknown>, MockOutput>
   let resolve
   let times
   let calledCount = 0
-  const mock = jest.fn((...args: MockInput) => {
+  const mock = vi.fn((...args: MockInput) => {
     calledCount += 1
     const result = fn ? fn(...args) : undefined
     if (resolve && calledCount >= times) {

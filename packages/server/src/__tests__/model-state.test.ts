@@ -14,7 +14,7 @@ describe('model-state', () => {
     expect(s.get()).toBe(1)
   })
   test('subscribe', () => {
-    const handler = jest.fn()
+    const handler = vi.fn()
     const [s, setS] = state(0)
     const release = s.subscribe(handler)
     expect(handler).toBeCalledTimes(1)

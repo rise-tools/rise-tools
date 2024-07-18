@@ -22,9 +22,9 @@ describe('view models', () => {
     const [b] = state(3)
     const mockA = {
       ...a,
-      get: jest.fn().mockImplementation(() => a.get()),
+      get: vi.fn().mockImplementation(() => a.get()),
     }
-    const viewLoad = jest.fn().mockImplementation((get) => {
+    const viewLoad = vi.fn().mockImplementation((get) => {
       const _a = get(mockA)
       const _b = get(b)
       if (!_a || !_b) return 0
@@ -49,7 +49,7 @@ describe('view models', () => {
       if (!_a || !_b) return 0
       return _a * _b
     })
-    const handler = jest.fn()
+    const handler = vi.fn()
     mult.subscribe(handler)
     setA(3)
     expect(await mult.load()).toBe(9)
@@ -92,7 +92,7 @@ describe('view models', () => {
   })
   test('view loads dependency query', async () => {
     let currentQueryValue = 0
-    const loader = jest.fn(() => Promise.resolve(currentQueryValue))
+    const loader = vi.fn(() => Promise.resolve(currentQueryValue))
     const aQuery = query(loader)
     const aDoubled = view((get) => {
       const a = get(aQuery)

@@ -14,5 +14,5 @@ it('should throw on non-object', () => {
   expect(() => {
     // @ts-ignore
     lookupValue('string', ['path'])
-  }).toThrowError()
+  }).toThrow()
 })

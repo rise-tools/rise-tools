@@ -31,7 +31,7 @@ it('should render a Tamagui component', () => {
             },
           ],
         }}
-        onEvent={jest.fn()}
+        onEvent={vi.fn()}
       />
     </TamaguiProvider>
   )
