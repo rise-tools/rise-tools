@@ -115,6 +115,14 @@ async function createRise(opts: Options) {
   }
 
   console.log(highlight('npm run dev'))
+
+  console.log()
+
+  console.log(dedent`
+    ${bold('📱 For fast and easy prototyping check out Rise Playground App!')}
+    ${highlight('iOS')}     ${chalk.underline('https://apps.apple.com/us/app/rise-playground/id6499588861')}
+    ${highlight('Android')} ${chalk.underline('https://play.google.com/store/apps/details?id=com.xplatlabs.rise')}
+  `)
 }
 
 async function copyAdditionalTemplateFiles(root: string) {
