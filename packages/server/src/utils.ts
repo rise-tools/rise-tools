@@ -12,15 +12,15 @@ export async function printInstructions({ protocol, port }: { protocol: string; 
     return
   }
 
-  const deepLink = getConnectionURL(url)
+  const deepLink = await getConnectionURL(url)
 
   console.log(dedent`
     Listening on ${highlight(url)}
-    
+
     To preview your app in the Rise Playground, scan the QR code:
     ${await generateQRCode(deepLink)}
 
     Or open the following link on your device:
-    ${link(getConnectionURL(url))}  
+    ${link(deepLink)}  
   `)
 }
