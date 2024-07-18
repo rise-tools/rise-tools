@@ -21,6 +21,8 @@ async function createRise() {
   const { verbose } = minimist<Args>(process.argv.slice(2))
   const { base, baseBold, highlight, error, errorBold, riseGradient } = colors
 
+  console.log(riseGradient(RISE_ASCII))
+
   const projectName = await input(
     styledPrompt({
       message: 'Project Name',
@@ -101,11 +103,10 @@ async function createRise() {
     )
   }
 
-  console.log(riseGradient(RISE_ASCII))
-
   console.log(
     [
-      baseBold(`✅ The project has been successfully created !`),
+      '',
+      baseBold(`✔ The project has been successfully created !`),
       '',
       base('To run your project, navigate to the directory and run the following commands'),
       highlight(`cd ${projectName}`),

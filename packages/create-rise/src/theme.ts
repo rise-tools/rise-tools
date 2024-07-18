@@ -8,15 +8,13 @@ type PromptConfig = {
 }
 
 const hexColors = {
-  base: '#4594D5',
-  secondary: '#223EF6',
-  highlight: '#E60990',
+  highlight: '#FD48C1',
   error: '#D22B2B',
 }
 
 export const colors = {
-  base: (string: string) => chalk.hex(hexColors.base)(string),
-  baseBold: (string: string) => chalk.hex(hexColors.base).bold(string),
+  base: (string: string) => string,
+  baseBold: (string: string) => chalk.bold(string),
   highlight: (string: string) => chalk.hex(hexColors.highlight)(string),
   error: (string: string) => chalk.hex(hexColors.error)(string),
   errorBold: (string: string) => chalk.hex(hexColors.error).bold(string),
@@ -31,9 +29,9 @@ export function styledPrompt<T extends { message: string; default?: string | boo
     theme: {
       prefix: colors.base('>'),
       style: {
-        answer: colors.base,
-        message: colors.highlight,
-        defaultAnswer: colors.base,
+        answer: colors.highlight,
+        message: colors.base,
+        defaultAnswer: colors.highlight,
         error: colors.error,
       },
     },
