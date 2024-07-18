@@ -5,7 +5,17 @@ import { handleGetRequest } from './http-server'
 import { AnyModels } from './types'
 import { connectWebSocket, createWSServerContext } from './ws-connection'
 
-export async function createServer(models: AnyModels, port: number) {
+export interface CreateServerOptions {
+  port: number
+  host?: string
+  /**
+   * Enable websocket server
+   */
+  ws?: boolean
+}
+
+export async function createServer(models: AnyModels, options: CreateServerOptions) {
+  const { port } = options
   const server = Fastify({
     // logger: true,
   })
@@ -17,10 +27,12 @@ export async function createServer(models: AnyModels, port: number) {
     return resp
   })
   const wsContext = createWSServerContext(models)
-  await server.listen({ port })
   server.get('/', { websocket: true }, (connection) => {
     connectWebSocket(wsContext, connection)
   })
+
+  await server.listen({ port })
+
   return {
     close() {
       server.close()

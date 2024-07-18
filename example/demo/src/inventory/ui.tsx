@@ -1,4 +1,4 @@
-import { navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
+import { navigate } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   H2,

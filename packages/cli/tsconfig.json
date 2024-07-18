@@ -1,0 +1,10 @@
+{
+  "extends": "@rise-tools/preset-typescript",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib"
+  },
+  "references": [{
+    "path": "../../packages/server"
+  }]
+}
