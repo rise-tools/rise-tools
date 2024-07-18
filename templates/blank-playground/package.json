@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/template-blank-playground",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "license": "Apache-2.0",
   "description": "Blank template for Rise projects that work inside Rise Playground",
   "files": [
@@ -30,12 +30,12 @@
     "dev": "tsx watch src/server.ts"
   },
   "dependencies": {
-    "@rise-tools/kit-react-navigation": "0.4.1",
-    "@rise-tools/kitchen-sink": "0.4.1",
-    "@rise-tools/server": "0.4.1"
+    "@rise-tools/kit-react-navigation": "0.5.0",
+    "@rise-tools/kitchen-sink": "0.5.0",
+    "@rise-tools/server": "0.5.0"
   },
   "devDependencies": {
-    "@rise-tools/preset-typescript": "0.4.1",
+    "@rise-tools/preset-typescript": "0.5.0",
     "@types/react": "^18.0.27",
     "tsx": "^4.11.0",
     "typescript": "^5.1.3"
