@@ -15,8 +15,13 @@ type NavigateOptions = {
 export const navigate = <T extends keyof Path<Navigate>, Params extends Path<Navigate>[T]>(
   path: T,
   ...[options]: Params extends void
-    ? [opts?: NavigateOptions]
-    : [opts: NavigateOptions & { params: Params }]
+    ? // If Params is void (no parameters required):
+      [opts?: NavigateOptions]
+    : Params extends NonNullable<unknown>
+      ? // If Params is any non-nullable type (includes objects and primitives):
+        [opts: NavigateOptions & { params: Params }]
+      : // For any other case (type is any):
+        [opts?: NavigateOptions & { params?: Params }]
 ) => action('rise-tools/kit-react-navigation/navigate', { path, options })
 
 export const goBack = () => action('rise-tools/kit-react-navigation/goBack')
