@@ -1,20 +1,23 @@
 import path from 'node:path'
 
 import react from '@vitejs/plugin-react'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineProject } from 'vitest/config'
 
+import tsConfig from './tsconfig.json'
+
+const aliases = Object.fromEntries(
+  Object.entries(tsConfig.compilerOptions.paths).map(([moduleName, [modulePath]]) => [
+    moduleName,
+    path.resolve(__dirname, modulePath),
+  ])
+)
+
 export default defineProject({
-  plugins: [react(), tsconfigPaths()],
+  plugins: [react()],
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: [path.resolve(__dirname, 'vitest/setup.js')],
-    server: {
-      deps: {
-        inline: ['@rise-tools/cli'],
-      },
-    },
   },
   esbuild: {
     jsxDev: false,
@@ -22,6 +25,7 @@ export default defineProject({
   },
   resolve: {
     alias: {
+      ...aliases,
       'react-native': 'react-native-web',
     },
   },
