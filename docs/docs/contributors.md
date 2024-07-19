@@ -20,6 +20,14 @@ cd rise-tools
 npm install
 ```
 
+## Generate Build
+
+After installing the dependencies, you need to generate the build for the project if you want to run the playground or the demo server:
+
+```sh
+npm run build
+```
+
 ### Run Tests
 
 `npm run test`
