@@ -2,6 +2,7 @@ import { describe, expect, test, vi } from 'vitest'
 
 import { query } from '../model-query.js'
 import { createWaitableMock, delay } from './test-utils.js'
+
 describe('query model', () => {
   test('basic query get + load', async () => {
     const q = query(() => Promise.resolve(1))

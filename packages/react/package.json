@@ -6,8 +6,7 @@
   "main": "./lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./jsx-runtime": "./lib/jsx-runtime.js",
-    "./jsx-dev-runtime": "./lib/jsx-dev-runtime.js"
+    "./jsx-runtime": "./lib/jsx-runtime.js"
   },
   "files": [
     "src",
