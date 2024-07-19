@@ -4,6 +4,7 @@
   "license": "Apache-2.0",
   "description": "Utils for CLI",
   "files": [
+    "src",
     "lib",
     "!**/__tests__",
     "!**/__fixtures__",

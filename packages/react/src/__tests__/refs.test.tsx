@@ -1,5 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
+import { expect, it, vi } from 'vitest'
 
 import { action, ModelSource, ref, response, Rise } from '..'
 import { BUILT_IN_COMPONENTS } from './rise.test'
@@ -7,7 +8,7 @@ import { BUILT_IN_COMPONENTS } from './rise.test'
 it('should render a component', () => {
   const modelSource: ModelSource = {
     get: () => ({
-      subscribe: () => jest.fn(),
+      subscribe: () => vi.fn(),
       get() {
         return {
           $: 'component',
@@ -18,7 +19,7 @@ it('should render a component', () => {
         }
       },
     }),
-    sendEvent: jest.fn(),
+    sendEvent: vi.fn(),
   }
   const component = render(
     <Rise
@@ -38,8 +39,8 @@ it('should render a component', () => {
 })
 
 it('should render component at a path', () => {
-  const getStore = jest.fn().mockReturnValue({
-    subscribe: () => jest.fn(),
+  const getStore = vi.fn().mockReturnValue({
+    subscribe: () => vi.fn(),
     get() {
       return {
         $: 'component',
@@ -54,7 +55,7 @@ it('should render component at a path', () => {
   })
   const modelSource: ModelSource = {
     get: getStore,
-    sendEvent: jest.fn(),
+    sendEvent: vi.fn(),
   }
   const component = render(
     <Rise
@@ -80,7 +81,7 @@ it('should resolve a ref', () => {
     get: (store: string) => {
       if (store === 'secondStore') {
         return {
-          subscribe: () => jest.fn(),
+          subscribe: () => vi.fn(),
           get() {
             return {
               $: 'component',
@@ -92,7 +93,7 @@ it('should resolve a ref', () => {
         }
       }
       return {
-        subscribe: () => jest.fn(),
+        subscribe: () => vi.fn(),
         get() {
           return {
             $: 'component',
@@ -110,7 +111,7 @@ it('should resolve a ref', () => {
         },
       }
     },
-    sendEvent: jest.fn(),
+    sendEvent: vi.fn(),
   }
   const component = render(
     <Rise
@@ -140,7 +141,7 @@ it('should send an action with ref as a path when trigerred by referenced compon
     get: (store: string) => {
       if (store === 'secondStore') {
         return {
-          subscribe: () => jest.fn(),
+          subscribe: () => vi.fn(),
           get() {
             return {
               $: 'component',
@@ -155,7 +156,7 @@ it('should send an action with ref as a path when trigerred by referenced compon
         }
       }
       return {
-        subscribe: () => jest.fn(),
+        subscribe: () => vi.fn(),
         get() {
           return {
             $: 'component',
@@ -176,10 +177,10 @@ it('should send an action with ref as a path when trigerred by referenced compon
         },
       }
     },
-    sendEvent: jest.fn().mockResolvedValue(response(null)),
+    sendEvent: vi.fn().mockResolvedValue(response(null)),
   }
 
-  const actionHandler = jest.fn()
+  const actionHandler = vi.fn()
   const component = render(
     <Rise
       components={BUILT_IN_COMPONENTS}
@@ -200,8 +201,8 @@ it('should send an action with ref as a path when trigerred by referenced compon
 })
 
 it('should subscribe to the root store', () => {
-  const mainStoreUnsubscribeFunction = jest.fn()
-  const mainStoreSubscribeFunction = jest.fn().mockReturnValue(mainStoreUnsubscribeFunction)
+  const mainStoreUnsubscribeFunction = vi.fn()
+  const mainStoreSubscribeFunction = vi.fn().mockReturnValue(mainStoreUnsubscribeFunction)
   const modelSource: ModelSource = {
     get: () => ({
       subscribe: mainStoreSubscribeFunction,
@@ -212,7 +213,7 @@ it('should subscribe to the root store', () => {
         }
       },
     }),
-    sendEvent: jest.fn(),
+    sendEvent: vi.fn(),
   }
   const element = render(
     <Rise
@@ -230,11 +231,11 @@ it('should subscribe to the root store', () => {
 })
 
 it('should manage subscription to stores referenced by refs', () => {
-  const mainStoreUnsubscribeFunction = jest.fn()
-  const mainStoreSubscribeFunction = jest.fn().mockReturnValue(mainStoreUnsubscribeFunction)
+  const mainStoreUnsubscribeFunction = vi.fn()
+  const mainStoreSubscribeFunction = vi.fn().mockReturnValue(mainStoreUnsubscribeFunction)
 
-  const secondStoreUnsubscribeFunction = jest.fn()
-  const secondStoreSubscribeFunction = jest.fn().mockReturnValue(secondStoreUnsubscribeFunction)
+  const secondStoreUnsubscribeFunction = vi.fn()
+  const secondStoreSubscribeFunction = vi.fn().mockReturnValue(secondStoreUnsubscribeFunction)
 
   const modelSource: ModelSource = {
     get: (name: string) => {
@@ -264,7 +265,7 @@ it('should manage subscription to stores referenced by refs', () => {
         }
       }
     },
-    sendEvent: jest.fn(),
+    sendEvent: vi.fn(),
   }
 
   const element = render(
@@ -296,7 +297,7 @@ it('should manage subscription to stores referenced by refs', () => {
 it('should dispatch all actions associated with an event', () => {
   const modelSource: ModelSource = {
     get: () => ({
-      subscribe: jest.fn().mockReturnValue(jest.fn()),
+      subscribe: vi.fn().mockReturnValue(vi.fn()),
       get() {
         return {
           $: 'component',
@@ -308,9 +309,9 @@ it('should dispatch all actions associated with an event', () => {
         }
       },
     }),
-    sendEvent: jest.fn().mockReturnValue(response(null)),
+    sendEvent: vi.fn().mockReturnValue(response(null)),
   }
-  const actionHandler = jest.fn()
+  const actionHandler = vi.fn()
   const component = render(
     <Rise
       components={BUILT_IN_COMPONENTS}

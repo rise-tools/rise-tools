@@ -4,8 +4,6 @@ import { useStream } from '@rise-tools/react'
 import {
   BookOpenText,
   CircleEllipsis,
-  Github,
-  Info,
   PlusCircle,
   Settings,
   VenetianMask,

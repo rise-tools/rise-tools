@@ -1,5 +1,5 @@
 import { createComponentDefinition } from '@rise-tools/react'
-import * as t from 'tamagui'
+import type * as t from 'tamagui'
 import { LinearGradient as TLinearGradient } from 'tamagui/linear-gradient'
 
 export const Adapt = createComponentDefinition<typeof t.Adapt>('rise-tools/kit-tamagui/Adapt')

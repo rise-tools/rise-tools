@@ -16,7 +16,8 @@ To see an example client implementation that uses React Navigation, see the [sou
 
 ## Actions
 
-### `navigate(path: string)`
+### `navigate(path: string, options: NativeStackNavigationOptions)`
+
 ### `goBack`
 
 ## Components
@@ -24,3 +25,29 @@ To see an example client implementation that uses React Navigation, see the [sou
 ### `StackScreen`
 
 https://reactnavigation.org/docs/stack-navigator/#options
+
+## Type checking with TypeScript
+
+Place the following code in your project, next to your server-side models:
+
+```ts
+import '@rise-tools/kit-react-navigation/server'
+declare module '@rise-tools/kit-react-navigation/server' {
+  interface Navigate {
+    // your server-defined and local screens go here
+    screens:
+      // no params
+      'home'
+      // with param (when used together with lookup() model state)
+      | `profile/${string}`
+    }
+  }
+}
+```
+
+This will provide type-safety, when calling navigate:
+
+```ts
+navigate('home')
+navigate('profile/mike', { title: 'Profile of Mike' })
+```

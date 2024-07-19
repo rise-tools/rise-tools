@@ -1,5 +1,6 @@
 import { act, fireEvent, render } from '@testing-library/react'
 import React from 'react'
+import { expect, it, vi } from 'vitest'
 
 import { ModelSource, Rise } from '../refs'
 import { response } from '../response'
@@ -16,7 +17,7 @@ it('should render initial localStateExperimental', () => {
   )
   const modelSource: ModelSource = {
     get: () => ({
-      subscribe: () => jest.fn(),
+      subscribe: () => vi.fn(),
       get() {
         return [
           {
@@ -36,7 +37,7 @@ it('should render initial localStateExperimental', () => {
         ]
       },
     }),
-    sendEvent: jest.fn(),
+    sendEvent: vi.fn(),
   }
   const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   expect(component.asFragment()).toMatchInlineSnapshot(`
@@ -55,7 +56,7 @@ it('should set localStateExperimental with default payload', async () => {
   const value = localStateExperimental('foo', 'example/value')
   const modelSource: ModelSource = {
     get: () => ({
-      subscribe: () => jest.fn(),
+      subscribe: () => vi.fn(),
       get() {
         return [
           {
@@ -76,7 +77,7 @@ it('should set localStateExperimental with default payload', async () => {
         ]
       },
     }),
-    sendEvent: jest.fn(),
+    sendEvent: vi.fn(),
   }
   const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   await act(async () => {
@@ -98,7 +99,7 @@ it('should set localStateExperimental with custom value', async () => {
   const value = localStateExperimental('foo', 'example/value')
   const modelSource: ModelSource = {
     get: () => ({
-      subscribe: () => jest.fn(),
+      subscribe: () => vi.fn(),
       get() {
         return [
           {
@@ -119,7 +120,7 @@ it('should set localStateExperimental with custom value', async () => {
         ]
       },
     }),
-    sendEvent: jest.fn(),
+    sendEvent: vi.fn(),
   }
   const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   await act(async () => {
@@ -141,7 +142,7 @@ it('should toggle localStateExperimental', async () => {
   const isDisabled = localStateExperimental(false, 'example/is-disabled')
   const modelSource: ModelSource = {
     get: () => ({
-      subscribe: () => jest.fn(),
+      subscribe: () => vi.fn(),
       get() {
         return [
           {
@@ -164,7 +165,7 @@ it('should toggle localStateExperimental', async () => {
         ]
       },
     }),
-    sendEvent: jest.fn(),
+    sendEvent: vi.fn(),
   }
   const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   expect(component.asFragment()).toMatchInlineSnapshot(`
@@ -194,7 +195,7 @@ it('should increment localStateExperimental', async () => {
   const counter = localStateExperimental(1, 'example/counter')
   const modelSource: ModelSource = {
     get: () => ({
-      subscribe: () => jest.fn(),
+      subscribe: () => vi.fn(),
       get() {
         return [
           {
@@ -215,7 +216,7 @@ it('should increment localStateExperimental', async () => {
         ]
       },
     }),
-    sendEvent: jest.fn(),
+    sendEvent: vi.fn(),
   }
   const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   expect(component.asFragment()).toMatchInlineSnapshot(`
@@ -248,7 +249,7 @@ it('should modify localStateExperimental after receiving response from the serve
   const value = localStateExperimental('foo', 'example/value')
   const modelSource: ModelSource = {
     get: () => ({
-      subscribe: jest.fn().mockReturnValue(jest.fn()),
+      subscribe: vi.fn().mockReturnValue(vi.fn()),
       get() {
         return {
           $: 'component',
@@ -263,7 +264,7 @@ it('should modify localStateExperimental after receiving response from the serve
         }
       },
     }),
-    sendEvent: jest.fn().mockReturnValue(response(setStateAction(value, 'bar'), { key: '123' })),
+    sendEvent: vi.fn().mockReturnValue(response(setStateAction(value, 'bar'), { key: '123' })),
   }
   const component = render(<Rise components={BUILT_IN_COMPONENTS} modelSource={modelSource} />)
   expect(component.asFragment()).toMatchInlineSnapshot(`
@@ -290,11 +291,11 @@ it('should modify localStateExperimental after receiving response from the serve
 })
 
 it('should inject localStateExperimental (initial value) into function handler', async () => {
-  const onEvent = jest.fn().mockReturnValue(response(null))
+  const onEvent = vi.fn().mockReturnValue(response(null))
   const isChecked = localStateExperimental(false, 'example/is-checked')
   const modelSource: ModelSource = {
     get: () => ({
-      subscribe: () => jest.fn(),
+      subscribe: () => vi.fn(),
       get() {
         return [
           {
@@ -318,15 +319,15 @@ it('should inject localStateExperimental (initial value) into function handler',
   await act(async () => {
     fireEvent.click(component.getByTestId('button'))
   })
-  expect(onEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: false })
+  expect(onEvent.mock.lastCall?.[0].payload[0]).toEqual({ isChecked: false })
 })
 
 it('should inject current localStateExperimental value into function handler', async () => {
-  const onEvent = jest.fn().mockReturnValue(response(null))
+  const onEvent = vi.fn().mockReturnValue(response(null))
   const isChecked = localStateExperimental(false, 'example/is-checked')
   const modelSource: ModelSource = {
     get: () => ({
-      subscribe: () => jest.fn(),
+      subscribe: () => vi.fn(),
       get() {
         return [
           {
@@ -360,14 +361,14 @@ it('should inject current localStateExperimental value into function handler', a
     fireEvent.click(component.getByTestId('checkbox'))
     fireEvent.click(component.getByTestId('button'))
   })
-  expect(onEvent.mock.lastCall[0].payload[0]).toEqual({ isChecked: true })
+  expect(onEvent.mock.lastCall?.[0].payload[0]).toEqual({ isChecked: true })
 })
 
 it('should lookup value from the arguments', async () => {
   const userName = localStateExperimental('', 'example/user-name')
   const modelSource: ModelSource = {
     get: () => ({
-      subscribe: () => jest.fn(),
+      subscribe: () => vi.fn(),
       get() {
         return [
           {
@@ -388,7 +389,7 @@ it('should lookup value from the arguments', async () => {
         ]
       },
     }),
-    sendEvent: jest.fn(),
+    sendEvent: vi.fn(),
   }
   const component = render(
     <Rise
