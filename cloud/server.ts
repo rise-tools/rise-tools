@@ -3,7 +3,7 @@ import { Hono } from 'hono'
 import { bearerAuth } from 'hono/bearer-auth'
 import httpProxy from 'http-proxy'
 
-import { jwt, tunnelService } from './server.tunnel.service'
+import { jwt, tunnelService } from '../packages/cli/src/tunnel/server.tunnel.service'
 
 const app = new Hono()
 
