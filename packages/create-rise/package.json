@@ -23,7 +23,8 @@
   "type": "module",
   "author": "Arpit Bhalla (https://github.com/arpitBhalla)",
   "contributors": [
-    "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)"
+    "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+    "Piotr Kochanowski (https://github.com/TheKohan)"
   ],
   "bugs": {
     "url": "https://github.com/rise-tools/rise-tools/issues"
