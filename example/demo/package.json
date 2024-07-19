@@ -8,6 +8,7 @@
     "url": "https://github.com/rise-tools/rise-tools.git",
     "directory": "example/demo"
   },
+  "type": "module",
   "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "bugs": {
     "url": "https://github.com/rise-tools/rise-tools/issues"
@@ -19,12 +20,13 @@
     "start": "tsx ./src"
   },
   "dependencies": {
-    "@rise-tools/react": "0.3.1",
-    "@rise-tools/server": "0.3.1",
-    "@rise-tools/kitchen-sink": "0.3.1",
-    "@rise-tools/kit-react-navigation": "0.3.1"
+    "@rise-tools/react": "0.5.0",
+    "@rise-tools/server": "0.5.0",
+    "@rise-tools/kitchen-sink": "0.5.0",
+    "@rise-tools/kit-react-navigation": "0.5.0"
   },
   "devDependencies": {
+    "@rise-tools/preset-typescript": "0.5.0",
     "tsx": "^4.11.0",
     "typescript": "^5.1.3"
   }

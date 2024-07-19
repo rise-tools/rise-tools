@@ -1,0 +1,26 @@
+{
+  "name": "@rise-tools/preset-typescript",
+  "version": "0.5.0",
+  "license": "Apache-2.0",
+  "description": "TypeScript preset for Rise projects",
+  "files": [
+    "tsconfig.json"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
+    "directory": "packages/preset-typescript"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "bugs": {
+    "url": "https://github.com/rise-tools/rise-tools/issues"
+  },
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
+  "dependencies": {
+    "@rise-tools/react": "0.5.0",
+    "@tsconfig/node18": "^18.2.3"
+  }
+}

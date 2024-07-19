@@ -7,6 +7,12 @@
   "files": [],
   "references": [
     {
+      "path": "./packages/cli"
+    },
+    {
+      "path": "./packages/create-rise"
+    },
+    {
       "path": "./packages/react"
     },
     {

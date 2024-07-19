@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/ws-client",
-  "version": "0.3.1",
+  "version": "0.5.0",
   "license": "Apache-2.0",
   "description": "",
   "main": "./lib/index.js",
@@ -32,7 +32,7 @@
     "reconnecting-websocket": "^4.4.0"
   },
   "devDependencies": {
-    "@rise-tools/react": "0.3.1",
+    "@rise-tools/react": "0.5.0",
     "@types/react": "^18.0.27",
     "jest-websocket-mock": "^2.5.0",
     "metro-react-native-babel-preset": "^0.77.0",

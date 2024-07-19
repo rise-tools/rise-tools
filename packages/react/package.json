@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/react",
-  "version": "0.3.1",
+  "version": "0.5.0",
   "license": "Apache-2.0",
   "description": "",
   "main": "./lib/index.js",

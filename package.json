@@ -5,6 +5,7 @@
   "workspaces": [
     "apps/*",
     "packages/*",
+    "templates/*",
     "example/*",
     "docs",
     "tunnel"
@@ -80,7 +81,8 @@
       },
       "@release-it-plugins/workspaces": {
         "workspaces": [
-          "packages/*"
+          "packages/*",
+          "templates/*"
         ],
         "additionalManifests": {
           "dependencyUpdates": [
@@ -91,5 +93,5 @@
       }
     }
   },
-  "version": "0.3.1"
+  "version": "0.5.0"
 }

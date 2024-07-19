@@ -1,0 +1,47 @@
+{
+  "name": "@rise-tools/template-blank-playground",
+  "version": "0.5.0",
+  "license": "Apache-2.0",
+  "description": "Blank template for Rise projects that work inside Rise Playground",
+  "files": [
+    "src",
+    "lib",
+    "tsconfig.json",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rise-tools/rise-tools.git",
+    "directory": "templates/blank-playground"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
+  "bugs": {
+    "url": "https://github.com/rise-tools/rise-tools/issues"
+  },
+  "homepage": "https://github.com/rise-tools/rise-tools#readme",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "dev": "tsx watch src/server.ts"
+  },
+  "dependencies": {
+    "@rise-tools/kit-react-navigation": "0.5.0",
+    "@rise-tools/kitchen-sink": "0.5.0",
+    "@rise-tools/server": "0.5.0"
+  },
+  "devDependencies": {
+    "@rise-tools/preset-typescript": "0.5.0",
+    "@types/react": "^18.0.27",
+    "tsx": "^4.11.0",
+    "typescript": "^5.1.3"
+  },
+  "overrides": {
+    "react-dom": "18.2.0"
+  }
+}

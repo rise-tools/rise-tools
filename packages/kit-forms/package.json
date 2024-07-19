@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/kit-forms",
-  "version": "0.3.1",
+  "version": "0.5.0",
   "license": "Apache-2.0",
   "description": "",
   "main": "./lib/index.js",
@@ -30,11 +30,11 @@
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "dependencies": {
-    "@rise-tools/react": "0.3.1",
+    "@rise-tools/react": "0.5.0",
     "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "@rise-tools/kit-tamagui": "0.3.1",
+    "@rise-tools/kit-tamagui": "0.5.0",
     "tamagui": "^1.100.3"
   }
 }

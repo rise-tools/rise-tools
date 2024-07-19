@@ -1,8 +1,8 @@
 import Link from '@docusaurus/Link'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
 import Layout from '@theme/Layout'
-import clsx from 'clsx'
 import {
+  ArrowRight,
   Atom,
   Braces,
   ClipboardPen,
@@ -18,12 +18,16 @@ import {
 } from 'lucide-react'
 import React, { ReactNode } from 'react'
 
-import test from '../../assets/forms-ui.png'
 import { PlaygroundAppDownload } from '../components/PlaygroundAppDownload'
-import styles from './index.module.css'
 
 function HomepageHeader() {
-  return <header className={clsx('hero hero--primary', styles.heroBanner)}></header>
+  return (
+    <header
+      className={
+        'bg-no-repeat bg-center bg-hero-image sm:bg-[length:1340px_150px] sm:h-[150px] bg-[length:1072px_120px] h-[120px] md:bg-[length:1605px_190px] md:h-[190px] lg:bg-[length:3216px_360px] lg:h-[360px] overflow-hidden'
+      }
+    ></header>
+  )
 }
 
 const tools = [
@@ -103,8 +107,10 @@ const tools = [
 
 function Section({ children, alt = false }: { children: ReactNode; alt?: boolean }) {
   return (
-    <section className={clsx(styles.section, alt && styles.sectionAlt)}>
-      <div>{children}</div>
+    <section className={`${alt ? 'bg-black' : ''}`}>
+      <div className="lg:container w-100  md:px-8 px-4 md:py-12 py-8 space-y-10 mx-auto">
+        {children}
+      </div>
     </section>
   )
 }
@@ -113,22 +119,27 @@ function SectionContent({
   title,
   text,
   graphic,
+  footer,
 }: {
   title: string
   text: string
   graphic: ReactNode
+  footer?: ReactNode
 }) {
   return (
-    <div className={styles.sectionContent}>
-      <h2>{title}</h2>
+    <div className="space-y-8">
+      <h2 className="flex center rise-gradient-text font-extrabold lg:text-7xl md:text-5xl text-4xl text-center">
+        {title}
+      </h2>
       <p>{text}</p>
-      <div className={styles.sectionGraphic}>{graphic}</div>
+      <div>
+        <div className={'flex flex-col center drop-shadow-md rounded-2xl overflow-hidden'}>
+          {graphic}
+        </div>
+      </div>
+      {footer && <div>{footer}</div>}
     </div>
   )
-}
-
-function Interstitial({ children }: { children: ReactNode }) {
-  return <section className={styles.interstitial}>{children}</section>
 }
 
 export default function Home() {
@@ -139,15 +150,17 @@ export default function Home() {
       description="Description will go into a meta tag in <head />"
     >
       <HomepageHeader />
-      <div className={styles.heroCta}>
-        <Link className="button button--secondary button--lg" to="/docs/intro">
-          Introduction
-        </Link>
-        <Link className="button button--secondary button--lg" to="/docs/getting-started">
-          Get Started
-        </Link>
-      </div>
-      <main className={styles.main}>
+
+      <main className={'bg-gradient-to-tl from-background from-30% to-black'}>
+        <div className={'flex center p-5 gap-5 md:mt-10 mt-5'}>
+          <Link className="rise-button shrink-0" to="/docs/getting-started">
+            Get Started
+          </Link>
+          <Link className="rise-button-outlined flex items-center gap-2 shrink-0" to="/docs/intro">
+            <div>Introduction</div>
+            <ArrowRight className="w-6 h-6 " />
+          </Link>
+        </div>
         <Section>
           <SectionContent
             title="Forms and UI, defined on your server"
@@ -155,11 +168,18 @@ export default function Home() {
             graphic={<img src="/img/forms-ui.png" />}
           />
         </Section>
-        <Interstitial>
-          <h2>Any Framework.</h2>
-          <h2>Any Server.</h2>
-          <h2>Ready Today.</h2>
-        </Interstitial>
+        <section className="bg-white px-10 py-8">
+          <h2 className="lg:text-6xl md:text-4xl text-3xl font-extrabold text-black text-center">
+            Any Framework.
+          </h2>
+          <h2 className="lg:text-6xl md:text-4xl text-3xl font-extrabold text-black text-center">
+            Any Server.
+          </h2>
+          <h2 className="lg:text-6xl md:text-4xl text-3xl font-extrabold text-black text-center">
+            Ready Today.
+          </h2>
+        </section>
+
         <Section alt>
           <SectionContent
             title="Local Actions. Remote Events. Dynamic Routes."
@@ -171,22 +191,24 @@ export default function Home() {
           <SectionContent
             title="Playground App: Jump-Start Your Dev"
             text=""
-            graphic={
-              <>
-                <img src="/img/playground-app.png" />
-                <PlaygroundAppDownload />
-              </>
-            }
+            graphic={<img src="/img/playground-app.png" />}
+            footer={<PlaygroundAppDownload />}
           />
         </Section>
         <Section alt>
-          <h2 className={styles.sectionTitle}>Meet The Tools</h2>
-          <div className={styles.toolsList}>
+          <h2 className={'rise-gradient-text lg:text-6xl md:text-4xl text-3xl font-extrabold'}>
+            Meet The Tools
+          </h2>
+          <div className={'grid gap-10 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6'}>
             {tools.map((tool) => {
               return (
-                <a className={styles.tool} href={tool.url}>
+                <a
+                  className={'flex flex-col items-center  hover:no-underline text-white'}
+                  key={tool.name}
+                  href={tool.url}
+                >
                   <h4>{tool.name}</h4>
-                  <tool.icon className={styles.toolIcon} size={64} />
+                  <tool.icon size={64} />
                 </a>
               )
             })}

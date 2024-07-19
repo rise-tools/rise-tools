@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/kitchen-sink",
-  "version": "0.3.1",
+  "version": "0.5.0",
   "license": "Apache-2.0",
   "description": "",
   "main": "./lib/index.js",
@@ -30,15 +30,15 @@
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "dependencies": {
-    "@rise-tools/kit-tamagui": "0.3.1",
-    "@rise-tools/kit": "0.3.1",
-    "@rise-tools/kit-haptics": "0.3.1",
-    "@rise-tools/kit-forms": "0.3.1",
-    "@rise-tools/kit-linking": "0.3.1",
-    "@rise-tools/kit-tamagui-toast": "0.3.1",
-    "@rise-tools/kit-lucide-icons": "0.3.1",
-    "@rise-tools/kit-svg": "0.3.1",
-    "@rise-tools/kit-qrcode": "0.3.1"
+    "@rise-tools/kit-tamagui": "0.5.0",
+    "@rise-tools/kit": "0.5.0",
+    "@rise-tools/kit-haptics": "0.5.0",
+    "@rise-tools/kit-forms": "0.5.0",
+    "@rise-tools/kit-linking": "0.5.0",
+    "@rise-tools/kit-tamagui-toast": "0.5.0",
+    "@rise-tools/kit-lucide-icons": "0.5.0",
+    "@rise-tools/kit-svg": "0.5.0",
+    "@rise-tools/kit-qrcode": "0.5.0"
   },
   "peerDependencies": {
     "@tamagui/lucide-icons": "^1.100.3",
