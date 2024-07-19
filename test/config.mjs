@@ -15,6 +15,7 @@ const alias = Object.fromEntries(
 export const node = defineProject({
   test: {
     environment: 'node',
+    include: ['**/src/**/*.test.*'],
   },
   esbuild: {
     jsxDev: false,

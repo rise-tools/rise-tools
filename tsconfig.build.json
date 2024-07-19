@@ -60,10 +60,5 @@
     {
       "path": "./packages/kit-qrcode"
     }
-  ],
-  "exclude": [
-    "**/__tests__",
-    "**/*.test.tsx",
-    "**/*.test.ts"
   ]
 }
