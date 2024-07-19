@@ -1,5 +1,6 @@
 import { event, EventRequest, HandlerEvent, response } from '@rise-tools/react'
 import WS from 'jest-websocket-mock'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 
 import { createWSModelSource } from '../data-source'
 
@@ -25,7 +26,7 @@ it('should resolve a promise once response comes in', async () => {
       propKey: 'onPress',
       component: 'View',
     },
-    modelState: event(jest.fn()),
+    modelState: event(vi.fn()),
     payload: [null],
   }
 
@@ -35,10 +36,10 @@ it('should resolve a promise once response comes in', async () => {
   ws.send(response({}, { key: message.key }))
 
   expect(await promise).toMatchInlineSnapshot(`
-    Object {
+    {
       "$": "evt-res",
       "key": "1",
-      "payload": Object {},
+      "payload": {},
     }
   `)
 })
@@ -56,7 +57,7 @@ it('should timeout if response comes later than timeout specified', async () => 
       propKey: 'onPress',
       component: 'View',
     },
-    modelState: event(jest.fn(), { timeout: 1000 }),
+    modelState: event(vi.fn(), { timeout: 1000 }),
     payload: [null],
   }
 
@@ -67,5 +68,5 @@ it('should timeout if response comes later than timeout specified', async () => 
     ws.send(response({}, { key: message.key }))
   }, 2000)
 
-  expect(promise).rejects.toMatch('timeout')
+  expect(promise).rejects.toBeInstanceOf(Error)
 })

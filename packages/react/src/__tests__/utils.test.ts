@@ -1,3 +1,5 @@
+import { expect, it } from 'vitest'
+
 import { lookupValue } from '../utils'
 
 it('should lookup value', () => {
@@ -11,8 +13,5 @@ it('should lookup value', () => {
 })
 
 it('should throw on non-object', () => {
-  expect(() => {
-    // @ts-ignore
-    lookupValue('string', ['path'])
-  }).toThrowError()
+  expect(() => lookupValue('string', ['path'])).toThrow()
 })

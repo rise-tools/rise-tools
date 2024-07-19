@@ -37,8 +37,8 @@
     "tamagui": "^1.100.3"
   },
   "peerDependencies": {
+    "expo-linear-gradient": "*",
     "react": "^18.2.0",
-    "tamagui": "^1.100.3",
-    "expo-linear-gradient": "*"
+    "tamagui": "^1.100.3"
   }
 }

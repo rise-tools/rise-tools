@@ -18,7 +18,6 @@ export async function downloadAndExtractTemplate(root: string, packageName: stri
   }
 
   await Stream.pipeline([
-    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
     Readable.fromWeb(response.body),
     tar.extract(
       {
