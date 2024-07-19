@@ -9,8 +9,8 @@ import { jwt } from './jwt.js'
 import { tunnelService } from './service.js'
 
 const app = new Hono()
-const service = tunnelService()
 const proxy = httpProxy.createProxyServer({})
+const service = tunnelService()
 
 const schema = z.object({
   url: z.string().url(),
