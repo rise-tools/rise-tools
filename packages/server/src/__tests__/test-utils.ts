@@ -3,8 +3,8 @@ import { vi } from 'vitest'
 export function createWaitableMock<MockInput extends Array<unknown>, MockOutput>(
   fn?: (...args: MockInput) => MockOutput
 ) {
-  let resolve
-  let times
+  let resolve: () => void
+  let times: number
   let calledCount = 0
   const mock = vi.fn((...args: MockInput) => {
     calledCount += 1
