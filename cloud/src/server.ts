@@ -12,13 +12,10 @@ const proxy = httpProxy.createProxyServer({})
 
 app.post('/projects', async (c) => {
   const body = (await c.req.json()) as { url: string } | undefined
-
   if (!body || !body.url) {
     return c.json({ error: 'Missing tunnel URL' }, 400)
   }
-
   const { projectId, secret } = service.createProject(body.url)
-
   return c.json({ projectId, secret }, 201)
 })
 
@@ -36,13 +33,10 @@ app.post(
     if (!body || !body.url) {
       return c.json({ error: 'Missing tunnel URL' }, 400)
     }
-
     const success = service.setTunnelURL(projectId, body.url)
-
     if (!success) {
       return c.json({ error: 'Project not found' }, 404)
     }
-
     return c.json({ message: 'Project updated successfully' })
   }
 )
