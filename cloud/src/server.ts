@@ -1,7 +1,9 @@
 import { serve } from '@hono/node-server'
+import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { bearerAuth } from 'hono/bearer-auth'
 import httpProxy from 'http-proxy'
+import { z } from 'zod'
 
 import { jwt } from './jwt.js'
 import { tunnelService } from './service.js'
@@ -10,12 +12,16 @@ const app = new Hono()
 const service = tunnelService()
 const proxy = httpProxy.createProxyServer({})
 
-app.post('/projects', async (c) => {
-  const body = (await c.req.json()) as { url: string } | undefined
-  if (!body || !body.url) {
+const schema = z.object({
+  url: z.string().url(),
+})
+
+app.post('/projects', zValidator('json', schema), async (c) => {
+  const url = c.req.valid('json').url
+  if (!url) {
     return c.json({ error: 'Missing tunnel URL' }, 400)
   }
-  const { projectId, secret } = service.createProject(body.url)
+  const { projectId, secret } = service.createProject(url)
   return c.json({ projectId, secret }, 201)
 })
 
@@ -26,14 +32,15 @@ app.post(
       return !!jwt.verify(token)?.projectId
     },
   }),
+  zValidator('json', schema),
   async (c) => {
     const projectId = c.req.param('projectId')
-    const body = (await c.req.json()) as { url: string } | undefined
+    const url = c.req.valid('json').url
 
-    if (!body || !body.url) {
+    if (!url) {
       return c.json({ error: 'Missing tunnel URL' }, 400)
     }
-    const success = service.setTunnelURL(projectId, body.url)
+    const success = service.setTunnelURL(projectId, url)
     if (!success) {
       return c.json({ error: 'Project not found' }, 404)
     }
