@@ -36,11 +36,11 @@ export type AnyModels =
 
 type LookupModelPathOf<M, Prefix extends string = ''> =
   M extends ValueModel<any>
-    ? Prefix
+    ? `${Prefix}/${string}`
     : M extends LookupModel<infer LM>
       ? LookupModelPathOf<LM, `${Prefix}`>
       : M extends object
-        ? InferModel<M, `${Prefix}/[id]/`>
+        ? InferModel<M, `${Prefix}/${string}/`>
         : never
 
 type ExcludeSymbol<K> = K extends symbol ? never : K

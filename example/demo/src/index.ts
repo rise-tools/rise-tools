@@ -11,8 +11,9 @@ const port = Number(process.env.PORT || '3005')
 createWSServer(models, port)
 
 import '@rise-tools/kit-react-navigation/server'
+
 declare module '@rise-tools/kit-react-navigation/server' {
   interface Navigate {
-    screens: Record<InferModel<typeof models>, void>
+    screens: InferModel<typeof models>
   }
 }
