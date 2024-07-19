@@ -36,10 +36,7 @@
   },
   "devDependencies": {
     "@types/dedent": "^0.7.2",
-<<<<<<< HEAD
     "@types/node": "^18.19.41",
-=======
->>>>>>> dev
     "@types/ws": "^8.5.10",
     "metro-react-native-babel-preset": "^0.77.0"
   }
