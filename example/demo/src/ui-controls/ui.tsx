@@ -54,39 +54,43 @@ function UI() {
   return (
     <>
       <YStack padding="$4">
-        <Button onPress={navigate('form')} borderBottomLeftRadius={0} borderBottomRightRadius={0}>
+        <Button
+          onPress={navigate('form', { title: 'Form' })}
+          borderBottomLeftRadius={0}
+          borderBottomRightRadius={0}
+        >
           Form
         </Button>
         <Separator />
-        <Button onPress={navigate('list')} borderRadius={0}>
+        <Button onPress={navigate('list', { title: 'List' })} borderRadius={0}>
           List
         </Button>
         <Separator />
-        <Button onPress={navigate('draggableList')} borderRadius={0}>
+        <Button onPress={navigate('draggableList', { title: 'Draggable List' })} borderRadius={0}>
           DraggableList
         </Button>
         <Separator />
-        <Button onPress={navigate('toast')} borderRadius={0}>
+        <Button onPress={navigate('toast', { title: 'Toast' })} borderRadius={0}>
           Toast
         </Button>
         <Separator />
-        <Button onPress={navigate('haptics')} borderRadius={0}>
+        <Button onPress={navigate('haptics', { title: 'Haptics' })} borderRadius={0}>
           Haptics
         </Button>
         <Separator />
-        <Button onPress={navigate('svg')} borderRadius={0}>
+        <Button onPress={navigate('svg', { title: 'SVG' })} borderRadius={0}>
           SVG
         </Button>
         <Separator />
-        <Button onPress={navigate('icons')} borderRadius={0}>
+        <Button onPress={navigate('icons', { title: 'Icons' })} borderRadius={0}>
           Icons
         </Button>
         <Separator />
-        <Button onPress={navigate('linking')} borderRadius={0}>
+        <Button onPress={navigate('linking', { title: 'Linking' })} borderRadius={0}>
           Linking
         </Button>
         <Separator />
-        <Button onPress={navigate('qrcode')} borderRadius={0}>
+        <Button onPress={navigate('qrcode', { title: 'QR Code' })} borderRadius={0}>
           QR Code
         </Button>
         <Separator />

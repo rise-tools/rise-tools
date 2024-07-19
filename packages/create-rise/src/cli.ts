@@ -18,9 +18,6 @@ type Options = {
   yes: boolean
 }
 
-const RISE_ASCII =
-  '\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2557  \r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u255A\u2550\u2550\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u255D  \r\n\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\r\n                           \r\n'
-
 const DEFAULT_PROJECT_NAME = 'rise-project'
 
 async function createRise(opts: Options) {
@@ -122,8 +119,8 @@ async function createRise(opts: Options) {
 
   console.log(dedent`
     ${bold('📱 For fast and easy prototyping check out Rise Playground App!')}
-    ${highlight('iOS')}     ${chalk.underline('https://apps.apple.com/us/app/rise-playground/id6499588861')}
-    ${highlight('Android')} ${chalk.underline('https://play.google.com/store/apps/details?id=com.xplatlabs.rise')}
+    ${highlight('iOS')}     ${link('https://apps.apple.com/us/app/rise-playground/id6499588861')}
+    ${highlight('Android')} ${link('https://play.google.com/store/apps/details?id=com.xplatlabs.rise')}
   `)
 }
 
