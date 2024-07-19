@@ -1,14 +1,6 @@
-import jsonwebtoken from 'jsonwebtoken'
 import { uuid } from 'uuidv4'
 
-export const jwt = {
-  sign(projectId: string) {
-    return jsonwebtoken.sign({ projectId }, process.env.SECRET_KEY || '')
-  },
-  verify(secret: string) {
-    return jsonwebtoken.verify(secret, process.env.SECRET_KEY || '') as { projectId: string }
-  },
-}
+import { jwt } from './jwt.js'
 
 export const tunnelService = () => {
   const projects = new Map<string, string>()

@@ -3,13 +3,12 @@ import { Hono } from 'hono'
 import { bearerAuth } from 'hono/bearer-auth'
 import httpProxy from 'http-proxy'
 
-import { jwt, tunnelService } from '../packages/cli/src/tunnel/server.tunnel.service'
+import { jwt } from './jwt.js'
+import { tunnelService } from './service.js'
 
 const app = new Hono()
-
-const proxy = httpProxy.createProxyServer({})
-
 const service = tunnelService()
+const proxy = httpProxy.createProxyServer({})
 
 app.post('/projects', async (c) => {
   const body = (await c.req.json()) as { url: string } | undefined
@@ -50,7 +49,7 @@ app.post(
 
 app.all('/*', async (c) => {
   return new Promise((resolve) => {
-    const projectId = c.req.headers.host?.split('.')[0]
+    const projectId = c.req.header().host?.split('.')[0]
     if (!projectId) return
     const tunnelURL = service.getTunnelURL(projectId)
     proxy.web(
@@ -82,6 +81,6 @@ server.on('upgrade', (req, socket, head) => {
   if (!projectId) return
   const tunnelURL = service.getTunnelURL(projectId)
   proxy.ws(req, socket, head, {
-    target: 'ws://destination-server.com',
+    target: `ws://${tunnelURL}`,
   })
 })
