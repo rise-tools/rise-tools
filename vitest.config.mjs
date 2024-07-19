@@ -2,14 +2,19 @@ import path from 'node:path'
 
 import react from '@vitejs/plugin-react'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import { defineConfig } from 'vitest/config'
+import { defineProject } from 'vitest/config'
 
-export default defineConfig({
+export default defineProject({
   plugins: [react(), tsconfigPaths()],
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: [path.resolve(__dirname, 'vitest/setup.js')],
+    server: {
+      deps: {
+        inline: ['@rise-tools/cli'],
+      },
+    },
   },
   esbuild: {
     jsxDev: false,
