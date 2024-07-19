@@ -17,6 +17,6 @@ Object.defineProperty(global, 'matchMedia', {
   })),
 })
 
-afterEach(() => {
-  cleanup()
-})
+// afterEach(() => {
+//   cleanup()
+// })
