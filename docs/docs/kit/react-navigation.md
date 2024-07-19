@@ -16,7 +16,8 @@ To see an example client implementation that uses React Navigation, see the [sou
 
 ## Actions
 
-### `navigate(path: string)`
+### `navigate(path: string, options: NativeStackNavigationOptions)`
+
 ### `goBack`
 
 ## Components
@@ -34,13 +35,11 @@ import '@rise-tools/kit-react-navigation/server'
 declare module '@rise-tools/kit-react-navigation/server' {
   interface Navigate {
     // your server-defined and local screens go here
-    screens: {
+    screens:
       // no params
-      home: void
-      // with params
-      profile: { user: string }
-      // with optional params
-      help: { sessionId: string } | undefined
+      'home'
+      // with param (when used together with lookup() model state)
+      | `profile/${string}`
     }
   }
 }
@@ -50,7 +49,5 @@ This will provide type-safety, when calling navigate:
 
 ```ts
 navigate('home')
-navigate('profile', { params: { user: 'Mike' }})
-navigate('help')
-navigate('help', { params: { sessionId: '<<hash>>' }})
+navigate('profile/mike', { title: 'Profile of Mike' })
 ```
