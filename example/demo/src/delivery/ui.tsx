@@ -97,7 +97,7 @@ function Survey() {
             fontSize="$5"
             fontWeight="bold"
             color="white"
-            onPress={navigate('delivery:feedback-form')}
+            onPress={navigate('delivery:feedback-form', { screen: { title: 'Feedback' } })}
           >
             Send Feedback
           </Button>

@@ -1,3 +1,4 @@
+import type { NativeStackNavigationOptions } from '@react-navigation/native-stack'
 import { action, ActionsDefinition, createComponentDefinition } from '@rise-tools/react'
 
 import type { Screen } from './index'
@@ -7,9 +8,7 @@ export type ReactNavigationActions = ActionsDefinition<
 >
 
 type NavigateOptions = {
-  screen?: {
-    title?: string
-  }
+  screen?: NativeStackNavigationOptions
 }
 
 export const navigate = <T extends keyof Path<Navigate>, Params extends Path<Navigate>[T]>(
