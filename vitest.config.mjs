@@ -27,6 +27,9 @@ export default defineProject({
     alias: {
       ...aliases,
       'react-native': 'react-native-web',
+      // https://github.com/evanw/esbuild/issues/1719#issuecomment-953470495
+      // https://github.com/evanw/esbuild/issues/532
+      tamagui: path.resolve('./node_modules/tamagui/dist/cjs'),
     },
   },
 })
