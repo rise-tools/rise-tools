@@ -1,4 +1,4 @@
-import { createWSServer } from '@rise-tools/server'
+import { createWSServer, InferModel } from '@rise-tools/server'
 
 import { models as delivery } from './delivery/ui.js'
 import { models as inventory } from './inventory/ui.js'
@@ -13,6 +13,6 @@ createWSServer(models, port)
 import '@rise-tools/kit-react-navigation/server'
 declare module '@rise-tools/kit-react-navigation/server' {
   interface Navigate {
-    screens: Record<keyof typeof models, void>
+    screens: Record<InferModel<typeof models>, void>
   }
 }
