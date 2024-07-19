@@ -36,8 +36,8 @@
     "dev": "tsx src/cli.ts"
   },
   "dependencies": {
-    "@rise-tools/cli": "0.5.0",
     "@inquirer/prompts": "^5.2.0",
+    "@rise-tools/cli": "0.5.0",
     "dedent": "^1.5.3",
     "gradient-string": "^2.0.2",
     "tar": "^7.4.0",
@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@types/dedent": "^0.7.2",
-    "@types/gradient-string": "^1.1.6"
+    "@types/gradient-string": "^1.1.6",
+    "@types/node": "^18.19.41"
   }
 }
