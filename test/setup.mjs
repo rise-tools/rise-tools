@@ -1,8 +1,10 @@
 import { cleanup } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
 
-// `matchMedia` is not available in JSDOM, so we need to mock it out
-// https://github.com/vitest-dev/vitest/issues/821
+/**
+ * `matchMedia` is not available in JSDOM, so we need to mock it out
+ * https://github.com/vitest-dev/vitest/issues/821
+ */
 Object.defineProperty(global, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation((query) => ({
@@ -17,6 +19,6 @@ Object.defineProperty(global, 'matchMedia', {
   })),
 })
 
-// afterEach(() => {
-//   cleanup()
-// })
+afterEach(() => {
+  cleanup()
+})

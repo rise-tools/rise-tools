@@ -1,6 +1,3 @@
-/**
- * @vitest-environment node
- */
 import { afterAll, describe, expect, Mock, test } from 'vitest'
 import WS, { WebSocket } from 'ws'
 
