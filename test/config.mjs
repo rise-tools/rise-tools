@@ -16,6 +16,9 @@ export const node = defineProject({
   test: {
     environment: 'node',
     include: ['**/src/**/*.test.*'],
+    typecheck: {
+      enabled: true,
+    },
   },
   esbuild: {
     jsxDev: false,
