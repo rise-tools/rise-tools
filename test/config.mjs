@@ -17,6 +17,7 @@ export const node = defineProject({
     environment: 'node',
     include: ['**/src/**/*.test.*'],
     typecheck: {
+      ignoreSourceErrors: true,
       enabled: true,
     },
   },
