@@ -13,7 +13,7 @@ import {
 import { ref } from '@rise-tools/react'
 import { lookup, state, StateSetter, view } from '@rise-tools/server'
 
-import defaultInventory, { Inventory, Item } from './inventory'
+import defaultInventory, { Inventory, Item } from './inventory.js'
 
 // models
 const [inventoryItems, setInventoryState] = state(defaultInventory)

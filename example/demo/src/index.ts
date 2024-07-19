@@ -1,25 +1,13 @@
 import '@rise-tools/kit-react-navigation/server'
 
-import { createServer } from '@rise-tools/cli'
+import { createWSServer } from '@rise-tools/server'
 
-import { models as delivery } from './delivery/ui'
-import { models as inventory } from './inventory/ui'
-import { models as controls } from './ui-controls/ui'
+import { models as delivery } from './delivery/ui.js'
+import { models as inventory } from './inventory/ui.js'
+import { models as controls } from './ui-controls/ui.js'
 
 const models = { ...inventory, ...controls, ...delivery }
 
 const port = Number(process.env.PORT || '3005')
 
-createServer(models, {
-  port,
-  // ws: true,
-}).then((server) => {
-  console.log(server.appConnectionURL)
-  server.printQR()
-})
-
-declare module '@rise-tools/kit-react-navigation/server' {
-  export interface Navigate {
-    path: keyof typeof models
-  }
-}
+createWSServer(models, port)

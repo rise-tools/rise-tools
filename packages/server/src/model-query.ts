@@ -1,4 +1,4 @@
-import { QueryModel } from './types'
+import { QueryModel } from './types.js'
 
 export function query<V>(loadInput: () => Promise<V>): QueryModel<V> {
   let state: V | undefined = undefined

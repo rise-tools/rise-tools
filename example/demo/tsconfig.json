@@ -9,8 +9,6 @@
   }, {
     "path": "../../packages/kit-tamagui"
   }, {
-    "path": "../../packages/cli"
-  }, {
     "path": "../../packages/kit-react-navigation"
   }]
 }

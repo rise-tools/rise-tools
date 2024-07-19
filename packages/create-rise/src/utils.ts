@@ -1,9 +1,8 @@
 import { promises as Stream, Readable } from 'node:stream'
 
+import { text } from '@rise-tools/cli'
 import * as tar from 'tar'
 import { $, spinner } from 'zx'
-
-import { text } from './theme.js'
 
 export function formatTargetDir(targetDir: string) {
   return targetDir.trim().replace(/\/+$/g, '')
