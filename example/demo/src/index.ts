@@ -13,6 +13,6 @@ createWSServer(models, port)
 import '@rise-tools/kit-react-navigation/server'
 declare module '@rise-tools/kit-react-navigation/server' {
   interface Navigate {
-    path: keyof typeof models
+    screens: Record<keyof typeof models, void>
   }
 }
