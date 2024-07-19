@@ -85,3 +85,6 @@ yarn-error.log
 
 # Lefthook
 lefthook.yml
+
+# Vitest
+**/*.vitest-temp.json
