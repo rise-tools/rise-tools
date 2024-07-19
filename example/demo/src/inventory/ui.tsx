@@ -39,7 +39,7 @@ function HomeScreen({ inventory }: { inventory?: Inventory }) {
         {inventory?.map((item, idx) => (
           <Button
             unstyled
-            onPress={navigate(`inventoryItem/${item.key}`)}
+            onPress={navigate(`inventoryItem/${item.key}`, { title: item.title })}
             pressStyle={{ opacity: 0.8 }}
           >
             <XStack

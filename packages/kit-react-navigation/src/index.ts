@@ -1,13 +1,8 @@
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack'
 import { useEffect } from 'react'
-import z from 'zod'
 
 import { ReactNavigationActions } from './server'
-
-const NavigateActionPayload = z.object({
-  path: z.string(),
-})
 
 export const useReactNavigationActions = ({
   routeName,
@@ -18,11 +13,10 @@ export const useReactNavigationActions = ({
 
   return {
     'rise-tools/kit-react-navigation/navigate': {
-      action: ({ path }) => {
+      action: ({ path, options }) => {
         // @ts-expect-error - we don't know the navigation stack ahead of time
-        navigation.navigate(routeName, { path })
+        navigation.navigate(routeName, { path, options })
       },
-      validate: (payload) => NavigateActionPayload.parse(payload),
     },
     'rise-tools/kit-react-navigation/goBack': {
       action: () => {
