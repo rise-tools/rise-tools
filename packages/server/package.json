@@ -36,8 +36,8 @@
   },
   "devDependencies": {
     "@types/dedent": "^0.7.2",
+    "@types/node": "^18.19.41",
     "@types/ws": "^8.5.10",
-    "metro-react-native-babel-preset": "^0.77.0",
-    "node-fetch": "^3.3.2"
+    "metro-react-native-babel-preset": "^0.77.0"
   }
 }

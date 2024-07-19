@@ -1,5 +1,5 @@
-import { lookup } from '../model-lookup'
-import { state } from '../model-state'
+import { lookup } from '../model-lookup.js'
+import { state } from '../model-state.js'
 
 describe('basic lookup behavior', () => {
   test('lookup', () => {

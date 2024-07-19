@@ -4,10 +4,10 @@
 
 import WS, { WebSocket } from 'ws'
 
-import { state } from '../model-state'
-import { AnyModels } from '../types'
-import { createWSServer } from '../ws-server'
-import { createWaitableMock } from './test-utils'
+import { state } from '../model-state.js'
+import { AnyModels } from '../types.js'
+import { createWSServer } from '../ws-server.js'
+import { createWaitableMock } from './test-utils.js'
 
 type TestServerClient = {
   client: WebSocket

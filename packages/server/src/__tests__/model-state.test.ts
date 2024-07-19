@@ -1,4 +1,4 @@
-import { state } from '../model-state'
+import { state } from '../model-state.js'
 
 describe('model-state', () => {
   test('get and set', () => {

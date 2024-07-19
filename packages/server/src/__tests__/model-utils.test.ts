@@ -1,6 +1,6 @@
-import { lookup } from '../model-lookup'
-import { state } from '../model-state'
-import { findModel, getModelState } from '../model-utils'
+import { lookup } from '../model-lookup.js'
+import { state } from '../model-state.js'
+import { findModel, getModelState } from '../model-utils.js'
 
 describe('findModel', () => {
   test('root find', () => {
