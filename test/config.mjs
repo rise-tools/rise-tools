@@ -40,4 +40,7 @@ export const react = mergeConfig(node, {
       },
     },
   },
+  esbuild: {
+    jsxImportSource: 'react',
+  },
 })

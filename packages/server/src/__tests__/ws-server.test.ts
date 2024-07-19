@@ -49,7 +49,7 @@ describe('model server', () => {
   test('basic ws server', async () => {
     const [aState, setA] = state('a')
     const bFunc = () => 'b'
-    testA = await testServer({ aState, bFunc }, 4108)
+    testA = await testServer({ aState, bFunc }, 4106)
     testA?.clientSend({ $: 'sub', keys: ['aState'] })
     await testA.waitForClientMessages(1)
     expect(testA.clientMessages).toHaveBeenLastCalledWith({ $: 'up', key: 'aState', val: 'a' })
@@ -71,7 +71,7 @@ describe('model server', () => {
           props: { onPress: { $: 'event', handler: eventHandler } },
         }),
       },
-      4109
+      4107
     )
     testB?.clientSend({ $: 'sub', keys: ['EventButton'] })
     await testB.waitForClientMessages(1)
