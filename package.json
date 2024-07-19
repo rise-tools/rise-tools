@@ -18,7 +18,7 @@
     "watch": "tsc --build tsconfig.build.json --watch",
     "clean": "del-cli ./packages/*/lib ./packages/*/*.tsbuildinfo",
     "check-deps": "check-dependency-version-consistency .",
-    "test": "vitest",
+    "test": "node --trace-deprecation=DEP0040 ./node_modules/.bin/vitest --silent",
     "release": "npm run clean && npm run build && release-it"
   },
   "devDependencies": {

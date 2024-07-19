@@ -1,6 +1,7 @@
 /* @jsxImportSource .. */
 
-import { vi } from 'vitest'
+import type { ReactNode } from 'react'
+import { expect, it, vi } from 'vitest'
 
 import { createComponentDefinition } from '../jsx-runtime'
 import { isComponentModelState, isEventModelState } from '../rise'
@@ -55,7 +56,7 @@ it('should turn function props into event', () => {
 })
 
 it('should set static children', () => {
-  const Section = ({ children }) => {
+  const Section = ({ children }: { children: ReactNode }) => {
     return (
       <View>
         <View>{children}</View>
@@ -99,7 +100,7 @@ it('should set static children', () => {
     }
   `)
   // Since DynamicSection maps over children, its type should change from static to dynamic
-  const DynamicSection = ({ children }) => {
+  const DynamicSection = ({ children }: { children: ReactNode[] }) => {
     return (
       <View>
         <View>

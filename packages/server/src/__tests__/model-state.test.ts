@@ -1,3 +1,5 @@
+import { describe, expect, test, vi } from 'vitest'
+
 import { state } from '../model-state.js'
 
 describe('model-state', () => {

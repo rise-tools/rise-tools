@@ -1,6 +1,6 @@
 import { act, fireEvent, render } from '@testing-library/react'
 import React, { useState } from 'react'
-import { vi } from 'vitest'
+import { expect, it, vi } from 'vitest'
 
 import { action, event } from '../events'
 import { BaseRise, ComponentDefinition, ComponentRegistry, EventRequest } from '../rise'
@@ -423,7 +423,7 @@ it('should fire multiple template events for an array of actions', () => {
   )
   fireEvent.click(component.getByTestId('button'))
 
-  expect(onEvent.mock.calls[0][0].modelState).toMatchInlineSnapshot(`
+  expect(onEvent.mock.calls?.[0]?.[0].modelState).toMatchInlineSnapshot(`
     [
       {
         "$": "action",

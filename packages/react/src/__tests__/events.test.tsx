@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react'
 import React, { PropsWithChildren, ReactNode } from 'react'
-import { vi } from 'vitest'
+import { beforeEach, expect, it, vi } from 'vitest'
 
 import { BaseRise } from '../rise'
 

@@ -5,7 +5,7 @@ import React from 'react'
 import { createTamagui, TamaguiProvider } from 'tamagui'
 import { expect, it, vi } from 'vitest'
 
-import { TamaguiComponents } from '..'
+import { TamaguiComponents } from '../index'
 
 const testAppConfig = createTamagui(config)
 

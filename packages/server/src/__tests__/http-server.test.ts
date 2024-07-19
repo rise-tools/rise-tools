@@ -1,6 +1,8 @@
 /**
  * @vitest-environment node
  */
+import { afterAll, describe, expect, test } from 'vitest'
+
 import { createHTTPServer } from '../http-server.js'
 import { AnyModels } from '../types.js'
 

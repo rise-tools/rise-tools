@@ -1,6 +1,6 @@
 import { act, fireEvent, render } from '@testing-library/react'
 import React from 'react'
-import { vi } from 'vitest'
+import { expect, it, vi } from 'vitest'
 
 import { ModelSource, Rise } from '../refs'
 import { response } from '../response'

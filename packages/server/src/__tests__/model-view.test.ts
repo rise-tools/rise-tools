@@ -1,3 +1,5 @@
+import { describe, expect, test, vi } from 'vitest'
+
 import { query } from '../model-query.js'
 import { state } from '../model-state.js'
 import { view } from '../model-view.js'

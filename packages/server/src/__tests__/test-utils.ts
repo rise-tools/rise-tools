@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 export function createWaitableMock<MockInput extends Array<unknown>, MockOutput>(
   fn?: (...args: MockInput) => MockOutput
 ) {

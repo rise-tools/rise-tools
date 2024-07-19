@@ -17,7 +17,7 @@ export default defineProject({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: [path.resolve(__dirname, 'vitest/setup.js')],
+    setupFiles: [path.resolve(__dirname, 'vitest.setup.mjs')],
   },
   esbuild: {
     jsxDev: false,
