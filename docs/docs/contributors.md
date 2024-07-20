@@ -20,14 +20,6 @@ cd rise-tools
 npm install
 ```
 
-## Generate Build
-
-After installing the dependencies, you need to generate the build for the project if you want to run the playground or the demo server:
-
-```sh
-npm run build
-```
-
 ### Run Tests
 
 `npm run test`
@@ -47,7 +39,9 @@ For Android: `npm run android`
 
 ### Run Demo Server
 
-First `cd example/demo`
+First, make sure you are in root folder of the project and run `npm run watch` to start the build watcher to view your changes live.
+
+then `cd example/demo`
 
 `npm run dev`
 
