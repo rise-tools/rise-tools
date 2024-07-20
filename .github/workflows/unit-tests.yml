@@ -19,3 +19,8 @@ jobs:
         
     - run: npm install
     - run: npm test
+
+    # Tests are running from source.
+    # Here we just make sure that the build is working.
+    - run: npm run build
+    
