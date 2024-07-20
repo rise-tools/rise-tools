@@ -1,2 +1,2 @@
-export * from './theme.js'
-export * from './utils.js'
+export * from './theme'
+export * from './utils'

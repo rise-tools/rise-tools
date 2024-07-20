@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 
-import { lookup } from '../model-lookup.js'
-import { state } from '../model-state.js'
+import { lookup } from '../model-lookup'
+import { state } from '../model-state'
 
 describe('basic lookup behavior', () => {
   test('lookup', () => {

@@ -2,6 +2,7 @@ import { promises as Stream, Readable } from 'node:stream'
 
 import { text } from '@rise-tools/cli'
 import * as tar from 'tar'
+// @ts-ignore
 import { $, spinner } from 'zx'
 
 export function formatTargetDir(targetDir: string) {

@@ -1,8 +1,8 @@
 import { WebSocketServer } from 'ws'
 
-import { AnyModels } from './types.js'
-import { printInstructions } from './utils.js'
-import { connectWebSocket, createWSServerContext } from './ws-connection.js'
+import { AnyModels } from './types'
+import { printInstructions } from './utils'
+import { connectWebSocket, createWSServerContext } from './ws-connection'
 
 export function createWSServer(models: AnyModels, port: number) {
   const wss = new WebSocketServer({ port })
