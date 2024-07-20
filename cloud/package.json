@@ -1,0 +1,26 @@
+{
+  "name": "@rise-tools/cloud",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.12.0",
+    "@hono/zod-validator": "^0.2.2",
+    "@openziti/ziti-sdk-nodejs": "^0.17.0",
+    "hono": "^4.5.0",
+    "http-proxy": "^1.18.1",
+    "jsonwebtoken": "^9.0.2",
+    "uuidv4": "^6.2.13",
+    "zod": "^3.23.8",
+    "zx": "^8.1.4"
+  }
+}
