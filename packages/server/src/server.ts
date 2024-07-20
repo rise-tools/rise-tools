@@ -1,9 +1,9 @@
 import fastifyWebsocket from '@fastify/websocket'
 import Fastify from 'fastify'
 
-import { handleGetRequest } from './http-server.js'
-import { AnyModels } from './types.js'
-import { connectWebSocket, createWSServerContext } from './ws-connection.js'
+import { handleGetRequest } from './http-server'
+import { AnyModels } from './types'
+import { connectWebSocket, createWSServerContext } from './ws-connection'
 
 export interface CreateServerOptions {
   port: number

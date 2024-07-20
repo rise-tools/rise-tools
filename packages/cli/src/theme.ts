@@ -1,4 +1,5 @@
 import makeGradient from 'gradient-string'
+// @ts-ignore
 import { chalk } from 'zx'
 
 const hexColors = {

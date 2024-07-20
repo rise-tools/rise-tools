@@ -1,4 +1,4 @@
-import { StateModel, StateSetter } from './types.js'
+import { StateModel, StateSetter } from './types'
 
 export function state<T>(initial: T): [StateModel<T>, StateSetter<T>] {
   let value = initial

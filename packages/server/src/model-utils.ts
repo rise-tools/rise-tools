@@ -1,4 +1,4 @@
-import { AnyModels, ValueModel } from './types.js'
+import { AnyModels, ValueModel } from './types'
 
 export function findModel<V>(
   models: AnyModels,

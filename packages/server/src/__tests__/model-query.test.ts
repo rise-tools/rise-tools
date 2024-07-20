@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from 'vitest'
 
-import { query } from '../model-query.js'
-import { createWaitableMock, delay } from './test-utils.js'
+import { query } from '../model-query'
+import { createWaitableMock, delay } from './test-utils'
 
 describe('query model', () => {
   test('basic query get + load', async () => {

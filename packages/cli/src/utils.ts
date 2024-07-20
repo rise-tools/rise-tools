@@ -1,11 +1,12 @@
 import bs58 from 'bs58'
-import { findUp } from 'find-up'
-import { internalIpV4 } from 'internal-ip'
+import findUp from 'find-up'
+import internalIp from 'internal-ip'
 import qr from 'qrcode-terminal'
+// @ts-ignore
 import { fs } from 'zx'
 
 export async function getHost() {
-  return internalIpV4()
+  return internalIp.v4()
 }
 
 export async function generateQRCode(url: string) {

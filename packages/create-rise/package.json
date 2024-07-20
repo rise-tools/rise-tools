@@ -20,7 +20,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "type": "module",
   "author": "Arpit Bhalla (https://github.com/arpitBhalla)",
   "contributors": [
     "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",

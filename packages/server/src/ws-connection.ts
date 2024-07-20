@@ -8,8 +8,8 @@ import {
 import { WebSocket } from 'ws'
 import { z } from 'zod'
 
-import { findModel, getModelState } from './model-utils.js'
-import { AnyModels, ValueModel } from './types.js'
+import { findModel, getModelState } from './model-utils'
+import { AnyModels, ValueModel } from './types'
 
 const serverSubscribeMessageSchema = z.object({
   $: z.literal('sub'),
