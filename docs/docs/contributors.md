@@ -39,7 +39,9 @@ For Android: `npm run android`
 
 ### Run Demo Server
 
-First `cd example/demo`
+First, make sure you are in root folder of the project and run `npm run watch` to start the build watcher to view your changes live.
+
+then `cd example/demo`
 
 `npm run dev`
 
