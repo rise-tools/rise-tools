@@ -34,6 +34,7 @@
     "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "@react-navigation/native": "^6.1.17"
+    "@react-navigation/native": "^6.1.17",
+    "@react-navigation/native-stack": "^6.9.26"
   }
 }

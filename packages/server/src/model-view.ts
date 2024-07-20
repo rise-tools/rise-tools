@@ -1,5 +1,5 @@
-import { getModelState } from './model-utils'
-import { ValueModel, ViewModel } from './types'
+import { getModelState } from './model-utils.js'
+import { ValueModel, ViewModel } from './types.js'
 
 export function view<T>(
   loadInput: (get: <V>(model: ValueModel<V>) => V | undefined) => T

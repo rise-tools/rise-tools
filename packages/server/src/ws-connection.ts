@@ -8,8 +8,8 @@ import {
 import { WebSocket } from 'ws'
 import { z } from 'zod'
 
-import { findModel, getModelState } from './model-utils'
-import { AnyModels, ValueModel } from './types'
+import { findModel, getModelState } from './model-utils.js'
+import { AnyModels, ValueModel } from './types.js'
 
 const serverSubscribeMessageSchema = z.object({
   $: z.literal('sub'),
@@ -133,7 +133,7 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
       const value = lookupValue(modelState, lookupPath)
 
       if (!isServerEventModelState(value)) {
-        throw new Error(`Missing event handler on the server for event: ${JSON.stringify(event)}`)
+        throw new Error(`Missing event handler on the server for target: ${JSON.stringify(target)}`)
       }
       let res = await value.handler(...payload)
       if (isEventResponse(res)) {

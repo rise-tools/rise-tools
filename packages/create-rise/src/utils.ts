@@ -1,9 +1,8 @@
 import { promises as Stream, Readable } from 'node:stream'
 
+import { text } from '@rise-tools/cli'
 import * as tar from 'tar'
 import { $, spinner } from 'zx'
-
-import { text } from './theme.js'
 
 export function formatTargetDir(targetDir: string) {
   return targetDir.trim().replace(/\/+$/g, '')
@@ -19,7 +18,6 @@ export async function downloadAndExtractTemplate(root: string, packageName: stri
   }
 
   await Stream.pipeline([
-    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
     Readable.fromWeb(response.body),
     tar.extract(
       {

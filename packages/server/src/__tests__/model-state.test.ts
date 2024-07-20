@@ -1,4 +1,6 @@
-import { state } from '../model-state'
+import { describe, expect, test, vi } from 'vitest'
+
+import { state } from '../model-state.js'
 
 describe('model-state', () => {
   test('get and set', () => {
@@ -14,7 +16,7 @@ describe('model-state', () => {
     expect(s.get()).toBe(1)
   })
   test('subscribe', () => {
-    const handler = jest.fn()
+    const handler = vi.fn()
     const [s, setS] = state(0)
     const release = s.subscribe(handler)
     expect(handler).toBeCalledTimes(1)

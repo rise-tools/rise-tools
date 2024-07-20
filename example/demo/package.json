@@ -8,6 +8,7 @@
     "url": "https://github.com/rise-tools/rise-tools.git",
     "directory": "example/demo"
   },
+  "type": "module",
   "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "bugs": {
     "url": "https://github.com/rise-tools/rise-tools/issues"

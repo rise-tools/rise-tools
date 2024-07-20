@@ -1,5 +1,8 @@
 /* @jsxImportSource .. */
 
+import type { ReactNode } from 'react'
+import { expect, it, vi } from 'vitest'
+
 import { createComponentDefinition } from '../jsx-runtime'
 import { isComponentModelState, isEventModelState } from '../rise'
 
@@ -21,39 +24,39 @@ it('should render fragments', () => {
       <View>bar</View>
     </>
   ).toMatchInlineSnapshot(`
-    Object {
+    {
       "$": "component",
       "$staticChildren": true,
-      "children": Array [
-        Object {
+      "children": [
+        {
           "$": "component",
           "children": "foo",
           "component": "View",
           "key": undefined,
-          "props": Object {},
+          "props": {},
         },
-        Object {
+        {
           "$": "component",
           "children": "bar",
           "component": "View",
           "key": undefined,
-          "props": Object {},
+          "props": {},
         },
       ],
       "component": "rise-tools/react/Fragment",
       "key": undefined,
-      "props": Object {},
+      "props": {},
     }
   `)
 })
 
 it('should turn function props into event', () => {
-  const el = <View onPress={jest.fn()} />
+  const el = <View onPress={vi.fn()} />
   expect(isEventModelState(el.props.onPress)).toBe(true)
 })
 
 it('should set static children', () => {
-  const Section = ({ children }) => {
+  const Section = ({ children }: { children: ReactNode }) => {
     return (
       <View>
         <View>{children}</View>
@@ -66,38 +69,38 @@ it('should set static children', () => {
       <View>Bar</View>
     </Section>
   ).toMatchInlineSnapshot(`
-    Object {
+    {
       "$": "component",
-      "children": Object {
+      "children": {
         "$": "component",
         "$staticChildren": true,
-        "children": Array [
-          Object {
+        "children": [
+          {
             "$": "component",
             "children": "Foo",
             "component": "View",
             "key": undefined,
-            "props": Object {},
+            "props": {},
           },
-          Object {
+          {
             "$": "component",
             "children": "Bar",
             "component": "View",
             "key": undefined,
-            "props": Object {},
+            "props": {},
           },
         ],
         "component": "View",
         "key": undefined,
-        "props": Object {},
+        "props": {},
       },
       "component": "View",
       "key": undefined,
-      "props": Object {},
+      "props": {},
     }
   `)
   // Since DynamicSection maps over children, its type should change from static to dynamic
-  const DynamicSection = ({ children }) => {
+  const DynamicSection = ({ children }: { children: ReactNode[] }) => {
     return (
       <View>
         <View>
@@ -114,33 +117,33 @@ it('should set static children', () => {
       <View>Bar</View>
     </DynamicSection>
   ).toMatchInlineSnapshot(`
-    Object {
+    {
       "$": "component",
-      "children": Object {
+      "children": {
         "$": "component",
-        "children": Array [
-          Object {
+        "children": [
+          {
             "$": "component",
             "children": 0,
             "component": "View",
             "key": undefined,
-            "props": Object {},
+            "props": {},
           },
-          Object {
+          {
             "$": "component",
             "children": 1,
             "component": "View",
             "key": undefined,
-            "props": Object {},
+            "props": {},
           },
         ],
         "component": "View",
         "key": undefined,
-        "props": Object {},
+        "props": {},
       },
       "component": "View",
       "key": undefined,
-      "props": Object {},
+      "props": {},
     }
   `)
 })

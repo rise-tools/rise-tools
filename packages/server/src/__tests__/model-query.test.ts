@@ -1,5 +1,8 @@
-import { query } from '../model-query'
-import { createWaitableMock, delay } from './test-utils'
+import { describe, expect, test, vi } from 'vitest'
+
+import { query } from '../model-query.js'
+import { createWaitableMock, delay } from './test-utils.js'
+
 describe('query model', () => {
   test('basic query get + load', async () => {
     const q = query(() => Promise.resolve(1))
@@ -8,7 +11,7 @@ describe('query model', () => {
     expect(q.get()).toBe(1)
   })
   test('double load does not re-fetch source', async () => {
-    const queryFn = jest.fn(() => Promise.resolve(1))
+    const queryFn = vi.fn(() => Promise.resolve(1))
     const q = query(queryFn)
     expect(queryFn).toBeCalledTimes(0)
     expect(await q.load()).toBe(1)
@@ -29,7 +32,7 @@ describe('query model', () => {
     const q = query(() => Promise.resolve(result))
     const value = await q.load()
     expect(value).toBe(1)
-    const handler = jest.fn()
+    const handler = vi.fn()
     const release = q.subscribe(handler)
     expect(handler).toBeCalledTimes(1)
     expect(handler).toBeCalledWith(1)
@@ -44,7 +47,7 @@ describe('query model', () => {
   })
   test('basic subscribe (waiting)', async () => {
     let result = 1
-    const loader = jest.fn(() => Promise.resolve(result))
+    const loader = vi.fn(() => Promise.resolve(result))
     const q = query(loader)
     const value = await q.load()
     expect(value).toBe(1)

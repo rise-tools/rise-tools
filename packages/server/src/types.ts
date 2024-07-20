@@ -33,3 +33,20 @@ export type AnyModels =
   | Record<string, ValueModel<any> | LookupModel<any>>
   | ValueModel<any>
   | LookupModel<any>
+
+export type LookupModelPathOf<M, Prefix extends string = ''> =
+  M extends LookupModel<infer NestedModel>
+    ? LookupModelPathOf<NestedModel, `${Prefix}/${string}`>
+    : Prefix
+
+type ExcludeSymbol<K> = K extends symbol ? never : K
+
+export type InferModel<T> = T extends object
+  ? {
+      [ModelKey in keyof T]: T[ModelKey] extends ValueModel<any>
+        ? `${ExcludeSymbol<ModelKey>}`
+        : T[ModelKey] extends LookupModel<any>
+          ? LookupModelPathOf<T[ModelKey], `${ExcludeSymbol<ModelKey>}`>
+          : never
+    }[keyof T]
+  : never

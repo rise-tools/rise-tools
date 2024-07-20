@@ -2,6 +2,7 @@
   "extends": "@tsconfig/node18",
   "compilerOptions": {
     "paths": {
+      "@rise-tools/cli": ["./packages/cli/src"],
       "@rise-tools/react": ["./packages/react/src"],
       "@rise-tools/react/jsx-runtime": ["./packages/react/src/jsx-runtime"],
       "@rise-tools/ws-client": ["./packages/ws-client/src"],
@@ -30,7 +31,7 @@
       "@rise-tools/kit-linking": ["./packages/kit-linking/src"],
       "@rise-tools/kit-linking/server": ["./packages/kit-linking/src/server"],
       "@rise-tools/kit-qrcode": ["./packages/kit-qrcode/src"],
-      "@rise-tools/kit-qrcode/server": ["./packages/kit-qrcode/src/server"],
+      "@rise-tools/kit-qrcode/server": ["./packages/kit-qrcode/src/server"]
     },
     "composite": true,
     "strictNullChecks": true,
@@ -40,9 +41,6 @@
   },
   "exclude": [
     "**/node_modules",
-    "**/__tests__",
-    "**/*.test.tsx",
-    "**/*.test.ts",
     "**/lib"
   ]
 }

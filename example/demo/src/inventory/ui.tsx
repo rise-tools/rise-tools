@@ -1,4 +1,4 @@
-import { navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
+import { navigate } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
   H2,
@@ -13,7 +13,7 @@ import {
 import { ref } from '@rise-tools/react'
 import { lookup, state, StateSetter, view } from '@rise-tools/server'
 
-import defaultInventory, { Inventory, Item } from './inventory'
+import defaultInventory, { Inventory, Item } from './inventory.js'
 
 // models
 const [inventoryItems, setInventoryState] = state(defaultInventory)
@@ -39,7 +39,7 @@ function HomeScreen({ inventory }: { inventory?: Inventory }) {
         {inventory?.map((item, idx) => (
           <Button
             unstyled
-            onPress={navigate(`inventoryItem/${item.key}`)}
+            onPress={navigate(`inventoryItem/${item.key}`, { title: item.title })}
             pressStyle={{ opacity: 0.8 }}
           >
             <XStack

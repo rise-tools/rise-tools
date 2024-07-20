@@ -5,10 +5,10 @@ import { fileURLToPath } from 'node:url'
 
 import { ExitPromptError } from '@inquirer/core'
 import { confirm, input } from '@inquirer/prompts'
+import { bold, debug, error, highlight, link, logo, prompt, text } from '@rise-tools/cli'
 import dedent from 'dedent'
-import { $, cd, chalk, fs, minimist, spinner } from 'zx'
+import { $, cd, fs, minimist, spinner } from 'zx'
 
-import { bold, debug, error, gradient, highlight, prompt, text } from './theme.js'
 import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils.js'
 
 type Options = {
@@ -18,12 +18,10 @@ type Options = {
   yes: boolean
 }
 
-const RISE_ASCII =
-  '\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2557  \r\n\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551\u255A\u2550\u2550\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u255D  \r\n\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\r\n\u255A\u2550\u255D  \u255A\u2550\u255D\u255A\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u255D\r\n                           \r\n'
 const DEFAULT_PROJECT_NAME = 'rise-project'
 
 async function createRise(opts: Options) {
-  console.log(gradient(RISE_ASCII))
+  console.log(logo())
 
   let projectName = DEFAULT_PROJECT_NAME
   if (!opts.yes) {
@@ -69,7 +67,7 @@ async function createRise(opts: Options) {
   await downloadAndExtractTemplate(root, template)
   await copyAdditionalTemplateFiles(root)
 
-  const { dependencies, devDependencies, scripts, overrides } = await fs.readJSON(
+  const { dependencies, devDependencies, type, scripts, overrides } = await fs.readJSON(
     path.join(root, 'package.json'),
     'utf-8'
   )
@@ -78,6 +76,7 @@ async function createRise(opts: Options) {
     {
       name: projectName,
       private: true,
+      type,
       dependencies,
       devDependencies,
       scripts,
@@ -120,8 +119,8 @@ async function createRise(opts: Options) {
 
   console.log(dedent`
     ${bold('📱 For fast and easy prototyping check out Rise Playground App!')}
-    ${highlight('iOS')}     ${chalk.underline('https://apps.apple.com/us/app/rise-playground/id6499588861')}
-    ${highlight('Android')} ${chalk.underline('https://play.google.com/store/apps/details?id=com.xplatlabs.rise')}
+    ${highlight('iOS')}     ${link('https://apps.apple.com/us/app/rise-playground/id6499588861')}
+    ${highlight('Android')} ${link('https://play.google.com/store/apps/details?id=com.xplatlabs.rise')}
   `)
 }
 
@@ -172,7 +171,7 @@ createRise(opts).catch((e) => {
     ${debug(e.stack)}
 
     If you believe this is a bug in Rise CLI, please open a new issue here:
-    ${chalk.underline('https://github.com/rise-tools/rise-tools/issues/new')}
+    ${link('https://github.com/rise-tools/rise-tools/issues/new')}
   `)
   process.exit(1)
 })
