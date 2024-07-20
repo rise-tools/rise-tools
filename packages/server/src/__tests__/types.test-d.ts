@@ -1,8 +1,8 @@
 import { describe, expectTypeOf, test } from 'vitest'
 
-import { lookup } from '../model-lookup.js'
-import { view } from '../model-view.js'
-import type { InferModel } from '../types.js'
+import { lookup } from '../model-lookup'
+import { view } from '../model-view'
+import type { InferModel } from '../types'
 
 describe('types', () => {
   test('infer navigation types from models', () => {

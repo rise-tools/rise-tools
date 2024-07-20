@@ -27,12 +27,11 @@
     "url": "https://github.com/rise-tools/rise-tools/issues"
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
-  "type": "module",
   "main": "./lib/index.js",
   "dependencies": {
     "bs58": "^5.0.0",
-    "find-up": "^7.0.0",
-    "internal-ip": "^7.0.0",
+    "find-up": "^5.0.0",
+    "internal-ip": "^5.0.0",
     "qrcode-terminal": "^0.12.0",
     "zx": "^8.1.4"
   },

@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, test } from 'vitest'
 
-import { createHTTPServer } from '../http-server.js'
-import { AnyModels } from '../types.js'
+import { createHTTPServer } from '../http-server'
+import { AnyModels } from '../types'
 
 type TestServer = {
   close: () => void

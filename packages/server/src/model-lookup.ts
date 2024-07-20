@@ -1,4 +1,4 @@
-import { AnyModels, LookupModel } from './types.js'
+import { AnyModels, LookupModel } from './types'
 
 export function lookup<T extends AnyModels>(load: (key: string) => T | undefined): LookupModel<T> {
   const cache: Record<string, T | undefined> = {}

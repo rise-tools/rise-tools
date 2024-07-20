@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 import { ExitPromptError } from '@inquirer/core'
 import { confirm, input } from '@inquirer/prompts'
 import { bold, debug, error, highlight, link, logo, prompt, text } from '@rise-tools/cli'
 import dedent from 'dedent'
+// @ts-ignore
 import { $, cd, fs, minimist, spinner } from 'zx'
 
-import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils.js'
+import { downloadAndExtractTemplate, formatTargetDir, isNodeError } from './utils'
 
 type Options = {
   verbose: boolean
@@ -125,9 +125,7 @@ async function createRise(opts: Options) {
 }
 
 async function copyAdditionalTemplateFiles(root: string) {
-  const source = path.dirname(fileURLToPath(import.meta.url))
-
-  await $`cp ${path.join(source, '../_gitignore')} ${path.join(root, '.gitignore')}`
+  await $`cp ${path.join(__dirname, '../_gitignore')} ${path.join(root, '.gitignore')}`
 }
 
 const opts = minimist<Options>(process.argv.slice(2), {

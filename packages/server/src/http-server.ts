@@ -1,7 +1,7 @@
 import Fastify from 'fastify'
 
-import { findModel } from './model-utils.js'
-import { AnyModels } from './types.js'
+import { findModel } from './model-utils'
+import { AnyModels } from './types'
 
 export async function createHTTPServer(models: AnyModels, port: number) {
   const server = Fastify({

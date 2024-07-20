@@ -1,9 +1,9 @@
 import { describe, expect, test, vi } from 'vitest'
 
-import { query } from '../model-query.js'
-import { state } from '../model-state.js'
-import { view } from '../model-view.js'
-import { createWaitableMock } from './test-utils.js'
+import { query } from '../model-query'
+import { state } from '../model-state'
+import { view } from '../model-view'
+import { createWaitableMock } from './test-utils'
 
 describe('view models', () => {
   test('basic view get/set', async () => {

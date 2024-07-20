@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from 'vitest'
 
-import { state } from '../model-state.js'
+import { state } from '../model-state'
 
 describe('model-state', () => {
   test('get and set', () => {
