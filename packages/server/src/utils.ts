@@ -1,21 +1,30 @@
-import { generateQRCode, getConnectionURL, getHost, highlight, link, logo } from '@rise-tools/cli'
+import {
+  clearTerminal,
+  generateQRCode,
+  getConnectionURL,
+  getHost,
+  highlight,
+  link,
+  logo,
+  startTunnel,
+} from '@rise-tools/cli'
 import dedent from 'dedent'
 
 export async function printInstructions({ protocol, port }: { protocol: string; port: number }) {
   const host = (await getHost()) || 'localhost'
-  const url = `${protocol}://${host}:${port}`
+  const localUrl = `${protocol}://${host}:${port}`
+
+  const remoteUrl = `${protocol}://${await startTunnel(port)}`
+
+  clearTerminal()
 
   console.log(logo())
 
-  if (host === 'localhost') {
-    console.log(`Listening on ${highlight(url)}`)
-    return
-  }
-
-  const deepLink = await getConnectionURL(url)
+  const deepLink = await getConnectionURL(remoteUrl)
 
   console.log(dedent`
-    Listening on ${highlight(url)}
+    Listening on ${highlight(localUrl)}
+    Access anywhere on ${highlight(remoteUrl)}  
 
     To preview your app in the Rise Playground, scan the QR code:
     ${await generateQRCode(deepLink)}
