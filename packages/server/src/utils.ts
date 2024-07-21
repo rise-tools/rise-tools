@@ -7,7 +7,7 @@ import {
   highlight,
   link,
   logo,
-  safePromise,
+  spinner,
   startTunnel,
 } from '@rise-tools/cli'
 import dedent from 'dedent'
@@ -15,22 +15,32 @@ import dedent from 'dedent'
 export async function printInstructions({ protocol, port }: { protocol: string; port: number }) {
   const host = (await getHost()) || 'localhost'
 
-  const [tunnelHost, tunnelError] = await safePromise(startTunnel(port))
-
   const localUrl = `${protocol}://${host}:${port}`
-
-  const remoteUrl = `${protocol}://${tunnelHost}`
 
   clearTerminal()
 
   console.log(logo())
+  console.log(`Listening on ${highlight(localUrl)}`)
 
-  const deepLink = await getConnectionURL(remoteUrl ?? localUrl)
+  let deepLinkUrl = localUrl
+  try {
+    const tunnelUrl = await spinner('Starting the tunnel...', () => startTunnel(port))
+    console.log(`Access anywhere on ${highlight(tunnelUrl)}`)
+
+    deepLinkUrl = tunnelUrl
+  } catch (e) {
+    console.log(
+      debug(
+        'Failed to connect to Rise Proxy. You can access the server only on your local network.'
+      )
+    )
+  }
+
+  console.log('')
+
+  const deepLink = await getConnectionURL(deepLinkUrl)
 
   console.log(dedent`
-    Listening on ${highlight(localUrl)}
-    Access anywhere on ${tunnelError ? debug('Tunnel available. ' + tunnelError.message) : highlight(remoteUrl)}
-
     To preview your app in the Rise Playground, scan the QR code:
     ${await generateQRCode(deepLink)}
 

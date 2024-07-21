@@ -80,14 +80,11 @@ export async function startTunnel(port: number) {
   )
 
   const timeoutPromise = setTimeout(5000).then(() => {
-    throw new Error(
-      'Timeout: Did not establish succesful connection with Rise Proxy. Please try again.'
-    )
+    throw new Error('timeout')
   })
 
   const sessionPromise = new Promise<string>((resolve) => {
     session.stdout.on('data', (data: Buffer) => {
-      console.log(data.toString())
       const match = data.toString().match(/(?:http:\/\/)([^\s]+)/)
       if (match) {
         resolve(match[1]!)

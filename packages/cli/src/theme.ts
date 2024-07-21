@@ -28,3 +28,6 @@ export const prompt = {
     error,
   },
 }
+
+// @ts-ignore
+export { spinner } from 'zx'
