@@ -1,6 +1,6 @@
 import makeGradient from 'gradient-string'
-// @ts-ignore
-import { chalk } from 'zx'
+
+import { chalk } from './zx'
 
 const hexColors = {
   highlight: '#FD48C1',
@@ -29,5 +29,4 @@ export const prompt = {
   },
 }
 
-// @ts-ignore
-export { spinner } from 'zx'
+export { spinner } from './zx'

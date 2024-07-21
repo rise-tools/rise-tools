@@ -7,8 +7,8 @@ import findUp from 'find-up'
 import internalIp from 'internal-ip'
 import qr from 'qrcode-terminal'
 import * as uuid from 'uuid'
-// @ts-ignore
-import { fs } from 'zx'
+
+import { fs } from './zx'
 
 export async function getHost() {
   return internalIp.v4()
