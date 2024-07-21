@@ -13,7 +13,26 @@ import {
 import type { Server } from '@rise-tools/server'
 import dedent from 'dedent'
 
-export async function setupRiseTools({ server, tunnel }: { server: Server; tunnel?: boolean }) {
+import { minimist } from './zx'
+
+type Options = {
+  tunnel: boolean
+}
+
+const opts = minimist<Options>(process.argv.slice(2), {
+  boolean: ['tunnel'],
+  default: {
+    tunnel: false,
+  },
+})
+
+export async function setupRiseTools({
+  server,
+  tunnel = opts.tunnel,
+}: {
+  server: Server
+  tunnel?: boolean
+}) {
   const host = (await getHost()) || 'localhost'
 
   const localUrl = `${server.protocol}://${host}:${server.port}`
