@@ -1,10 +1,9 @@
 import { WebSocketServer } from 'ws'
 
-import { AnyModels } from './types'
-import { printInstructions } from './utils'
+import { AnyModels, Server } from './types'
 import { connectWebSocket, createWSServerContext } from './ws-connection'
 
-export function createWSServer(models: AnyModels, port: number) {
+export function createWSServer(models: AnyModels, port: number): Server {
   const wss = new WebSocketServer({ port })
   const context = createWSServerContext(models)
 
@@ -12,9 +11,9 @@ export function createWSServer(models: AnyModels, port: number) {
     connectWebSocket(context, ws)
   })
 
-  printInstructions({ protocol: 'ws', port })
-
   return {
+    port,
+    protocol: 'ws',
     close() {
       wss.close()
     },

@@ -7,9 +7,6 @@
   "references": [
     {
       "path": "../react"
-    },
-    {
-      "path": "../cli"
     }
   ]
 }

@@ -1,6 +1,8 @@
 {
 	"extends": "@rise-tools/preset-typescript",
 	"references": [{
+    "path": "../../packages/cli"
+  }, {
     "path": "../../packages/kitchen-sink"
   }, {
     "path": "../../packages/react"

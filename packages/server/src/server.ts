@@ -14,8 +14,6 @@ export interface CreateServerOptions {
   ws?: boolean
 }
 
-// tbd: what should we do for `createServer` that ultimately supports both HTTP and WS,
-// in terms of generating connection string?
 export async function createServer(models: AnyModels, port: number) {
   const server = Fastify()
   server.register(fastifyWebsocket)
