@@ -73,7 +73,6 @@ export async function setupRiseTools({
   console.log('')
 
   const connectionInfo = await getConnectionInfo(rootModel)
-
   const deepLink = getConnectionURL(connectionInfo, deepLinkUrl)
 
   console.log(dedent`
