@@ -94,13 +94,3 @@ export async function startTunnel(port: number) {
 
   return Promise.race([sessionPromise, timeoutPromise])
 }
-
-export const safePromise = async <T>(
-  promise: Promise<T>
-): Promise<[T | undefined, Error | undefined]> => {
-  try {
-    return [await promise, undefined]
-  } catch (error) {
-    return [undefined, error instanceof Error ? error : new Error('An unknown error occurred')]
-  }
-}
