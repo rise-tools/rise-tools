@@ -45,7 +45,8 @@ export async function setupRiseTools({
   let deepLinkUrl = localUrl
   if (tunnel) {
     try {
-      const tunnelUrl = await spinner('Starting the tunnel...', () => startTunnel(server.port))
+      const host = await spinner('Starting the tunnel...', () => startTunnel(server.port))
+      const tunnelUrl = `${server.protocol}://${host}`
       console.log(`Access anywhere on ${highlight(tunnelUrl)}`)
 
       deepLinkUrl = tunnelUrl
