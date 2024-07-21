@@ -27,7 +27,6 @@
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "dependencies": {
     "@fastify/websocket": "^10.0.1",
-    "@rise-tools/cli": "0.5.0",
     "fastify": "^4.27.0",
     "ws": "^8.16.0",
     "zod": "^3.22.4"

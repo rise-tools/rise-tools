@@ -1,9 +1,9 @@
 import Fastify from 'fastify'
 
 import { findModel } from './model-utils'
-import { AnyModels } from './types'
+import { AnyModels, Server } from './types'
 
-export async function createHTTPServer(models: AnyModels, port: number) {
+export async function createHTTPServer(models: AnyModels, port: number): Promise<Server> {
   const server = Fastify({
     // logger: true,
   })
@@ -15,6 +15,8 @@ export async function createHTTPServer(models: AnyModels, port: number) {
   })
   await server.listen({ port })
   return {
+    port,
+    protocol: 'http',
     close() {
       server.close()
     },

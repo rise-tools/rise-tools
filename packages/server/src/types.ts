@@ -50,3 +50,9 @@ export type InferModel<T> = T extends object
           : never
     }[keyof T]
   : never
+
+export type Server = {
+  protocol: 'ws' | 'http'
+  port: number
+  close: () => void
+}

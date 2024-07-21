@@ -10,20 +10,13 @@ import {
   spinner,
   startTunnel,
 } from '@rise-tools/cli'
+import type { Server } from '@rise-tools/server'
 import dedent from 'dedent'
 
-export async function setupRiseTools({
-  protocol,
-  port,
-  tunnel,
-}: {
-  protocol: string
-  port: number
-  tunnel?: boolean
-}) {
+export async function setupRiseTools({ server, tunnel }: { server: Server; tunnel?: boolean }) {
   const host = (await getHost()) || 'localhost'
 
-  const localUrl = `${protocol}://${host}:${port}`
+  const localUrl = `${server.protocol}://${host}:${server.port}`
 
   clearTerminal()
 
@@ -33,7 +26,7 @@ export async function setupRiseTools({
   let deepLinkUrl = localUrl
   if (tunnel) {
     try {
-      const tunnelUrl = await spinner('Starting the tunnel...', () => startTunnel(port))
+      const tunnelUrl = await spinner('Starting the tunnel...', () => startTunnel(server.port))
       console.log(`Access anywhere on ${highlight(tunnelUrl)}`)
 
       deepLinkUrl = tunnelUrl

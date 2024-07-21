@@ -9,10 +9,10 @@ const models = { ...inventory, ...controls, ...delivery }
 
 const port = Number(process.env.PORT || '3005')
 
-createWSServer(models, port)
+const server = createWSServer(models, port)
 
 if (process.env.NODE_ENV === 'development') {
-  setupRiseTools({ protocol: 'ws', port, tunnel: true })
+  setupRiseTools({ server, tunnel: true })
 }
 
 import '@rise-tools/kit-react-navigation/server'
