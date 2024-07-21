@@ -1,18 +1,15 @@
-import {
-  clearTerminal,
-  debug,
-  generateQRCode,
-  getConnectionURL,
-  getHost,
-  highlight,
-  link,
-  logo,
-  spinner,
-  startTunnel,
-} from '@rise-tools/cli'
 import type { Server } from '@rise-tools/server'
 import dedent from 'dedent'
 
+import { debug, highlight, link, logo, spinner } from './theme'
+import {
+  clearTerminal,
+  generateQRCode,
+  getConnectionInfo,
+  getConnectionURL,
+  getHost,
+  startTunnel,
+} from './utils'
 import { minimist } from './zx'
 
 type Options = {
@@ -58,9 +55,26 @@ export async function setupRiseTools({
     }
   }
 
+  let rootModel = ''
+  if (typeof server.models === 'object') {
+    if (!('' in server.models)) {
+      const model = Object.keys(server.models)[0]
+      if (!model) {
+        console.log(
+          debug(`You didn't provide any models. You will see empty screen in the Playground.`)
+        )
+      } else {
+        rootModel = model
+        console.log(debug(`No root model found. Using "${model}" as the root.`))
+      }
+    }
+  }
+
   console.log('')
 
-  const deepLink = await getConnectionURL(deepLinkUrl)
+  const connectionInfo = await getConnectionInfo(rootModel)
+
+  const deepLink = getConnectionURL(connectionInfo, deepLinkUrl)
 
   console.log(dedent`
     To preview your app in the Rise Playground, scan the QR code:

@@ -18,7 +18,7 @@ export async function generateQRCode(url: string) {
   return new Promise((resolve) => qr.generate(url, { small: true }, resolve))
 }
 
-async function getConnectionInfo() {
+export async function getConnectionInfo(path: string) {
   const packageJsonPath = await findUp('package.json')
   if (!packageJsonPath) {
     throw new Error('Could not find package.json. Are you in a project directory?')
@@ -28,15 +28,18 @@ async function getConnectionInfo() {
   return {
     label: name,
     id: name,
-    path: '',
+    path,
   }
 }
 
-export async function getConnectionURL(host: string) {
+export function getConnectionURL(
+  connection: Awaited<ReturnType<typeof getConnectionInfo>>,
+  host: string
+) {
   const connectionInfo = bs58.encode(
     Buffer.from(
       JSON.stringify({
-        ...(await getConnectionInfo()),
+        ...connection,
         host,
       })
     )
