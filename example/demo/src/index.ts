@@ -2,10 +2,11 @@ import { setupRiseTools } from '@rise-tools/cli'
 import { createWSServer, InferModel } from '@rise-tools/server'
 
 import { models as delivery } from './delivery/ui'
+import { models as home } from './home/ui'
 import { models as inventory } from './inventory/ui'
 import { models as controls } from './ui-controls/ui'
 
-const models = { ...inventory, ...controls, ...delivery }
+const models = { ...inventory, ...controls, ...delivery, ...home }
 
 const port = Number(process.env.PORT || '3005')
 
