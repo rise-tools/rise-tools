@@ -48,22 +48,22 @@ export function clearTerminal() {
   process.stdout.write('\x1Bc')
 }
 
-async function getProjectId(): Promise<string> {
+async function getProjectKey(): Promise<string> {
   const configDir = path.join(process.cwd(), '.rise')
-  const configPath = path.join(configDir, 'projectId')
+  const configPath = path.join(configDir, 'projectKey')
 
   await fs.mkdirp(configDir)
 
   if (!(await fs.exists(configPath))) {
-    const projectId = uuid.v4()
-    await fs.writeFile(configPath, projectId, { encoding: 'utf-8' })
-    return projectId
+    const projectKey = uuid.v4()
+    await fs.writeFile(configPath, projectKey, { encoding: 'utf-8' })
+    return projectKey
   }
   return await fs.readFile(configPath, { encoding: 'utf-8' })
 }
 
 export async function startTunnel(port: number) {
-  const projectId = await getProjectId()
+  const projectKey = await getProjectKey()
 
   const session = spawn(
     'ssh',
@@ -73,7 +73,7 @@ export async function startTunnel(port: number) {
       '-p',
       '2222',
       '-R',
-      `${projectId}:80:localhost:${port}`,
+      `${projectKey}:80:localhost:${port}`,
       'proxy.rise.tools',
     ],
     { stdio: ['ignore', 'pipe', 'pipe'] }
@@ -87,6 +87,7 @@ export async function startTunnel(port: number) {
 
   const sessionPromise = new Promise<string>((resolve) => {
     session.stdout.on('data', (data: Buffer) => {
+      console.log(data.toString())
       const match = data.toString().match(/(?:http:\/\/)([^\s]+)/)
       if (match) {
         resolve(match[1]!)
