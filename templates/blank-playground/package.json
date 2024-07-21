@@ -27,9 +27,10 @@
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "scripts": {
     "start": "tsx src/server.ts",
-    "dev": "tsx watch src/server.ts"
+    "dev": "cross-env NODE_ENV=development tsx watch src/server.ts"
   },
   "dependencies": {
+    "@rise-tools/cli": "0.5.0",
     "@rise-tools/kit-react-navigation": "0.5.0",
     "@rise-tools/kitchen-sink": "0.5.0",
     "@rise-tools/server": "0.5.0"
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@rise-tools/preset-typescript": "0.5.0",
     "@types/react": "^18.0.27",
+    "cross-env": "^7.0.3",
     "tsx": "^4.11.0",
     "typescript": "^5.1.3"
   },
