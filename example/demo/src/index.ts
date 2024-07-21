@@ -1,3 +1,4 @@
+import { setupRiseTools } from '@rise-tools/cli'
 import { createWSServer, InferModel } from '@rise-tools/server'
 
 import { models as delivery } from './delivery/ui'
@@ -9,6 +10,10 @@ const models = { ...inventory, ...controls, ...delivery }
 const port = Number(process.env.PORT || '3005')
 
 createWSServer(models, port)
+
+if (process.env.NODE_ENV === 'development') {
+  setupRiseTools({ protocol: 'ws', port, tunnel: true })
+}
 
 import '@rise-tools/kit-react-navigation/server'
 

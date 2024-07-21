@@ -19,6 +19,7 @@
     "start": "tsx ./src"
   },
   "dependencies": {
+    "@rise-tools/cli": "0.5.0",
     "@rise-tools/react": "0.5.0",
     "@rise-tools/server": "0.5.0",
     "@rise-tools/kitchen-sink": "0.5.0",

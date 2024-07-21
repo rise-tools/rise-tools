@@ -12,7 +12,15 @@ import {
 } from '@rise-tools/cli'
 import dedent from 'dedent'
 
-export async function printInstructions({ protocol, port }: { protocol: string; port: number }) {
+export async function setupRiseTools({
+  protocol,
+  port,
+  tunnel,
+}: {
+  protocol: string
+  port: number
+  tunnel?: boolean
+}) {
   const host = (await getHost()) || 'localhost'
 
   const localUrl = `${protocol}://${host}:${port}`
@@ -23,17 +31,19 @@ export async function printInstructions({ protocol, port }: { protocol: string; 
   console.log(`Listening on ${highlight(localUrl)}`)
 
   let deepLinkUrl = localUrl
-  try {
-    const tunnelUrl = await spinner('Starting the tunnel...', () => startTunnel(port))
-    console.log(`Access anywhere on ${highlight(tunnelUrl)}`)
+  if (tunnel) {
+    try {
+      const tunnelUrl = await spinner('Starting the tunnel...', () => startTunnel(port))
+      console.log(`Access anywhere on ${highlight(tunnelUrl)}`)
 
-    deepLinkUrl = tunnelUrl
-  } catch (e) {
-    console.log(
-      debug(
-        'Failed to connect to Rise Proxy. You can access the server only on your local network.'
+      deepLinkUrl = tunnelUrl
+    } catch (e) {
+      console.log(
+        debug(
+          'Failed to connect to Rise Proxy. You can access the server only on your local network.'
+        )
       )
-    )
+    }
   }
 
   console.log('')
