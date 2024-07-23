@@ -19,14 +19,14 @@
     "start": "tsx ./src"
   },
   "dependencies": {
-    "@rise-tools/cli": "0.5.0",
-    "@rise-tools/kit-react-navigation": "0.5.0",
-    "@rise-tools/kitchen-sink": "0.5.0",
-    "@rise-tools/react": "0.5.0",
-    "@rise-tools/server": "0.5.0"
+    "@rise-tools/cli": "0.6.0",
+    "@rise-tools/kit-react-navigation": "0.6.0",
+    "@rise-tools/kitchen-sink": "0.6.0",
+    "@rise-tools/react": "0.6.0",
+    "@rise-tools/server": "0.6.0"
   },
   "devDependencies": {
-    "@rise-tools/preset-typescript": "0.5.0",
+    "@rise-tools/preset-typescript": "0.6.0",
     "cross-env": "^7.0.3",
     "tsx": "^4.11.0",
     "typescript": "^5.1.3"
