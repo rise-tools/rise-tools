@@ -30,7 +30,9 @@
   "main": "./lib/index.js",
   "dependencies": {
     "bs58": "^5.0.0",
+    "dedent": "^1.5.3",
     "find-up": "^5.0.0",
+    "gradient-string": "^2.0.2",
     "internal-ip": "^5.0.0",
     "qrcode-terminal": "^0.12.0",
     "uuid": "^9.0.1",
@@ -38,6 +40,8 @@
   },
   "devDependencies": {
     "@rise-tools/server": "0.6.0",
+    "@types/dedent": "^0.7.2",
+    "@types/gradient-string": "^1.1.6",
     "@types/qrcode-terminal": "^0.12.2",
     "@types/uuid": "^9.0.1"
   }
