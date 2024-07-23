@@ -51,11 +51,11 @@ function HeroSection() {
           </div>
 
           <div className="relative inline-block">
-            <code className="p-2 pr-12">npx create-rise@latest</code>
-            <div className="absolute top-1 right-4">
+            <code className="py-4 pl-4 pr-16">npx create-rise@latest</code>
+            <div className="absolute -top-1 right-4">
               <CopyButton
                 code="npx create-rise@latest"
-                className="relative flex items-center justify-center"
+                className="relative flex items-center justify-center border border-solid border-transparent hover:border-white/40 rounded-md p-2 hover:bg-white/10 bg-white/5 transition-all"
               />
             </div>
           </div>
