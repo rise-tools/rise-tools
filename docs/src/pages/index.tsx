@@ -197,7 +197,7 @@ export default function Home() {
           {tools.map((tool) => {
             return (
               <a
-                className="hover:no-underline text-white md:space-y-4 p-4 rounded-lg bg-background/40 max-md:flex items-start gap-4 max-md:text-left "
+                className="hover:no-underline text-white md:space-y-6 p-4 rounded-lg bg-background/40 max-md:flex items-start gap-4 text-left "
                 key={tool.name}
                 href={tool.url}
               >
@@ -227,7 +227,7 @@ export default function Home() {
 
       <main className={'bg-gradient-to-tl from-background from-30% to-black'}>
         <Section title="Forms and UI" subTitle="Defined on your server" className=" bg-black">
-          <img src="/img/forms-ui.png" className="w-[60vw]" />
+          <img src="/img/forms-ui.png" className="md:w-[60vw]" />
         </Section>
 
         <Section title="Playground App" subTitle="Jump-Start Your Dev">
