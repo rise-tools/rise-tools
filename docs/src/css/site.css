@@ -163,7 +163,7 @@
   background-color: var(--ifm-navbar-link-hover-color);
 }
 
-@media not all and (min-width: 640px) {
+@media (min-width: 640px) {
   .tooltip {
     position: relative;
     display: inline-block;
