@@ -1,11 +1,8 @@
 import { navigate } from '@rise-tools/kit-react-navigation/server'
 import { Button, YStack } from '@rise-tools/kitchen-sink/server'
 
-export const models = {
-  '': Home,
-}
 
-function Home() {
+export function Home() {
   return (
     <YStack padding="$4">
       <Button
