@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development tsx watch ./src",
+    "dev": "cross-env NODE_ENV=development tsx watch --clear-screen=false ./src",
     "dev-simple-demo": "tsx watch ./src/simple-demo.tsx",
     "start": "tsx ./src"
   },
