@@ -17,6 +17,7 @@ export async function createHTTPServer(models: AnyModels, port: number): Promise
   return {
     port,
     protocol: 'http',
+    models,
     close() {
       server.close()
     },
