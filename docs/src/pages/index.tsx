@@ -57,7 +57,7 @@ function HeroSection() {
                 code="npm create rise"
                 className="relative flex items-center justify-center border border-solid border-transparent hover:border-white/40 rounded-md p-2 hover:bg-white/10 bg-white/5 transition-all opacity-70 hover:opacity-100"
               />
-              <span className="tooltip-text rise-button w-40 text-sm font-inter -ml-20 h-8 font-medium">
+              <span className="max-sm:hidden tooltip-text rise-button w-40 text-sm font-inter -ml-20 h-8 font-medium">
                 Copy to clipboard
               </span>
             </div>
