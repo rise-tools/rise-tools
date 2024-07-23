@@ -50,20 +50,18 @@ function HeroSection() {
             </Link>
           </div>
 
-          <div className="relative inline-block">
-            <code className="py-4 pl-4 pr-16">npx create-rise@latest</code>
-            <div className="absolute -top-1 right-4 ">
-              <div className="tooltip">
-                <CopyButton
-                  code="npx create-rise@latest"
-                  className="relative flex items-center justify-center border border-solid border-transparent hover:border-white/40 rounded-md p-2 hover:bg-white/10 bg-white/5 transition-all opacity-70 hover:opacity-100"
-                />
-                <span className="tooltip-text rise-button w-40 text-sm font-inter -ml-20 h-8 font-medium">
-                  Copy to clipboard
-                </span>
-              </div>
+          <code className="px-3 py-1 inline-flex items-center gap-4">
+            npm create rise
+            <div className="tooltip">
+              <CopyButton
+                code="npm create rise"
+                className="relative flex items-center justify-center border border-solid border-transparent hover:border-white/40 rounded-md p-2 hover:bg-white/10 bg-white/5 transition-all opacity-70 hover:opacity-100"
+              />
+              <span className="tooltip-text rise-button w-40 text-sm font-inter -ml-20 h-8 font-medium">
+                Copy to clipboard
+              </span>
             </div>
-          </div>
+          </code>
         </div>
         <div className="flex items-center justify-center relative">
           <img src="/img/logo.svg" height={250} />
@@ -207,7 +205,7 @@ export default function Home() {
                 href={tool.url}
               >
                 <div
-                  className="border-solid p-2 inline-flex items-center justify-center rounded-md max-sm:mt-1"
+                  className="border-solid p-2 inline-flex items-center justify-center rounded-md max-sm:mt-2"
                   style={{
                     borderColor: tool.color,
                     color: tool.color,
