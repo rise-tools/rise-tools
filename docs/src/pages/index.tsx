@@ -24,7 +24,7 @@ import { PlaygroundAppDownload } from '../components/PlaygroundAppDownload'
 
 function HeroSection() {
   return (
-    <section className="bg-gradient-to-br from-secondary/15 via-background/90 to-background -m-[var(--ifm-navbar-height)]">
+    <section className="bg-gradient-to-br from-secondary/15 via-background/90 to-background -mt-[var(--ifm-navbar-height)]">
       <div className="flex max-lg:text-center max-md:py-40 max-lg:flex-col-reverse gap-6 mx-auto md:min-h-[90vh] items-center justify-center max-w-7xl px-4">
         <div className="space-y-6 max-w-2xl">
           <h1 className="rise-hero-text text-6xl max-md:text-4xl font-semibold font-poppins">
@@ -52,9 +52,6 @@ function HeroSection() {
 
           <div className="relative inline-block">
             <code className="py-4 pl-4 pr-16">npx create-rise@latest</code>
-            {/* <div class="tooltip">Hover over me
-
-</div> */}
             <div className="absolute -top-1 right-4 ">
               <div className="tooltip">
                 <CopyButton
