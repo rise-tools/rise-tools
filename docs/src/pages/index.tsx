@@ -1,5 +1,7 @@
 import Link from '@docusaurus/Link'
+import type {} from '@docusaurus/theme-classic'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
+import CopyButton from '@theme/CodeBlock/CopyButton'
 import Layout from '@theme/Layout'
 import {
   ArrowRight,
@@ -23,16 +25,16 @@ import { PlaygroundAppDownload } from '../components/PlaygroundAppDownload'
 function HeroSection() {
   return (
     <section className="bg-gradient-to-br from-secondary/15 via-background/90 to-background">
-      <div className="flex max-sm:text-center max-md:py-40 max-sm:flex-col-reverse gap-6 container md:min-h-[90vh] items-center justify-center max-w-7xl ">
-        <div className="space-y-6 flex-1">
-          <h1 className="rise-hero-text text-6xl max-sm:text-4xl font-semibold font-poppins">
+      <div className="flex max-lg:text-center max-md:py-40 max-lg:flex-col-reverse gap-6 mx-auto md:min-h-[90vh] items-center justify-center max-w-7xl px-4">
+        <div className="space-y-6 max-w-2xl">
+          <h1 className="rise-hero-text text-6xl max-md:text-4xl font-semibold font-poppins">
             Server Defined Rendering for React Native
           </h1>
-          <h2 className="text-gray-300 font-medium text-2xl max-sm:text-xl">
+          <h2 className="text-gray-300 font-medium text-2xl max-md:text-xl">
             Any Framework. Any Server. Ready Today.
           </h2>
 
-          <div className="flex items-center gap-4 max-sm:justify-center ">
+          <div className="flex items-center gap-4 max-lg:justify-center ">
             <Link
               className="rise-button shrink-0 hover:rise-button-outline text-sm"
               to="/docs/getting-started"
@@ -47,20 +49,18 @@ function HeroSection() {
               <ArrowRight size={20} />
             </Link>
           </div>
+
           <div className="relative inline-block">
             <code className="p-2 pr-12">npx create-rise@latest</code>
-            <div
-              className="absolute top-1 right-3 cursor-pointer"
-              onClick={() => {
-                // @ts-ignore
-                if (navigator) navigator.clipboard.writeText('npx create-rise@latest')
-              }}
-            >
-              <ClipboardPen size={18} />
+            <div className="absolute top-1 right-4">
+              <CopyButton
+                code="npx create-rise@latest"
+                className="relative flex items-center justify-center"
+              />
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-center relative flex-1">
+        <div className="flex items-center justify-center relative">
           <img src="/img/logo.svg" height={250} />
           <img
             src="/img/logo.svg"
@@ -178,7 +178,7 @@ function Section({
         {title}
       </div>
       <p className="text-center font-medium text-xl text-gray-300">{subTitle}</p>
-      <div className="container md:px-8 px-4 md:py-12 py-8 space-y-10 max-w-7xl">{children}</div>
+      <div className="mx-auto md:px-8 px-4 md:py-12 py-8 space-y-10 max-w-7xl">{children}</div>
     </section>
   )
 }
@@ -193,11 +193,11 @@ export default function Home() {
       <HeroSection />
 
       <Section title="Meet The Tools">
-        <div className={'grid gap-10 sm:grid-cols-2 md:grid-cols-4'}>
+        <div className={'grid gap-4 md:gap-10 sm:grid-cols-2 md:grid-cols-4'}>
           {tools.map((tool) => {
             return (
               <a
-                className="hover:no-underline text-white md:space-y-6 p-4 rounded-lg bg-background/40 max-md:flex items-start gap-4 text-left "
+                className="hover:no-underline text-white md:space-y-3 p-4 rounded-lg bg-background/40 max-md:flex items-start gap-4 text-left "
                 key={tool.name}
                 href={tool.url}
               >
@@ -212,7 +212,7 @@ export default function Home() {
                   <tool.icon size={20} />
                 </div>
                 <div>
-                  <div className="font-poppins text-gray-200 font-semibold text-lg">
+                  <div className="font-poppins text-gray-200 font-semibold text-lg leading-loose">
                     {tool.name}
                   </div>
                   <div className="font-medium text-gray-500 leading-5 text-wrap break-words">

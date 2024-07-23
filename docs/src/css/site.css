@@ -68,9 +68,12 @@
   background-color: transparent;
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins';
+}
+
+.navbar:not(.navbar-sidebar--show){
   backdrop-filter: blur(13.3px);
   -webkit-backdrop-filter: blur(13.3px);
-  font-family: 'Poppins';
 }
 
 .navbar.navbar--fixed-top{
