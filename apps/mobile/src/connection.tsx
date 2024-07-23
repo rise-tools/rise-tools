@@ -1,5 +1,6 @@
 import { useStream } from '@rise-tools/react'
 
+import { DEMO_WS_URL } from './config'
 import { createMMKVStream } from './storage'
 
 export type ConnectionPayload = {
@@ -52,19 +53,19 @@ export const BUILTIN_CONNECTIONS: Record<string, Connection> = {
   inventory: {
     id: 'inventory',
     label: '🏭 Car Parts Inventory',
-    host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
+    host: DEMO_WS_URL,
     path: 'inventory',
   },
   ui: {
     id: 'ui',
     label: '🎨 UI Controls',
-    host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
+    host: DEMO_WS_URL,
     path: 'controls',
   },
   delivery: {
     id: 'delivery',
     label: '🚚 Super Delivery',
-    host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
+    host: DEMO_WS_URL,
     path: 'delivery',
   },
 }

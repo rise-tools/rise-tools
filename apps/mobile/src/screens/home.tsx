@@ -13,6 +13,7 @@ import React from 'react'
 import { ScrollView } from 'react-native'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
+import { PRIVACY_POLICY_URL } from '../config'
 import { BUILTIN_CONNECTIONS, Connection, connections } from '../connection'
 import { Dropdown, DropdownItem } from '../dropdown'
 import { RootStackParamList } from '.'
@@ -98,8 +99,6 @@ function NewConnectionButton() {
 }
 
 export function HomeHeaderButton() {
-  const privacyUrl = process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL
-
   return (
     <Dropdown trigger={<CircleEllipsis />}>
       <DropdownItem
@@ -108,11 +107,9 @@ export function HomeHeaderButton() {
       >
         Docs
       </DropdownItem>
-      {privacyUrl && (
-        <DropdownItem onPress={() => Linking.openURL(privacyUrl)} Icon={VenetianMask}>
-          Privacy Policy
-        </DropdownItem>
-      )}
+      <DropdownItem onPress={() => Linking.openURL(PRIVACY_POLICY_URL)} Icon={VenetianMask}>
+        Privacy Policy
+      </DropdownItem>
     </Dropdown>
   )
 }

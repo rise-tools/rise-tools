@@ -6,10 +6,6 @@
         "buildType": "app-bundle"
       },
       "autoIncrement": true,
-      "env": {
-        "EXPO_PUBLIC_DEMO_WS_URL": "wss://demo.rise.tools",
-        "EXPO_PUBLIC_PRIVACY_POLICY_URL": "https://app.getterms.io/view/Val1H/privacy/en-us"
-      },
       "channel": "production"
     }
   },
