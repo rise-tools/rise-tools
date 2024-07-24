@@ -51,10 +51,10 @@ function HeroSection() {
           </div>
 
           <code className="px-3 py-1 inline-flex items-center gap-4">
-            npm create rise
+            npm create rise@latest
             <div className="tooltip">
               <CopyButton
-                code="npm create rise"
+                code="npm create rise@latest"
                 className="relative flex items-center justify-center border border-solid border-transparent hover:border-white/40 rounded-md p-2 hover:bg-white/10 bg-white/5 transition-all opacity-70 hover:opacity-100"
               />
               <span className="max-sm:hidden tooltip-text rise-button w-40 text-sm font-inter -ml-20 h-8 font-medium">
@@ -177,10 +177,10 @@ function Section({
 }) {
   return (
     <section className={'py-10 bg-background text-center ' + className}>
-      <div className="rise-gradient-text lg:text-5xl md:text-3xl text-xl font-semibold font-poppins !leading-normal max-w-4xl text-center">
+      <div className="rise-gradient-text lg:text-5xl md:text-3xl text-2xl font-semibold font-poppins !leading-normal max-w-4xl text-center">
         {title}
       </div>
-      <p className="text-center font-medium text-xl text-gray-300">{subTitle}</p>
+      <p className="text-center font-medium md:text-xl text-lg text-gray-300">{subTitle}</p>
       <div className="mx-auto md:px-8 px-4 md:py-12 py-8 space-y-10 max-w-7xl">{children}</div>
     </section>
   )
