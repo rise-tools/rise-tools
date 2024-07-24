@@ -25,7 +25,7 @@ import { PlaygroundAppDownload } from '../components/PlaygroundAppDownload'
 function HeroSection() {
   return (
     <section className="bg-gradient-to-br from-secondary/15 via-background/90 to-background -mt-[var(--ifm-navbar-height)]">
-      <div className="flex max-lg:text-center max-md:py-40 max-lg:flex-col-reverse gap-6 mx-auto md:min-h-[90vh] items-center justify-center max-w-7xl px-4">
+      <div className="flex max-lg:text-center max-md:pt-40 max-lg:flex-col-reverse gap-6 mx-auto md:min-h-[90vh] items-center justify-center max-w-7xl px-4">
         <div className="space-y-6 max-w-2xl">
           <h1 className="rise-hero-text text-6xl max-md:text-4xl font-semibold font-poppins">
             Server Defined Rendering for React Native
@@ -177,10 +177,12 @@ function Section({
 }) {
   return (
     <section className={'py-10 bg-background text-center ' + className}>
-      <div className="rise-gradient-text lg:text-5xl md:text-3xl text-2xl font-semibold font-poppins !leading-normal max-w-4xl text-center">
+      <div className="rise-gradient-text lg:text-5xl text-3xl font-semibold font-poppins !leading-normal max-w-4xl text-center">
         {title}
       </div>
-      <p className="text-center font-medium md:text-xl text-lg text-gray-300">{subTitle}</p>
+      {subTitle && (
+        <p className="text-center font-medium md:text-xl text-lg text-gray-300">{subTitle}</p>
+      )}
       <div className="mx-auto md:px-8 px-4 md:py-12 py-8 space-y-10 max-w-7xl">{children}</div>
     </section>
   )

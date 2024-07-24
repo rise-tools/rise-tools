@@ -194,4 +194,6 @@
   .tooltip:hover:not(:focus-within) .tooltip-text {
     visibility: visible;
   }
-  }
+}
+
+
