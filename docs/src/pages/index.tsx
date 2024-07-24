@@ -26,23 +26,23 @@ function HeroSection() {
   return (
     <section className="bg-gradient-to-br from-secondary/15 via-background/90 to-background -mt-[var(--ifm-navbar-height)]">
       <div className="flex max-lg:text-center max-md:pt-40 max-lg:flex-col-reverse gap-6 mx-auto md:min-h-[90vh] items-center justify-center max-w-7xl px-4">
-        <div className="space-y-6 max-w-2xl">
-          <h1 className="rise-hero-text text-6xl max-md:text-4xl font-semibold font-poppins">
+        <div className="max-w-2xl space-y-6">
+          <h1 className="text-6xl font-semibold rise-hero-text max-md:text-4xl font-poppins">
             Server Defined Rendering for React Native
           </h1>
-          <h2 className="text-gray-300 font-medium text-2xl max-md:text-xl">
-            Any Framework. Any Server. Ready Today.
+          <h2 className="text-2xl font-medium text-gray-300 max-md:text-xl">
+            The Server, Kit, and Playground. Or bring your own.
           </h2>
 
           <div className="flex items-center gap-4 max-lg:justify-center ">
             <Link
-              className="rise-button shrink-0 hover:rise-button-outline text-sm"
+              className="text-sm rise-button shrink-0 hover:rise-button-outline"
               to="/docs/getting-started"
             >
               Get Started
             </Link>
             <Link
-              className="rise-button-outlined transition-all flex items-center gap-2 shrink-0  text-sm"
+              className="flex items-center gap-2 text-sm transition-all rise-button-outlined shrink-0"
               to="/docs/intro"
             >
               <div>Introduction</div>
@@ -50,20 +50,20 @@ function HeroSection() {
             </Link>
           </div>
 
-          <code className="px-3 py-1 inline-flex items-center gap-4">
+          <code className="inline-flex items-center gap-4 px-3 py-1">
             npm create rise@latest
             <div className="tooltip">
               <CopyButton
                 code="npm create rise@latest"
-                className="relative flex items-center justify-center border border-solid border-transparent hover:border-white/40 rounded-md p-2 hover:bg-white/10 bg-white/5 transition-all opacity-70 hover:opacity-100"
+                className="relative flex items-center justify-center p-2 transition-all border border-transparent border-solid rounded-md hover:border-white/40 hover:bg-white/10 bg-white/5 opacity-70 hover:opacity-100"
               />
-              <span className="max-sm:hidden tooltip-text rise-button w-40 text-sm font-inter -ml-20 h-8 font-medium">
+              <span className="w-40 h-8 -ml-20 text-sm font-medium max-sm:hidden tooltip-text rise-button font-inter">
                 Copy to clipboard
               </span>
             </div>
           </code>
         </div>
-        <div className="flex items-center justify-center relative">
+        <div className="relative flex items-center justify-center">
           <img src="/img/logo.svg" height={250} />
           <img
             src="/img/logo.svg"
@@ -181,9 +181,9 @@ function Section({
         {title}
       </div>
       {subTitle && (
-        <p className="text-center font-medium md:text-xl text-lg text-gray-300">{subTitle}</p>
+        <p className="text-lg font-medium text-center text-gray-300 md:text-xl">{subTitle}</p>
       )}
-      <div className="mx-auto md:px-8 px-4 md:py-12 py-8 space-y-10 max-w-7xl">{children}</div>
+      <div className="px-4 py-8 mx-auto space-y-10 md:px-8 md:py-12 max-w-7xl">{children}</div>
     </section>
   )
 }
@@ -202,12 +202,12 @@ export default function Home() {
           {tools.map((tool) => {
             return (
               <a
-                className="hover:no-underline text-white md:space-y-3 p-4 rounded-lg bg-background/40 max-md:flex items-start gap-4 text-left "
+                className="items-start gap-4 p-4 text-left text-white rounded-lg hover:no-underline md:space-y-3 bg-background/40 max-md:flex "
                 key={tool.name}
                 href={tool.url}
               >
                 <div
-                  className="border-solid p-2 inline-flex items-center justify-center rounded-md max-sm:mt-2"
+                  className="inline-flex items-center justify-center p-2 border-solid rounded-md max-sm:mt-2"
                   style={{
                     borderColor: tool.color,
                     color: tool.color,
@@ -217,10 +217,10 @@ export default function Home() {
                   <tool.icon size={20} />
                 </div>
                 <div>
-                  <div className="font-poppins text-gray-200 font-semibold text-lg leading-loose">
+                  <div className="text-lg font-semibold leading-loose text-gray-200 font-poppins">
                     {tool.name}
                   </div>
-                  <div className="font-medium text-gray-500 leading-5 text-wrap break-words">
+                  <div className="font-medium leading-5 text-gray-500 break-words text-wrap">
                     {tool.description}
                   </div>
                 </div>
@@ -231,7 +231,7 @@ export default function Home() {
       </Section>
 
       <main className={'bg-gradient-to-tl from-background from-30% to-black'}>
-        <Section title="Forms and UI" subTitle="Defined on your server" className=" bg-black">
+        <Section title="Forms and UI" subTitle="Defined on your server" className="bg-black ">
           <img src="/img/forms-ui.png" className="md:w-[60vw]" />
         </Section>
 

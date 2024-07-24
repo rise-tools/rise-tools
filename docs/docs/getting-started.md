@@ -10,13 +10,13 @@ So you want to try Server Defined Rendering with Rise Tools? Lets go!
 
 ## Quick Start Server Dev
 
-Fist we will create a server that controls UI for our app.
-
-Start by cloning the [server quickstart repo](https://github.com/rise-tools/rise-server-quickstart):
+First we will create a server that controls UI for our app. Run the command:
 
 ```sh
-git clone git@github.com:rise-tools/rise-server-quickstart.git
+npm create rise@latest
 ```
+
+You will name the project and it will install the dependencies (this takes a while, we plan to reduce the required dependencies soon).
 
 This starter includes the following:
 
@@ -25,28 +25,39 @@ This starter includes the following:
 - [@rise-tools/kitchen-sink](/docs/kit#rise-toolskitchen-sink) - The components of your app
 - [Experimental JSX support for Rise Server](/docs/guides/jsx-setup)
 
-The main code is in `src/index.tsx`:
+To get started:
+
+```sh
+cd <my-project-name>
+npm run dev
+```
+
+> Note: To start the server over the public internet, run `npm run dev -- --tunnel` and your server will be available through our public proxy
+
+Now your server should be ready to use and develop on!
+
+Paste this new code in `src/models.tsx`:
 
 ```tsx
-import { createWSServer, state, view } from '@rise-tools/server'
+import { state, view } from '@rise-tools/server'
 import { YStack, Text, Button } from '@rise-tools/kitchen-sink/server'
 
 const [count, setCount] = state(0)
 
 const incrementer = view(get => (
-    <YStack>
-        <Text>The count is {get(count)}</Text>
-        <Button onPress={() => {
-            setCount(c => c + 1)
-        }}>
-            Plus 1
-        </Button>
-    </YStack>
+  <YStack>
+    <Text>The count is {get(count)}</Text>
+    <Button onPress={() => {
+      setCount(c => c + 1)
+    }}>
+      Plus 1
+    </Button>
+  </YStack>
 ))
 
-console.log('Starting server on ws://localhost:8888')
-
-createWSServer({ home: incrementer }, 8888)
+export const models = {
+  home: incrementer,
+}
 ```
 
 This code establishes:
@@ -55,25 +66,18 @@ This code establishes:
 - A `view` model which renders a `YStack` container,
     - `Text` which displays the current count
     - `Button` with a handler that mutates the internal count state
-- The WebSocket server on port `8888` which serves the `home` view
 
-To run the app:
+Now lets test your new code!
 
-```sh
-cd rise-server-quickstart
-npm install
-npm run dev
-```
-
-If everything goes well, your server is ready to use and develop on!
-
-## Playground App
+## Option 1: Playground App
 
 The fastest way to start developing is by downloading the [Rise Playground App](/docs/playground) from the App Store or Play Store.
 
-Connect to your server by adding `ws://<your-computer-ip>:8888` and setting the path to `home`
+Then, scan the QR Code from the terminal to add the connection to your dev server.
 
-## React Native Quick Start
+> Note: You may also connect to your server by manually adding `ws://<your-computer-ip>:3005` and setting the path to `home`
+
+## Option 2: React Native Quick Start
 
 Or you can connect a React Native app to your new server. We will demonstrate in a fresh Expo app. Start by cloning the [mobile quickstart repo](https://github.com/rise-tools/rise-mobile-quickstart):
 
@@ -116,7 +120,7 @@ Next, look at `src/modelSource.ts` which defines the connection to the WebSocket
 ```tsx
 import { createWSModelSource } from "@rise-tools/ws-client";
 
-export const modelSource = createWSModelSource("ws://localhost:8888");
+export const modelSource = createWSModelSource("ws://localhost:3005");
 ```
 
 Finally lets see how it all ties together in the home screen `app/index.tsx`:
@@ -153,7 +157,7 @@ Here we render the main `<Rise>` component, we specify the component library and
 
 At this point you should be able to change the code in `index.tsx` and see the UI reflect your changes in the app.
 
-> TODO: example code changes
+See the [docs on models](/docs/server-js/models) to see how to manage data in the server, and browse the [Kit docs](/docs/kit) to see what components are available out-of-the-box.
 
 ## Navigation
 

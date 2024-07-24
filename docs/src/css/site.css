@@ -45,6 +45,10 @@
   }
  }
 
+ body, html {
+  background-color: rgb(21, 2, 53);
+ }
+
  @layer components {
   .rise-button {
     @apply drop-shadow-sm center hover:no-underline text-white hover:text-white bg-gradient-to-bl from-secondary to-100% to-primary focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 rounded-lg text-lg px-5  text-center h-12 font-bold
@@ -205,6 +209,7 @@
     --ifm-footer-link-color:#c3c3c3;
     --ifm-footer-title-color:var(--ifm-color-primary);
     --ifm-footer-background-color: #160435 !important;
+  background-color: #111;
 }
 
 .footer__copyright{
