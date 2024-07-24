@@ -10,7 +10,7 @@ import { NewConnectionScreen } from './new-connection'
 export type RootStackParamList = {
   home: undefined
   connect: { connectInfo?: string }
-  connection: { id: string }
+  connection: { id: string; path?: string }
   'edit-connection': { id: string }
   'new-connection': undefined
 }

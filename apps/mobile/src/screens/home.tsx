@@ -14,12 +14,30 @@ import { ScrollView } from 'react-native'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
 import { PRIVACY_POLICY_URL } from '../config'
-import { BUILTIN_CONNECTIONS, Connection, connections } from '../connection'
+import { Connection, connections, useConnection } from '../connection'
 import { Dropdown, DropdownItem } from '../dropdown'
 import { RootStackParamList } from '.'
+import { RiseScreen } from './connection'
 
 export function HomeScreen() {
   const state = useStream(connections)
+  const connection = useConnection('example')
+
+  const navigation = useNavigation()
+
+  const actions = {
+    'rise-tools/kit-react-navigation/navigate': {
+      // @ts-ignore
+      action: ({ path, options }) => {
+        // @ts-ignore
+        navigation.navigate('connection', {
+          id: 'example',
+          path,
+          options,
+        })
+      },
+    },
+  }
 
   return (
     <ScrollView>
@@ -33,15 +51,8 @@ export function HomeScreen() {
           </YGroup>
           <NewConnectionButton />
         </YStack>
-        {state.length === 0 && (
-          <YStack gap="$2">
-            <Text textAlign="center">or try some of the examples below:</Text>
-            <YGroup separator={<Separator />}>
-              {Object.values(BUILTIN_CONNECTIONS).map((connection) => (
-                <ConnectionItem key={connection.id} connection={connection} readonly />
-              ))}
-            </YGroup>
-          </YStack>
+        {state.length === 0 && connection && (
+          <RiseScreen connection={connection} path="" actions={actions} />
         )}
       </YStack>
     </ScrollView>

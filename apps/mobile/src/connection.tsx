@@ -50,22 +50,28 @@ export function updateConnection(id: string, connection: ConnectionPayload) {
 }
 
 export const BUILTIN_CONNECTIONS: Record<string, Connection> = {
-  inventory: {
-    id: 'inventory',
-    label: '🏭 Car Parts Inventory',
+  example: {
+    id: 'example',
+    label: '🏭 Example',
     host: DEMO_WS_URL,
-    path: 'inventory',
+    path: '',
   },
-  ui: {
-    id: 'ui',
-    label: '🎨 UI Controls',
-    host: DEMO_WS_URL,
-    path: 'controls',
-  },
-  delivery: {
-    id: 'delivery',
-    label: '🚚 Super Delivery',
-    host: DEMO_WS_URL,
-    path: 'delivery',
-  },
+  // inventory: {
+  //   id: 'inventory',
+  //   label: '🏭 Car Parts Inventory',
+  //   host: DEMO_WS_URL,
+  //   path: 'inventory',
+  // },
+  // ui: {
+  //   id: 'ui',
+  //   label: '🎨 UI Controls',
+  //   host: DEMO_WS_URL,
+  //   path: 'controls',
+  // },
+  // delivery: {
+  //   id: 'delivery',
+  //   label: '🚚 Super Delivery',
+  //   host: process.env.EXPO_PUBLIC_DEMO_WS_URL as string,
+  //   path: 'delivery',
+  // },
 }

@@ -60,9 +60,11 @@ export function ConnectionScreen({
         options={{
           headerLeft: () => <BackButton connection={connection} />,
           title: connection?.label || connection?.path,
+          // @ts-ignore
+          ...(route.params.options || {}),
         }}
       >
-        {() => <RiseScreen connection={connection!} path={connection!.path || ''} />}
+        {() => <RiseScreen connection={connection!} path={route.params.path || connection!.path} />}
       </Stack.Screen>
       <Stack.Screen
         name="rise"
@@ -93,17 +95,30 @@ export function ConnectionScreen({
   )
 }
 
-function RiseScreen({ connection, path }: { connection: Connection; path: string }) {
+export function RiseScreen({
+  connection,
+  path,
+  actions = {},
+}: {
+  connection: Connection
+  path: string
+  actions?: Record<string, any>
+}) {
   const modelSource = useModelSource(connection.id, connection.host)
-  const actions = {
-    ...useReactNavigationActions({ routeName: 'rise' }),
-    ...useToastActions(),
-    ...useHapticsActions(),
-    ...useLinkingActions(),
-  }
   return (
     <DataBoundary modelSource={modelSource} path={path}>
-      <Rise components={components} modelSource={modelSource} path={path} actions={actions} />
+      <Rise
+        components={components}
+        modelSource={modelSource}
+        path={path}
+        actions={{
+          ...useReactNavigationActions({ routeName: 'rise' }),
+          ...useToastActions(),
+          ...useHapticsActions(),
+          ...useLinkingActions(),
+          ...actions,
+        }}
+      />
     </DataBoundary>
   )
 }
