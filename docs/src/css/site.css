@@ -10,9 +10,11 @@
 .font-inter, *{
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
-
 }
 
+code, pre, pre *{
+  font-family: var(--ifm-font-family-monospace) !important;
+}
 
 @tailwind base;
 @tailwind components;
@@ -56,7 +58,7 @@
   .rise-button-outlined {
     @apply box-border drop-shadow-sm center border-2 -m-[2px] border-solid border-secondary  hover:no-underline hover:text-white text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-lg px-5 h-12 text-center
   }
-  .rise-gradient-text, .footer__title, .footer__copyright {
+  .rise-gradient-text, .footer__title, .footer__copyright, .markdown h1 {
     @apply bg-gradient-to-r from-primary to-secondary inline-block text-transparent bg-clip-text
   }
  }
@@ -208,8 +210,7 @@
   font-family: Inter;
     --ifm-footer-link-color:#c3c3c3;
     --ifm-footer-title-color:var(--ifm-color-primary);
-    --ifm-footer-background-color: #160435 !important;
-  background-color: #111;
+    --ifm-footer-background-color: #111;
 }
 
 .footer__copyright{

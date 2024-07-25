@@ -64,11 +64,10 @@ function HeroSection() {
           </code>
         </div>
         <div className="relative flex items-center justify-center">
-          <img src="/img/logo.svg" height={250} />
+          <img src="/img/logo.svg" className="w-52 md:w-72 lg:w-80" />
           <img
             src="/img/logo.svg"
-            height={250}
-            className="blur-2xl opacity-70 absolute animate-[spin_2s_linear_infinite]"
+            className="blur-2xl opacity-70 absolute animate-[spin_2s_linear_infinite] w-52 md:w-72 lg:w-80"
           />
         </div>
       </div>
