@@ -14,7 +14,6 @@
 
 code, pre, pre *{
   font-family: var(--ifm-font-family-monospace) !important;
-
 }
 
 @tailwind base;
@@ -50,6 +49,7 @@ code, pre, pre *{
 
  body, html {
   background-color: rgb(21, 2, 53);
+  overflow-x: hidden;
  }
 
  @layer components {
@@ -218,7 +218,3 @@ code, pre, pre *{
 .footer__copyright{
   font-weight: 600;
 }
-
- body{
-  overflow-x: hidden;
- }
