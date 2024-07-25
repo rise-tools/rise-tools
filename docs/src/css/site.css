@@ -49,7 +49,6 @@ code, pre, pre *{
 
  body, html {
   background-color: rgb(21, 2, 53);
-  overflow-x: hidden;
  }
 
  @layer components {
