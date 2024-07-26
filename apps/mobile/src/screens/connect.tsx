@@ -16,25 +16,16 @@ export function ConnectScreen({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'connect'>) {
   const importedConnection:Connection | null = (() => {
-     if (connectInfo) {
-    try {
-      return JSON.parse(Buffer.from(bs58.decode(connectInfo)).toString('utf-8'))
-    } catch (error) {
-      console.error('Error parsing connection:', error)
+    if (connectInfo) {
+      try {
+        return JSON.parse(Buffer.from(bs58.decode(connectInfo)).toString('utf-8'))
+      } catch (error) {
+        console.error('Error parsing connection:', error)
+      }
     }
-  }
   })()
- 
 
   const state = useStream(connections)
-
-  if (!importedConnection) {
-    return (
-      <YStack>
-        <SizableText>Invalid Connection Info</SizableText>
-      </YStack>
-    )
-  }
 
   useEffect(() => {
     // check if connection exists in connections, redirect if it does
@@ -52,27 +43,35 @@ export function ConnectScreen({
 
   return (
     <YStack>
-      <SizableText>Confirm Connection to "{importedConnection.label}"?</SizableText>
-      {importedConnection && (
-        <Button
-          onPress={() => {
-            if (!importedConnection) return
-            const existingConnection = state.find(
-              (connection) =>
-                connection.label === importedConnection?.label &&
-                connection.host === importedConnection?.host &&
-                connection.path === importedConnection?.path
-            )
-            if (existingConnection) {
-              navigation.replace('connection', { id: existingConnection.id })
-            } else {
-              const newConnId = addConnection(importedConnection)
-              navigation.replace('connection', { id: newConnId })
-            }
-          }}
-        >
-          Connect
-        </Button>
+      {importedConnection ? (
+        <>
+          <SizableText>
+            Confirm Connection to "{importedConnection.label}"?
+          </SizableText>
+          <Button
+            onPress={() => {
+              if (!importedConnection) return
+              const existingConnection = state.find(
+                (connection) =>
+                  connection.label === importedConnection?.label &&
+                  connection.host === importedConnection?.host &&
+                  connection.path === importedConnection?.path
+              )
+              if (existingConnection) {
+                navigation.replace('connection', { id: existingConnection.id })
+              } else {
+                const newConnId = addConnection(importedConnection)
+                navigation.replace('connection', { id: newConnId })
+              }
+            }}
+          >
+            Connect
+          </Button>
+        </>
+      ) : (
+        <YStack>
+          <SizableText>Invalid Connection Info</SizableText>
+        </YStack>
       )}
     </YStack>
   )
