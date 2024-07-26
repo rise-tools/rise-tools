@@ -15,14 +15,16 @@ export function ConnectScreen({
   },
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'connect'>) {
-  let importedConnection: Connection | null = null
-  if (connectInfo) {
+  const importedConnection:Connection | null = (() => {
+     if (connectInfo) {
     try {
-      importedConnection = JSON.parse(Buffer.from(bs58.decode(connectInfo)).toString('utf-8'))
+      return JSON.parse(Buffer.from(bs58.decode(connectInfo)).toString('utf-8'))
     } catch (error) {
       console.error('Error parsing connection:', error)
     }
   }
+  })()
+ 
 
   const state = useStream(connections)
 
