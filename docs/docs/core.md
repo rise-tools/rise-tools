@@ -15,7 +15,7 @@ The base `<Rise />` components requires:
 First, install `@rise-tools/react`
 
 ```tsx
-import { Rise } from '@rise-tools/react`
+import { Rise } from '@rise-tools/react'
 
 // then, render it in your app:
 

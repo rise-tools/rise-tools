@@ -9,7 +9,7 @@ function DLButton({ img, url }: { img: string; url: string }) {
 }
 export function PlaygroundAppDownload() {
   return (
-    <div className={'flex w-100 gap-3 center'}>
+    <div className={'flex gap-3 justify-center'}>
       <DLButton
         img="/img/dl-appstore.png"
         url="https://apps.apple.com/us/app/rise-playground/id6499588861"

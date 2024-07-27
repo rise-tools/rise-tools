@@ -58,9 +58,7 @@ This can be accomplished by passing an object of actions into the Rise client:
   modelSource={modelSource}
   actions={{
     goToTheMoon: {
-      handler: () => {
-        // TODO: implement moon launch. easy, right?!
-      }
+      handler: () => // TODO: implement moon launch. easy, right?!,
     }
   }}
 />
