@@ -8,8 +8,6 @@
     "icon": "./assets/RiseIcon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/RiseSplash.png",
-      "resizeMode": "contain",
       "backgroundColor": "#260162"
     },
     "updates": {
