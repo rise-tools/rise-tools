@@ -15,28 +15,39 @@ const AnimatedView = Animated.createAnimatedComponent(View)
 
 export function SplashScreen({ children, loaded }: { children: React.ReactNode; loaded: boolean }) {
   const [isAppReady, setIsAppReady] = useState(false)
+  const [isInitialAnimationDone, setIsInitialAnimationDone] = useState(false)
   const opacity = useSharedValue(0)
   const bgOpacity = useSharedValue(1)
   const scale = useSharedValue(0.5)
-  const rotation = useSharedValue(315)
+  const rotation = useSharedValue(270)
 
   useEffect(() => {
-    startAnimation()
+    startInitialAnimation()
   }, [])
 
-  const startAnimation = async () => {
+  useEffect(() => {
+    if (isInitialAnimationDone && loaded) {
+      startFinalAnimation()
+    }
+  }, [isInitialAnimationDone, loaded])
+
+  const startInitialAnimation = async () => {
     await Splash.hideAsync()
-    opacity.value = withTiming(1, { duration: 500 })
-    rotation.value = withTiming(360, { duration: 500 })
-    scale.value = withTiming(1, { duration: 500 }, () => {
-      bgOpacity.value = withTiming(0, { duration: 500 }, () => {
-        runOnJS(onAnimationComplete)()
-      })
+    opacity.value = withTiming(1, { duration: 1000 })
+    rotation.value = withTiming(360, { duration: 1000 })
+    scale.value = withTiming(1, { duration: 1000 }, () => {
+      runOnJS(setIsInitialAnimationDone)(true)
     })
   }
 
-  const onAnimationComplete = async () => {
-    setTimeout(() => setIsAppReady(true), 500)
+  const startFinalAnimation = () => {
+    bgOpacity.value = withTiming(0, { duration: 1000 }, () => {
+      runOnJS(onAnimationComplete)()
+    })
+  }
+
+  const onAnimationComplete = () => {
+    setTimeout(() => setIsAppReady(true), 1000)
   }
 
   const animatedStyles = useAnimatedStyle(() => {
@@ -52,9 +63,9 @@ export function SplashScreen({ children, loaded }: { children: React.ReactNode; 
   })
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.wrapper}>
       {children}
-      {(!isAppReady || !loaded) && (
+      {!isAppReady && (
         <AnimatedView style={[styles.container, animatedBgStyles]}>
           <AnimatedImage
             source={require('../assets/RiseMainIcon.png')}
@@ -68,6 +79,9 @@ export function SplashScreen({ children, loaded }: { children: React.ReactNode; 
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+  },
   container: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
