@@ -42,12 +42,8 @@ export function SplashScreen({ children, loaded }: { children: React.ReactNode; 
 
   const startFinalAnimation = () => {
     bgOpacity.value = withTiming(0, { duration: 1000 }, () => {
-      runOnJS(onAnimationComplete)()
+      runOnJS(setIsAppReady)(true)
     })
-  }
-
-  const onAnimationComplete = () => {
-    setTimeout(() => setIsAppReady(true), 1000)
   }
 
   const animatedStyles = useAnimatedStyle(() => {
