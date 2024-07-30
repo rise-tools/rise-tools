@@ -49,7 +49,7 @@ function Examples() {
     'rise-tools/kit-react-navigation/navigate': {
       action: ({ path, options }) => {
         navigation.navigate('connection', {
-          id: 'example',
+          id: DEMO_CONNECTION.id,
           path,
           options,
         })
