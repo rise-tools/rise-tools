@@ -57,7 +57,7 @@ function Examples() {
     },
   } satisfies ReturnType<typeof useReactNavigationActions>
 
-  return <RiseScreen connection={DEMO_CONNECTION} path="" actions={actions} />
+  return <RiseScreen connection={DEMO_CONNECTION} actions={actions} />
 }
 
 function HeroImage() {

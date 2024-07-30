@@ -63,7 +63,7 @@ export function ConnectionScreen({
           ...(route.params.options || {}),
         }}
       >
-        {() => <RiseScreen connection={connection!} path={route.params.path || connection!.path} />}
+        {() => <RiseScreen connection={connection!} path={route.params.path} />}
       </Stack.Screen>
       <Stack.Screen
         name="rise"
@@ -96,11 +96,11 @@ export function ConnectionScreen({
 
 export function RiseScreen({
   connection,
-  path,
+  path = connection.path,
   actions = {},
 }: {
   connection: Connection
-  path: string
+  path?: string
   actions?: Record<string, any>
 }) {
   const modelSource = useModelSource(connection.id, connection.host)

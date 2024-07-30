@@ -39,32 +39,36 @@ export function HeaderButton(props: ButtonProps) {
 export function BackButton({ connection }: { connection?: Connection }) {
   const navigation = useNavigation<NavigationProp<RiseStackParamList & RootStackParamList>>()
 
+  if (connection && connection.id !== DEMO_CONNECTION.id) {
+    return (
+      <Dropdown
+        trigger={
+          <HeaderButton>
+            <Image src={require('../assets/RiseMainIcon.png')} aspectRatio={1} height={25} />
+          </HeaderButton>
+        }
+      >
+        <DropdownItem onPress={() => navigation.goBack()} Icon={Home}>
+          Go Home
+        </DropdownItem>
+        <Separator />
+        <DropdownItem onPress={() => navigation.navigate('qr-code')} Icon={Share}>
+          Share Connection
+        </DropdownItem>
+        <Separator />
+        <DropdownItem
+          onPress={() => navigation.navigate('edit-connection', { id: connection.id })}
+          Icon={Pencil}
+        >
+          Edit Connection
+        </DropdownItem>
+      </Dropdown>
+    )
+  }
+
   return (
-    <Dropdown
-      trigger={
-        <HeaderButton>
-          <Image src={require('../assets/RiseMainIcon.png')} aspectRatio={1} height={25} />
-        </HeaderButton>
-      }
-    >
-      <DropdownItem onPress={() => navigation.goBack()} Icon={Home}>
-        Go Home
-      </DropdownItem>
-      {connection && connection.id !== DEMO_CONNECTION.id && (
-        <>
-          <Separator />
-          <DropdownItem onPress={() => navigation.navigate('qr-code')} Icon={Share}>
-            Share Connection
-          </DropdownItem>
-          <Separator />
-          <DropdownItem
-            onPress={() => navigation.navigate('edit-connection', { id: connection.id })}
-            Icon={Pencil}
-          >
-            Edit Connection
-          </DropdownItem>
-        </>
-      )}
-    </Dropdown>
+    <HeaderButton onPress={() => navigation.goBack()}>
+      <Image src={require('../assets/RiseMainIcon.png')} aspectRatio={1} height={25} />
+    </HeaderButton>
   )
 }
