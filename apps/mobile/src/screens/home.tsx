@@ -15,7 +15,7 @@ import { ScrollView } from 'react-native'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
 import { PRIVACY_POLICY_URL } from '../config'
-import { Connection, connections, EXAMPLE_CONNECTION } from '../connection'
+import { Connection, connections, DEMO_CONNECTION } from '../connection'
 import { Dropdown, DropdownItem } from '../dropdown'
 import { RootStackParamList } from '.'
 import { RiseScreen } from './connection'
@@ -32,7 +32,7 @@ export function HomeScreen() {
             {state.map((connection) => (
               <ConnectionItem key={connection.id} connection={connection} />
             ))}
-            {state.length > 0 && <ConnectionItem connection={EXAMPLE_CONNECTION} readonly />}
+            {state.length > 0 && <ConnectionItem connection={DEMO_CONNECTION} readonly />}
           </YGroup>
           <NewConnectionButton />
         </YStack>
@@ -57,7 +57,7 @@ function Examples() {
     },
   } satisfies ReturnType<typeof useReactNavigationActions>
 
-  return <RiseScreen connection={EXAMPLE_CONNECTION} path="" actions={actions} />
+  return <RiseScreen connection={DEMO_CONNECTION} path="" actions={actions} />
 }
 
 function HeroImage() {

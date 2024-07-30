@@ -23,8 +23,8 @@ export function useConnection(id?: string) {
   if (!id) {
     return
   }
-  if (id === EXAMPLE_CONNECTION.id) {
-    return EXAMPLE_CONNECTION
+  if (id === DEMO_CONNECTION.id) {
+    return DEMO_CONNECTION
   }
   return state.find((connection) => connection.id === id)
 }
@@ -49,7 +49,7 @@ export function updateConnection(id: string, connection: ConnectionPayload) {
   })
 }
 
-export const EXAMPLE_CONNECTION: Connection = {
+export const DEMO_CONNECTION: Connection = {
   id: 'example',
   label: '🏭 Example',
   host: DEMO_WS_URL,
