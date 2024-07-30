@@ -50,12 +50,12 @@ export function BackButton({ connection }: { connection?: Connection }) {
       <DropdownItem onPress={() => navigation.goBack()} Icon={Home}>
         Go Home
       </DropdownItem>
-      <Separator />
-      <DropdownItem onPress={() => navigation.navigate('qr-code')} Icon={Share}>
-        Share Connection
-      </DropdownItem>
       {connection && connection.id !== DEMO_CONNECTION.id && (
         <>
+          <Separator />
+          <DropdownItem onPress={() => navigation.navigate('qr-code')} Icon={Share}>
+            Share Connection
+          </DropdownItem>
           <Separator />
           <DropdownItem
             onPress={() => navigation.navigate('edit-connection', { id: connection.id })}
