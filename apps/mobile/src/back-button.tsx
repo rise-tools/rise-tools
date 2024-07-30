@@ -4,7 +4,7 @@ import { X } from '@tamagui/lucide-icons'
 import { Platform } from 'react-native'
 import { Button, ButtonProps, Image, Separator } from 'tamagui'
 
-import { BUILTIN_CONNECTIONS, Connection } from './connection'
+import { Connection, EXAMPLE_CONNECTION } from './connection'
 import { Dropdown, DropdownItem } from './dropdown'
 import { RootStackParamList } from './screens'
 import type { RiseStackParamList } from './screens/connection'
@@ -54,7 +54,7 @@ export function BackButton({ connection }: { connection?: Connection }) {
       <DropdownItem onPress={() => navigation.navigate('qr-code')} Icon={Share}>
         Share Connection
       </DropdownItem>
-      {connection && Object.keys(BUILTIN_CONNECTIONS).includes(connection.id) === false && (
+      {connection && connection.id !== EXAMPLE_CONNECTION.id && (
         <>
           <Separator />
           <DropdownItem

@@ -60,7 +60,6 @@ export function ConnectionScreen({
         options={{
           headerLeft: () => <BackButton connection={connection} />,
           title: connection?.label || connection?.path,
-          // @ts-ignore
           ...(route.params.options || {}),
         }}
       >

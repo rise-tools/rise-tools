@@ -1,5 +1,6 @@
-import { useNavigation } from '@react-navigation/native'
+import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { useReactNavigationActions } from '@rise-tools/kit-react-navigation'
 import { useStream } from '@rise-tools/react'
 import {
   BookOpenText,
@@ -14,30 +15,13 @@ import { ScrollView } from 'react-native'
 import { Button, Image, Separator, Text, View, XStack, YGroup, YStack } from 'tamagui'
 
 import { PRIVACY_POLICY_URL } from '../config'
-import { Connection, connections, useConnection } from '../connection'
+import { Connection, connections, EXAMPLE_CONNECTION } from '../connection'
 import { Dropdown, DropdownItem } from '../dropdown'
 import { RootStackParamList } from '.'
 import { RiseScreen } from './connection'
 
 export function HomeScreen() {
   const state = useStream(connections)
-  const connection = useConnection('example')
-
-  const navigation = useNavigation()
-
-  const actions = {
-    'rise-tools/kit-react-navigation/navigate': {
-      // @ts-ignore
-      action: ({ path, options }) => {
-        // @ts-ignore
-        navigation.navigate('connection', {
-          id: 'example',
-          path,
-          options,
-        })
-      },
-    },
-  }
 
   return (
     <ScrollView>
@@ -48,15 +32,32 @@ export function HomeScreen() {
             {state.map((connection) => (
               <ConnectionItem key={connection.id} connection={connection} />
             ))}
+            {state.length > 0 && <ConnectionItem connection={EXAMPLE_CONNECTION} readonly />}
           </YGroup>
           <NewConnectionButton />
         </YStack>
-        {state.length === 0 && connection && (
-          <RiseScreen connection={connection} path="" actions={actions} />
-        )}
+        {state.length === 0 && <Examples />}
       </YStack>
     </ScrollView>
   )
+}
+
+function Examples() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
+
+  const actions = {
+    'rise-tools/kit-react-navigation/navigate': {
+      action: ({ path, options }) => {
+        navigation.navigate('connection', {
+          id: 'example',
+          path,
+          options,
+        })
+      },
+    },
+  } satisfies ReturnType<typeof useReactNavigationActions>
+
+  return <RiseScreen connection={EXAMPLE_CONNECTION} path="" actions={actions} />
 }
 
 function HeroImage() {
@@ -87,13 +88,13 @@ function ConnectionItem({
               {connection.label}
             </Text>
           </View>
-          {!readonly && (
-            <Button
-              backgroundColor="transparent"
-              icon={Settings}
-              onPress={() => navigation.push('edit-connection', { id: connection.id })}
-            />
-          )}
+          <Button
+            backgroundColor="transparent"
+            icon={Settings}
+            onPress={() => navigation.push('edit-connection', { id: connection.id })}
+            disabled={readonly}
+            opacity={readonly ? 0 : 1}
+          />
         </XStack>
       </Button>
     </YGroup.Item>
