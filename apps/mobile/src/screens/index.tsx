@@ -1,4 +1,7 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationOptions,
+} from '@react-navigation/native-stack'
 import React from 'react'
 
 import { ConnectScreen } from './connect'
@@ -10,7 +13,7 @@ import { NewConnectionScreen } from './new-connection'
 export type RootStackParamList = {
   home: undefined
   connect: { connectInfo?: string }
-  connection: { id: string }
+  connection: { id: string; path?: string; options?: NativeStackNavigationOptions }
   'edit-connection': { id: string }
   'new-connection': undefined
 }

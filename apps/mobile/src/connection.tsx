@@ -23,8 +23,8 @@ export function useConnection(id?: string) {
   if (!id) {
     return
   }
-  if (BUILTIN_CONNECTIONS[id]) {
-    return BUILTIN_CONNECTIONS[id]
+  if (id === DEMO_CONNECTION.id) {
+    return DEMO_CONNECTION
   }
   return state.find((connection) => connection.id === id)
 }
@@ -49,23 +49,9 @@ export function updateConnection(id: string, connection: ConnectionPayload) {
   })
 }
 
-export const BUILTIN_CONNECTIONS: Record<string, Connection> = {
-  inventory: {
-    id: 'inventory',
-    label: '🏭 Car Parts Inventory',
-    host: DEMO_WS_URL,
-    path: 'inventory',
-  },
-  ui: {
-    id: 'ui',
-    label: '🎨 UI Controls',
-    host: DEMO_WS_URL,
-    path: 'controls',
-  },
-  delivery: {
-    id: 'delivery',
-    label: '🚚 Super Delivery',
-    host: DEMO_WS_URL,
-    path: 'delivery',
-  },
+export const DEMO_CONNECTION: Connection = {
+  id: 'example',
+  label: 'Rise Example UI',
+  host: DEMO_WS_URL,
+  path: '',
 }
