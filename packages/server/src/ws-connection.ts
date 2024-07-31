@@ -125,7 +125,6 @@ export function connectWebSocket(context: WSServerContext, ws: WebSocket) {
     const { path } = target
     try {
       const [storeName, ...lookupPath] = path
-      if (!storeName) throw new Error('Missing store name in event path')
       if (typeof storeName !== 'string') throw new Error('Store name must be a string')
       const model = getModel(storeName)
       if (!model) throw new Error(`Model not found for store name: ${storeName}`)
