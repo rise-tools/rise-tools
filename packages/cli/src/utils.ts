@@ -51,7 +51,7 @@ export function clearTerminal() {
   process.stdout.write('\x1Bc')
 }
 
-async function getProjectKey(): Promise<string> {
+export async function getProjectKey(): Promise<string> {
   const configDir = path.join(process.cwd(), '.rise')
   const configPath = path.join(configDir, 'projectKey')
 
@@ -65,9 +65,7 @@ async function getProjectKey(): Promise<string> {
   return await fs.readFile(configPath, { encoding: 'utf-8' })
 }
 
-export async function startTunnel(port: number) {
-  const projectKey = await getProjectKey()
-
+export async function startTunnel({ port, projectKey }: { port: number; projectKey: string }) {
   const session = spawn(
     'ssh',
     [

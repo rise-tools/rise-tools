@@ -13,7 +13,7 @@ const port = Number(process.env.PORT || '3005')
 const server = createWSServer(models, port)
 
 if (process.env.NODE_ENV === 'development') {
-  setupRiseTools({ server })
+  setupRiseTools({ server, projectKey: process.env.RISE_PROJECT_KEY })
 }
 
 import '@rise-tools/kit-react-navigation/server'
