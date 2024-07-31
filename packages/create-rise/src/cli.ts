@@ -3,7 +3,7 @@
 import path from 'node:path'
 
 import { ExitPromptError } from '@inquirer/core'
-import { confirm, input } from '@inquirer/prompts'
+import { confirm, input, select } from '@inquirer/prompts'
 import { bold, debug, error, highlight, link, logo, prompt, text } from '@rise-tools/cli'
 import dedent from 'dedent'
 // @ts-ignore
@@ -32,7 +32,16 @@ async function createRise(opts: Options) {
     })
   }
 
-  const template = '@rise-tools/template-blank-playground'
+  const template = await select({
+    message: 'Choose a template',
+    choices: [
+      {
+        value: '@rise-tools/template-blank-playground',
+      },
+      { value: '@rise-tools/template-full' },
+    ],
+    theme: prompt,
+  })
 
   // tbd: provide a bit more comprehensive name sanitisation
   const targetDir = formatTargetDir(projectName)

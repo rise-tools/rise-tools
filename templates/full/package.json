@@ -1,7 +1,16 @@
 {
-  "name": "@rise-tools/demo-server",
-  "private": true,
-  "version": "0.1.2",
+  "name": "@rise-tools/template-full",
+  "version": "0.6.1",
+  "description": "Rise project that demonstrates all features of Rise Playground",
+  "files": [
+    "src",
+    "lib",
+    "tsconfig.json",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -15,7 +24,6 @@
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx watch ./src",
-    "dev-simple-demo": "tsx watch ./src/simple-demo.tsx",
     "start": "tsx ./src"
   },
   "dependencies": {
