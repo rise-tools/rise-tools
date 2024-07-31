@@ -8,6 +8,7 @@ import {
   getConnectionInfo,
   getConnectionURL,
   getHost,
+  getProjectKey,
   startTunnel,
 } from './utils'
 import { minimist } from './zx'
@@ -26,9 +27,11 @@ const opts = minimist<Options>(process.argv.slice(2), {
 export async function setupRiseTools({
   server,
   tunnel = opts.tunnel,
+  projectKey,
 }: {
   server: Server
   tunnel?: boolean
+  projectKey?: string
 }) {
   const host = (await getHost()) || 'localhost'
 
@@ -39,10 +42,16 @@ export async function setupRiseTools({
   console.log(logo())
   console.log(`Listening on ${highlight(localUrl)}`)
 
+  if (!projectKey) {
+    projectKey = await getProjectKey()
+  }
+
   let deepLinkUrl = localUrl
   if (tunnel) {
     try {
-      const host = await spinner('Starting the tunnel...', () => startTunnel(server.port))
+      const host = await spinner('Starting the tunnel...', async () =>
+        startTunnel({ port: server.port, projectKey })
+      )
       const tunnelUrl = `${server.protocol}://${host}`
       console.log(`Access anywhere on ${highlight(tunnelUrl)}`)
 
