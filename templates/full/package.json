@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rise-tools/rise-tools.git",
-    "directory": "example/demo"
+    "directory": "templates/full"
   },
   "author": "Mike Grabowski <grabbou@gmail.com> (https://github.com/grabbou)",
   "bugs": {
@@ -23,8 +23,8 @@
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development tsx watch ./src",
-    "start": "tsx ./src"
+    "dev": "cross-env NODE_ENV=development tsx watch ./src/server.ts",
+    "start": "tsx ./src/server.ts"
   },
   "dependencies": {
     "@rise-tools/cli": "0.6.1",
