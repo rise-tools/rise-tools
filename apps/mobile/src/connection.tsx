@@ -51,7 +51,7 @@ export function updateConnection(id: string, connection: ConnectionPayload) {
 
 export const DEMO_CONNECTION: Connection = {
   id: 'example',
-  label: '🏭 Example',
+  label: 'Rise Example UI',
   host: DEMO_WS_URL,
   path: '',
 }
