@@ -24,8 +24,8 @@ const TheVibes = [
 type Vibe = (typeof TheVibes)[number]
 
 export const models = {
-  home: SendVibes,
-  results: view((get) => <VibeResults vibes={get(vibeState)} />),
+  vibes: SendVibes,
+  vibesResults: view((get) => <VibeResults vibes={get(vibeState)} />),
 }
 
 type VibesState = Partial<Record<Vibe['icon'], number>>
@@ -67,7 +67,7 @@ function SendVibes() {
       </XStack>
       <XStack padding="$4" justifyContent="center">
         <Button
-          onPress={navigate('results', {
+          onPress={navigate('vibesResults', {
             headerBackTitle: 'Back',
           })}
           chromeless
