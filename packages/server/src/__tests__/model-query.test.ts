@@ -69,4 +69,14 @@ describe('query model', () => {
     expect(loader).toBeCalledTimes(2)
     expect(subHandle).toBeCalledTimes(2)
   })
+  test('subscribe with auto-load', async () => {
+    const result = 1
+    const loader = vi.fn(() => Promise.resolve(result))
+    const q = query(loader)
+    const [subHandle, waitToHaveBeenCalled] = createWaitableMock()
+    q.subscribe(subHandle)
+    await waitToHaveBeenCalled(1)
+    expect(subHandle).toBeCalledTimes(1)
+    expect(subHandle).toBeCalledWith(1)
+  })
 })
