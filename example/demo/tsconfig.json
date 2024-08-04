@@ -1,16 +1,23 @@
 {
 	"extends": "@rise-tools/preset-typescript",
-	"references": [{
-    "path": "../../packages/cli"
-  }, {
-    "path": "../../packages/kitchen-sink"
-  }, {
-    "path": "../../packages/react"
-  }, {
-    "path": "../../packages/server"
-  }, {
-    "path": "../../packages/kit-tamagui"
-  }, {
-    "path": "../../packages/kit-react-navigation"
-  }]
+	"references": [
+    {
+      "path": "../../packages/cli"
+    }, 
+    {
+      "path": "../../packages/kitchen-sink"
+    },
+    {
+      "path": "../../packages/react"
+    },
+    {
+      "path": "../../packages/server"
+    },
+    {
+      "path": "../../packages/kit-tamagui"
+    }, 
+    {
+      "path": "../../packages/kit-react-navigation"
+    }
+]
 }

@@ -86,16 +86,16 @@ const config = {
           {
             type: 'docSidebar',
             sidebarId: 'mainSidebar',
-            position: 'left',
+            position: 'right',
             label: 'Docs',
           },
           {
             type: 'docSidebar',
             sidebarId: 'guidesSidebar',
-            position: 'left',
+            position: 'right',
             label: 'Guides',
           },
-          { to: '/blog', label: 'Blog', position: 'left' },
+          { to: '/blog', label: 'Blog', position: 'right' },
           {
             href: 'https://github.com/rise-tools/rise-tools',
             'aria-label': 'GitHub',
@@ -168,6 +168,7 @@ const config = {
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
+        additionalLanguages: ['bash'],
       },
     }),
 }

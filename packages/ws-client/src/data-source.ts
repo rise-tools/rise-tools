@@ -52,7 +52,7 @@ export function createWSModelSource(wsUrl: string, options?: Options): WebSocket
 
   rws.addEventListener('open', () => {
     const keys = [...subscriptions.entries()]
-      .filter(([key, handlers]) => !!key && handlers.size > 0)
+      .filter(([, handlers]) => handlers.size > 0)
       .map(([key]) => key)
     if (keys.length === 0) {
       return

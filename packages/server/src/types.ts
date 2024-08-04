@@ -54,5 +54,6 @@ export type InferModel<T> = T extends object
 export type Server = {
   protocol: 'ws' | 'http'
   port: number
+  models: AnyModels
   close: () => void
 }

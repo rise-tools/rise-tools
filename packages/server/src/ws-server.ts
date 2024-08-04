@@ -14,6 +14,7 @@ export function createWSServer(models: AnyModels, port: number): Server {
   return {
     port,
     protocol: 'ws',
+    models,
     close() {
       wss.close()
     },
