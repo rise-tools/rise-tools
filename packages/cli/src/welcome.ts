@@ -3,13 +3,13 @@ import dedent from 'dedent'
 
 import { debug, highlight, link, logo, spinner } from './theme'
 import {
+  isProcessRunning,
   clearTerminal,
   generateQRCode,
   getConnectionInfo,
   getConnectionURL,
   getHost,
   getProjectKey,
-  isTunnelProcessRunning,
   startTunnel,
 } from './utils'
 import { minimist } from './zx'
@@ -34,7 +34,7 @@ export async function setupRiseTools({
   tunnel?: boolean
   projectKey?: string
 }) {
-  if (await isTunnelProcessRunning()) return
+  if (await isProcessRunning()) return
 
   const host = (await getHost()) || 'localhost'
 

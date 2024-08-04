@@ -96,7 +96,7 @@ export async function startTunnel({ port, projectKey }: { port: number; projectK
   return Promise.race([sessionPromise, timeoutPromise])
 }
 
-export async function isTunnelProcessRunning() {
+export async function isProcessRunning() {
   const configDir = path.join(process.cwd(), '.rise')
   const pidPath = path.join(configDir, '.pid')
   const pid = process.ppid.toString() ?? process.pid.toString()
@@ -108,6 +108,9 @@ export async function isTunnelProcessRunning() {
     isSameProcess = (await fs.readFile(pidPath, { encoding: 'utf-8' })) === pid
   }
 
-  await fs.writeFile(pidPath, pid)
+  if (!isSameProcess) {
+    await fs.writeFile(pidPath, pid)
+  }
+
   return isSameProcess
 }
