@@ -9,6 +9,7 @@ import {
   getConnectionURL,
   getHost,
   getProjectKey,
+  isTunnelProcessRunning,
   startTunnel,
 } from './utils'
 import { minimist } from './zx'
@@ -33,6 +34,8 @@ export async function setupRiseTools({
   tunnel?: boolean
   projectKey?: string
 }) {
+  if (await isTunnelProcessRunning()) return
+
   const host = (await getHost()) || 'localhost'
 
   const localUrl = `${server.protocol}://${host}:${server.port}`

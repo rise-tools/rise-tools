@@ -5,7 +5,6 @@ import { models as delivery } from './delivery/ui'
 import { Home } from './home/ui'
 import { models as inventory } from './inventory/ui'
 import { models as controls } from './ui-controls/ui'
-import { isProcessRunning } from './util'
 
 const models = { ...inventory, ...controls, ...delivery, '': Home }
 
@@ -13,7 +12,7 @@ const port = Number(process.env.PORT || '3005')
 
 const server = createWSServer(models, port)
 
-if (process.env.NODE_ENV === 'development' && !isProcessRunning()) {
+if (process.env.NODE_ENV === 'development') {
   setupRiseTools({ server, projectKey: process.env.RISE_PROJECT_KEY })
 }
 
