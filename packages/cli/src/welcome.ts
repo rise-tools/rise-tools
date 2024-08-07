@@ -3,6 +3,7 @@ import dedent from 'dedent'
 
 import { debug, highlight, link, logo, spinner } from './theme'
 import {
+  isProcessRunning,
   clearTerminal,
   generateQRCode,
   getConnectionInfo,
@@ -33,6 +34,8 @@ export async function setupRiseTools({
   tunnel?: boolean
   projectKey?: string
 }) {
+  if (await isProcessRunning()) return
+
   const host = (await getHost()) || 'localhost'
 
   const localUrl = `${server.protocol}://${host}:${server.port}`
