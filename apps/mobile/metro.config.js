@@ -9,7 +9,9 @@ const exclusionList = require('metro-config/src/defaults/exclusionList')
 const projectRoot = __dirname
 const workspaceRoot = path.resolve(__dirname, '../..')
 
-const config = getDefaultConfig(projectRoot)
+const config = getDefaultConfig(projectRoot, {
+  isCSSEnabled: true,
+})
 
 config.watchFolders = [workspaceRoot]
 config.resolver.nodeModulesPaths = [
@@ -22,4 +24,10 @@ config.resolver.blockList = exclusionList([/example\/.*/])
 config.transformer = { ...config.transformer, unstable_allowRequireContext: true }
 config.transformer.minifierPath = require.resolve('metro-minify-terser')
 
-module.exports = config
+// add nice web support with optimizing compiler + CSS extraction
+const { withTamagui } = require('@tamagui/metro-plugin')
+module.exports = withTamagui(config, {
+  components: ['tamagui'],
+  config: './src/tamagui/config.ts',
+  outputCSS: './tamagui-web.css',
+})
