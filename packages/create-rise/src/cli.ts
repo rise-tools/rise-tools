@@ -32,17 +32,6 @@ async function createRise(opts: Options) {
     })
   }
 
-  const template = await select({
-    message: 'Choose a template',
-    choices: [
-      {
-        value: '@rise-tools/template-blank-playground',
-      },
-      { value: '@rise-tools/template-full' },
-    ],
-    theme: prompt,
-  })
-
   // tbd: provide a bit more comprehensive name sanitisation
   const targetDir = formatTargetDir(projectName)
 
@@ -73,8 +62,61 @@ async function createRise(opts: Options) {
     await fs.mkdir(root)
   }
 
-  await downloadAndExtractTemplate(root, template)
+  const template = await select({
+    message: 'Choose a template',
+    choices: [
+      {
+        value: 'blank',
+        name: 'I want to start from scratch',
+      },
+      {
+        value: 'full',
+        name: 'I want to start with all the examples',
+      },
+      {
+        value: 'custom',
+        name: 'I will choose the example myself',
+      },
+    ] as const,
+    theme: prompt,
+  })
+
+  await downloadAndExtractTemplate(
+    root,
+    template === 'blank' ? '@rise-tools/template-blank' : '@rise-tools/template-full'
+  )
   await copyAdditionalTemplateFiles(root)
+
+  const templateRoot = path.join(root, 'src')
+
+  const entryPointPath = path.join(templateRoot, 'server.ts')
+  const entryPoint = await fs.readFile(entryPointPath, 'utf-8')
+
+  // Replace the import with the selected example
+  if (template === 'custom') {
+    const example = await select({
+      message: 'Choose the example you want to start with:',
+      choices: AVAILABLE_EXAMPLE_CHOICES,
+    })
+
+    const toRemove = [
+      'home',
+      ...AVAILABLE_EXAMPLE_CHOICES.map((e) => e.value).filter((name) => name !== example),
+    ]
+    for (const folder of toRemove) {
+      await fs.rm(path.join(templateRoot, folder), { force: true, recursive: true })
+    }
+
+    await fs.writeFile(
+      entryPointPath,
+      entryPoint.replace(MODELS_IMPORT_REGEX, `import { models } from './${example}/ui'`)
+    )
+  }
+
+  // No need to replace the import in this case. Remove the comments instead.
+  if (template === 'full') {
+    await fs.writeFile(entryPointPath, entryPoint.replace(MODELS_IMPORT_REGEX, '$1'))
+  }
 
   const { dependencies, devDependencies, type, scripts, overrides } = await fs.readJSON(
     path.join(root, 'package.json'),
@@ -132,6 +174,22 @@ async function createRise(opts: Options) {
     ${highlight('Android')} ${link('https://play.google.com/store/apps/details?id=com.xplatlabs.rise')}
   `)
 }
+
+const MODELS_IMPORT_REGEX = /\/\/ create-rise-import-start([\s\S]*?)\/\/ create-rise-import-end/
+const AVAILABLE_EXAMPLE_CHOICES = [
+  {
+    value: 'delivery',
+    name: `Delivery - ${debug('Superapp showcase')}`,
+  },
+  {
+    value: 'inventory',
+    name: `Inventory - ${debug('An internal warehouse')}`,
+  },
+  {
+    value: 'controls',
+    name: `UI Controls - ${debug('Kitchen Sink with all the Playground features')}`,
+  },
+]
 
 async function copyAdditionalTemplateFiles(root: string) {
   await $`cp ${path.join(__dirname, '../_gitignore')} ${path.join(root, '.gitignore')}`
