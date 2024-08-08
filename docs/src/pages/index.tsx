@@ -36,7 +36,7 @@ function HeroSection() {
 
           <div className="flex items-center gap-4 max-lg:justify-center ">
             <Link
-              className="text-sm rise-button shrink-0 hover:rise-button-outline"
+              className="flex items-center text-sm rise-button shrink-0 hover:rise-button-outline"
               to="/docs/getting-started"
             >
               Get Started
