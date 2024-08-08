@@ -14,7 +14,7 @@
     {
       "label": "Demo server",
       "type": "shell",
-      "command": "cd ./example/demo && npm run dev",
+      "command": "cd ./templates/full && npm run dev",
       "presentation": {
         "reveal": "always",
         "panel": "new",
