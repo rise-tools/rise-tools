@@ -32,17 +32,6 @@ async function createRise(opts: Options) {
     })
   }
 
-  const template = await select({
-    message: 'Choose a template',
-    choices: [
-      {
-        value: '@rise-tools/template-blank-playground',
-      },
-      { value: '@rise-tools/template-full' },
-    ],
-    theme: prompt,
-  })
-
   // tbd: provide a bit more comprehensive name sanitisation
   const targetDir = formatTargetDir(projectName)
 
