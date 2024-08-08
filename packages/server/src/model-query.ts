@@ -42,6 +42,10 @@ export function query<V>(loadInput: () => Promise<V>): QueryModel<V> {
     },
     subscribe: (listener) => {
       subscribers.add(listener)
+      if (!isValid) {
+        clearTimeout(updateSchedule)
+        updateSchedule = setTimeout(load, 1)
+      }
       if (state !== undefined) listener(state)
       return () => {
         subscribers.delete(listener)
