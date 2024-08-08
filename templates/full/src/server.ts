@@ -6,8 +6,9 @@ import { models as controls } from './controls/ui'
 import { models as delivery } from './delivery/ui'
 import { Home } from './home/ui'
 import { models as inventory } from './inventory/ui'
+import { models as vibes } from './vibes/ui'
 
-const models = { ...inventory, ...controls, ...delivery, '': Home }
+const models = { ...inventory, ...controls, ...delivery, ...vibes, '': Home }
 // create-rise-import-end
 
 const port = Number(process.env.PORT || '3005')

@@ -14,6 +14,7 @@ export function Home() {
       <Button onPress={navigate('inventory', { title: 'Inventory' })}>
         🏭 Car Parts Inventory
       </Button>
+      <Button onPress={navigate('vibes', { title: 'Vibes' })}>🏭 Vibes</Button>
       <Button
         onPress={navigate('delivery', { title: 'Super Delivery' })}
         borderTopLeftRadius={0}

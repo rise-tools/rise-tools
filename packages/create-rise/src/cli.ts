@@ -189,6 +189,10 @@ const AVAILABLE_EXAMPLE_CHOICES = [
     value: 'controls',
     name: `UI Controls - ${debug('Kitchen Sink with all the Playground features')}`,
   },
+  {
+    value: 'vibes',
+    name: `Vibes - ${debug('Poll app with server-side state for automatic client updates')}`,
+  },
 ]
 
 async function copyAdditionalTemplateFiles(root: string) {
