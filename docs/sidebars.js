@@ -47,6 +47,7 @@ const sidebars = {
         'kit/tamagui-toast',
         'kit/expo-router',
         'kit/react-navigation',
+        'kit/webview',
       ],
     },
     {

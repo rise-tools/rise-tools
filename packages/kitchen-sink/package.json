@@ -38,7 +38,8 @@
     "@rise-tools/kit-tamagui-toast": "0.6.1",
     "@rise-tools/kit-lucide-icons": "0.6.1",
     "@rise-tools/kit-svg": "0.6.1",
-    "@rise-tools/kit-qrcode": "0.6.1"
+    "@rise-tools/kit-qrcode": "0.6.1",
+    "@rise-tools/kit-webview": "0.6.1"
   },
   "peerDependencies": {
     "@tamagui/lucide-icons": "^1.100.3",
@@ -49,6 +50,7 @@
     "react-native-safe-area-context": ">= 3.0.0",
     "react-native-svg": "15.2.0",
     "react-native-qrcode-svg": "^6.3.1",
+    "react-native-webview": "13.10.5",
     "tamagui": "^1.100.3"
   }
 }

@@ -29,6 +29,7 @@ import {
   TextField,
   toast,
   ToggleGroupField,
+  WebView,
   XStack,
   YStack,
 } from '@rise-tools/kitchen-sink/server'
@@ -48,6 +49,7 @@ export const models = {
   linking: LinkingExample,
   bottomSheet: BottomSheetExample,
   qrcode: QRCodeExample,
+  webview: WebViewExample,
 }
 
 function UI() {
@@ -94,6 +96,10 @@ function UI() {
           QR Code
         </Button>
         <Separator />
+        <Button onPress={navigate('webview', { title: 'WebView' })} borderRadius={0}>
+          WebView
+        </Button>
+        <Separator />
         <BottomSheetExample />
       </YStack>
     </>
@@ -107,6 +113,15 @@ function QRCodeExample() {
       <YStack padding="$4">
         <QRCode value="https://rise.tools" />
       </YStack>
+    </>
+  )
+}
+
+function WebViewExample() {
+  return (
+    <>
+      <StackScreen title="WebView" />
+      <WebView source={{ uri: 'https://rise.tools' }} />
     </>
   )
 }
