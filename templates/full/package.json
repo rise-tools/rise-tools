@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/template-full",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Rise project that demonstrates all features of Rise Playground",
   "files": [
     "src",
@@ -27,14 +27,14 @@
     "start": "tsx ./src/server.ts"
   },
   "dependencies": {
-    "@rise-tools/cli": "0.6.1",
-    "@rise-tools/kit-react-navigation": "0.6.1",
-    "@rise-tools/kitchen-sink": "0.6.1",
-    "@rise-tools/react": "0.6.1",
-    "@rise-tools/server": "0.6.1"
+    "@rise-tools/cli": "0.7.0",
+    "@rise-tools/kit-react-navigation": "0.7.0",
+    "@rise-tools/kitchen-sink": "0.7.0",
+    "@rise-tools/react": "0.7.0",
+    "@rise-tools/server": "0.7.0"
   },
   "devDependencies": {
-    "@rise-tools/preset-typescript": "0.6.1",
+    "@rise-tools/preset-typescript": "0.7.0",
     "cross-env": "^7.0.3",
     "tsx": "^4.11.0",
     "typescript": "^5.1.3"
