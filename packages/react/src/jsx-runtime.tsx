@@ -17,7 +17,7 @@ type JSXFactory = (
   componentFactory: ((props: any) => ServerComponent | ReactElement) | undefined,
   { children, ...passedProps }: Record<string, any>,
   key?: string
-) => ServerComponent
+) => ServerComponent | null
 
 export const jsxs: JSXFactory = (componentFactory, passedProps, key) => {
   Object.defineProperty(passedProps.children, '$static', {
@@ -39,6 +39,7 @@ export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
   if (isComponentModelState(el)) {
     return el
   }
+  if (el === null) return null
   if (typeof el.type !== 'string') {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
