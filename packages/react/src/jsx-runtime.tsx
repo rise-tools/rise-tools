@@ -1,23 +1,50 @@
-import type { JSXElementConstructor, ReactElement } from 'react'
+import type { JSXElementConstructor, ReactElement, ReactNode } from 'react'
 import React from 'react'
 
 import { event } from './events'
 import {
   ComponentModelState,
   HandlerFunction,
-  isComponentModelState,
   ReferencedModelState,
   ServerEventModelState,
   ServerHandlerModelState,
   StateModelState,
 } from './rise'
 
-type ServerComponent = ComponentModelState<ServerEventModelState>
+type RiseElement = ComponentModelState<ServerEventModelState>
+
 type JSXFactory = (
-  componentFactory: ((props: any) => ServerComponent | ReactElement) | undefined,
+  /**
+   * When rendering fragments, `componentFactory` will be undefined
+   * ```tsx
+   * <>
+   *   <View>foo</View>
+   * </>
+   * ```
+   *
+   * When rendering server-side component definitions, `componentFactory` will return `RiseElement`
+   * ```tsx
+   * const View = createComponentDefinition('View')
+   *
+   * <View />
+   * ```
+   *
+   * When rendering function defined on the server, `componentFactory` will return `ReactNode` or `RiseElement`,
+   * depending whether it returns a primitive value or a component definition:
+   * ```tsx
+   * const View = createComponentDefinition('View')
+   *
+   * function Helper() {
+   *   return isMobile ? <View /> : 'foo'
+   * }
+   *
+   * <Helper />
+   * ```
+   */
+  componentFactory: ((props: any) => ReactNode | RiseElement) | undefined,
   { children, ...passedProps }: Record<string, any>,
   key?: string
-) => ServerComponent
+) => Exclude<ReactNode, ReactElement> | RiseElement
 
 export const jsxs: JSXFactory = (componentFactory, passedProps, key) => {
   Object.defineProperty(passedProps.children, '$static', {
@@ -36,7 +63,7 @@ export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
     }
   }
   const el = componentFactory(passedProps)
-  if (isComponentModelState(el)) {
+  if (!isReactElement(el)) {
     return el
   }
   if (typeof el.type !== 'string') {
