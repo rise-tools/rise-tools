@@ -1,11 +1,10 @@
-import type { JSXElementConstructor, ReactElement } from 'react'
+import type { JSXElementConstructor, ReactElement, ReactNode } from 'react'
 import React from 'react'
 
 import { event } from './events'
 import {
   ComponentModelState,
   HandlerFunction,
-  isComponentModelState,
   ReferencedModelState,
   ServerEventModelState,
   ServerHandlerModelState,
@@ -13,11 +12,12 @@ import {
 } from './rise'
 
 type ServerComponent = ComponentModelState<ServerEventModelState>
+
 type JSXFactory = (
-  componentFactory: ((props: any) => ServerComponent | ReactElement) | undefined,
+  componentFactory: ((props: any) => ServerComponent | ReactNode) | undefined,
   { children, ...passedProps }: Record<string, any>,
   key?: string
-) => ServerComponent | null
+) => ServerComponent | Exclude<ReactNode, ReactElement>
 
 export const jsxs: JSXFactory = (componentFactory, passedProps, key) => {
   Object.defineProperty(passedProps.children, '$static', {
@@ -36,10 +36,9 @@ export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
     }
   }
   const el = componentFactory(passedProps)
-  if (isComponentModelState(el)) {
+  if (!isReactElement(el)) {
     return el
   }
-  if (el === null) return null
   if (typeof el.type !== 'string') {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
   }
