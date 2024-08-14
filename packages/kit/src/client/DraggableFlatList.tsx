@@ -3,9 +3,9 @@ import DraggableFlatList, {
   DraggableFlatListProps,
   ScaleDecorator,
 } from 'react-native-draggable-flatlist'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 
-type Item = { key: string; label: React.ReactElement }
+type Item = { key: string; label: React.ReactElement; onPress?: () => void }
 
 export function RNDraggableFlatList(
   props: Omit<
@@ -14,6 +14,7 @@ export function RNDraggableFlatList(
   > & {
     header?: React.ReactElement
     footer?: React.ReactElement
+    onItemPress?: (key: Item['key']) => void
     onReorder?: (data: Item['key'][]) => void
   }
 ) {
@@ -36,9 +37,16 @@ export function RNDraggableFlatList(
         const Item = () => item.label
         return (
           <ScaleDecorator>
-            <TouchableOpacity onLongPress={drag} disabled={isActive}>
+            <TouchableWithoutFeedback
+              onLongPress={drag}
+              disabled={isActive}
+              onPress={() => {
+                item.onPress?.()
+                props.onItemPress?.(item.key)
+              }}
+            >
               <Item />
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
           </ScaleDecorator>
         )
       }}
