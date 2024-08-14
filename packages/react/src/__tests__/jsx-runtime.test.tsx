@@ -1,6 +1,6 @@
 /* @jsxImportSource .. */
 
-import type { ReactNode } from 'react'
+import type { PropsWithChildren, ReactNode } from 'react'
 import { expect, it, vi } from 'vitest'
 
 import { createComponentDefinition } from '../jsx-runtime'
@@ -141,6 +141,48 @@ it('should set static children', () => {
         "key": undefined,
         "props": {},
       },
+      "component": "View",
+      "key": undefined,
+      "props": {},
+    }
+  `)
+})
+
+it('should handle primitive values inside the server-side component', () => {
+  function Render({ children }: PropsWithChildren) {
+    return children
+  }
+  expect(
+    <View>
+      <Render>{null}</Render>
+      <Render>{undefined}</Render>
+      <Render>{1}</Render>
+      <Render>{'hello world'}</Render>
+      <Render>{true}</Render>
+      <Render>{[0, 1, 2]}</Render>
+      <Render>{new Set([0, 1, 2])}</Render>
+    </View>
+  ).toMatchInlineSnapshot(`
+    {
+      "$": "component",
+      "$staticChildren": true,
+      "children": [
+        null,
+        undefined,
+        1,
+        "hello world",
+        true,
+        [
+          0,
+          1,
+          2,
+        ],
+        Set {
+          0,
+          1,
+          2,
+        },
+      ],
       "component": "View",
       "key": undefined,
       "props": {},
