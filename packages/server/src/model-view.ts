@@ -2,7 +2,8 @@ import { getModelState } from './model-utils'
 import { ValueModel, ViewModel } from './types'
 
 export function view<T>(
-  loadInput: (get: <V>(model: ValueModel<V>) => V | undefined) => T
+  loadInput: (get: <V>(model: ValueModel<V>) => V | undefined) => T,
+  opts?: { compare?: true | ((newState: T, oldState: T) => boolean) }
 ): ViewModel<T> {
   let state: T | undefined = undefined
   let isValid = false
@@ -30,8 +31,18 @@ export function view<T>(
       return getModelState(model)
     }
     const newState = loadInput(getter)
-    state = newState
     isValid = true
+    if (opts?.compare) {
+      if (opts.compare === true && newState === state) return newState
+      if (
+        typeof opts.compare === 'function' &&
+        state !== undefined &&
+        opts.compare(newState, state)
+      )
+        return newState
+    }
+
+    state = newState
     subHandlers.forEach((handler) => handler(newState))
     return newState
   }
