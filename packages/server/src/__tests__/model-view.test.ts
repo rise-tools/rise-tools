@@ -3,7 +3,7 @@ import { describe, expect, test, vi } from 'vitest'
 import { query } from '../model-query'
 import { state } from '../model-state'
 import { view } from '../model-view'
-import { createWaitableMock } from './test-utils'
+import { createWaitableMock, delay } from './test-utils'
 
 describe('view models', () => {
   test('basic view get/set', async () => {
@@ -110,6 +110,29 @@ describe('view models', () => {
     expect(aDoubled.get()).toBe(0)
     expect(await aDoubled.load()).toBe(2)
     expect(loader).toHaveBeenCalledTimes(2)
+  })
+  test('view compare', async () => {
+    const [a, setA] = state(2)
+    const [b] = state(3)
+    const mult = view(
+      (get) => {
+        const _a = get(a)
+        const _b = get(b)
+        if (!_a || !_b) return 0
+        return _a * _b
+      },
+      { compare: true }
+    )
+    const [handler, waitToHaveBeenCalled] = createWaitableMock()
+    const firstCall = waitToHaveBeenCalled(1)
+    mult.subscribe(handler)
+    await firstCall
+    setA(3)
+    await waitToHaveBeenCalled(2)
+    setA(3)
+    await delay(100) // just to be sure
+    expect(handler).toBeCalledTimes(2)
+    expect(mult.get()).toBe(9)
   })
   // todo: make sure view loads dependency query properly during subscription
 })
