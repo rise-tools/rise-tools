@@ -35,5 +35,8 @@
     {
       "path": "../kit-qrcode"
     },
+    {
+      "path": "../kit-webview"
+    },
   ]
 }
