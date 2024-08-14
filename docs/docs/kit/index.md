@@ -38,6 +38,7 @@ import {
   RiseComponents,
   SVGComponents,
   TamaguiComponents,
+  WebViewComponents,
   useHapticsActions,
   useLinkingActions,
   useToastActions,
@@ -50,6 +51,7 @@ const components = {
   ...RiseComponents,
   ...SVGComponents,
   ...TamaguiComponents,
+  ...WebViewComponents,
 }
 
 // when you render your client entry point component:

@@ -1,9 +1,13 @@
 {
-  "name": "@rise-tools/server",
+  "name": "@rise-tools/kit-webview",
   "version": "0.7.0",
   "license": "Apache-2.0",
   "description": "",
   "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./server": "./lib/server.js"
+  },
   "files": [
     "src",
     "lib",
@@ -15,7 +19,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/rise-tools/rise-tools.git",
-    "directory": "packages/server"
+    "directory": "packages/kit-webview"
   },
   "publishConfig": {
     "access": "public"
@@ -26,13 +30,10 @@
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "dependencies": {
-    "@fastify/websocket": "^10.0.1",
-    "fastify": "^4.27.0",
-    "ws": "^8.16.0",
+    "@rise-tools/react": "0.7.0",
     "zod": "^3.22.4"
   },
-  "devDependencies": {
-    "@types/node": "^18.19.41",
-    "@types/ws": "^8.5.10"
+  "peerDependencies": {
+    "react-native-webview": "13.10.5"
   }
 }

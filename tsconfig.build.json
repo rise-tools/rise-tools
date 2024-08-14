@@ -59,6 +59,9 @@
     },
     {
       "path": "./packages/kit-qrcode"
+    },
+    {
+      "path": "./packages/kit-webview"
     }
   ]
 }

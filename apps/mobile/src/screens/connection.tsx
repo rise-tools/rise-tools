@@ -17,6 +17,7 @@ import {
   useHapticsActions,
   useLinkingActions,
   useToastActions,
+  WebViewComponents,
 } from '@rise-tools/kitchen-sink'
 import { Rise } from '@rise-tools/react'
 import React from 'react'
@@ -37,6 +38,7 @@ const components = {
   ...LucideIconsComponents,
   ...QRCodeComponents,
   ...ReactNavigationComponents,
+  ...WebViewComponents,
 }
 
 export type RiseStackParamList = {
