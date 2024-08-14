@@ -21,7 +21,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.xplatlabs.riseplayground",
+      "bundleIdentifier": "link.verse.rise",
       "buildNumber": "6"
     },
     "android": {
@@ -49,10 +49,10 @@
         "origin": false
       },
       "eas": {
-        "projectId": "e375003a-c8cd-4eec-bec8-202333e67dc6"
+        "projectId": "d8f030d6-44d4-44cd-bec1-21d303f650b3"
       }
     },
-    "owner": "rise-tools",
+    "owner": "ericvicenti",
     "runtimeVersion": {
       "policy": "appVersion"
     }
