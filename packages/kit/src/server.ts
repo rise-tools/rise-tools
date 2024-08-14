@@ -8,6 +8,7 @@ import type {
 } from './client/BottomSheet'
 import type { RNDraggableFlatList } from './client/DraggableFlatList'
 import { RNFlatList } from './client/FlatList'
+import { SmoothSlider as KitSmoothSlider } from './client/SmoothSlider'
 
 export const DraggableFlatList = createComponentDefinition<typeof RNDraggableFlatList>(
   'rise-tools/kit/RNDraggableFlatList'
@@ -25,4 +26,8 @@ export const BottomSheetTriggerButton = createComponentDefinition<
 
 export const AnimatedProgress = createComponentDefinition<typeof KitAnimatedProgress>(
   'rise-tools/kit/AnimatedProgress'
+)
+
+export const SmoothSlider = createComponentDefinition<typeof KitSmoothSlider>(
+  'rise-tools/kit/SmoothSlider'
 )
