@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import { useCallback, useSyncExternalStore } from 'react'
 
 import { JSONValue } from './rise'
 
@@ -36,9 +36,12 @@ export function createWritableStream<S extends JSONValue>(initState: S): Writabl
 
 export function useStream<T>(stream: Stream<T>): T {
   return useSyncExternalStore(
-    (onStoreChange) => {
-      return stream ? stream.subscribe(onStoreChange) : () => {}
-    },
+    useCallback(
+      (onStoreChange) => {
+        return stream ? stream.subscribe(onStoreChange) : () => {}
+      },
+      [stream]
+    ),
     () => stream.get()
   )
 }
