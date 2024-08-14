@@ -11,13 +11,40 @@ import {
   StateModelState,
 } from './rise'
 
-type ServerComponent = ComponentModelState<ServerEventModelState>
+type RiseElement = ComponentModelState<ServerEventModelState>
 
 type JSXFactory = (
-  componentFactory: ((props: any) => ServerComponent | ReactNode) | undefined,
+  /**
+   * When rendering fragments, `componentFactory` will be undefined
+   * ```tsx
+   * <>
+   *   <View>foo</View>
+   * </>
+   * ```
+   *
+   * When rendering server-side component definitions, `componentFactory` will return `RiseElement`
+   * ```tsx
+   * const View = createComponentDefinition('View')
+   *
+   * <View />
+   * ```
+   *
+   * When rendering function defined on the server, `componentFactory` will return `ReactNode` or `RiseElement`,
+   * depending whether it returns a primitive value or a component definition:
+   * ```tsx
+   * const View = createComponentDefinition('View')
+   *
+   * function Helper() {
+   *   return isMobile ? <View /> : 'foo'
+   * }
+   *
+   * <Helper />
+   * ```
+   */
+  componentFactory: ((props: any) => ReactNode | RiseElement) | undefined,
   { children, ...passedProps }: Record<string, any>,
   key?: string
-) => ServerComponent | Exclude<ReactNode, ReactElement>
+) => Exclude<ReactNode, ReactElement> | RiseElement
 
 export const jsxs: JSXFactory = (componentFactory, passedProps, key) => {
   Object.defineProperty(passedProps.children, '$static', {
