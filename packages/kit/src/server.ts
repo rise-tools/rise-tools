@@ -1,5 +1,6 @@
 import { createComponentDefinition } from '@rise-tools/react'
 
+import { AnimatedProgress as KitAnimatedProgress } from './client/AnimatedProgress'
 import type {
   BottomSheet as KitBottomSheet,
   BottomSheetCloseButton as KitBottomSheetCloseButton,
@@ -21,3 +22,7 @@ export const BottomSheetCloseButton = createComponentDefinition<typeof KitBottom
 export const BottomSheetTriggerButton = createComponentDefinition<
   typeof KitBottomSheetTriggerButton
 >('rise-tools/kit/BottomSheetTriggerButton')
+
+export const AnimatedProgress = createComponentDefinition<typeof KitAnimatedProgress>(
+  'rise-tools/kit/AnimatedProgress'
+)
