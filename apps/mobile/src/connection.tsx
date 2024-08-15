@@ -49,6 +49,16 @@ export function updateConnection(id: string, connection: ConnectionPayload) {
   })
 }
 
+export function touchConnection(id: string) {
+  write((connections) => {
+    const connection = connections.find((c) => c.id === id)
+    if (!connection) {
+      return connections
+    }
+    return [connection, ...connections.filter((c) => c.id !== id)]
+  })
+}
+
 export const DEMO_CONNECTION: Connection = {
   id: 'example',
   label: 'Rise Example UI',
