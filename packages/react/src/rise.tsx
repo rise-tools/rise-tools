@@ -22,7 +22,7 @@ export type ModelState<T = EventModelState> =
   | HandlerModelState<T>
   | StateModelState
   | { [key: string]: ModelState<T>; $?: never }
-  | ModelState<T>[]
+  | Iterable<ModelState<T>>
   | T
 /** Server data state */
 export type ServerModelState = ModelState<ServerEventModelState>
@@ -229,8 +229,10 @@ export function BaseRise({
     if (stateNode === null || typeof stateNode !== 'object') {
       return stateNode
     }
-    if (Array.isArray(stateNode)) {
-      return stateNode.map((item, idx) => render(item, [...path, itemKeyOrIndex(item, idx)]))
+    if (Symbol.iterator in stateNode) {
+      return Array.from(stateNode).map((item, idx) =>
+        render(item, [...path, itemKeyOrIndex(item, idx)])
+      )
     }
     if (!isCompositeModelState(stateNode)) {
       throw new Error('Objects are not valid as a React child.')
@@ -259,6 +261,9 @@ export function BaseRise({
     getLocalStateValue: (state: StateModelState) => JSONValue,
     path: Path
   ): any {
+    if (!propValue || typeof propValue !== 'object') {
+      return propValue
+    }
     if (
       isEventModelState(propValue) ||
       isActionModelState(propValue) ||
@@ -290,8 +295,8 @@ export function BaseRise({
         })
       }
     }
-    if (Array.isArray(propValue)) {
-      return propValue.map((item, idx) =>
+    if (Symbol.iterator in propValue) {
+      return Array.from(propValue).map((item, idx) =>
         renderProp(propKey, item, parentNode, getLocalStateValue, [
           ...path,
           itemKeyOrIndex(item, idx),
@@ -310,14 +315,11 @@ export function BaseRise({
     if (isCompositeModelState(propValue)) {
       return render(propValue, path)
     }
-    if (propValue && typeof propValue === 'object') {
-      return Object.fromEntries(
-        Object.entries(propValue).map(([key, value]) => {
-          return [key, renderProp(key, value, parentNode, getLocalStateValue, [...path, key])]
-        })
-      )
-    }
-    return propValue
+    return Object.fromEntries(
+      Object.entries(propValue).map(([key, value]) => {
+        return [key, renderProp(key, value, parentNode, getLocalStateValue, [...path, key])]
+      })
+    )
   }
 
   return <>{render(model, path)}</>
