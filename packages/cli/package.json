@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/cli",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "license": "Apache-2.0",
   "description": "Utils for CLI",
   "files": [
@@ -39,7 +39,7 @@
     "zx": "^8.1.4"
   },
   "devDependencies": {
-    "@rise-tools/server": "0.8.0",
+    "@rise-tools/server": "0.9.0",
     "@types/dedent": "^0.7.2",
     "@types/gradient-string": "^1.1.6",
     "@types/qrcode-terminal": "^0.12.2",

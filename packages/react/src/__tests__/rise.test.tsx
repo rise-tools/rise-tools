@@ -69,6 +69,39 @@ it('should render an array of components', () => {
   `)
 })
 
+it('should render any iterable of components', () => {
+  const component = render(
+    <BaseRise
+      components={BUILT_IN_COMPONENTS}
+      model={
+        new Set([
+          'hello',
+          {
+            $: 'component',
+            component: 'View',
+            children: 'world',
+            props: {
+              height: new Set([1, 2, 3]),
+            },
+          },
+        ])
+      }
+      onEvent={vi.fn()}
+    />
+  )
+
+  expect(component.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      hello
+      <div
+        height="1,2,3"
+      >
+        world
+      </div>
+    </DocumentFragment>
+  `)
+})
+
 it('should use component key when provided', () => {
   const component = render(
     <BaseRise
