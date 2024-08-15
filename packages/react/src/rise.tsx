@@ -261,7 +261,7 @@ export function BaseRise({
     getLocalStateValue: (state: StateModelState) => JSONValue,
     path: Path
   ): any {
-    if (!propValue || typeof propValue !== 'object') {
+    if (propValue === null || typeof propValue !== 'object') {
       return propValue
     }
     if (
