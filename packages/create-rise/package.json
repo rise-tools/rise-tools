@@ -1,6 +1,6 @@
 {
   "name": "create-rise",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "license": "Apache-2.0",
   "description": "Create new Rise application",
   "files": [
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^5.2.0",
-    "@rise-tools/cli": "0.8.0",
+    "@rise-tools/cli": "0.9.0",
     "dedent": "^1.5.3",
     "tar": "^6.2.1",
     "zx": "^8.1.4"
