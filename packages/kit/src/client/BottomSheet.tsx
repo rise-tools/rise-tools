@@ -1,4 +1,12 @@
-import { createContext, Dispatch, SetStateAction, useContext, useState } from 'react'
+import { SubmitButton } from '@rise-tools/kit-forms'
+import {
+  ComponentProps,
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState,
+} from 'react'
 import { Button, ButtonProps, Sheet, SheetProps, YStack } from 'tamagui'
 
 type BottomSheetProps = Omit<SheetProps, 'onOpenChange' | 'open'>
@@ -69,5 +77,23 @@ export function BottomSheetCloseButton({ children, ...props }: ButtonProps) {
     >
       {children}
     </Button>
+  )
+}
+
+export function BottomSheetSubmitButton({
+  children,
+  ...props
+}: ComponentProps<typeof SubmitButton>) {
+  const { setOpen } = useContext(BottomSheetContext)
+  return (
+    <SubmitButton
+      {...props}
+      onPress={async (e) => {
+        props.onPress?.(e)
+        setOpen(false)
+      }}
+    >
+      {children}
+    </SubmitButton>
   )
 }

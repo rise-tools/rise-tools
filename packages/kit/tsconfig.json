@@ -5,7 +5,12 @@
     "outDir": "./lib",
     "jsx": "react-jsx"
   },
-  "references": [{
-    "path": "../react"
-  }]
+  "references": [
+    {
+      "path": "../react"
+    },
+    {
+      "path": "../kit-forms"
+    }
+  ]
 }
