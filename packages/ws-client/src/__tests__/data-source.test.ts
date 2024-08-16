@@ -80,14 +80,12 @@ it('should return initial values if server is not connected', async () => {
 
   const value = dataSource.get('')
 
+  // In real-world application, value gets subscribed to while accessing it
+  value.subscribe(vi.fn())
   expect(value.get()).toBe('Hello World')
 
-  await ws.connected
-  ws.send({
-    $: 'up',
-    key: '',
-    val: 'Updated',
+  expect(await ws.nextMessage).toStrictEqual({
+    $: 'sub',
+    keys: [''],
   })
-
-  expect(value.get()).toBe('Updated')
 })
