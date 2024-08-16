@@ -130,7 +130,7 @@ export const SubmitButton = ({ pendingState, ...props }: SubmitButtonProps) => {
   }
   return (
     <Form.Trigger asChild>
-      <Button {...props} disabled={formContext.isSubmitting} />
+      <Button disabled={formContext.isSubmitting} {...props} />
     </Form.Trigger>
   )
 }
