@@ -36,6 +36,7 @@ const rwsDefaultOptions: RWSOptions = {
 
 type Options = {
   rws?: RWSOptions
+  initialValues?: { [key: string]: any }
 }
 
 export function createWSModelSource(wsUrl: string, options?: Options): WebSocketModelSource {
@@ -48,7 +49,7 @@ export function createWSModelSource(wsUrl: string, options?: Options): WebSocket
   }
 
   const subscriptions = new Map<string, Set<Handler>>()
-  const cache = new Map<string, any>()
+  const cache = new Map(Object.entries(options?.initialValues || {}))
 
   rws.addEventListener('open', () => {
     const keys = [...subscriptions.entries()]
