@@ -166,7 +166,7 @@ function BottomSheetFormExample() {
             { key: 'manager', label: 'Manager' },
           ]}
         />
-        <BottomSheetSubmitButton onPress={() => console.log('d')}>
+        <BottomSheetSubmitButton>
           <Text>Submit form</Text>
         </BottomSheetSubmitButton>
       </RiseForm>
