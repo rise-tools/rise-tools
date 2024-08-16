@@ -31,7 +31,9 @@
       "@rise-tools/kit-linking": ["./packages/kit-linking/src"],
       "@rise-tools/kit-linking/server": ["./packages/kit-linking/src/server"],
       "@rise-tools/kit-qrcode": ["./packages/kit-qrcode/src"],
-      "@rise-tools/kit-qrcode/server": ["./packages/kit-qrcode/src/server"]
+      "@rise-tools/kit-qrcode/server": ["./packages/kit-qrcode/src/server"],
+      "@rise-tools/kit-webview": ["./packages/kit-webview/src"],
+      "@rise-tools/kit-webview/server": ["./packages/kit-webview/src/server"]
     },
     "composite": true,
     "strictNullChecks": true,

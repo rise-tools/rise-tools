@@ -31,7 +31,10 @@ export function Screens() {
       <Stack.Screen
         name="connect"
         component={ConnectScreen}
-        options={{ title: 'Add Connection' }}
+        options={{
+          animation: 'none',
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="connection"

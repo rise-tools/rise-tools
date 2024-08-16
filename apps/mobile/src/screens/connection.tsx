@@ -20,10 +20,10 @@ import {
   WebViewComponents,
 } from '@rise-tools/kitchen-sink'
 import { Rise } from '@rise-tools/react'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { BackButton, DismissButton } from '../back-button'
-import { Connection, useConnection } from '../connection'
+import { Connection, touchConnection, useConnection } from '../connection'
 import { DataBoundary } from '../data-boundary'
 import { useModelSource } from '../model-sources'
 import { RootStackParamList } from '.'
@@ -52,9 +52,19 @@ const Stack = createNativeStackNavigator<RiseStackParamList>()
 
 export function ConnectionScreen({
   route,
+  navigation,
 }: NativeStackScreenProps<RootStackParamList, 'connection'>) {
   const connection = useConnection(route.params.id)
   const initialRoute = connection ? 'index' : 'not-found'
+
+  useEffect(
+    () =>
+      navigation.addListener('transitionEnd', () => {
+        touchConnection(route.params.id)
+      }),
+    []
+  )
+
   return (
     <Stack.Navigator initialRouteName={initialRoute}>
       <Stack.Screen
