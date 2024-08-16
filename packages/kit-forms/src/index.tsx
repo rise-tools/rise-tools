@@ -11,6 +11,8 @@ import {
   ToggleGroupField,
 } from './form'
 
+export { SubmitButton } from './form'
+
 export const FormComponents = {
   'rise-tools/kit-forms/Form': {
     component: RiseForm,

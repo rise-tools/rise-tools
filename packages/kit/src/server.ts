@@ -4,6 +4,7 @@ import { AnimatedProgress as KitAnimatedProgress } from './client/AnimatedProgre
 import type {
   BottomSheet as KitBottomSheet,
   BottomSheetCloseButton as KitBottomSheetCloseButton,
+  BottomSheetSubmitButton as KitBottomSheetSubmitButton,
   BottomSheetTriggerButton as KitBottomSheetTriggerButton,
 } from './client/BottomSheet'
 import type { RNDraggableFlatList } from './client/DraggableFlatList'
@@ -15,6 +16,9 @@ export const DraggableFlatList = createComponentDefinition<typeof RNDraggableFla
 export const FlatList = createComponentDefinition<typeof RNFlatList>('rise-tools/kit/FlatList')
 export const BottomSheet = createComponentDefinition<typeof KitBottomSheet>(
   'rise-tools/kit/BottomSheet'
+)
+export const BottomSheetSubmitButton = createComponentDefinition<typeof KitBottomSheetSubmitButton>(
+  'rise-tools/kit/BottomSheetSubmitButton'
 )
 export const BottomSheetCloseButton = createComponentDefinition<typeof KitBottomSheetCloseButton>(
   'rise-tools/kit/BottomSheetCloseButton'

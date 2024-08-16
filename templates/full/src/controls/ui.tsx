@@ -1,6 +1,7 @@
 import {
   BottomSheet,
   BottomSheetCloseButton,
+  BottomSheetSubmitButton,
   BottomSheetTriggerButton,
   DraggableFlatList,
   FlatList,
@@ -136,6 +137,12 @@ function BottomSheetExample() {
       }
     >
       <YStack gap="$4">
+        <RiseForm onSubmit={toast('Thanks for submitting the form!')}>
+          <TextField id="name" label="Name" placeholder="What is your name?" />
+          <BottomSheetSubmitButton onPress={goBack()}>
+            <Text>Submit form</Text>
+          </BottomSheetSubmitButton>
+        </RiseForm>
         <BottomSheetCloseButton theme="green" onPress={goBack()}>
           <Text>Close and go back</Text>
         </BottomSheetCloseButton>
