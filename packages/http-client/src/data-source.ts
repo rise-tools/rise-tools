@@ -1,10 +1,13 @@
 import { type ModelSource, ModelState, Store } from '@rise-tools/react'
 
 type Handler = (value: ModelState) => void
+type Options = {
+  initialValues?: { [key: string]: any }
+}
 
-export function createHTTPModelSource(httpUrl: string): ModelSource {
+export function createHTTPModelSource(httpUrl: string, options?: Options): ModelSource {
   const subscriptions = new Map<string, Set<Handler>>()
-  const cache = new Map<string, any>()
+  const cache = new Map(Object.entries(options?.initialValues || {}))
 
   const stores = new Map<string, Store>()
 
@@ -20,6 +23,7 @@ export function createHTTPModelSource(httpUrl: string): ModelSource {
     return {
       get: () => cache.get(key),
       subscribe: (handler) => {
+        // tbd: `shouldFetch` should have different logic. If it fails on first fetch, it should retry
         const shouldFetch = handlers.size === 0
         // tbd: this should return promise so it works with Suspense on the client
         if (shouldFetch) {

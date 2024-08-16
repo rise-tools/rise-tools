@@ -70,3 +70,22 @@ it('should timeout if response comes later than timeout specified', async () => 
 
   expect(promise).rejects.toBeInstanceOf(Error)
 })
+
+it('should return initial values if server is not connected', async () => {
+  const dataSource = createWSModelSource('ws://localhost:8080', {
+    initialValues: {
+      '': 'Hello World',
+    },
+  })
+
+  const value = dataSource.get('')
+
+  // In real-world application, value gets subscribed to while accessing it
+  value.subscribe(vi.fn())
+  expect(value.get()).toBe('Hello World')
+
+  expect(await ws.nextMessage).toStrictEqual({
+    $: 'sub',
+    keys: [''],
+  })
+})
