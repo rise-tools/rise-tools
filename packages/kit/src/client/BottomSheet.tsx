@@ -80,10 +80,20 @@ export function BottomSheetCloseButton({ children, ...props }: ButtonProps) {
   )
 }
 
-export function BottomSheetSubmitButton({ ...props }: ComponentProps<typeof SubmitButton>) {
+export function BottomSheetSubmitButton({
+  children,
+  ...props
+}: ComponentProps<typeof SubmitButton>) {
+  const { setOpen } = useContext(BottomSheetContext)
   return (
-    <BottomSheetCloseButton asChild>
-      <SubmitButton {...props} />
-    </BottomSheetCloseButton>
+    <SubmitButton
+      {...props}
+      onPress={async (e) => {
+        props.onPress?.(e)
+        setOpen(false)
+      }}
+    >
+      {children}
+    </SubmitButton>
   )
 }

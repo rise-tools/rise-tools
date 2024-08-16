@@ -102,6 +102,8 @@ function UI() {
         </Button>
         <Separator />
         <BottomSheetExample />
+        <Separator />
+        <BottomSheetFormExample />
       </YStack>
     </>
   )
@@ -130,19 +132,9 @@ function WebViewExample() {
 function BottomSheetExample() {
   return (
     <BottomSheet
-      trigger={
-        <BottomSheetTriggerButton borderTopLeftRadius={0} borderTopRightRadius={0}>
-          Bottom Sheet
-        </BottomSheetTriggerButton>
-      }
+      trigger={<BottomSheetTriggerButton borderRadius={0}>Bottom Sheet</BottomSheetTriggerButton>}
     >
       <YStack gap="$4">
-        <RiseForm onSubmit={toast('Thanks for submitting the form!')}>
-          <TextField id="name" label="Name" placeholder="What is your name?" />
-          <BottomSheetSubmitButton onPress={goBack()}>
-            <Text>Submit form</Text>
-          </BottomSheetSubmitButton>
-        </RiseForm>
         <BottomSheetCloseButton theme="green" onPress={goBack()}>
           <Text>Close and go back</Text>
         </BottomSheetCloseButton>
@@ -150,6 +142,34 @@ function BottomSheetExample() {
           <Text>Just close</Text>
         </BottomSheetCloseButton>
       </YStack>
+    </BottomSheet>
+  )
+}
+
+function BottomSheetFormExample() {
+  return (
+    <BottomSheet
+      trigger={
+        <BottomSheetTriggerButton borderTopLeftRadius={0} borderTopRightRadius={0}>
+          Bottom Sheet with Form
+        </BottomSheetTriggerButton>
+      }
+    >
+      <RiseForm onSubmit={toast('Thanks for submitting the form!')}>
+        <SelectField
+          id="role"
+          label="What is your role at organisation?"
+          placeholder="Select something!"
+          options={[
+            { key: 'developer', label: 'Developer' },
+            { key: 'designer', label: 'Designer' },
+            { key: 'manager', label: 'Manager' },
+          ]}
+        />
+        <BottomSheetSubmitButton onPress={() => console.log('d')}>
+          <Text>Submit form</Text>
+        </BottomSheetSubmitButton>
+      </RiseForm>
     </BottomSheet>
   )
 }
