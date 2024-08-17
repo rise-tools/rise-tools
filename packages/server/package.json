@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/server",
-  "version": "0.11.1",
+  "version": "0.12.0",
   "license": "Apache-2.0",
   "description": "",
   "main": "./lib/index.js",
