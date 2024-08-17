@@ -22,9 +22,11 @@ const BottomSheetContext = createContext<BottomSheetContext>({
 export function BottomSheet({
   trigger,
   children,
+  frameProps,
   ...props
 }: Omit<BottomSheetProps, 'open' | 'onOpenChange'> & {
   trigger: React.ReactNode
+  frameProps: ComponentProps<typeof Sheet.Frame>
 }) {
   const [open, setOpen] = useState(false)
   return (
@@ -41,7 +43,7 @@ export function BottomSheet({
         >
           <Sheet.Overlay animation="quick" />
           <Sheet.Handle />
-          <Sheet.Frame padding="$4" justifyContent="center">
+          <Sheet.Frame padding="$4" justifyContent="center" {...frameProps}>
             {children}
           </Sheet.Frame>
         </Sheet>
