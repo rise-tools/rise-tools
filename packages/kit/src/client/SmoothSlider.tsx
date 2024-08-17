@@ -14,6 +14,8 @@ export const smoothSliderPropsSchema = z.object({
 
 const animationFps = 45
 
+const mostlyEqual = (a: number, b: number) => Math.abs(a - b) < 0.001
+
 export function SmoothSlider({
   value,
   size,
@@ -32,15 +34,18 @@ export function SmoothSlider({
   const valueMax = max ?? 1
   const displayValue = isTouching && touchingValue !== null ? touchingValue : value
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       setSmoothedValue((lastSmoothedValue) => {
         const destValue = lastActualValue.current
         const moveAggression = smoothing <= 0 ? 1 : (1 - smoothing) / 5 + 0.02 // 0.05 is default
         const nextValue = destValue * moveAggression + lastSmoothedValue * (1 - moveAggression)
-
+        if (mostlyEqual(nextValue, destValue)) {
+          return destValue
+        }
         return nextValue
       })
     }, 1000 / animationFps)
+    return () => clearInterval(interval)
   }, [smoothing])
   if (displayValue === null) return null
   return (
@@ -63,13 +68,15 @@ export function SmoothSlider({
     >
       <Slider.Track height={size}>
         <Slider.TrackActive backgroundColor={isTouching ? '$color11' : '$color10'} />
-        <Slider.TrackActive
-          width={`${((smoothedValue - valueMin) / (valueMax - valueMin)) * 100}%`}
-          backgroundColor="white"
-          height={1}
-          top={45}
-          bottom={20}
-        />
+        {smoothing === 0 ? null : (
+          <Slider.TrackActive
+            width={`${((smoothedValue - valueMin) / (valueMax - valueMin)) * 100}%`}
+            backgroundColor="white"
+            height={1}
+            top={45}
+            bottom={20}
+          />
+        )}
       </Slider.Track>
     </Slider>
   )
