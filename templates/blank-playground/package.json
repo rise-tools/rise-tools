@@ -1,5 +1,5 @@
 {
-  "name": "@rise-tools/template-blank-playground",
+  "name": "@rise-tools/template-blank",
   "version": "0.11.1",
   "license": "Apache-2.0",
   "description": "Blank template for Rise projects that work inside Rise Playground",
