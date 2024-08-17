@@ -5,6 +5,7 @@
       "@rise-tools/cli": ["./packages/cli/src"],
       "@rise-tools/react": ["./packages/react/src"],
       "@rise-tools/react/jsx-runtime": ["./packages/react/src/jsx-runtime"],
+      "@rise-tools/react/jsx-dev-runtime": ["./packages/react/src/jsx-dev-runtime"],
       "@rise-tools/ws-client": ["./packages/ws-client/src"],
       "@rise-tools/http-client": ["./packages/http-client/src"],
       "@rise-tools/server": ["./packages/server/src"],
