@@ -30,21 +30,23 @@ const VideoContext = createContext<VideoContext>({
   },
 })
 
-type VideoPlayerSettings = Pick<
-  VideoPlayer,
-  | 'currentTime'
-  | 'loop'
-  | 'muted'
-  | 'playbackRate'
-  | 'preservesPitch'
-  | 'showNowPlayingNotification'
-  | 'staysActiveInBackground'
-  | 'volume'
+type VideoPlayerSettings = Partial<
+  Pick<
+    VideoPlayer,
+    | 'currentTime'
+    | 'loop'
+    | 'muted'
+    | 'playbackRate'
+    | 'preservesPitch'
+    | 'showNowPlayingNotification'
+    | 'staysActiveInBackground'
+    | 'volume'
+  >
 >
 
 export function Video({
   source,
-  autoplay,
+  autoplay = false,
   children,
   loop,
   muted,
@@ -53,19 +55,21 @@ export function Video({
   showNowPlayingNotification,
   staysActiveInBackground,
   volume,
-}: PropsWithChildren<{ source: VideoSource; autoplay: boolean } & VideoPlayerSettings>) {
+}: PropsWithChildren<{ source: VideoSource; autoplay?: boolean } & VideoPlayerSettings>) {
   const player = useVideoPlayer(source)
 
   // tbd: do we need effect here? maybe we can set each render
   // also, what happens when you set it with the same value? (do we need each setter in sep. hook or not)
   useEffect(() => {
-    player.muted = muted
-    player.loop = loop
-    player.playbackRate = playbackRate
-    player.preservesPitch = preservesPitch
-    player.showNowPlayingNotification = showNowPlayingNotification
-    player.staysActiveInBackground = staysActiveInBackground
-    player.volume = volume
+    if (muted !== undefined) player.muted = muted
+    if (loop !== undefined) player.loop = loop
+    if (playbackRate !== undefined) player.playbackRate = playbackRate
+    if (preservesPitch !== undefined) player.preservesPitch = preservesPitch
+    if (showNowPlayingNotification !== undefined)
+      player.showNowPlayingNotification = showNowPlayingNotification
+    if (staysActiveInBackground !== undefined)
+      player.staysActiveInBackground = staysActiveInBackground
+    if (volume !== undefined) player.volume = volume
   }, [
     muted,
     loop,
@@ -87,9 +91,9 @@ export function Video({
   return <VideoContext.Provider value={{ player, video }}>{children}</VideoContext.Provider>
 }
 
-export function VideoView(props: Omit<ExpoVideoViewProps, 'ref'>) {
-  const { video } = useContext(VideoContext)
-  return <ExpoVideoView ref={video} {...props} />
+export function VideoView(props: Omit<ExpoVideoViewProps, 'ref' | 'player'>) {
+  const { video, player } = useContext(VideoContext)
+  return <ExpoVideoView ref={video} player={player} {...props} />
 }
 
 // tbd: how do we choose the right Pressable for the user?
