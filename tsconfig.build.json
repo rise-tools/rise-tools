@@ -62,6 +62,12 @@
     },
     {
       "path": "./packages/kit-webview"
+    },
+    {
+      "path": "./packages/kit-expo-video"
+    },
+    {
+      "path": "./packages/kit-react-native"
     }
   ]
 }

@@ -140,10 +140,14 @@ function VideoExample() {
   return (
     <>
       <StackScreen title="Video" />
-      <Video>
+      <Video source="">
         <VideoView />
-        <VideoActionButton action="play">Play</VideoActionButton>
-        <VideoActionButton action="pause">Pause</VideoActionButton>
+        <XStack>
+          <VideoActionButton action={['seekBy', -15]}>{'<<'}</VideoActionButton>
+          <VideoActionButton action="play">Play</VideoActionButton>
+          <VideoActionButton action="pause">Pause</VideoActionButton>
+          <VideoActionButton action={['seekBy', 15]}>{'>>'}</VideoActionButton>
+        </XStack>
       </Video>
     </>
   )
