@@ -1,4 +1,5 @@
 export * from '@rise-tools/kit/server'
+export * from '@rise-tools/kit-expo-video/server'
 export * from '@rise-tools/kit-forms/server'
 export * from '@rise-tools/kit-haptics/server'
 export * from '@rise-tools/kit-linking/server'

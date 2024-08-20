@@ -38,5 +38,8 @@
     {
       "path": "../kit-webview"
     },
+    {
+      "path": "../kit-expo-video"
+    }
   ]
 }

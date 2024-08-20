@@ -30,6 +30,7 @@ import {
   TextField,
   toast,
   ToggleGroupField,
+  Video,
   WebView,
   XStack,
   YStack,
@@ -51,6 +52,7 @@ export const models = {
   bottomSheet: BottomSheetExample,
   qrcode: QRCodeExample,
   webview: WebViewExample,
+  video: VideoExample,
 }
 
 function UI() {
@@ -100,6 +102,9 @@ function UI() {
         <Button onPress={navigate('webview', { title: 'WebView' })} borderRadius={0}>
           WebView
         </Button>
+        <Button onPress={navigate('video', { title: 'Video' })} borderRadius={0}>
+          Video
+        </Button>
         <Separator />
         <BottomSheetExample />
         <Separator />
@@ -125,6 +130,20 @@ function WebViewExample() {
     <>
       <StackScreen title="WebView" />
       <WebView source={{ uri: 'https://rise.tools' }} />
+    </>
+  )
+}
+
+function VideoExample() {
+  return (
+    <>
+      <StackScreen title="Video" />
+      <Video
+        source="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        autoplay
+        loop
+        style={{ width: '100%', aspectRatio: 16 / 9 }}
+      />
     </>
   )
 }

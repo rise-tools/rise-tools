@@ -9,6 +9,7 @@ import {
   useReactNavigationActions,
 } from '@rise-tools/kit-react-navigation'
 import {
+  ExpoVideoComponents,
   FormComponents,
   LucideIconsComponents,
   QRCodeComponents,
@@ -39,6 +40,7 @@ const components = {
   ...QRCodeComponents,
   ...ReactNavigationComponents,
   ...WebViewComponents,
+  ...ExpoVideoComponents,
 }
 
 export type RiseStackParamList = {

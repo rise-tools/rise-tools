@@ -42,6 +42,7 @@
     "expo-standard-web-crypto": "^1.7.0",
     "expo-status-bar": "~1.12.1",
     "expo-updates": "~0.25.17",
+    "expo-video": "^1.2.4",
     "react": "^18.2.0",
     "react-native": "0.74.2",
     "react-native-draggable-flatlist": "^4.0.1",
