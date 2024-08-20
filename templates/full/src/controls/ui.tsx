@@ -142,7 +142,7 @@ function VideoExample() {
         source="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
         autoplay
         loop
-        style={{ width: '100%', height: 300 }}
+        style={{ width: '100%', aspectRatio: 16 / 9 }}
       />
     </>
   )
