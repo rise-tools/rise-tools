@@ -140,17 +140,12 @@ function VideoExample() {
   return (
     <>
       <StackScreen title="Video" />
-      <Video source="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4">
-        <>
-          <VideoView />
-          <XStack>
-            <VideoActionButton action={['seekBy', -15]}>{'<<'}</VideoActionButton>
-            <VideoActionButton action="play">Play</VideoActionButton>
-            <VideoActionButton action="pause">Pause</VideoActionButton>
-            <VideoActionButton action={['seekBy', 15]}>{'>>'}</VideoActionButton>
-          </XStack>
-        </>
-      </Video>
+      <Video
+        source="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        autoplay
+        loop
+        style={{ width: '100%', height: 300 }}
+      />
     </>
   )
 }

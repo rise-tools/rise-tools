@@ -1,15 +1,8 @@
-import {
-  useVideoPlayer,
-  VideoPlayer,
-  VideoSource,
-  VideoView as ExpoVideoView,
-  VideoViewProps as ExpoVideoViewProps,
-} from 'expo-video'
+import { useVideoPlayer, VideoPlayer, VideoSource, VideoView, VideoViewProps } from 'expo-video'
 import React, {
   ComponentProps,
   createContext,
   MutableRefObject,
-  PropsWithChildren,
   useContext,
   useEffect,
   useRef,
@@ -18,7 +11,7 @@ import { TouchableOpacity } from 'react-native'
 
 type VideoContext = {
   player: VideoPlayer
-  video: MutableRefObject<ExpoVideoView | null>
+  video: MutableRefObject<VideoView | null>
 }
 
 const VideoContext = createContext<VideoContext>({
@@ -47,7 +40,6 @@ type VideoPlayerSettings = Partial<
 export function Video({
   source,
   autoplay = false,
-  children,
   loop,
   muted,
   playbackRate,
@@ -55,11 +47,11 @@ export function Video({
   showNowPlayingNotification,
   staysActiveInBackground,
   volume,
-}: PropsWithChildren<{ source: VideoSource; autoplay?: boolean } & VideoPlayerSettings>) {
+  ...props
+}: { source: VideoSource; autoplay?: boolean } & VideoPlayerSettings &
+  Omit<VideoViewProps, 'player'>) {
   const player = useVideoPlayer(source)
 
-  // tbd: do we need effect here? maybe we can set each render
-  // also, what happens when you set it with the same value? (do we need each setter in sep. hook or not)
   useEffect(() => {
     if (muted !== undefined) player.muted = muted
     if (loop !== undefined) player.loop = loop
@@ -86,14 +78,13 @@ export function Video({
     }
   })
 
-  const video = useRef<ExpoVideoView>(null)
+  const video = useRef<VideoView>(null)
 
-  return <VideoContext.Provider value={{ player, video }}>{children}</VideoContext.Provider>
-}
-
-export function VideoView(props: Omit<ExpoVideoViewProps, 'ref' | 'player'>) {
-  const { video, player } = useContext(VideoContext)
-  return <ExpoVideoView ref={video} player={player} {...props} />
+  return (
+    <VideoContext.Provider value={{ player, video }}>
+      <VideoView ref={video} player={player} {...props} />
+    </VideoContext.Provider>
+  )
 }
 
 // tbd: how do we choose the right Pressable for the user?
