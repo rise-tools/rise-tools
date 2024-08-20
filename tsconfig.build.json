@@ -65,9 +65,6 @@
     },
     {
       "path": "./packages/kit-expo-video"
-    },
-    {
-      "path": "./packages/kit-react-native"
     }
   ]
 }

@@ -40,9 +40,6 @@
     },
     {
       "path": "../kit-expo-video"
-    },
-    {
-      "path": "../kit-react-native"
-    },
+    }
   ]
 }
