@@ -27,10 +27,6 @@ export const ScrollView = createComponentDefinition<typeof RN.ScrollView>(
   'rise-tools/kit-react-native/ScrollView'
 )
 
-export const SectionList = createComponentDefinition<typeof RN.SectionList>(
-  'rise-tools/kit-react-native/SectionList'
-)
-
 export const StatusBar = createComponentDefinition<typeof RN.StatusBar>(
   'rise-tools/kit-react-native/StatusBar'
 )
@@ -62,7 +58,3 @@ export const TouchableNativeFeedback = createComponentDefinition<typeof RN.Touch
 )
 
 export const View = createComponentDefinition<typeof RN.View>('rise-tools/kit-react-native/View')
-
-export const VirtualizedList = createComponentDefinition<typeof RN.VirtualizedList>(
-  'rise-tools/kit-react-native/VirtualizedList'
-)

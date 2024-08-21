@@ -23,9 +23,6 @@ export const ReactNativeComponents: ComponentRegistry = {
   'rise-tools/kit-react-native/ScrollView': {
     component: RN.ScrollView,
   },
-  'rise-tools/kit-react-native/SectionList': {
-    component: RN.SectionList,
-  },
   'rise-tools/kit-react-native/StatusBar': {
     component: RN.StatusBar,
   },
@@ -52,8 +49,5 @@ export const ReactNativeComponents: ComponentRegistry = {
   },
   'rise-tools/kit-react-native/View': {
     component: RN.View,
-  },
-  'rise-tools/kit-react-native/VirtualizedList': {
-    component: RN.VirtualizedList,
   },
 }
