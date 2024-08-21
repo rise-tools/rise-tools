@@ -41,5 +41,8 @@
     {
       "path": "../kit-react-native"
     },
+    {
+      "path": "../kit-expo-video"
+    }
   ]
 }

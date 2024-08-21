@@ -26,7 +26,7 @@ export function BottomSheet({
   ...props
 }: Omit<BottomSheetProps, 'open' | 'onOpenChange'> & {
   trigger: React.ReactNode
-  frameProps: ComponentProps<typeof Sheet.Frame>
+  frameProps?: ComponentProps<typeof Sheet.Frame>
 }) {
   const [open, setOpen] = useState(false)
   return (
