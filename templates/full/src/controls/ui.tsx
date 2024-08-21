@@ -5,7 +5,7 @@ import {
   BottomSheetTriggerButton,
   DraggableFlatList,
 } from '@rise-tools/kit/server'
-import { ActivityIndicator, FlatList } from '@rise-tools/kit-react-native/server'
+import { FlatList } from '@rise-tools/kit-react-native/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
@@ -65,6 +65,9 @@ function UI() {
           borderBottomRightRadius={0}
         >
           Form
+        </Button>
+        <Button onPress={navigate('list', { title: 'List' })} borderRadius={0}>
+          List
         </Button>
         <Separator />
         <Button onPress={navigate('draggableList', { title: 'Draggable List' })} borderRadius={0}>
@@ -429,6 +432,43 @@ function DraggableListExample() {
             console.log('Reordered keys:', keys)
           }}
         />
+      </YStack>
+    </>
+  )
+}
+
+function ListExample() {
+  const data = [
+    {
+      key: 'rise-tools',
+      view: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+    {
+      key: 'rise-tools-1',
+      view: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+    {
+      key: 'rise-tools-2',
+      view: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+  ]
+  return (
+    <>
+      <StackScreen title="List" />
+      <YStack flex={1} padding="$4">
+        <FlatList data={data} ListHeaderComponent={<H4>Our ranking of JavaScript frameworks</H4>} />
       </YStack>
     </>
   )
