@@ -91,7 +91,7 @@ export function VibeResults({ vibes }: { vibes?: VibesState }) {
           const vibeCount = vibes?.[vibe.icon] || 0
 
           return (
-            <XStack padding="$2" alignItems="center" justifyContent="space-between">
+            <XStack key={vibe.icon} padding="$2" alignItems="center" justifyContent="space-between">
               <View flex={vibeCount} margin="$2">
                 <View padding="$2" backgroundColor={`$${vibe.theme}8`} borderRadius="$4">
                   <SizableText size="$9">{vibe.icon}</SizableText>
