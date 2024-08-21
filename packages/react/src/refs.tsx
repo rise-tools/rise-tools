@@ -1,5 +1,6 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 
+import { isEventModelState } from './events'
 import {
   ActionModelState,
   ActionsDefinition,
@@ -10,7 +11,6 @@ import {
   HandlerEvent,
   isComponentModelState,
   isCompositeModelState,
-  isEventModelState,
   isEventResponse,
   isHandlerEvent,
   ModelState,

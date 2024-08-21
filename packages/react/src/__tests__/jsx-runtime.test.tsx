@@ -3,8 +3,9 @@
 import type { PropsWithChildren, ReactNode } from 'react'
 import { expect, it, vi } from 'vitest'
 
+import { isEventModelState } from '../events'
 import { createComponentDefinition } from '../jsx-runtime'
-import { isComponentModelState, isEventModelState } from '../rise'
+import { isComponentModelState } from '../rise'
 
 const View = createComponentDefinition('View')
 

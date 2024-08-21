@@ -1,12 +1,11 @@
 import type { JSXElementConstructor, ReactElement, ReactNode } from 'react'
 import React from 'react'
 
-import { event } from './events'
+import { event, ServerEventModelState } from './events'
 import {
   ComponentModelState,
   HandlerFunction,
   ReferencedModelState,
-  ServerEventModelState,
   ServerHandlerModelState,
   StateModelState,
 } from './rise'

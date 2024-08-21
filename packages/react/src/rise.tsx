@@ -1,6 +1,7 @@
 import React, { useCallback, useContext } from 'react'
 import { jsx, jsxs } from 'react/jsx-runtime'
 
+import { EventModelState, isEventModelState, ServerEventModelState } from './events'
 import { LocalState, useLocalStateValues } from './state'
 import { useStream } from './streams'
 
@@ -24,6 +25,7 @@ export type ModelState<T = EventModelState> =
   | { [key: string]: ModelState<T>; $?: never }
   | Iterable<ModelState<T>>
   | T
+
 /** Server data state */
 export type ServerModelState = ModelState<ServerEventModelState>
 export type ServerHandlerModelState<
@@ -84,18 +86,6 @@ export type HandlerFunction<Args extends any[] = any[], ReturnType = void> = (
   ...args: Args
 ) => Promise<EventResponse<ReturnType> | ReturnType> | EventResponse<ReturnType> | ReturnType
 
-export type EventModelState = {
-  $: 'event'
-  actions?: ActionModelState[]
-  timeout?: number
-  args?: Record<string, StateModelState<any>>
-}
-export type ServerEventModelState<
-  Args extends any[] = any[],
-  ReturnType = void,
-> = EventModelState & {
-  handler: HandlerFunction<Args, ReturnType>
-}
 export type JSONValue =
   | { [key: string]: JSONValue; $?: never }
   | string
@@ -135,9 +125,6 @@ export function isComponentModelState(obj: any): obj is ComponentModelState<any>
 }
 export function isReferencedComponentModelState(obj: any): obj is ReferencedComponentModelState {
   return isComponentModelState(obj) && 'path' in obj
-}
-export function isEventModelState(obj: any): obj is EventModelState {
-  return obj !== null && typeof obj === 'object' && obj.$ === 'event'
 }
 export function isHandlerEvent(obj: EventRequest): obj is HandlerEvent {
   return isEventModelState(obj.modelState)
