@@ -15,8 +15,6 @@
       "@rise-tools/kitchen-sink/server": ["./packages/kitchen-sink/src/server"],
       "@rise-tools/kit-expo-router": ["./packages/kit-expo-router/src"],
       "@rise-tools/kit-expo-router/server": ["./packages/kit-expo-router/src/server"],
-      "@rise-tools/kit-expo-video": ["./packages/kit-expo-video/src"],
-      "@rise-tools/kit-expo-video/server": ["./packages/kit-expo-video/src/server"],
       "@rise-tools/kit-react-native": ["./packages/kit-react-native/src"],
       "@rise-tools/kit-react-native/server": ["./packages/kit-react-native/src/server"],
       "@rise-tools/kit-react-navigation": ["./packages/kit-react-navigation/src"],
