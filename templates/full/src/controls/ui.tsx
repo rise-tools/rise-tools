@@ -42,7 +42,6 @@ const { Circle, Svg, SvgUri, SvgXml } = SVG
 export const models = {
   controls: UI,
   form: FormExample,
-  list: ListExample,
   draggableList: DraggableListExample,
   toast: ShowToastExample,
   haptics: HapticsExample,
@@ -66,10 +65,6 @@ function UI() {
           borderBottomRightRadius={0}
         >
           Form
-        </Button>
-        <Separator />
-        <Button onPress={navigate('list', { title: 'List' })} borderRadius={0}>
-          List
         </Button>
         <Separator />
         <Button onPress={navigate('draggableList', { title: 'Draggable List' })} borderRadius={0}>
@@ -131,6 +126,32 @@ function QRCodeExample() {
 }
 
 function ReactNativeExample() {
+  const data = [
+    {
+      key: 'rise-tools',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+    {
+      key: 'rise-tools-1',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+    {
+      key: 'rise-tools-2',
+      label: (
+        <Button theme="blue" marginVertical="$2">
+          Rise Tools
+        </Button>
+      ),
+    },
+  ]
   return (
     <>
       <StackScreen title="QR Code" />
@@ -138,6 +159,13 @@ function ReactNativeExample() {
         <YStack gap="$2">
           <H4>ActivityIndicator</H4>
           <ActivityIndicator />
+        </YStack>
+        <YStack gap="$2">
+          <H4>FlatList with header</H4>
+          <FlatList
+            data={data}
+            ListHeaderComponent={<H4>Our ranking of JavaScript frameworks</H4>}
+          />
         </YStack>
       </YStack>
     </>
@@ -401,43 +429,6 @@ function DraggableListExample() {
             console.log('Reordered keys:', keys)
           }}
         />
-      </YStack>
-    </>
-  )
-}
-
-function ListExample() {
-  const data = [
-    {
-      key: 'rise-tools',
-      label: (
-        <Button theme="blue" marginVertical="$2">
-          Rise Tools
-        </Button>
-      ),
-    },
-    {
-      key: 'rise-tools-1',
-      label: (
-        <Button theme="blue" marginVertical="$2">
-          Rise Tools
-        </Button>
-      ),
-    },
-    {
-      key: 'rise-tools-2',
-      label: (
-        <Button theme="blue" marginVertical="$2">
-          Rise Tools
-        </Button>
-      ),
-    },
-  ]
-  return (
-    <>
-      <StackScreen title="List" />
-      <YStack flex={1} padding="$4">
-        <FlatList data={data} ListHeaderComponent={<H4>Our ranking of JavaScript frameworks</H4>} />
       </YStack>
     </>
   )
