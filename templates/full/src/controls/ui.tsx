@@ -42,6 +42,7 @@ const { Circle, Svg, SvgUri, SvgXml } = SVG
 export const models = {
   controls: UI,
   form: FormExample,
+  list: ListExample,
   draggableList: DraggableListExample,
   toast: ShowToastExample,
   haptics: HapticsExample,
@@ -51,8 +52,7 @@ export const models = {
   bottomSheet: BottomSheetExample,
   qrcode: QRCodeExample,
   webview: WebViewExample,
-  video: VideoExample,
-  rn: ReactNativeExample,
+  video: VideoExample
 }
 
 function UI() {
@@ -105,10 +105,6 @@ function UI() {
           Video
         </Button>
         <Separator />
-        <Button onPress={navigate('rn', { title: 'React Native' })} borderRadius={0}>
-          Base React Native Elements
-        </Button>
-        <Separator />
         <BottomSheetExample />
         <Separator />
         <BottomSheetFormExample />
@@ -123,53 +119,6 @@ function QRCodeExample() {
       <StackScreen title="QR Code" />
       <YStack padding="$4">
         <QRCode value="https://rise.tools" />
-      </YStack>
-    </>
-  )
-}
-
-function ReactNativeExample() {
-  const data = [
-    {
-      key: 'rise-tools',
-      label: (
-        <Button theme="blue" marginVertical="$2">
-          Rise Tools
-        </Button>
-      ),
-    },
-    {
-      key: 'rise-tools-1',
-      label: (
-        <Button theme="blue" marginVertical="$2">
-          Rise Tools
-        </Button>
-      ),
-    },
-    {
-      key: 'rise-tools-2',
-      label: (
-        <Button theme="blue" marginVertical="$2">
-          Rise Tools
-        </Button>
-      ),
-    },
-  ]
-  return (
-    <>
-      <StackScreen title="QR Code" />
-      <YStack gap="$8" padding="$4">
-        <YStack gap="$2">
-          <H4>ActivityIndicator</H4>
-          <ActivityIndicator />
-        </YStack>
-        <YStack gap="$2">
-          <H4>FlatList with header</H4>
-          <FlatList
-            data={data}
-            ListHeaderComponent={<H4>Our ranking of JavaScript frameworks</H4>}
-          />
-        </YStack>
       </YStack>
     </>
   )
