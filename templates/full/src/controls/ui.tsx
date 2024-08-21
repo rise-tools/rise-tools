@@ -4,8 +4,8 @@ import {
   BottomSheetSubmitButton,
   BottomSheetTriggerButton,
   DraggableFlatList,
-  FlatList,
 } from '@rise-tools/kit/server'
+import { FlatList } from '@rise-tools/kit-react-native/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
@@ -418,7 +418,7 @@ function ListExample() {
     <>
       <StackScreen title="List" />
       <YStack flex={1} padding="$4">
-        <FlatList data={data} header={<H4>Our ranking of JavaScript frameworks</H4>} />
+        <FlatList data={data} ListHeaderComponent={<H4>Our ranking of JavaScript frameworks</H4>} />
       </YStack>
     </>
   )

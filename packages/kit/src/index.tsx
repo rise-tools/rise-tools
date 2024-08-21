@@ -6,13 +6,9 @@ import {
   BottomSheetTriggerButton,
 } from './client/BottomSheet'
 import { RNDraggableFlatList } from './client/DraggableFlatList'
-import { RNFlatList } from './client/FlatList'
 import { SmoothSlider, smoothSliderPropsSchema } from './client/SmoothSlider'
 
 export const RiseComponents = {
-  'rise-tools/kit/FlatList': {
-    component: RNFlatList,
-  },
   'rise-tools/kit/RNDraggableFlatList': {
     component: RNDraggableFlatList,
   },
