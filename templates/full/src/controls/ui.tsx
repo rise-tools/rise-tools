@@ -5,7 +5,7 @@ import {
   BottomSheetTriggerButton,
   DraggableFlatList,
 } from '@rise-tools/kit/server'
-import { ActivityIndicator, FlatList } from '@rise-tools/kit-react-native/server'
+import { FlatList } from '@rise-tools/kit-react-native/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
@@ -42,6 +42,7 @@ const { Circle, Svg, SvgUri, SvgXml } = SVG
 export const models = {
   controls: UI,
   form: FormExample,
+  list: ListExample,
   draggableList: DraggableListExample,
   toast: ShowToastExample,
   haptics: HapticsExample,
@@ -52,7 +53,6 @@ export const models = {
   qrcode: QRCodeExample,
   webview: WebViewExample,
   video: VideoExample,
-  rn: ReactNativeExample,
 }
 
 function UI() {
@@ -66,6 +66,10 @@ function UI() {
         >
           Form
         </Button>
+        <Button onPress={navigate('list', { title: 'List' })} borderRadius={0}>
+          List
+        </Button>
+        <Separator />
         <Separator />
         <Button onPress={navigate('draggableList', { title: 'Draggable List' })} borderRadius={0}>
           DraggableList
@@ -102,10 +106,6 @@ function UI() {
           Video
         </Button>
         <Separator />
-        <Button onPress={navigate('rn', { title: 'React Native' })} borderRadius={0}>
-          Base React Native Elements
-        </Button>
-        <Separator />
         <BottomSheetExample />
         <Separator />
         <BottomSheetFormExample />
@@ -125,11 +125,11 @@ function QRCodeExample() {
   )
 }
 
-function ReactNativeExample() {
+function ListExample() {
   const data = [
     {
       key: 'rise-tools',
-      label: (
+      view: (
         <Button theme="blue" marginVertical="$2">
           Rise Tools
         </Button>
@@ -137,7 +137,7 @@ function ReactNativeExample() {
     },
     {
       key: 'rise-tools-1',
-      label: (
+      view: (
         <Button theme="blue" marginVertical="$2">
           Rise Tools
         </Button>
@@ -145,7 +145,7 @@ function ReactNativeExample() {
     },
     {
       key: 'rise-tools-2',
-      label: (
+      view: (
         <Button theme="blue" marginVertical="$2">
           Rise Tools
         </Button>
@@ -154,19 +154,9 @@ function ReactNativeExample() {
   ]
   return (
     <>
-      <StackScreen title="QR Code" />
-      <YStack gap="$8" padding="$4">
-        <YStack gap="$2">
-          <H4>ActivityIndicator</H4>
-          <ActivityIndicator />
-        </YStack>
-        <YStack gap="$2">
-          <H4>FlatList with header</H4>
-          <FlatList
-            data={data}
-            ListHeaderComponent={<H4>Our ranking of JavaScript frameworks</H4>}
-          />
-        </YStack>
+      <StackScreen title="List" />
+      <YStack flex={1} padding="$4">
+        <FlatList data={data} ListHeaderComponent={<H4>Our ranking of JavaScript frameworks</H4>} />
       </YStack>
     </>
   )
