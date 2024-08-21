@@ -5,6 +5,7 @@ import { event, ServerEventModelState } from './events'
 import {
   ComponentModelState,
   HandlerFunction,
+  isComponentModelState,
   ReferencedModelState,
   ServerHandlerModelState,
   StateModelState,
@@ -63,7 +64,19 @@ export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
   }
   const el = componentFactory(passedProps)
   if (!isReactElement(el)) {
-    return el
+    if (!isComponentModelState(el)) {
+      return {
+        $: 'component',
+        component: 'rise-tools/react/Fragment',
+        key,
+        props: {},
+        children: el,
+      }
+    }
+    return {
+      ...el,
+      key,
+    }
   }
   if (typeof el.type !== 'string') {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
