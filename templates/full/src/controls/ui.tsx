@@ -5,7 +5,7 @@ import {
   BottomSheetTriggerButton,
   DraggableFlatList,
 } from '@rise-tools/kit/server'
-import { FlatList } from '@rise-tools/kit-react-native/server'
+import { ActivityIndicator, FlatList } from '@rise-tools/kit-react-native/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
@@ -53,6 +53,7 @@ export const models = {
   qrcode: QRCodeExample,
   webview: WebViewExample,
   video: VideoExample,
+  rn: ReactNativeExample,
 }
 
 function UI() {
@@ -106,6 +107,10 @@ function UI() {
           Video
         </Button>
         <Separator />
+        <Button onPress={navigate('rn', { title: 'React Native' })} borderRadius={0}>
+          Base React Native Elements
+        </Button>
+        <Separator />
         <BottomSheetExample />
         <Separator />
         <BottomSheetFormExample />
@@ -120,6 +125,20 @@ function QRCodeExample() {
       <StackScreen title="QR Code" />
       <YStack padding="$4">
         <QRCode value="https://rise.tools" />
+      </YStack>
+    </>
+  )
+}
+
+function ReactNativeExample() {
+  return (
+    <>
+      <StackScreen title="QR Code" />
+      <YStack gap="$8" padding="$4">
+        <YStack gap="$2">
+          <H4>ActivityIndicator</H4>
+          <ActivityIndicator />
+        </YStack>
       </YStack>
     </>
   )
