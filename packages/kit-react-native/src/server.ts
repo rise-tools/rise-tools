@@ -1,5 +1,7 @@
 import { createComponentDefinition } from '@rise-tools/react'
-import * as RN from 'react-native'
+import type * as RN from 'react-native'
+
+import type { RNFlatList } from './FlatList'
 
 export const ActivityIndicator = createComponentDefinition<typeof RN.ActivityIndicator>(
   'rise-tools/kit-react-native/ActivityIndicator'
@@ -33,6 +35,10 @@ export const StatusBar = createComponentDefinition<typeof RN.StatusBar>(
 
 export const Switch = createComponentDefinition<typeof RN.Switch>(
   'rise-tools/kit-react-native/Switch'
+)
+
+export const FlatList = createComponentDefinition<typeof RNFlatList>(
+  'rise-tools/kit-react-native/FlatList'
 )
 
 export const Text = createComponentDefinition<typeof RN.Text>('rise-tools/kit-react-native/Text')

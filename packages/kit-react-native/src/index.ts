@@ -1,6 +1,8 @@
 import { ComponentRegistry } from '@rise-tools/react'
 import * as RN from 'react-native'
 
+import { RNFlatList } from './FlatList'
+
 export const ReactNativeComponents: ComponentRegistry = {
   'rise-tools/kit-react-native/ActivityIndicator': {
     component: RN.ActivityIndicator,
@@ -28,6 +30,9 @@ export const ReactNativeComponents: ComponentRegistry = {
   },
   'rise-tools/kit-react-native/Switch': {
     component: RN.Switch,
+  },
+  'rise-tools/kit-react-native/FlatList': {
+    component: RNFlatList,
   },
   'rise-tools/kit-react-native/Text': {
     component: RN.Text,
