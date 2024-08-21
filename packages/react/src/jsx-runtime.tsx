@@ -22,15 +22,17 @@ type JSXFactory = (
    * </>
    * ```
    *
-   * When rendering server-side component definitions, `componentFactory` will return `RiseElement`
+   * When rendering server-side component definitions, `componentFactory` will return `ReactElement`:
    * ```tsx
    * const View = createComponentDefinition('View')
    *
    * <View />
    * ```
    *
+   * See `createComponentDefinition` function for more details.
+   *
    * When rendering function defined on the server, `componentFactory` will return `ReactNode` or `RiseElement`,
-   * depending whether it returns a primitive value or a component definition:
+   * depending whether it returns a primitive value or a server-side component definition:
    * ```tsx
    * const View = createComponentDefinition('View')
    *
@@ -64,19 +66,22 @@ export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
   }
   const el = componentFactory(passedProps)
   if (!isReactElement(el)) {
-    if (!isComponentModelState(el)) {
+    if (!key) {
+      return el
+    }
+    if (isComponentModelState(el)) {
       return {
-        $: 'component',
-        component: 'rise-tools/react/Fragment',
+        ...el,
         key,
-        props: {},
-        children: el,
       }
     }
+    // tbd: fix type casting
     return {
-      ...el,
+      $: 'component',
+      component: 'rise-tools/react/Fragment',
       key,
-    }
+      children: el,
+    } as RiseElement
   }
   if (typeof el.type !== 'string') {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')
