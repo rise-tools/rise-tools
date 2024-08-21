@@ -4,8 +4,8 @@ import {
   BottomSheetSubmitButton,
   BottomSheetTriggerButton,
   DraggableFlatList,
-  FlatList,
 } from '@rise-tools/kit/server'
+import { FlatList } from '@rise-tools/kit-react-native/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
@@ -66,7 +66,6 @@ function UI() {
         >
           Form
         </Button>
-        <Separator />
         <Button onPress={navigate('list', { title: 'List' })} borderRadius={0}>
           List
         </Button>
@@ -391,7 +390,7 @@ function ListExample() {
   const data = [
     {
       key: 'rise-tools',
-      label: (
+      view: (
         <Button theme="blue" marginVertical="$2">
           Rise Tools
         </Button>
@@ -399,7 +398,7 @@ function ListExample() {
     },
     {
       key: 'rise-tools-1',
-      label: (
+      view: (
         <Button theme="blue" marginVertical="$2">
           Rise Tools
         </Button>
@@ -407,7 +406,7 @@ function ListExample() {
     },
     {
       key: 'rise-tools-2',
-      label: (
+      view: (
         <Button theme="blue" marginVertical="$2">
           Rise Tools
         </Button>
@@ -418,7 +417,7 @@ function ListExample() {
     <>
       <StackScreen title="List" />
       <YStack flex={1} padding="$4">
-        <FlatList data={data} header={<H4>Our ranking of JavaScript frameworks</H4>} />
+        <FlatList data={data} ListHeaderComponent={<H4>Our ranking of JavaScript frameworks</H4>} />
       </YStack>
     </>
   )

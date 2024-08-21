@@ -39,6 +39,9 @@
       "path": "../kit-webview"
     },
     {
+      "path": "../kit-react-native"
+    },
+    {
       "path": "../kit-expo-video"
     }
   ]

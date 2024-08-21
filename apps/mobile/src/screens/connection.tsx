@@ -13,6 +13,7 @@ import {
   FormComponents,
   LucideIconsComponents,
   QRCodeComponents,
+  ReactNativeComponents,
   SVGComponents,
   TamaguiComponents,
   useHapticsActions,
@@ -41,6 +42,7 @@ const components = {
   ...ReactNavigationComponents,
   ...WebViewComponents,
   ...ExpoVideoComponents,
+  ...ReactNativeComponents,
 }
 
 export type RiseStackParamList = {
