@@ -52,7 +52,7 @@ export const models = {
   bottomSheet: BottomSheetExample,
   qrcode: QRCodeExample,
   webview: WebViewExample,
-  video: VideoExample
+  video: VideoExample,
 }
 
 function UI() {
