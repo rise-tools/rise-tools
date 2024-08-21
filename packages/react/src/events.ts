@@ -1,10 +1,21 @@
-import {
-  ActionModelState,
-  HandlerFunction,
-  isEventModelState,
-  ServerEventModelState,
-  StateModelState,
-} from './rise'
+import { ActionModelState, HandlerFunction, StateModelState } from './rise'
+
+export type EventModelState = {
+  $: 'event'
+  actions?: ActionModelState[]
+  timeout?: number
+  args?: Record<string, StateModelState<any>>
+}
+export type ServerEventModelState<
+  Args extends any[] = any[],
+  ReturnType = void,
+> = EventModelState & {
+  handler: HandlerFunction<Args, ReturnType>
+}
+
+export function isEventModelState(obj: any): obj is EventModelState {
+  return obj !== null && typeof obj === 'object' && obj.$ === 'event'
+}
 
 export function isServerEventModelState(obj: any): obj is ServerEventModelState {
   return isEventModelState(obj) && 'handler' in obj && typeof obj.handler === 'function'
