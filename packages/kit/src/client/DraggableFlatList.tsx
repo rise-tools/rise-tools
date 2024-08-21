@@ -8,12 +8,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 type Item = { key: string; label: React.ReactElement; onPress?: () => void }
 
 export function RNDraggableFlatList(
-  props: Omit<
-    DraggableFlatListProps<Item>,
-    'ListHeaderComponent' | 'ListFooterComponent' | 'keyExtractor' | 'renderItem' | 'onDragEnd'
-  > & {
-    header?: React.ReactElement
-    footer?: React.ReactElement
+  props: Omit<DraggableFlatListProps<Item>, 'keyExtractor' | 'renderItem' | 'onDragEnd'> & {
     onItemPress?: (key: Item['key']) => void
     onReorder?: (data: Item['key'][]) => void
   }
@@ -27,8 +22,6 @@ export function RNDraggableFlatList(
       {...props}
       data={data}
       keyExtractor={(item) => item.key}
-      ListHeaderComponent={props.header ? () => props.header : undefined}
-      ListFooterComponent={props.footer ? () => props.footer : undefined}
       onDragEnd={(e) => {
         setData(e.data)
         props.onReorder?.(e.data.map((item) => item.key))
