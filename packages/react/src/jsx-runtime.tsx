@@ -11,38 +11,43 @@ import {
   StateModelState,
 } from './rise'
 
-type JSXFactory = (
-  /**
-   * When rendering server-side component definitions, `componentFactory` will return `ReactElement`:
-   * ```tsx
-   * const View = createComponentDefinition('View')
-   *
-   * <View />
-   * ```
-   * See `createComponentDefinition` function for more details.
-   *
-   * When rendering function defined on the server, `componentFactory` will return `ServerModelState`:
-   * ```tsx
-   * const View = createComponentDefinition('View')
-   *
-   * function Helper() {
-   *   return isMobile ? <View /> : 'foo'
-   * }
-   *
-   * <Helper />
-   * ```
-   */
-  componentFactory: (props: any) => ServerModelState | ReactElement,
-  { children, ...passedProps }: Record<string, any>,
-  key?: string,
-  isStaticChildren?: boolean
-) => ServerModelState
+/**
+ * When rendering server-side component definitions, `componentFactory` will return `ReactElement`:
+ * ```tsx
+ * const View = createComponentDefinition('View')
+ *
+ * <View />
+ * ```
+ * See `createComponentDefinition` function for more details.
+ *
+ * When rendering function defined on the server, `componentFactory` will return `ServerModelState`:
+ * ```tsx
+ * const View = createComponentDefinition('View')
+ *
+ * function Helper() {
+ *   return isMobile ? <View /> : 'foo'
+ * }
+ *
+ * <Helper />
+ * ```
+ */
+type ComponentFactory = (props: any) => ServerModelState | ReactElement
+type Props = Record<string, any>
 
-export const jsxs: JSXFactory = (componentFactory, passedProps, key) => {
-  return jsx(componentFactory, passedProps, key, true)
+export const jsxs = (componentFactory: ComponentFactory, props: Props, key: string) => {
+  return jsxImpl(componentFactory, props, key, true)
 }
 
-export const jsx: JSXFactory = (componentFactory, passedProps, key, isStaticChildren) => {
+export const jsx = (componentFactory: ComponentFactory, props: Props, key: string) => {
+  return jsxImpl(componentFactory, props, key, false)
+}
+
+export const jsxImpl = (
+  componentFactory: ComponentFactory,
+  passedProps: Props,
+  key: string,
+  isStaticChildren: boolean
+) => {
   if (isStaticChildren) {
     Object.defineProperty(passedProps.children, '$static', {
       value: true,
