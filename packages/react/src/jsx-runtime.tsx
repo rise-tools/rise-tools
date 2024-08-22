@@ -13,13 +13,6 @@ import {
 
 type JSXFactory = (
   /**
-   * When rendering fragments, `componentFactory` will be undefined
-   * ```tsx
-   * <>
-   *   <View>foo</View>
-   * </>
-   * ```
-   *
    * When rendering server-side component definitions, `componentFactory` will return `ReactElement`:
    * ```tsx
    * const View = createComponentDefinition('View')
@@ -39,7 +32,7 @@ type JSXFactory = (
    * <Helper />
    * ```
    */
-  componentFactory: ((props: any) => ServerModelState | ReactElement) | undefined,
+  componentFactory: (props: any) => ServerModelState | ReactElement,
   { children, ...passedProps }: Record<string, any>,
   key?: string
 ) => ServerModelState
@@ -53,13 +46,6 @@ export const jsxs: JSXFactory = (componentFactory, passedProps, key) => {
 }
 
 export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
-  if (typeof componentFactory === 'undefined') {
-    return {
-      $: 'component',
-      component: 'rise-tools/react/Fragment',
-      children: passedProps.children,
-    }
-  }
   const el = componentFactory(passedProps)
   if (!isReactElement(el)) {
     if (!key) {
