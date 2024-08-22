@@ -11,7 +11,7 @@ import {
   StateModelState,
 } from './rise'
 
-export type JSXFactory = (
+type JSXFactory = (
   /**
    * When rendering server-side component definitions, `componentFactory` will return `ReactElement`:
    * ```tsx
