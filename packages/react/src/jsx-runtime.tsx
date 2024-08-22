@@ -11,7 +11,7 @@ import {
   StateModelState,
 } from './rise'
 
-type JSXFactory = (
+export type JSXFactory = (
   /**
    * When rendering server-side component definitions, `componentFactory` will return `ReactElement`:
    * ```tsx
@@ -34,18 +34,21 @@ type JSXFactory = (
    */
   componentFactory: (props: any) => ServerModelState | ReactElement,
   { children, ...passedProps }: Record<string, any>,
-  key?: string
+  key?: string,
+  isStaticChildren?: boolean
 ) => ServerModelState
 
 export const jsxs: JSXFactory = (componentFactory, passedProps, key) => {
-  Object.defineProperty(passedProps.children, '$static', {
-    value: true,
-    enumerable: false,
-  })
-  return jsx(componentFactory, passedProps, key)
+  return jsx(componentFactory, passedProps, key, true)
 }
 
-export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
+export const jsx: JSXFactory = (componentFactory, passedProps, key, isStaticChildren) => {
+  if (isStaticChildren) {
+    Object.defineProperty(passedProps.children, '$static', {
+      value: true,
+      enumerable: false,
+    })
+  }
   const el = componentFactory(passedProps)
   if (!isReactElement(el)) {
     if (!key) {
