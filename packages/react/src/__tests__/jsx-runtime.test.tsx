@@ -190,3 +190,73 @@ it('should handle primitive values inside the server-side component', () => {
     }
   `)
 })
+
+it('should assign key to a component definition returned by a server-side helper', () => {
+  function Button() {
+    return <View />
+  }
+  expect(
+    <View>
+      {['foo', 'bar'].map((item) => (
+        <Button key={item} />
+      ))}
+    </View>
+  ).toMatchInlineSnapshot(`
+    {
+      "$": "component",
+      "children": [
+        {
+          "$": "component",
+          "children": undefined,
+          "component": "View",
+          "key": "foo",
+          "props": {},
+        },
+        {
+          "$": "component",
+          "children": undefined,
+          "component": "View",
+          "key": "bar",
+          "props": {},
+        },
+      ],
+      "component": "View",
+      "key": undefined,
+      "props": {},
+    }
+  `)
+})
+
+it('should wrap primitive values with a fragment to assign a key', () => {
+  function Text() {
+    return 'Hello World'
+  }
+  expect(
+    <View>
+      {['foo', 'bar'].map((item) => (
+        <Text key={item} />
+      ))}
+    </View>
+  ).toMatchInlineSnapshot(`
+    {
+      "$": "component",
+      "children": [
+        {
+          "$": "component",
+          "children": "Hello World",
+          "component": "rise-tools/react/Fragment",
+          "key": "foo",
+        },
+        {
+          "$": "component",
+          "children": "Hello World",
+          "component": "rise-tools/react/Fragment",
+          "key": "bar",
+        },
+      ],
+      "component": "View",
+      "key": undefined,
+      "props": {},
+    }
+  `)
+})

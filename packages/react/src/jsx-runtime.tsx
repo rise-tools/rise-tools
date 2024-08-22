@@ -1,16 +1,15 @@
-import type { JSXElementConstructor, ReactElement, ReactNode } from 'react'
+import type { JSXElementConstructor, ReactElement } from 'react'
 import React from 'react'
 
-import { event, ServerEventModelState } from './events'
+import { event } from './events'
 import {
-  ComponentModelState,
   HandlerFunction,
+  isComponentModelState,
   ReferencedModelState,
   ServerHandlerModelState,
+  ServerModelState,
   StateModelState,
 } from './rise'
-
-type RiseElement = ComponentModelState<ServerEventModelState>
 
 type JSXFactory = (
   /**
@@ -21,15 +20,15 @@ type JSXFactory = (
    * </>
    * ```
    *
-   * When rendering server-side component definitions, `componentFactory` will return `RiseElement`
+   * When rendering server-side component definitions, `componentFactory` will return `ReactElement`:
    * ```tsx
    * const View = createComponentDefinition('View')
    *
    * <View />
    * ```
+   * See `createComponentDefinition` function for more details.
    *
-   * When rendering function defined on the server, `componentFactory` will return `ReactNode` or `RiseElement`,
-   * depending whether it returns a primitive value or a component definition:
+   * When rendering function defined on the server, `componentFactory` will return `ServerModelState`:
    * ```tsx
    * const View = createComponentDefinition('View')
    *
@@ -40,10 +39,10 @@ type JSXFactory = (
    * <Helper />
    * ```
    */
-  componentFactory: ((props: any) => ReactNode | RiseElement) | undefined,
+  componentFactory: ((props: any) => ServerModelState | ReactElement) | undefined,
   { children, ...passedProps }: Record<string, any>,
   key?: string
-) => Exclude<ReactNode, ReactElement> | RiseElement
+) => ServerModelState
 
 export const jsxs: JSXFactory = (componentFactory, passedProps, key) => {
   Object.defineProperty(passedProps.children, '$static', {
@@ -63,7 +62,21 @@ export const jsx: JSXFactory = (componentFactory, passedProps, key) => {
   }
   const el = componentFactory(passedProps)
   if (!isReactElement(el)) {
-    return el
+    if (!key) {
+      return el
+    }
+    if (isComponentModelState(el)) {
+      return {
+        ...el,
+        key,
+      }
+    }
+    return {
+      $: 'component',
+      component: 'rise-tools/react/Fragment',
+      key,
+      children: el,
+    }
   }
   if (typeof el.type !== 'string') {
     throw new Error('Invalid component. Make sure to use server-side version of your components.')

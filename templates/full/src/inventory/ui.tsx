@@ -38,6 +38,7 @@ function HomeScreen({ inventory }: { inventory?: Inventory }) {
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {inventory?.map((item, idx) => (
           <Button
+            key={item.key}
             unstyled
             onPress={navigate(`inventoryItem/${item.key}`, { title: item.title })}
             pressStyle={{ opacity: 0.8 }}
