@@ -8,10 +8,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 type Item = { key: string; label: React.ReactElement; onPress?: () => void }
 
 export function RNDraggableFlatList(
-  props: Omit<
-    DraggableFlatListProps<Item>,
-    'ListHeaderComponent' | 'ListFooterComponent' | 'keyExtractor' | 'renderItem' | 'onDragEnd'
-  > & {
+  props: Omit<DraggableFlatListProps<Item>, 'keyExtractor' | 'renderItem' | 'onDragEnd'> & {
     header?: React.ReactElement
     footer?: React.ReactElement
     onItemPress?: (key: Item['key']) => void
@@ -22,13 +19,19 @@ export function RNDraggableFlatList(
   useEffect(() => {
     setData(props.data)
   }, [props.data])
+  if (props.header) {
+    console.warn('DraggableFlatList: header is deprecated, use ListHeaderComponent instead')
+  }
+  if (props.footer) {
+    console.warn('DraggableFlatList: footer is deprecated, use ListHeaderComponent instead')
+  }
   return (
     <DraggableFlatList
       {...props}
+      ListHeaderComponent={props.header || props.ListHeaderComponent}
+      ListFooterComponent={props.footer || props.ListFooterComponent}
       data={data}
       keyExtractor={(item) => item.key}
-      ListHeaderComponent={props.header}
-      ListFooterComponent={props.footer}
       onDragEnd={(e) => {
         setData(e.data)
         props.onReorder?.(e.data.map((item) => item.key))

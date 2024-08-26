@@ -373,8 +373,8 @@ function DraggableListExample() {
       <YStack flex={1} padding="$4">
         <DraggableFlatList
           data={data}
-          header={<H4>Best JavaScript frameworks</H4>}
-          footer={
+          ListHeaderComponent={<H4>Best JavaScript frameworks</H4>}
+          ListFooterComponent={
             <Text paddingVertical="$2">PS. You can reorder them to match your preferences!</Text>
           }
           onReorder={(keys) => {
