@@ -27,8 +27,8 @@ export function RNDraggableFlatList(
       {...props}
       data={data}
       keyExtractor={(item) => item.key}
-      ListHeaderComponent={props.header ? () => props.header : undefined}
-      ListFooterComponent={props.footer ? () => props.footer : undefined}
+      ListHeaderComponent={props.header}
+      ListFooterComponent={props.footer}
       onDragEnd={(e) => {
         setData(e.data)
         props.onReorder?.(e.data.map((item) => item.key))
