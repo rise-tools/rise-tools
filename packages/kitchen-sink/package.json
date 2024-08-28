@@ -1,6 +1,6 @@
 {
   "name": "@rise-tools/kitchen-sink",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "license": "Apache-2.0",
   "description": "",
   "main": "./lib/index.js",
@@ -30,18 +30,18 @@
   },
   "homepage": "https://github.com/rise-tools/rise-tools#readme",
   "dependencies": {
-    "@rise-tools/kit-tamagui": "0.13.1",
-    "@rise-tools/kit": "0.13.1",
-    "@rise-tools/kit-expo-video": "0.13.1",
-    "@rise-tools/kit-haptics": "0.13.1",
-    "@rise-tools/kit-forms": "0.13.1",
-    "@rise-tools/kit-linking": "0.13.1",
-    "@rise-tools/kit-react-native": "0.13.1",
-    "@rise-tools/kit-tamagui-toast": "0.13.1",
-    "@rise-tools/kit-lucide-icons": "0.13.1",
-    "@rise-tools/kit-svg": "0.13.1",
-    "@rise-tools/kit-qrcode": "0.13.1",
-    "@rise-tools/kit-webview": "0.13.1"
+    "@rise-tools/kit-tamagui": "0.14.0",
+    "@rise-tools/kit": "0.14.0",
+    "@rise-tools/kit-expo-video": "0.14.0",
+    "@rise-tools/kit-haptics": "0.14.0",
+    "@rise-tools/kit-forms": "0.14.0",
+    "@rise-tools/kit-linking": "0.14.0",
+    "@rise-tools/kit-react-native": "0.14.0",
+    "@rise-tools/kit-tamagui-toast": "0.14.0",
+    "@rise-tools/kit-lucide-icons": "0.14.0",
+    "@rise-tools/kit-svg": "0.14.0",
+    "@rise-tools/kit-qrcode": "0.14.0",
+    "@rise-tools/kit-webview": "0.14.0"
   },
   "peerDependencies": {
     "@tamagui/lucide-icons": "^1.100.3",
