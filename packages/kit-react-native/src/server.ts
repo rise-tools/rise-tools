@@ -68,3 +68,9 @@ export const TouchableNativeFeedback = createComponentDefinition<typeof RN.Touch
 )
 
 export const View = createComponentDefinition<typeof RN.View>('rise-tools/kit-react-native/View')
+
+export const Image = createComponentDefinition<typeof RN.Image>('rise-tools/kit-react-native/Image')
+
+export const ImageBackground = createComponentDefinition<typeof RN.ImageBackground>(
+  'rise-tools/kit-react-native/ImageBackground'
+)

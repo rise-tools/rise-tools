@@ -25,6 +25,12 @@ export const ReactNativeComponents: ComponentRegistry = {
   'rise-tools/kit-react-native/ScrollView': {
     component: RN.ScrollView,
   },
+  'rise-tools/kit-react-native/Image': {
+    component: RN.Image,
+  },
+  'rise-tools/kit-react-native/ImageBackground': {
+    component: RN.ImageBackground,
+  },
   'rise-tools/kit-react-native/StatusBar': {
     component: RN.StatusBar,
   },

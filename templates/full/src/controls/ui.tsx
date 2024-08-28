@@ -5,7 +5,7 @@ import {
   BottomSheetTriggerButton,
   DraggableFlatList,
 } from '@rise-tools/kit/server'
-import { FlatList } from '@rise-tools/kit-react-native/server'
+import { FlatList, Image, ImageBackground } from '@rise-tools/kit-react-native/server'
 import { goBack, navigate, StackScreen } from '@rise-tools/kit-react-navigation/server'
 import {
   Button,
