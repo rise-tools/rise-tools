@@ -1,10 +1,9 @@
-import { ActionModelState, HandlerFunction, StateModelState } from './rise'
+import { ActionModelState, HandlerFunction } from './rise'
 
 export type EventModelState = {
   $: 'event'
   actions?: ActionModelState[]
   timeout?: number
-  args?: Record<string, StateModelState<any>>
 }
 export type ServerEventModelState<
   Args extends any[] = any[],
@@ -26,7 +25,6 @@ export function event<T>(
   opts?: {
     actions?: ActionModelState[]
     timeout?: number
-    args?: { [K in keyof T]: StateModelState<T[K]> }
   }
 ): ServerEventModelState<[T]> {
   return {
@@ -34,7 +32,6 @@ export function event<T>(
     handler: func,
     actions: opts?.actions,
     timeout: opts?.timeout,
-    args: opts?.args,
   }
 }
 
