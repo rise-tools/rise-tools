@@ -25,6 +25,15 @@
       "buildNumber": "6"
     },
     "android": {
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "category": ["BROWSABLE", "DEFAULT"],
+          "data": {
+            "scheme": "rise"
+          }
+        }
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/RiseIcon-Adaptive.png",
         "backgroundColor": "#260162",
