@@ -56,7 +56,7 @@ const incrementer = view(get => (
 ))
 
 export const models = {
-  home: incrementer,
+  '': incrementer,
 }
 ```
 
