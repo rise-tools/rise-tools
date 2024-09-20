@@ -7,6 +7,12 @@
       },
       "autoIncrement": true,
       "channel": "production"
+    },
+    "preview": {
+      "channel": "production",
+      "ios": {
+        "simulator": true
+      }
     }
   },
   "submit": {
