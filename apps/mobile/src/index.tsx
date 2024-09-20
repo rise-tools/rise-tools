@@ -9,6 +9,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import { Screens } from './screens'
+import { SplashScreen } from './splash-screen'
 import { storage } from './storage'
 import { tamaguiConfig } from './tamagui/config'
 import { TamaguiProvider } from './tamagui/provider'
@@ -40,22 +41,24 @@ function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <TamaguiProvider config={tamaguiConfig}>
-          <NavigationContainer
-            linking={{
-              prefixes: [prefix],
-            }}
-            theme={{
-              ...theme,
-              colors: {
-                ...theme.colors,
-                primary: scheme === 'dark' ? '#FD5811' : '#E74500',
-              },
-            }}
-            initialState={initialState ? JSON.parse(initialState) : undefined}
-            onStateChange={(state) => storage.set('react-navigation', JSON.stringify(state))}
-          >
-            <Screens />
-          </NavigationContainer>
+          <SplashScreen loaded={loaded}>
+            <NavigationContainer
+              linking={{
+                prefixes: [prefix],
+              }}
+              theme={{
+                ...theme,
+                colors: {
+                  ...theme.colors,
+                  primary: scheme === 'dark' ? '#FD5811' : '#E74500',
+                },
+              }}
+              initialState={initialState ? JSON.parse(initialState) : undefined}
+              onStateChange={(state) => storage.set('react-navigation', JSON.stringify(state))}
+            >
+              <Screens />
+            </NavigationContainer>
+          </SplashScreen>
         </TamaguiProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
