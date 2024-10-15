@@ -8,7 +8,6 @@ import {
   ReferencedModelState,
   ServerHandlerModelState,
   ServerModelState,
-  StateModelState,
 } from './rise'
 
 /**
@@ -93,30 +92,19 @@ export const jsxImpl = (
   }
 }
 
-export type Literal<T> = {
-  __literal: T
-}
-export type LiteralArray<T> = Array<T> & {
-  __literalArray: T[]
-}
-
 export type WithServerProps<T> = { [P in keyof T]: _Extend<T[P]> }
 
 interface _ExtendArray<T> extends Array<_Extend<T>> {}
 
-export type _Extend<T> = T extends StateModelState
-  ? T
-  : T extends Literal<infer U>
-    ? U
-    : T extends (...args: infer Args) => infer ReturnType
-      ? HandlerFunction<Args, ReturnType> | ServerHandlerModelState<Args, ReturnType>
-      : T extends Array<infer U>
-        ? _ExtendArray<U> | (T extends LiteralArray<U> ? never : StateModelState<Array<U>>)
-        : T extends object
-          ? WithServerProps<T>
-          : T extends null | undefined
-            ? T
-            : T | ReferencedModelState | StateModelState<T>
+export type _Extend<T> = T extends (...args: infer Args) => infer ReturnType
+  ? HandlerFunction<Args, ReturnType> | ServerHandlerModelState<Args, ReturnType>
+  : T extends Array<infer U>
+    ? _ExtendArray<U>
+    : T extends object
+      ? WithServerProps<T>
+      : T extends null | undefined
+        ? T
+        : T | ReferencedModelState
 
 export function createComponentDefinition<
   T extends JSXElementConstructor<any> | keyof JSX.IntrinsicElements,

@@ -17,7 +17,6 @@ import {
   Path,
   ReferencedModelState,
 } from './rise'
-import { isStateUpdateAction, LocalState, useLocalState } from './state'
 import { Stream } from './streams'
 import { lookupValue } from './utils'
 
@@ -200,9 +199,6 @@ export function Rise({
   }, [])
   const rootModelState = resolveRef(dataValues, path)
 
-  /* state */
-  const [localState, applyStateUpdateAction] = useLocalState()
-
   /* actions */
   const handleAction = useCallback(
     (action: ActionModelState) => {
@@ -231,23 +227,10 @@ export function Rise({
         ? event.modelState.actions
         : event.modelState
       for (const action of eventActions || []) {
-        if (isStateUpdateAction(action)) {
-          applyStateUpdateAction(action, event.payload)
-        } else {
-          handleAction(action)
-        }
+        handleAction(action)
       }
       if (!isHandlerEvent(event)) {
         return
-      }
-      if (event.modelState.args) {
-        event.payload = [
-          Object.fromEntries(
-            Object.entries(event.modelState.args).map(([key, value]) => {
-              return [key, localState.getStream(value).get()]
-            })
-          ),
-        ]
       }
       const res = await onEvent(event)
       if (!isEventResponse(res)) {
@@ -257,11 +240,7 @@ export function Rise({
       }
       if (res.actions) {
         for (const action of res.actions) {
-          if (isStateUpdateAction(action)) {
-            applyStateUpdateAction(action, event.payload)
-          } else {
-            handleAction(action)
-          }
+          handleAction(action)
         }
       }
       if (res.error) {
@@ -273,8 +252,6 @@ export function Rise({
   )
 
   return (
-    <LocalState.Provider value={localState}>
-      <BaseRise components={components} path={path} model={rootModelState} onEvent={handleEvent} />
-    </LocalState.Provider>
+    <BaseRise components={components} path={path} model={rootModelState} onEvent={handleEvent} />
   )
 }

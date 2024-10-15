@@ -1,9 +1,7 @@
-import React, { useCallback, useContext } from 'react'
+import React from 'react'
 import { jsx, jsxs } from 'react/jsx-runtime'
 
 import { EventModelState, isEventModelState, ServerEventModelState } from './events'
-import { LocalState, useLocalStateValues } from './state'
-import { useStream } from './streams'
 
 /** Components */
 type ComponentIdentifier = string
@@ -21,7 +19,6 @@ export type ModelState<T = EventModelState> =
   | ComponentModelState<T>
   | ReferencedModelState
   | HandlerModelState<T>
-  | StateModelState
   | { [key: string]: ModelState<T>; $?: never }
   | Iterable<ModelState<T>>
   | T
@@ -43,11 +40,6 @@ export type ComponentModelState<T = EventModelState> = {
 }
 type ReferencedComponentModelState<T = EventModelState> = ComponentModelState<T> & {
   path: Path
-}
-export type StateModelState<T = JSONValue> = {
-  $: 'state'
-  key: string
-  initialValue: T
 }
 export type Path = [string, ...(string | number)[]]
 export type ReferencedModelState = {
@@ -111,14 +103,8 @@ export type EventRequest<P = EventModelState | ActionModelState[], K = any[]> = 
 export type HandlerEvent = EventRequest<EventModelState>
 export type HandlerModelState<T = EventModelState> = T | ActionModelState | ActionModelState[]
 
-export function isCompositeModelState(
-  obj: any
-): obj is ComponentModelState | ReferencedModelState | StateModelState {
-  return (
-    obj !== null &&
-    typeof obj === 'object' &&
-    (obj.$ === 'component' || obj.$ === 'ref' || obj.$ === 'state')
-  )
+export function isCompositeModelState(obj: any): obj is ComponentModelState | ReferencedModelState {
+  return obj !== null && typeof obj === 'object' && (obj.$ === 'component' || obj.$ === 'ref')
 }
 export function isComponentModelState(obj: any): obj is ComponentModelState<any> {
   return obj !== null && typeof obj === 'object' && obj.$ === 'component'
@@ -141,9 +127,6 @@ export function isActionModelStateArray(obj: any): obj is ActionModelState[] {
 export function isEventResponse(obj: any): obj is EventResponse<any> {
   return obj && typeof obj === 'object' && obj.$ === 'evt-res'
 }
-function isStateModelState(obj: any): obj is StateModelState {
-  return obj !== null && typeof obj === 'object' && obj.$ === 'state'
-}
 function itemKeyOrIndex(item: ModelState, idx: number): string | number {
   if (isComponentModelState(item)) {
     return item.key || idx
@@ -162,54 +145,37 @@ export function BaseRise({
   model: ModelState
   onEvent?: (event: EventRequest) => any
 }) {
-  const RenderComponent = useCallback(
-    function ({ stateNode, path }: { stateNode: ComponentModelState; path: Path }) {
-      const componentDefinition =
-        CORE_COMPONENTS[stateNode.component] || components[stateNode.component]
-      if (!componentDefinition) {
-        throw new RenderError(`Unknown component: ${stateNode.component}`)
-      }
+  function renderComponent({ stateNode, path }: { stateNode: ComponentModelState; path: Path }) {
+    const componentDefinition =
+      CORE_COMPONENTS[stateNode.component] || components[stateNode.component]
+    if (!componentDefinition) {
+      throw new RenderError(`Unknown component: ${stateNode.component}`)
+    }
 
-      const Component = componentDefinition.component
-      if (!Component) {
-        throw new RenderError(`Invalid component: ${stateNode.component}`)
-      }
+    const Component = componentDefinition.component
+    if (!Component) {
+      throw new RenderError(`Invalid component: ${stateNode.component}`)
+    }
 
-      const getLocalStateValue = useLocalStateValues()
-      let componentProps = Object.fromEntries(
-        Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
-          return [
-            propKey,
-            renderProp(propKey, propValue, stateNode, getLocalStateValue, [
-              ...path,
-              'props',
-              propKey,
-            ]),
-          ]
-        })
-      )
-      if (typeof componentDefinition.validator === 'function') {
-        try {
-          componentProps = componentDefinition.validator(componentProps)
-        } catch (e) {
-          throw new RenderError(
-            `Invalid props for component: ${stateNode.component}, props: ${JSON.stringify(stateNode.props)}. Error: ${JSON.stringify(e)}`
-          )
-        }
-      }
-      const jsxFactory = stateNode.$staticChildren ? jsxs : jsx
-      return jsxFactory(Component, {
-        ...componentProps,
-        children: render(stateNode.children, [...path, 'children']),
+    let componentProps = Object.fromEntries(
+      Object.entries(stateNode.props || {}).map(([propKey, propValue]) => {
+        return [propKey, renderProp(propKey, propValue, stateNode, [...path, 'props', propKey])]
       })
-    },
-    [components]
-  )
-
-  function RenderState({ stateNode, path }: { stateNode: StateModelState; path: Path }) {
-    const localState = useContext(LocalState)
-    const value = useStream(localState.getStream(stateNode))
-    return render(value, path)
+    )
+    if (typeof componentDefinition.validator === 'function') {
+      try {
+        componentProps = componentDefinition.validator(componentProps)
+      } catch (e) {
+        throw new RenderError(
+          `Invalid props for component: ${stateNode.component}, props: ${JSON.stringify(stateNode.props)}. Error: ${JSON.stringify(e)}`
+        )
+      }
+    }
+    const jsxFactory = stateNode.$staticChildren ? jsxs : jsx
+    return jsxFactory(Component, {
+      ...componentProps,
+      children: render(stateNode.children, [...path, 'children']),
+    })
   }
 
   function render(stateNode: ModelState, path: Path): React.ReactNode {
@@ -225,16 +191,10 @@ export function BaseRise({
       throw new Error('Objects are not valid as a React child.')
     }
     if (stateNode.$ === 'component') {
-      return (
-        <RenderComponent
-          key={stateNode.key}
-          stateNode={stateNode}
-          path={isReferencedComponentModelState(stateNode) ? stateNode.path : path}
-        />
-      )
-    }
-    if (stateNode.$ === 'state') {
-      return <RenderState stateNode={stateNode} path={path} />
+      return renderComponent({
+        stateNode,
+        path: isReferencedComponentModelState(stateNode) ? stateNode.path : path,
+      })
     }
     if (stateNode.$ === 'ref') {
       throw new Error('Your data includes refs. You must use a <Rise /> component instead.')
@@ -245,7 +205,6 @@ export function BaseRise({
     propKey: string,
     propValue: ModelState,
     parentNode: ComponentModelState | ReferencedComponentModelState,
-    getLocalStateValue: (state: StateModelState) => JSONValue,
     path: Path
   ): any {
     if (propValue === null || typeof propValue !== 'object') {
@@ -284,19 +243,7 @@ export function BaseRise({
     }
     if (Symbol.iterator in propValue) {
       return Array.from(propValue).map((item, idx) =>
-        renderProp(propKey, item, parentNode, getLocalStateValue, [
-          ...path,
-          itemKeyOrIndex(item, idx),
-        ])
-      )
-    }
-    if (isStateModelState(propValue)) {
-      return renderProp(
-        propKey,
-        getLocalStateValue(propValue),
-        parentNode,
-        getLocalStateValue,
-        path
+        renderProp(propKey, item, parentNode, [...path, itemKeyOrIndex(item, idx)])
       )
     }
     if (isCompositeModelState(propValue)) {
@@ -304,7 +251,7 @@ export function BaseRise({
     }
     return Object.fromEntries(
       Object.entries(propValue).map(([key, value]) => {
-        return [key, renderProp(key, value, parentNode, getLocalStateValue, [...path, key])]
+        return [key, renderProp(key, value, parentNode, [...path, key])]
       })
     )
   }
